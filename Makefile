@@ -43,6 +43,13 @@ $(BIN):
 protobuf:
 	@echo " TODO: generate protobuf files"
 
+
+## ---- documentation
+
+doc: $(SOURCES) $(INCLUDES)
+	doxygen Doxyfile
+
+
 ## ---- clean up
 
 clean:
