@@ -14,16 +14,14 @@ int main (int argc, char* argv[]) {
 
 	std::cout << "Hello World!" << std::endl;
 
-	int i = 0;
 	std::vector<gtfs::Vehicle> vehicles;
 
-	while (i < 3) {
+	for (int i=0; i<3; i++) {
 		std::cout << "=============== " << i << std::endl;
 		vehicles.emplace_back("CXY" + std::to_string(i));
 		gtfs::Vehicle *vp = &vehicles[0];
 		std::cout << "Created vehicle " << vp->vehicle_id() << "." << std::endl;
-		i++;
-		std::cout << "---" << std::endl;
+		std::cout << "---" << std::endl << std::endl;
 	}
 
 	return 0;

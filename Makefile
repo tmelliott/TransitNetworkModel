@@ -1,5 +1,11 @@
 CXX := g++
-CXXFLAGS := --std=c++11 -g -Wall -fopenmp
+CXXFLAGS := --std=c++11 -g -Wall
+
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Linux)
+	CXXFLAGS += -fopenmp
+endif
+
 
 SRC := src
 INCLUDE := include
@@ -7,7 +13,7 @@ BUILD := build
 BIN := bin
 
 EXT := cpp
-INC := -I $(INCLUDE)
+INC := -I$(INCLUDE)
 SOURCES := $(shell find $(SRC) -type f -name *.$(EXT))
 INCLUDES := $(wildcard $(INCLUDE)/*.h)
 OBJECTS := $(patsubst $(SRC)/%, $(BUILD)/%, $(SOURCES:.$(EXT)=.o))
@@ -16,7 +22,7 @@ TARGETS := $(patsubst $(SRC)/%, $(BIN)/%, $(SOURCES:.$(EXT)=))
 all: protobuf $(TARGETS)
 
 $(TARGETS): $(OBJECTS) $(INCLUDES) | $(BIN)
-	$(CXX) $(CXXFLAGS) $(INC) -o $@ $^
+	$(CXX) $(CXXFLAGS) $(INC) $< -o $@
 
 $(OBJECTS): $(SOURCES) $(INCLUDES) | $(BUILD)
 	$(CXX) $(CXXFLAGS) $(INC) -c -o $@ $<
