@@ -69,7 +69,9 @@ __OUT__: ETA to remaining stops along route
   - `transit_network_model.cpp`: mostly just a wrapper for `while (TRUE) { ... }`
   - `laod_gtfs.cpp`
 - `include`
-  - `gtfs`: descriptions of the gtfs objects
+  - `gtfs`: descriptions of the gtfs objects (??)
+	  - `gtfs::Vehicle` a vehicle object
+	  - `gtfs::Particle`
   - `gps`: methods for GPS coordinates (distance, etc)
   - `particle_filter`: the particle filter model
   - `kalman_filter`: the Kalman filter model
