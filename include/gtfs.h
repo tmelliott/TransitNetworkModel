@@ -13,8 +13,11 @@ namespace gtfs {
 		std::string vehicle_id_;
 
 	public:
+		Vehicle ();
 		Vehicle (std::string vehicle_id) :
 			vehicle_id_ (vehicle_id) {}
+
+		~Vehicle(void);
 
 		/**
 		 * Getter for vehicle_id
@@ -24,7 +27,6 @@ namespace gtfs {
 			return vehicle_id_;
 		};
 
-		~Vehicle(void);
 	};
 
 	/**
