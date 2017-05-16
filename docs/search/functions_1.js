@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['n_5fparticles',['n_particles',['../classgtfs_1_1Vehicle.html#a53f697645a668f2f04375331fe147dc8',1,'gtfs::Vehicle::n_particles() const '],['../classgtfs_1_1Vehicle.html#a2afb781a1158e0e3e2960c1da21a04e8',1,'gtfs::Vehicle::n_particles(unsigned int n)']]],
-  ['next_5fid',['next_id',['../classgtfs_1_1Vehicle.html#a1d53d3b8a106d0ed967cb63926e79c34',1,'gtfs::Vehicle']]]
+  ['vehicle',['Vehicle',['../classgtfs_1_1Vehicle.html#a011c9c3353ce1686ff783a4342f67dfd',1,'gtfs::Vehicle']]],
+  ['vehicle_5fid',['vehicle_id',['../classgtfs_1_1Vehicle.html#ac05f908002380c7c2e735c1581ae4c5f',1,'gtfs::Vehicle']]]
 ];

@@ -1,15 +1,11 @@
 /**
- * \mainpage
- * A realtime model of a public transport network.
+ * \mainpage A realtime model of a public transport network.
  *
  * An program which runs indefinitely, modeling the realtime state of
  * all vehicles in the transit network. These are in turn used to model
  * the realtime state of the network itself (road speeds),
  * and finally arrival time predictions made for each vehicle/stop combination.
  *
- * - transit_network_model.cpp
- *
- * @file
  * @author Tom Elliott <tom.elliott@auckland.ac.nz>
  * @version 0.0.1
  */
@@ -56,17 +52,8 @@ int main (int argc, char* argv[]) {
 		}
 		std::cout << "----------- (resample)" << std::endl;
 		vp->resample();
-		std::cout << "-----------" << std::endl;
 		for (auto& pr: vp->particles ()) {
-			std::cout << " |- Particle " << pr.particle_id ()
-				<< " is a child of particle " << pr.parent_id () << std::endl;
-		}
-		std::cout << "----------- (resample)" << std::endl;
-		vp->resample();
-		std::cout << "-----------" << std::endl;
-		for (auto& pr: vp->particles ()) {
-			std::cout << " |- Particle " << pr.particle_id ()
-				<< " is a child of particle " << pr.parent_id () << std::endl;
+			std::cout << " |- Particle " << pr.particle_id () << std::endl;
 		}
 
 		std::cout << std::endl;
