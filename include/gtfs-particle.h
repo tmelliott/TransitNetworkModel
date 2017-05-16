@@ -8,7 +8,6 @@
 */
 gtfs::Particle::Particle (gtfs::Vehicle& v) {
 	unsigned long next = v.next_id_++;
-	std::cout << "Next ID is " << next << "; ";
 	particle_id_ = next;
 	std::cout << " + Created particle for vehicle " << v.vehicle_id ()
 		<< " with id = " << particle_id_ << std::endl;
