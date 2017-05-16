@@ -60,8 +60,6 @@ private:
 public:
 	// Constructors, destructors
 	Particle (int i);
-	Particle (const gtfs::Particle &p); // copy
-	Particle (gtfs::Particle&& p);  // move
 	~Particle ();  // destroy
 
 	// Getters

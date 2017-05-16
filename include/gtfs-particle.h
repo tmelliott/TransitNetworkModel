@@ -12,22 +12,6 @@ gtfs::Particle::Particle (int i) {
 };
 
 /**
-* Copy constructor for a particle.
-*
-* This will copy all of the properties, EXCEPT particle id.
-*/
-gtfs::Particle::Particle (const gtfs::Particle &p) {
-	std::cout << " >+ Copying particle " << p.particle_id () << std::endl;
-
-	particle_id_ = p.particle_id ();
-};
-
-gtfs::Particle::Particle (gtfs::Particle&& p) {
-	std::cout << " >> Moving particle " << p.particle_id () << std::endl;
-	particle_id_ = p.particle_id ();
-};
-
-/**
 * Desctructor for a particle.
 */
 gtfs::Particle::~Particle() {
