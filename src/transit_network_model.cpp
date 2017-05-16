@@ -44,20 +44,20 @@ int main (int argc, char* argv[]) {
 
 	std::cout << std::endl;
 
-	// int i = 1;
-	// for (auto& vp: vehicles) {
-	// 	printf("Vehicle %d has id %s (%d particles).\n", i++, vp->vehicle_id ().c_str(), (int) vp->particles().size ());
-	// 	for (auto& pr: vp->particles ()) {
-	// 		std::cout << " |- Particle " << pr.particle_id () << std::endl;
-	// 	}
-	// 	std::cout << "----------- (resample)" << std::endl;
-	// 	vp->resample();
-	// 	for (auto& pr: vp->particles ()) {
-	// 		std::cout << " |- Particle " << pr.particle_id () << std::endl;
-	// 	}
-	//
-	// 	std::cout << std::endl;
-	// }
+	int i = 1;
+	for (auto& vp: vehicles) {
+		printf("Vehicle %d has id %s (%d particles).\n", i++, vp->vehicle_id ().c_str(), (int) vp->particles().size ());
+		for (auto& pr: vp->particles ()) {
+			std::cout << " |- Particle " << pr.particle_id () << std::endl;
+		}
+		std::cout << "----------- (resample)" << std::endl;
+		vp->resample();
+		for (auto& pr: vp->particles ()) {
+			std::cout << " |- Particle " << pr.particle_id () << std::endl;
+		}
+
+		std::cout << std::endl;
+	}
 
 	std::cout << "\n";
 	return 0;

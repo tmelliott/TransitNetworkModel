@@ -13,8 +13,6 @@ vehicle_id_ (vehicle_id), n_particles_ (5), next_id_ (0) {
 	for (int i=0; i<n_particles_; i++) {
 		particles_.emplace_back(*this);
 	}
-	std::cout << next_id_ << std::endl;
-	// std::cout << " >> now has " << particles_.size () << " particles." << std::endl;
 };
 
 /**
@@ -23,6 +21,8 @@ vehicle_id_ (vehicle_id), n_particles_ (5), next_id_ (0) {
 gtfs::Vehicle::~Vehicle() {
 	std::cout << " -- Vehicle " << vehicle_id_ << " deleted." << std::endl;
 };
+
+// -- GETTERS
 
 /**
 * @return ID of vehicle
@@ -59,6 +59,7 @@ void gtfs::Vehicle::n_particles (unsigned int n) {
 	n_particles_ = n;
 };
 
+// --- METHODS
 
 /**
  * Perform weighted resampling with replacement.
@@ -72,19 +73,19 @@ void gtfs::Vehicle::resample () {
 	std::vector<int> pn ({0, 3, 1, 0, 1});
 
 	// Move old particles into temporary holding vector
-	// std::vector<gtfs::Particle> old_particles = std::move(particles_);
+	std::vector<gtfs::Particle> old_particles = std::move(particles_);
 
-	// for (unsigned int i=0; i<pn.size(); i++) {
-	// 	if (pn[i] > 1) {
-	// 		for (int j=1; j<pn[i]; j++) {
-	// 			std::unique_ptr<gtfs::Particle> pj; // = std::copy(old_particles[i]);
-	// 			*pj = std::copy(*old_particles[i]);
-	// 		}
-	// 	}
-	// 	if (pn[i] > 0) {
-	//
-	// 	}
-	// }
+	particles_.reserve(n_particles_);
+	for (unsigned int i=0; i<pn.size(); i++) {
+		if (pn[i] > 1) {
+			for (int j=1; j<pn[i]; j++) {
+				particles_.push_back(old_particles[i]);
+			}
+		}
+		if (pn[i] > 0) {
+
+		}
+	}
 
 
 	// for (int& i: pkeep) {

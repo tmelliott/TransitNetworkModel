@@ -66,6 +66,7 @@ private:
 public:
 	// Constructors, destructors
 	Particle (gtfs::Vehicle& v);
+	Particle (const gtfs::Particle &p);
 	~Particle ();  // destroy
 
 	// Getters
