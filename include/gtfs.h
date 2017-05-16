@@ -31,7 +31,7 @@ private:
 	std::vector<gtfs::Particle> particles_;
 	unsigned long next_id_;
 
-	friend class Particle;
+	friend class Particle; // Particle has access to vehicle.
 
 public:
 	// Constructors, destructors
@@ -61,22 +61,25 @@ public:
 class gtfs::Particle {
 private:
 	unsigned long particle_id_;
-	// gtfs::Vehicle& vehicle_;
+	gtfs::Vehicle* vehicle_;
+	unsigned long parent_id_;
 
 public:
 	// Constructors, destructors
-	Particle (gtfs::Vehicle& v);
+	Particle (gtfs::Vehicle* v);
 	Particle (const gtfs::Particle &p);
 	~Particle ();  // destroy
 
 	// Getters
 	const unsigned long particle_id () const;
+	gtfs::Vehicle* vehicle ();
+	const unsigned long parent_id () const;
 
 	// Setters
 
 
 	// Methods
-	//
+
 };
 
 
