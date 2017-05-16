@@ -45,7 +45,7 @@ public:
 	unsigned long& next_id ();
 
 	// Setters
-
+	void n_particles (unsigned int n);
 
 	// Methods
 	void resample ();

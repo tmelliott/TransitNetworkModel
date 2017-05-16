@@ -1,5 +1,5 @@
 CXX := g++
-CXXFLAGS := --std=c++11 -g -Wall -O3
+CXXFLAGS := --std=c++11 -g -Wall 
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)

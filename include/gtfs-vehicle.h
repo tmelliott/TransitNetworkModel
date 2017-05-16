@@ -49,6 +49,17 @@ unsigned long& gtfs::Vehicle::next_id () {
 	return next_id_;
 };
 
+
+// --- SETTERS
+/**
+* @param n the number of particles that will be generated
+*          at the next iteration.
+*/
+void gtfs::Vehicle::n_particles (unsigned int n) {
+	n_particles_ = n;
+};
+
+
 /**
  * Perform weighted resampling with replacement.
  *
