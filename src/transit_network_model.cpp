@@ -34,6 +34,24 @@ int main (int argc, char* argv[]) {
 
 	std::vector<std::shared_ptr<gtfs::Vehicle> > vehicles;
 
+	bool forever = false;
+
+	while (forever) {
+		{
+			// Load GTFS feed -> vehicles
+			//
+			// -> triggers particle transition -> resample
+		}
+
+		{
+			// Update road segments -> Kalman filter
+		}
+
+		{
+			// Update ETA predictions
+		}
+	}
+
 	for (int i=0; i<3; i++) {
 		// Create "temporary" vehicle object
 		std::shared_ptr<gtfs::Vehicle> vp (new gtfs::Vehicle("CXY" + std::to_string(i)));
