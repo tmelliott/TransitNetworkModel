@@ -18,6 +18,7 @@
 #include <memory>
 #include <vector>
 
+#include "gtfs-realtime.pb.h"
 #include <gtfs.h>
 
 /**
@@ -54,16 +55,16 @@ int main (int argc, char* argv[]) {
 		for (auto& pr: vp->particles ()) {
 			std::cout << " |- Particle " << pr.particle_id () << std::endl;
 		}
-		std::cout << "----------- (resample)" << std::endl;
+		std::cout << ">>----------- (resample)" << std::endl;
 		vp->resample();
-		std::cout << "-----------" << std::endl;
+		std::cout << "  -----------<<" << std::endl;
 		for (auto& pr: vp->particles ()) {
 			std::cout << " |- Particle " << pr.particle_id ()
 				<< " is a child of particle " << pr.parent_id () << std::endl;
 		}
-		std::cout << "----------- (resample)" << std::endl;
+		std::cout << ">>----------- (resample)" << std::endl;
 		vp->resample();
-		std::cout << "-----------" << std::endl;
+		std::cout << "  -----------<<" << std::endl;
 		for (auto& pr: vp->particles ()) {
 			std::cout << " |- Particle " << pr.particle_id ()
 				<< " is a child of particle " << pr.parent_id () << std::endl;
