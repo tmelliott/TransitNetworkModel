@@ -7,12 +7,17 @@
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\hyperlink{classgtfs_1_1Particle_a1b5b0b92c1fdd22dd500059409076c3e}{Particle} (int i)
+\hyperlink{classgtfs_1_1Particle_a0d9725e1cf30d868fd0a7a1a6c841e53}{Particle} (\hyperlink{classgtfs_1_1Vehicle}{gtfs\+::\+Vehicle} $\ast$v)
+\item 
+\hyperlink{classgtfs_1_1Particle_a9b2546360867281901bed0f731b90153}{Particle} (const \hyperlink{classgtfs_1_1Particle}{gtfs\+::\+Particle} \&p)
 \item 
 \hyperlink{classgtfs_1_1Particle_a3accf3496ad8460b4ad8b3f6da2de411}{$\sim$\+Particle} ()
 \item 
-const unsigned long {\bfseries particle\+\_\+id} () const \hypertarget{classgtfs_1_1Particle_a4c02d3ea318b8f88c30a6fa32dc7f727}{}\label{classgtfs_1_1Particle_a4c02d3ea318b8f88c30a6fa32dc7f727}
-
+const unsigned long \hyperlink{classgtfs_1_1Particle_a4c02d3ea318b8f88c30a6fa32dc7f727}{particle\+\_\+id} () const 
+\item 
+\hyperlink{classgtfs_1_1Vehicle}{gtfs\+::\+Vehicle} $\ast$ \hyperlink{classgtfs_1_1Particle_a163b07fa0c6a576fa7f21e7eb1efa572}{vehicle} ()
+\item 
+const unsigned long \hyperlink{classgtfs_1_1Particle_aae0765ce4fcd86b55be0395ba468a64e}{parent\+\_\+id} () const 
 \end{DoxyCompactItemize}
 
 
@@ -24,21 +29,70 @@ A single \char`\"{}point estimate\char`\"{} of the unknown state of the transit 
 \subsection{Constructor \& Destructor Documentation}
 \index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!Particle@{Particle}}
 \index{Particle@{Particle}!gtfs\+::\+Particle@{gtfs\+::\+Particle}}
-\subsubsection[{\texorpdfstring{Particle(int i)}{Particle(int i)}}]{\setlength{\rightskip}{0pt plus 5cm}gtfs\+::\+Particle\+::\+Particle (
+\subsubsection[{\texorpdfstring{Particle(gtfs\+::\+Vehicle $\ast$v)}{Particle(gtfs::Vehicle *v)}}]{\setlength{\rightskip}{0pt plus 5cm}gtfs\+::\+Particle\+::\+Particle (
 \begin{DoxyParamCaption}
-\item[{int}]{i}
+\item[{{\bf gtfs\+::\+Vehicle} $\ast$}]{v}
 \end{DoxyParamCaption}
-)}\hypertarget{classgtfs_1_1Particle_a1b5b0b92c1fdd22dd500059409076c3e}{}\label{classgtfs_1_1Particle_a1b5b0b92c1fdd22dd500059409076c3e}
+)}\hypertarget{classgtfs_1_1Particle_a0d9725e1cf30d868fd0a7a1a6c841e53}{}\label{classgtfs_1_1Particle_a0d9725e1cf30d868fd0a7a1a6c841e53}
 \hyperlink{classgtfs_1_1Particle}{Particle} constructor.
 
-The ID is automatically selected from the parent vehicle. \index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!````~Particle@{$\sim$\+Particle}}
+The ID is automatically selected from the parent vehicle. \index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!Particle@{Particle}}
+\index{Particle@{Particle}!gtfs\+::\+Particle@{gtfs\+::\+Particle}}
+\subsubsection[{\texorpdfstring{Particle(const gtfs\+::\+Particle \&p)}{Particle(const gtfs::Particle &p)}}]{\setlength{\rightskip}{0pt plus 5cm}gtfs\+::\+Particle\+::\+Particle (
+\begin{DoxyParamCaption}
+\item[{const {\bf gtfs\+::\+Particle} \&}]{p}
+\end{DoxyParamCaption}
+)}\hypertarget{classgtfs_1_1Particle_a9b2546360867281901bed0f731b90153}{}\label{classgtfs_1_1Particle_a9b2546360867281901bed0f731b90153}
+\hyperlink{classgtfs_1_1Particle}{Particle} copy constructor.
+
+Makes an almost exact copy of the referenced particle, but gives it a unique ID and sets the parent\+\_\+id appropriately.
+
+
+\begin{DoxyParams}{Parameters}
+{\em p} & the parent particle to be copied \\
+\hline
+\end{DoxyParams}
+\index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!````~Particle@{$\sim$\+Particle}}
 \index{````~Particle@{$\sim$\+Particle}!gtfs\+::\+Particle@{gtfs\+::\+Particle}}
 \subsubsection[{\texorpdfstring{$\sim$\+Particle()}{~Particle()}}]{\setlength{\rightskip}{0pt plus 5cm}gtfs\+::\+Particle\+::$\sim$\+Particle (
 \begin{DoxyParamCaption}
 {}
 \end{DoxyParamCaption}
 )}\hypertarget{classgtfs_1_1Particle_a3accf3496ad8460b4ad8b3f6da2de411}{}\label{classgtfs_1_1Particle_a3accf3496ad8460b4ad8b3f6da2de411}
-Desctructor for a particle. 
+Destructor for a particle. 
+
+\subsection{Member Function Documentation}
+\index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!parent\+\_\+id@{parent\+\_\+id}}
+\index{parent\+\_\+id@{parent\+\_\+id}!gtfs\+::\+Particle@{gtfs\+::\+Particle}}
+\subsubsection[{\texorpdfstring{parent\+\_\+id() const }{parent_id() const }}]{\setlength{\rightskip}{0pt plus 5cm}const unsigned long gtfs\+::\+Particle\+::parent\+\_\+id (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}\hypertarget{classgtfs_1_1Particle_aae0765ce4fcd86b55be0395ba468a64e}{}\label{classgtfs_1_1Particle_aae0765ce4fcd86b55be0395ba468a64e}
+\begin{DoxyReturn}{Returns}
+the parent particle\textquotesingle{}s ID 
+\end{DoxyReturn}
+\index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!particle\+\_\+id@{particle\+\_\+id}}
+\index{particle\+\_\+id@{particle\+\_\+id}!gtfs\+::\+Particle@{gtfs\+::\+Particle}}
+\subsubsection[{\texorpdfstring{particle\+\_\+id() const }{particle_id() const }}]{\setlength{\rightskip}{0pt plus 5cm}const unsigned long gtfs\+::\+Particle\+::particle\+\_\+id (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}\hypertarget{classgtfs_1_1Particle_a4c02d3ea318b8f88c30a6fa32dc7f727}{}\label{classgtfs_1_1Particle_a4c02d3ea318b8f88c30a6fa32dc7f727}
+\begin{DoxyReturn}{Returns}
+the particle\textquotesingle{}s ID 
+\end{DoxyReturn}
+\index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!vehicle@{vehicle}}
+\index{vehicle@{vehicle}!gtfs\+::\+Particle@{gtfs\+::\+Particle}}
+\subsubsection[{\texorpdfstring{vehicle()}{vehicle()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf gtfs\+::\+Vehicle} $\ast$ gtfs\+::\+Particle\+::vehicle (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classgtfs_1_1Particle_a163b07fa0c6a576fa7f21e7eb1efa572}{}\label{classgtfs_1_1Particle_a163b07fa0c6a576fa7f21e7eb1efa572}
+\begin{DoxyReturn}{Returns}
+a pointer to the particle\textquotesingle{}s vehicle 
+\end{DoxyReturn}
+
 
 The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
 \item 
