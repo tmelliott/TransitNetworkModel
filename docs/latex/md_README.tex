@@ -1,0 +1,107 @@
+Three parts, running in real time\+:
+\begin{DoxyEnumerate}
+\item particle filter for vehicle location and speed
+\item Kalman filter for transit road network state (speed)
+\item travel-\/ and arrival-\/time predictions for each vehicle/stop combination in the network
+\end{DoxyEnumerate}
+
+\subsubsection*{1. Particle Filter}
+
+{\bfseries IN}\+: G\+T\+FS realtime protobuf feed
+
+{\bfseries O\+UT}\+: (updated) vehicle objects with updated particle states
+
+\subsubsection*{2. Kalman filter}
+
+{\bfseries IN}\+: particle filter state estimates, road state at time {\ttfamily now -\/ delta}
+
+{\bfseries O\+UT}\+: road state at time {\ttfamily now}
+
+\subsubsection*{3. Predictions}
+
+{\bfseries IN}\+: particle filter state estimates, road state estimates
+
+{\bfseries O\+UT}\+: E\+TA to remaining stops along route
+
+\subsection*{To-\/do}
+
+
+\begin{DoxyItemize}
+\item Application to run indefinitely
+\item Use a {\ttfamily Vehicle} object concept with
+\begin{DoxyItemize}
+\item {\ttfamily vector$<$Particle$>$ (N)}
+\item {\ttfamily void update (gtfs\+::\+Vehicle\+Position, gtfs\+::\+Trip\+Update)}\+: adjust the position, arrival/departure times etc, trigger particle transitions
+\item {\ttfamily void resample (N)}\+: perform particle filter weighted resample
+\item properties {\ttfamily vehicle\+\_\+id}, {\ttfamily timestamp}, {\ttfamily trip\+\_\+id}, {\ttfamily route\+\_\+id}, {\ttfamily position}, {\ttfamily stop\+\_\+sequence}, {\ttfamily arrival\+\_\+time}, {\ttfamily departure\+\_\+time}
+\end{DoxyItemize}
+\item And the particles work in memory only
+\begin{DoxyItemize}
+\item {\ttfamily Particle}
+\begin{DoxyItemize}
+\item {\ttfamily void initialize ()}
+\item {\ttfamily void transition ()}
+\item {\ttfamily void calc\+\_\+likelihood ()}\+: uses parent Vehicle
+\item {\ttfamily void calc\+\_\+weight ()}
+\item properties {\ttfamily distance}, {\ttfamily velocity}, {\ttfamily stop\+\_\+index}, {\ttfamily arrival\+\_\+time}, {\ttfamily departure\+\_\+time}, {\ttfamily segment\+\_\+index}, {\ttfamily queue\+\_\+time}, {\ttfamily begin\+\_\+time}, {\ttfamily likelihood}, {\ttfamily weight}
+\end{DoxyItemize}
+\end{DoxyItemize}
+\item Similar concept for network route segments
+\begin{DoxyItemize}
+\item {\ttfamily Segment}
+\begin{DoxyItemize}
+\item {\ttfamily vector$<$Path$>$ shape}\+: the G\+PS coordinates and cumulative distance of segment shape
+\item {\ttfamily double speed}
+\item {\ttfamily void update ()}\+: perform Kalman filter update, using particle summaries (?)
+\end{DoxyItemize}
+\end{DoxyItemize}
+\item The G\+T\+FS information can either be
+\begin{DoxyItemize}
+\item loaded into an S\+Q\+Lite database, or
+\item loaded into a M\+E\+M\+O\+RY table via My\+S\+QL
+\end{DoxyItemize}
+\item Vehicle state summaries can be written to a file (?)
+\item Making information available (via server) -\/ road segment speeds + arrival time predictions
+\begin{DoxyItemize}
+\item database (with no foreign key checks, and no transaction?)
+\end{DoxyItemize}
+\end{DoxyItemize}
+
+(?) best way of collecting vehicle/segment data
+\begin{DoxyItemize}
+\item sequentially append speed estimates to {\ttfamily Segment}, then periodically update and clear?
+\item write to file? (makes keeping history easier?)
+\end{DoxyItemize}
+
+\subsection*{Project Structure}
+
+
+\begin{DoxyItemize}
+\item {\ttfamily bin}
+\begin{DoxyItemize}
+\item {\ttfamily transit\+\_\+network\+\_\+model}\+: the application that\textquotesingle{}ll run \textquotesingle{}infinitely\textquotesingle{}
+\item {\ttfamily load\+\_\+gtfs}\+: this will load G\+T\+FS when updates released, and do the segmentation
+\end{DoxyItemize}
+\item {\ttfamily src}
+\begin{DoxyItemize}
+\item {\ttfamily transit\+\_\+network\+\_\+model.\+cpp}\+: mostly just a wrapper for {\ttfamily while (T\+R\+UE) \{ ... \}}
+\item {\ttfamily laod\+\_\+gtfs.\+cpp}
+\end{DoxyItemize}
+\item {\ttfamily include}
+\begin{DoxyItemize}
+\item {\ttfamily gtfs}\+: descriptions of the gtfs objects (??)
+\begin{DoxyItemize}
+\item {\ttfamily \hyperlink{classgtfs_1_1Vehicle}{gtfs\+::\+Vehicle}} a vehicle object
+\item {\ttfamily \hyperlink{classgtfs_1_1Particle}{gtfs\+::\+Particle}}
+\end{DoxyItemize}
+\item {\ttfamily gps}\+: methods for G\+PS coordinates (distance, etc)
+\item {\ttfamily particle\+\_\+filter}\+: the particle filter model
+\item {\ttfamily kalman\+\_\+filter}\+: the Kalman filter model
+\item {\ttfamily segmentation}\+: the segmentation algorithm for (new) segments
+\item {\ttfamily database}\+: any database methods (connection, S\+E\+L\+E\+CT, I\+N\+S\+E\+RT, etc)
+\end{DoxyItemize}
+\item {\ttfamily lib}
+\begin{DoxyItemize}
+\item {\ttfamily gtfsrealtime.\+proto}\+: the schema for G\+T\+FS protobuf feed 
+\end{DoxyItemize}
+\end{DoxyItemize}

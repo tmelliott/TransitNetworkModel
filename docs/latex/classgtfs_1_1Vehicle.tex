@@ -1,0 +1,67 @@
+\hypertarget{classgtfs_1_1Vehicle}{}\section{gtfs\+:\+:Vehicle Class Reference}
+\label{classgtfs_1_1Vehicle}\index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}}
+
+
+{\ttfamily \#include $<$gtfs.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classgtfs_1_1Vehicle_a011c9c3353ce1686ff783a4342f67dfd}{Vehicle} (std\+::string \hyperlink{classgtfs_1_1Vehicle_ac05f908002380c7c2e735c1581ae4c5f}{vehicle\+\_\+id})
+\item 
+\hyperlink{classgtfs_1_1Vehicle_a08c7450dd0df9406f78b30be044d27d8}{$\sim$\+Vehicle} ()
+\item 
+const std\+::string \hyperlink{classgtfs_1_1Vehicle_ac05f908002380c7c2e735c1581ae4c5f}{vehicle\+\_\+id} () const 
+\item 
+std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Particle}{gtfs\+::\+Particle} $>$ $>$ \& {\bfseries particles} ()\hypertarget{classgtfs_1_1Vehicle_aa74afb3da8d729fd383241f610514387}{}\label{classgtfs_1_1Vehicle_aa74afb3da8d729fd383241f610514387}
+
+\item 
+void {\bfseries resample} ()\hypertarget{classgtfs_1_1Vehicle_a46ee9775d11595461315be7141359d8a}{}\label{classgtfs_1_1Vehicle_a46ee9775d11595461315be7141359d8a}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Transit vehicle class
+
+A representation of a physical transit vehicle (i.\+e., a bus), including the most recent data associated with that vehicle (G\+PS location, arrival/departure time, etc). 
+
+\subsection{Constructor \& Destructor Documentation}
+\index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}!Vehicle@{Vehicle}}
+\index{Vehicle@{Vehicle}!gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}}
+\subsubsection[{\texorpdfstring{Vehicle(std\+::string vehicle\+\_\+id)}{Vehicle(std::string vehicle_id)}}]{\setlength{\rightskip}{0pt plus 5cm}gtfs\+::\+Vehicle\+::\+Vehicle (
+\begin{DoxyParamCaption}
+\item[{std\+::string}]{vehicle\+\_\+id}
+\end{DoxyParamCaption}
+)}\hypertarget{classgtfs_1_1Vehicle_a011c9c3353ce1686ff783a4342f67dfd}{}\label{classgtfs_1_1Vehicle_a011c9c3353ce1686ff783a4342f67dfd}
+Create a \hyperlink{classgtfs_1_1Vehicle}{Vehicle} object with given ID 
+\begin{DoxyParams}{Parameters}
+{\em vehicle\+\_\+id} & the ID of the vehicle as given in the G\+T\+FS feed \\
+\hline
+\end{DoxyParams}
+\index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}!````~Vehicle@{$\sim$\+Vehicle}}
+\index{````~Vehicle@{$\sim$\+Vehicle}!gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}}
+\subsubsection[{\texorpdfstring{$\sim$\+Vehicle()}{~Vehicle()}}]{\setlength{\rightskip}{0pt plus 5cm}gtfs\+::\+Vehicle\+::$\sim$\+Vehicle (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classgtfs_1_1Vehicle_a08c7450dd0df9406f78b30be044d27d8}{}\label{classgtfs_1_1Vehicle_a08c7450dd0df9406f78b30be044d27d8}
+Desctructor for a vehicle object, ensuring all particles are deleted too. 
+
+\subsection{Member Function Documentation}
+\index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}!vehicle\+\_\+id@{vehicle\+\_\+id}}
+\index{vehicle\+\_\+id@{vehicle\+\_\+id}!gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}}
+\subsubsection[{\texorpdfstring{vehicle\+\_\+id() const }{vehicle_id() const }}]{\setlength{\rightskip}{0pt plus 5cm}const std\+::string gtfs\+::\+Vehicle\+::vehicle\+\_\+id (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}\hypertarget{classgtfs_1_1Vehicle_ac05f908002380c7c2e735c1581ae4c5f}{}\label{classgtfs_1_1Vehicle_ac05f908002380c7c2e735c1581ae4c5f}
+\begin{DoxyReturn}{Returns}
+ID of vehicle 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+include/gtfs.\+h\item 
+include/gtfs-\/vehicle.\+h\end{DoxyCompactItemize}
