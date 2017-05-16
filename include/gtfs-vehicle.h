@@ -6,15 +6,15 @@
 * @param vehicle_id the ID of the vehicle as given in the GTFS feed
 */
 gtfs::Vehicle::Vehicle (std::string vehicle_id) :
-vehicle_id_ (vehicle_id), next_id_ (0) {
+vehicle_id_ (vehicle_id), n_particles_ (5), next_id_ (0) {
 	std::cout << " ++ Created vehicle " << vehicle_id_ << std::endl;
 
-	int N = 5;
-	for (int i=0; i<N; i++) {
-		// gtfs::Particle p (gtfs::Particle(*this));
+	particles_.reserve(n_particles_);
+	for (int i=0; i<n_particles_; i++) {
 		particles_.emplace_back(*this);
 	}
-	std::cout << " >> now has " << particles_.size () << " particles." << std::endl;
+	std::cout << next_id_ << std::endl;
+	// std::cout << " >> now has " << particles_.size () << " particles." << std::endl;
 };
 
 /**
@@ -27,15 +27,25 @@ gtfs::Vehicle::~Vehicle() {
 /**
 * @return ID of vehicle
 */
-const std::string gtfs::Vehicle::vehicle_id () const {
+const std::string& gtfs::Vehicle::vehicle_id () const {
 	return vehicle_id_;
 };
 
+/**
+* @return number of particles that will be used in future resamples
+*/
+const unsigned int& gtfs::Vehicle::n_particles () const {
+	return n_particles_;
+}
+
+/**
+* @return vector of particles
+*/
 std::vector<gtfs::Particle>& gtfs::Vehicle::particles () {
 	return particles_;
 };
 
-const unsigned long gtfs::Vehicle::next_id () const {
+unsigned long& gtfs::Vehicle::next_id () {
 	return next_id_;
 };
 

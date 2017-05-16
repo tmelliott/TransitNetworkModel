@@ -27,6 +27,7 @@ namespace gtfs {
 class gtfs::Vehicle {
 private:
 	std::string vehicle_id_;
+	unsigned int n_particles_;
 	std::vector<gtfs::Particle> particles_;
 	unsigned long next_id_;
 
@@ -38,9 +39,10 @@ public:
 	~Vehicle();
 
 	// Getters
-	const std::string vehicle_id () const;
+	const std::string& vehicle_id () const;
+	const unsigned int& n_particles () const;
 	std::vector<gtfs::Particle>& particles ();
-	const unsigned long next_id () const;
+	unsigned long& next_id ();
 
 	// Setters
 
