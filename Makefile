@@ -14,7 +14,7 @@ BIN := bin
 
 EXT := cpp
 INC := -I$(INCLUDE)
-LINK := -L/usr/lib/x86_64-linux-gnu:/usr/local/lib
+#LINK := -L/usr/lib/x86_64-linux-gnu:/usr/local/lib
 SOURCES := $(shell find $(SRC) -type f -name *.$(EXT))
 INCLUDES := $(wildcard $(INCLUDE)/*.h)
 OBJECTS := $(patsubst $(SRC)/%, $(BUILD)/%, $(SOURCES:.$(EXT)=.o))
@@ -28,11 +28,11 @@ all: $(TARGETS)
 
 $(TARGETS): $(OBJECTS) $(INCLUDES) | $(BIN) $(POBJECT)
 	@echo "+ Creating $@"
-	$(CXX) $(CXXFLAGS) $(INC) $< -o $@ $(LINK)
+	$(CXX) $(CXXFLAGS) $(INC) $(POBJECT) $< -o $@ $(PFLAGS)
 
 $(OBJECTS): $(SOURCES) $(INCLUDES) | $(BUILD) $(POBJECT)
 	@echo "+ Creating object $@"
-	$(CXX) $(CXXFLAGS) $(INC) -c -o $@ $< $(LINK) $(PFLAGS)
+	$(CXX) $(CXXFLAGS) $(INC) -c -o $@ $< $(PFLAGS)
 
 
 ## ---- create required directories
