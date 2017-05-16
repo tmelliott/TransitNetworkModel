@@ -27,6 +27,11 @@ __IN__: particle filter state estimates, road state estimates
 __OUT__: ETA to remaining stops along route
 
 
+****
+## Dependencies
+- [Google protobuf compiler `protoc`](https://github.com/google/protobuf/blob/master/src/README.md)
+
+
 ## To-do
 
 - Application to run indefinitely
