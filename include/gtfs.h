@@ -27,7 +27,10 @@ namespace gtfs {
 class gtfs::Vehicle {
 private:
 	std::string vehicle_id_;
-	std::vector<std::shared_ptr<gtfs::Particle> > particles_;
+	std::vector<gtfs::Particle> particles_;
+	unsigned long next_id_;
+
+	friend class Particle;
 
 public:
 	// Constructors, destructors
@@ -36,7 +39,8 @@ public:
 
 	// Getters
 	const std::string vehicle_id () const;
-	std::vector<std::shared_ptr<gtfs::Particle> >& particles ();
+	std::vector<gtfs::Particle>& particles ();
+	const unsigned long next_id () const;
 
 	// Setters
 
@@ -59,7 +63,7 @@ private:
 
 public:
 	// Constructors, destructors
-	Particle (int i);
+	Particle (gtfs::Vehicle& v);
 	~Particle ();  // destroy
 
 	// Getters

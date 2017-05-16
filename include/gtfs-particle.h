@@ -6,9 +6,12 @@
 *
 * The ID is automatically selected from the parent vehicle.
 */
-gtfs::Particle::Particle (int i) {
-	particle_id_ = i;
-	std::cout << " + Created particle with id = " << particle_id_ << std::endl;
+gtfs::Particle::Particle (gtfs::Vehicle& v) {
+	unsigned long next = v.next_id_++;
+	std::cout << "Next ID is " << next << "; ";
+	particle_id_ = next;
+	std::cout << " + Created particle for vehicle " << v.vehicle_id ()
+		<< " with id = " << particle_id_ << std::endl;
 };
 
 /**
