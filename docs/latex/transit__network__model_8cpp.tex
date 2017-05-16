@@ -1,0 +1,52 @@
+\hypertarget{transit__network__model_8cpp}{}\section{src/transit\+\_\+network\+\_\+model.cpp File Reference}
+\label{transit__network__model_8cpp}\index{src/transit\+\_\+network\+\_\+model.\+cpp@{src/transit\+\_\+network\+\_\+model.\+cpp}}
+{\ttfamily \#include $<$iostream$>$}\\*
+{\ttfamily \#include $<$memory$>$}\\*
+{\ttfamily \#include $<$vector$>$}\\*
+{\ttfamily \#include $<$gtfs.\+h$>$}\\*
+Include dependency graph for transit\+\_\+network\+\_\+model.\+cpp\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{transit__network__model_8cpp__incl}
+\end{center}
+\end{figure}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{transit__network__model_8cpp_a0ddf1224851353fc92bfbff6f499fa97}{main} (int argc, char $\ast$argv\mbox{[}$\,$\mbox{]})
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\begin{DoxyAuthor}{Author}
+Tom Elliott \href{mailto:tom.elliott@auckland.ac.nz}{\tt tom.\+elliott@auckland.\+ac.\+nz} 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+0.\+0.\+1 
+\end{DoxyVersion}
+
+
+\subsection{Function Documentation}
+\index{transit\+\_\+network\+\_\+model.\+cpp@{transit\+\_\+network\+\_\+model.\+cpp}!main@{main}}
+\index{main@{main}!transit\+\_\+network\+\_\+model.\+cpp@{transit\+\_\+network\+\_\+model.\+cpp}}
+\subsubsection[{\texorpdfstring{main(int argc, char $\ast$argv[])}{main(int argc, char *argv[])}}]{\setlength{\rightskip}{0pt plus 5cm}int main (
+\begin{DoxyParamCaption}
+\item[{int}]{argc, }
+\item[{char $\ast$}]{argv\mbox{[}$\,$\mbox{]}}
+\end{DoxyParamCaption}
+)}\hypertarget{transit__network__model_8cpp_a0ddf1224851353fc92bfbff6f499fa97}{}\label{transit__network__model_8cpp_a0ddf1224851353fc92bfbff6f499fa97}
+Transit Network Model\+: a realtime model running indefinitely (while (true) \{ ... \})
+
+Cycles through latest vehicles in the Realtime Feed, and updates/creates accordingly.
+
+
+\begin{DoxyParams}{Parameters}
+{\em argc} & number of command line arguments \\
+\hline
+{\em argv} & argument vector \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int 0 (although this will never happen because of the while forever loop) 
+\end{DoxyReturn}

@@ -7,16 +7,26 @@
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\hyperlink{classgtfs_1_1Vehicle_a011c9c3353ce1686ff783a4342f67dfd}{Vehicle} (std\+::string \hyperlink{classgtfs_1_1Vehicle_ac05f908002380c7c2e735c1581ae4c5f}{vehicle\+\_\+id})
+\hyperlink{classgtfs_1_1Vehicle_a011c9c3353ce1686ff783a4342f67dfd}{Vehicle} (std\+::string \hyperlink{classgtfs_1_1Vehicle_a8183a0cbc7ab58691b6c056b049ec033}{vehicle\+\_\+id})
 \item 
 \hyperlink{classgtfs_1_1Vehicle_a08c7450dd0df9406f78b30be044d27d8}{$\sim$\+Vehicle} ()
 \item 
-const std\+::string \hyperlink{classgtfs_1_1Vehicle_ac05f908002380c7c2e735c1581ae4c5f}{vehicle\+\_\+id} () const 
+const std\+::string \& \hyperlink{classgtfs_1_1Vehicle_a8183a0cbc7ab58691b6c056b049ec033}{vehicle\+\_\+id} () const 
 \item 
-std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Particle}{gtfs\+::\+Particle} $>$ $>$ \& {\bfseries particles} ()\hypertarget{classgtfs_1_1Vehicle_aa74afb3da8d729fd383241f610514387}{}\label{classgtfs_1_1Vehicle_aa74afb3da8d729fd383241f610514387}
-
+const unsigned int \& \hyperlink{classgtfs_1_1Vehicle_a53f697645a668f2f04375331fe147dc8}{n\+\_\+particles} () const 
 \item 
-void {\bfseries resample} ()\hypertarget{classgtfs_1_1Vehicle_a46ee9775d11595461315be7141359d8a}{}\label{classgtfs_1_1Vehicle_a46ee9775d11595461315be7141359d8a}
+std\+::vector$<$ \hyperlink{classgtfs_1_1Particle}{gtfs\+::\+Particle} $>$ \& \hyperlink{classgtfs_1_1Vehicle_a83c65fe9c837b76631ed0356a55b674b}{particles} ()
+\item 
+unsigned long \& \hyperlink{classgtfs_1_1Vehicle_a1d53d3b8a106d0ed967cb63926e79c34}{next\+\_\+id} ()
+\item 
+void \hyperlink{classgtfs_1_1Vehicle_a2afb781a1158e0e3e2960c1da21a04e8}{n\+\_\+particles} (unsigned int n)
+\item 
+void \hyperlink{classgtfs_1_1Vehicle_a46ee9775d11595461315be7141359d8a}{resample} ()
+\end{DoxyCompactItemize}
+\subsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+class {\bfseries Particle}\hypertarget{classgtfs_1_1Vehicle_a0f6381b33b90b7e4ab72eeaeec4cc9ff}{}\label{classgtfs_1_1Vehicle_a0f6381b33b90b7e4ab72eeaeec4cc9ff}
 
 \end{DoxyCompactItemize}
 
@@ -49,13 +59,68 @@ Create a \hyperlink{classgtfs_1_1Vehicle}{Vehicle} object with given ID
 Desctructor for a vehicle object, ensuring all particles are deleted too. 
 
 \subsection{Member Function Documentation}
-\index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}!vehicle\+\_\+id@{vehicle\+\_\+id}}
-\index{vehicle\+\_\+id@{vehicle\+\_\+id}!gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}}
-\subsubsection[{\texorpdfstring{vehicle\+\_\+id() const }{vehicle_id() const }}]{\setlength{\rightskip}{0pt plus 5cm}const std\+::string gtfs\+::\+Vehicle\+::vehicle\+\_\+id (
+\index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}!n\+\_\+particles@{n\+\_\+particles}}
+\index{n\+\_\+particles@{n\+\_\+particles}!gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}}
+\subsubsection[{\texorpdfstring{n\+\_\+particles() const }{n_particles() const }}]{\setlength{\rightskip}{0pt plus 5cm}const unsigned int \& gtfs\+::\+Vehicle\+::n\+\_\+particles (
 \begin{DoxyParamCaption}
 {}
 \end{DoxyParamCaption}
-) const}\hypertarget{classgtfs_1_1Vehicle_ac05f908002380c7c2e735c1581ae4c5f}{}\label{classgtfs_1_1Vehicle_ac05f908002380c7c2e735c1581ae4c5f}
+) const}\hypertarget{classgtfs_1_1Vehicle_a53f697645a668f2f04375331fe147dc8}{}\label{classgtfs_1_1Vehicle_a53f697645a668f2f04375331fe147dc8}
+\begin{DoxyReturn}{Returns}
+number of particles that will be used in future resamples 
+\end{DoxyReturn}
+\index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}!n\+\_\+particles@{n\+\_\+particles}}
+\index{n\+\_\+particles@{n\+\_\+particles}!gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}}
+\subsubsection[{\texorpdfstring{n\+\_\+particles(unsigned int n)}{n_particles(unsigned int n)}}]{\setlength{\rightskip}{0pt plus 5cm}void gtfs\+::\+Vehicle\+::n\+\_\+particles (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{n}
+\end{DoxyParamCaption}
+)}\hypertarget{classgtfs_1_1Vehicle_a2afb781a1158e0e3e2960c1da21a04e8}{}\label{classgtfs_1_1Vehicle_a2afb781a1158e0e3e2960c1da21a04e8}
+
+\begin{DoxyParams}{Parameters}
+{\em n} & the number of particles that will be generated at the next iteration. \\
+\hline
+\end{DoxyParams}
+\index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}!next\+\_\+id@{next\+\_\+id}}
+\index{next\+\_\+id@{next\+\_\+id}!gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}}
+\subsubsection[{\texorpdfstring{next\+\_\+id()}{next_id()}}]{\setlength{\rightskip}{0pt plus 5cm}unsigned long \& gtfs\+::\+Vehicle\+::next\+\_\+id (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classgtfs_1_1Vehicle_a1d53d3b8a106d0ed967cb63926e79c34}{}\label{classgtfs_1_1Vehicle_a1d53d3b8a106d0ed967cb63926e79c34}
+To ensure particles have unique ID\textquotesingle{}s (within a vehicle), increment the next\+\_\+id counter when used\+: 
+\begin{DoxyCode}
+particle\_id = vehicle.next\_id ()++
+\end{DoxyCode}
+ \begin{DoxyReturn}{Returns}
+the sequential ID for the next particle ID. 
+\end{DoxyReturn}
+\index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}!particles@{particles}}
+\index{particles@{particles}!gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}}
+\subsubsection[{\texorpdfstring{particles()}{particles()}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::vector$<$ {\bf gtfs\+::\+Particle} $>$ \& gtfs\+::\+Vehicle\+::particles (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classgtfs_1_1Vehicle_a83c65fe9c837b76631ed0356a55b674b}{}\label{classgtfs_1_1Vehicle_a83c65fe9c837b76631ed0356a55b674b}
+\begin{DoxyReturn}{Returns}
+vector of particles 
+\end{DoxyReturn}
+\index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}!resample@{resample}}
+\index{resample@{resample}!gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}}
+\subsubsection[{\texorpdfstring{resample()}{resample()}}]{\setlength{\rightskip}{0pt plus 5cm}void gtfs\+::\+Vehicle\+::resample (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classgtfs_1_1Vehicle_a46ee9775d11595461315be7141359d8a}{}\label{classgtfs_1_1Vehicle_a46ee9775d11595461315be7141359d8a}
+Perform weighted resampling with replacement.
+
+Use the computed particle weights to resample, with replacement, the particles associated with the vehicle. \index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}!vehicle\+\_\+id@{vehicle\+\_\+id}}
+\index{vehicle\+\_\+id@{vehicle\+\_\+id}!gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}}
+\subsubsection[{\texorpdfstring{vehicle\+\_\+id() const }{vehicle_id() const }}]{\setlength{\rightskip}{0pt plus 5cm}const std\+::string \& gtfs\+::\+Vehicle\+::vehicle\+\_\+id (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}\hypertarget{classgtfs_1_1Vehicle_a8183a0cbc7ab58691b6c056b049ec033}{}\label{classgtfs_1_1Vehicle_a8183a0cbc7ab58691b6c056b049ec033}
 \begin{DoxyReturn}{Returns}
 ID of vehicle 
 \end{DoxyReturn}
