@@ -69,20 +69,14 @@ __OUT__: ETA to remaining stops along route
 
 ## Project Structure
 
-- `bin`
-  - `transit_network_model`: the application that'll run 'infinitely'
-  - `load_gtfs`: this will load GTFS when updates released, and do the segmentation
+- `docs`: documentation (HTML and LaTeX)
+- `gps`: a library containing methods for dealing with GPS coordinates
+- `gtfs`: a library with GTFS object classes, and methods for modeling them
+    - `Vehicle`: Class representing a physical vehicle
+    - `Particle`: Class representing a single vehicle state estimate
+    - `Segment`: Class representing a road segment
+- `include`: header files for programs
+- `protobuf`: GTFS Realtime protobuf description and classes
 - `src`
   - `transit_network_model.cpp`: mostly just a wrapper for `while (TRUE) { ... }`
-  - `laod_gtfs.cpp`
-- `include`
-  - `gtfs`: descriptions of the gtfs objects (??)
-	  - `gtfs::Vehicle` a vehicle object
-	  - `gtfs::Particle`
-  - `gps`: methods for GPS coordinates (distance, etc)
-  - `particle_filter`: the particle filter model
-  - `kalman_filter`: the Kalman filter model
-  - `segmentation`: the segmentation algorithm for (new) segments
-  - `database`: any database methods (connection, SELECT, INSERT, etc)
-- `lib`
-  - `gtfsrealtime.proto`: the schema for GTFS protobuf feed
+  - `load_gtfs.cpp`: a program that imports the latest GTFS data and segments it
