@@ -17,9 +17,10 @@
 #include <iostream>
 #include <memory>
 #include <vector>
+#include <string>
 
 #include "gtfs-realtime.pb.h"
-#include <gtfs.h>
+#include "gtfs.h"
 
 /**
  * Transit Network Model: a realtime model running indefinitely (while (true) { ... })

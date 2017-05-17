@@ -1,5 +1,9 @@
-#ifndef GTFS_PARTICLE_H
-#define GTFS_PARTICLE_H value
+#include <string>
+#include <iostream>
+#include <memory>
+#include <vector>
+
+#include "gtfs.h"
 
 /**
 * Particle constructor.
@@ -63,5 +67,3 @@ gtfs::Vehicle* gtfs::Particle::vehicle () {
 const unsigned long gtfs::Particle::parent_id () const {
 	return parent_id_;
 }
-
-#endif

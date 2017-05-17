@@ -1,5 +1,9 @@
-#ifndef GTFS_VEHICLE_H
-#define GTFS_VEHICLE_H value
+#include <string>
+#include <iostream>
+#include <memory>
+#include <vector>
+
+#include "gtfs.h"
 
 /**
 * Create a Vehicle object with given ID
@@ -10,7 +14,7 @@ vehicle_id_ (vehicle_id), n_particles_ (5), next_id_ (1) {
 	std::cout << " ++ Created vehicle " << vehicle_id_ << std::endl;
 
 	particles_.reserve(n_particles_);
-	for (uint i=0; i<n_particles_; i++) {
+	for (unsigned int i=0; i<n_particles_; i++) {
 		particles_.emplace_back(this);
 	}
 };
@@ -19,7 +23,7 @@ vehicle_id_ (vehicle_id), n_particles_ (5), next_id_ (1) {
 * Desctructor for a vehicle object, ensuring all particles are deleted too.
 */
 gtfs::Vehicle::~Vehicle() {
-	std::cout << " -- Vehicle " << vehicle_id_ << " deleted." << std::endl;
+	std::cout << " -- Vehicle " << vehicle_id_ << " deleted!!" << std::endl;
 };
 
 // -- GETTERS
@@ -88,5 +92,3 @@ void gtfs::Vehicle::resample () {
 		particles_.push_back(old_particles[i]);
 	}
 }
-
-#endif
