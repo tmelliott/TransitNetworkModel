@@ -1,4 +1,7 @@
 default:
 	mkdir -p build
-	cd protobuf && protoc --cpp_out=. gtfs-realtime.proto && mv *.cc ../src/gtfs-realtime.pb.cpp && mv *.h ../include/gtfs-realtime.pb.h
+	cd protobuf && protoc --cpp_out=. gtfs-realtime.proto
 	cd build && cmake ..
+
+clean:
+	rm -rf build
