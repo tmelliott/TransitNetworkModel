@@ -1,7 +1,6 @@
 #include <string>
 #include <iostream>
 #include <memory>
-#include <vector>
 
 #include "gtfs.h"
 

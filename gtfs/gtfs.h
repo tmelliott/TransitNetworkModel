@@ -2,8 +2,6 @@
 #define GTFS_H
 
 #include <string>
-#include <iostream>
-#include <memory>
 #include <vector>
 
 /**

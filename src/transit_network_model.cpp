@@ -105,6 +105,6 @@ int main (int argc, char* argv[]) {
 		  << "\nCo-ordinate 2: " << p2 << std::endl;
 
 	std::cout << "Point 1 is " << p1.distanceTo(p2) << "m from p2.\n\n";
-	
+
 	return 0;
 }
