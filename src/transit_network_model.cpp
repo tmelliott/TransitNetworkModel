@@ -21,7 +21,6 @@
 
 #include "gtfs-realtime.pb.h"
 #include "gtfs.h"
-
 #include "gps.h"
 
 /**

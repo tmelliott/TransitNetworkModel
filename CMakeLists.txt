@@ -8,8 +8,6 @@ include_directories(${PROTOBUF_INCLUDE_DIRS})
 
 include_directories(include)
 
-file (GLOB SOURCES src/*.cpp)
-
 include_directories ("${PROJECT_SOURCE_DIR}/protobuf")
 add_subdirectory (protobuf)
 
@@ -19,9 +17,15 @@ add_subdirectory (gps)
 include_directories ("${PROJECT_SOURCE_DIR}/gtfs")
 add_subdirectory (gtfs)
 
+add_executable(transit_network_model src/transit_network_model.cpp ${PROTO_SRCS} ${PROTO_HDRS})
+target_link_libraries(transit_network_model
+	gtfs-realtime
+	${PROTOBUF_LIBRARIES}
+	gps
+	gtfs
+)
 
-add_executable(transit_network_model ${SOURCES}  ${PROTO_SRCS} ${PROTO_HDRS})
-target_link_libraries(transit_network_model gtfs-realtime)
-target_link_libraries(transit_network_model ${PROTOBUF_LIBRARIES})
-target_link_libraries(transit_network_model gps)
-target_link_libraries(transit_network_model gtfs)
+add_executable(load_gtfs src/load_gtfs.cpp)
+target_link_libraries(load_gtfs
+	gps
+)
