@@ -6,11 +6,21 @@
 
 namespace gtfs {
 	/**
-	* Create a Vehicle object with given ID
+	* Create a Vehicle object with given ID.
+	*
+	* Vehicles are created with a default number of particles.
+	*
 	* @param vehicle_id the ID of the vehicle as given in the GTFS feed
 	*/
 	Vehicle::Vehicle (std::string id) : Vehicle::Vehicle (id, 5) {};
 
+	/**
+	 * Create a vehicle with specified number of particles, and ID.
+	 *
+	 * @param id the ID of the vehicle as given in the GTFS feed
+	 * @param n  integer specifying the number of particles to initialize
+	 *           the vehicle with
+	 */
 	Vehicle::Vehicle (std::string id, unsigned int n) :
 	id (id), n_particles (n), next_id (1) {
 		std::cout << " ++ Created vehicle " << id << std::endl;

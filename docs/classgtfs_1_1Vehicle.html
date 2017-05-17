@@ -102,6 +102,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ac3f8111a611378f5f8b29f7465e48919"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Vehicle.html#ac3f8111a611378f5f8b29f7465e48919">Vehicle</a> (std::string id)</td></tr>
 <tr class="separator:ac3f8111a611378f5f8b29f7465e48919"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf892e71483b7f9005846599fd0308e6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Vehicle.html#adf892e71483b7f9005846599fd0308e6">Vehicle</a> (std::string id, unsigned int n)</td></tr>
+<tr class="separator:adf892e71483b7f9005846599fd0308e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a08c7450dd0df9406f78b30be044d27d8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Vehicle.html#a08c7450dd0df9406f78b30be044d27d8">~Vehicle</a> ()</td></tr>
 <tr class="separator:a08c7450dd0df9406f78b30be044d27d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1586a271d8c8d7eb61f6f1fac5491e26"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Vehicle.html#a1586a271d8c8d7eb61f6f1fac5491e26">get_id</a> () const </td></tr>
@@ -138,9 +140,45 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Create a <a class="el" href="classgtfs_1_1Vehicle.html">Vehicle</a> object with given ID </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Create a <a class="el" href="classgtfs_1_1Vehicle.html">Vehicle</a> object with given ID.</p>
+<p>Vehicles are created with a default number of particles.</p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">vehicle_id</td><td>the ID of the vehicle as given in the GTFS feed </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="adf892e71483b7f9005846599fd0308e6"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">gtfs::Vehicle::Vehicle </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>n</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Create a vehicle with specified number of particles, and ID.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">id</td><td>the ID of the vehicle as given in the GTFS feed </td></tr>
+    <tr><td class="paramname">n</td><td>integer specifying the number of particles to initialize the vehicle with </td></tr>
   </table>
   </dd>
 </dl>

@@ -9,6 +9,8 @@
 \item 
 \hyperlink{classgtfs_1_1Vehicle_ac3f8111a611378f5f8b29f7465e48919}{Vehicle} (std\+::string id)
 \item 
+\hyperlink{classgtfs_1_1Vehicle_adf892e71483b7f9005846599fd0308e6}{Vehicle} (std\+::string id, unsigned int n)
+\item 
 \hyperlink{classgtfs_1_1Vehicle_a08c7450dd0df9406f78b30be044d27d8}{$\sim$\+Vehicle} ()
 \item 
 std\+::string \hyperlink{classgtfs_1_1Vehicle_a1586a271d8c8d7eb61f6f1fac5491e26}{get\+\_\+id} () const 
@@ -43,9 +45,30 @@ Vehicles are initialized with an ID, so it is not editable.
 \item[{std\+::string}]{id}
 \end{DoxyParamCaption}
 )}\hypertarget{classgtfs_1_1Vehicle_ac3f8111a611378f5f8b29f7465e48919}{}\label{classgtfs_1_1Vehicle_ac3f8111a611378f5f8b29f7465e48919}
-Create a \hyperlink{classgtfs_1_1Vehicle}{Vehicle} object with given ID 
+Create a \hyperlink{classgtfs_1_1Vehicle}{Vehicle} object with given ID.
+
+Vehicles are created with a default number of particles.
+
+
 \begin{DoxyParams}{Parameters}
 {\em vehicle\+\_\+id} & the ID of the vehicle as given in the G\+T\+FS feed \\
+\hline
+\end{DoxyParams}
+\index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}!Vehicle@{Vehicle}}
+\index{Vehicle@{Vehicle}!gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}}
+\subsubsection[{\texorpdfstring{Vehicle(std\+::string id, unsigned int n)}{Vehicle(std::string id, unsigned int n)}}]{\setlength{\rightskip}{0pt plus 5cm}gtfs\+::\+Vehicle\+::\+Vehicle (
+\begin{DoxyParamCaption}
+\item[{std\+::string}]{id, }
+\item[{unsigned int}]{n}
+\end{DoxyParamCaption}
+)}\hypertarget{classgtfs_1_1Vehicle_adf892e71483b7f9005846599fd0308e6}{}\label{classgtfs_1_1Vehicle_adf892e71483b7f9005846599fd0308e6}
+Create a vehicle with specified number of particles, and ID.
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & the ID of the vehicle as given in the G\+T\+FS feed \\
+\hline
+{\em n} & integer specifying the number of particles to initialize the vehicle with \\
 \hline
 \end{DoxyParams}
 \index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}!````~Vehicle@{$\sim$\+Vehicle}}
