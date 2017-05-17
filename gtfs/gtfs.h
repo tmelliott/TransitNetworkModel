@@ -36,6 +36,7 @@ namespace gtfs {
 
 		// Constructors, destructors
 		Vehicle (std::string id);
+		Vehicle (std::string id, unsigned int n);
 		~Vehicle();
 
 		// Getters
@@ -74,7 +75,7 @@ namespace gtfs {
 
 
 		// Methods
-		
+
 	};
 
 	gps::Coord get_coords (double distance, std::vector<gps::Coord> path);

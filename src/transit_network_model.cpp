@@ -54,57 +54,67 @@ int main (int argc, char* argv[]) {
 			// Update ETA predictions
 		}
 	}
+
 	{
-	for (int i=0; i<3; i++) {
-		// Create unique vehicle object
-		std::unique_ptr<gtfs::Vehicle> vp (new gtfs::Vehicle("CXY" + std::to_string(i)));
+		for (int i=0; i<3; i++) {
+			// Create unique vehicle object
+			std::unique_ptr<gtfs::Vehicle> vp (new gtfs::Vehicle("CXY" + std::to_string(i)));
 
-		// Work with pointer
+			// Work with pointer
 
 
-		// Most pointer into vector
-		vehicles.push_back(std::move(vp));
+			// Most pointer into vector
+			vehicles.push_back(std::move(vp));
 
-		std::cout << std::endl;
-	}
-
-	std::cout << std::endl;
-
-	int i = 1;
-	for (auto& vp: vehicles) {
-		printf("Vehicle %d has id %s (%d particles).\n", i++, vp->get_id ().c_str(), (int) vp->get_particles().size ());
-		for (auto& pr: vp->get_particles ()) {
-			std::cout << " |- Particle " << pr.get_id () << std::endl;
-		}
-		std::cout << ">>----------- (resample)" << std::endl;
-		vp->resample();
-		std::cout << "  -----------<<" << std::endl;
-		for (auto& pr: vp->get_particles ()) {
-			std::cout << " |- Particle " << pr.get_id ()
-				<< " is a child of particle " << pr.get_parent_id () << std::endl;
-		}
-		std::cout << ">>----------- (resample)" << std::endl;
-		vp->resample();
-		std::cout << "  -----------<<" << std::endl;
-		for (auto& pr: vp->get_particles ()) {
-			std::cout << " |- Particle " << pr.get_id ()
-				<< " is a child of particle " << pr.get_parent_id () << std::endl;
+			std::cout << std::endl;
 		}
 
 		std::cout << std::endl;
+
+		int i = 1;
+		for (auto& vp: vehicles) {
+			printf("Vehicle %d has id %s (%d particles).\n", i++, vp->get_id ().c_str(), (int) vp->get_particles().size ());
+			for (auto& pr: vp->get_particles ()) {
+				std::cout << " |- Particle " << pr.get_id () << std::endl;
+			}
+			std::cout << ">>----------- (resample)" << std::endl;
+			vp->resample();
+			std::cout << "  -----------<<" << std::endl;
+			for (auto& pr: vp->get_particles ()) {
+				std::cout << " |- Particle " << pr.get_id ()
+					<< " is a child of particle " << pr.get_parent_id () << std::endl;
+			}
+			std::cout << ">>----------- (resample)" << std::endl;
+			vp->resample();
+			std::cout << "  -----------<<" << std::endl;
+			for (auto& pr: vp->get_particles ()) {
+				std::cout << " |- Particle " << pr.get_id ()
+					<< " is a child of particle " << pr.get_parent_id () << std::endl;
+			}
+
+			std::cout << std::endl;
+		}
+
+		std::cout << "\n";
 	}
 
-	std::cout << "\n";
+	{
+		std::cout << "A vehicle with 10 particles:\n\n";
+		auto v (new gtfs::Vehicle("ABUS", 10));
+		std::cout << "\n\n";
 	}
-	std::cout << "================ GPS test ...\n\n";
 
-	auto p1 = gps::Coord(-33.23245, 174.2356);
-	auto p2 = gps::Coord(-33.46311, 174.5421);
+	{
+		std::cout << "================ GPS test ...\n\n";
 
-	std::cout << "Co-ordinate 1: " << p1
-		  << "\nCo-ordinate 2: " << p2 << std::endl;
+		auto p1 = gps::Coord(-33.23245, 174.2356);
+		auto p2 = gps::Coord(-33.46311, 174.5421);
 
-	std::cout << "Point 1 is " << p1.distanceTo(p2) << "m from p2.\n\n";
+		std::cout << "Co-ordinate 1: " << p1
+		<< "\nCo-ordinate 2: " << p2 << std::endl;
+
+		std::cout << "Point 1 is " << p1.distanceTo(p2) << "m from p2.\n\n";
+	}
 
 	return 0;
 }

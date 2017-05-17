@@ -9,8 +9,10 @@ namespace gtfs {
 	* Create a Vehicle object with given ID
 	* @param vehicle_id the ID of the vehicle as given in the GTFS feed
 	*/
-	Vehicle::Vehicle (std::string id) :
-	id (id), n_particles (5), next_id (1) {
+	Vehicle::Vehicle (std::string id) : Vehicle::Vehicle (id, 5) {};
+
+	Vehicle::Vehicle (std::string id, unsigned int n) :
+	id (id), n_particles (n), next_id (1) {
 		std::cout << " ++ Created vehicle " << id << std::endl;
 
 		particles.reserve(n_particles);
