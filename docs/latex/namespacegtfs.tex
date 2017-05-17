@@ -7,9 +7,34 @@ class \hyperlink{classgtfs_1_1Particle}{Particle}
 \item 
 class \hyperlink{classgtfs_1_1Vehicle}{Vehicle}
 \end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classgps_1_1Coord}{gps\+::\+Coord} \hyperlink{namespacegtfs_aab5513b6c15b5c30de5f706a2e587ae4}{get\+\_\+coords} (double distance, std\+::vector$<$ \hyperlink{classgps_1_1Coord}{gps\+::\+Coord} $>$ path)
+\end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
 G\+T\+FS Namespace
 
 All aspects of the program refering to the G\+T\+FS information are in this namespace. 
+
+\subsection{Function Documentation}
+\index{gtfs@{gtfs}!get\+\_\+coords@{get\+\_\+coords}}
+\index{get\+\_\+coords@{get\+\_\+coords}!gtfs@{gtfs}}
+\subsubsection[{\texorpdfstring{get\+\_\+coords(double distance, std\+::vector$<$ gps\+::\+Coord $>$ path)}{get_coords(double distance, std::vector< gps::Coord > path)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf gps\+::\+Coord} gtfs\+::get\+\_\+coords (
+\begin{DoxyParamCaption}
+\item[{double}]{distance, }
+\item[{std\+::vector$<$ {\bf gps\+::\+Coord} $>$}]{path}
+\end{DoxyParamCaption}
+)}\hypertarget{namespacegtfs_aab5513b6c15b5c30de5f706a2e587ae4}{}\label{namespacegtfs_aab5513b6c15b5c30de5f706a2e587ae4}
+Get the coordinates of a point a given distance along a path. 
+\begin{DoxyParams}{Parameters}
+{\em distance} & total distance traveled along path, in meters \\
+\hline
+{\em path} & the path being traveled along \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a coordinate object 
+\end{DoxyReturn}

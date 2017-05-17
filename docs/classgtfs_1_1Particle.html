@@ -89,6 +89,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="classgtfs_1_1Particle-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">gtfs::Particle Class Reference</div>  </div>
@@ -96,6 +97,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="contents">
 
 <p><code>#include &lt;<a class="el" href="gtfs_8h_source.html">gtfs.h</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for gtfs::Particle:</div>
+<div class="dyncontent">
+<div class="center"><img src="classgtfs_1_1Particle__coll__graph.png" border="0" usemap="#gtfs_1_1Particle_coll__map" alt="Collaboration graph"/></div>
+<map name="gtfs_1_1Particle_coll__map" id="gtfs_1_1Particle_coll__map">
+<area shape="rect" id="node2" href="classgtfs_1_1Vehicle.html" title="gtfs::Vehicle" alt="" coords="6,5,101,32"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -105,12 +114,15 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ac386e64b43b1e317063f9a6666d604ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3accf3496ad8460b4ad8b3f6da2de411"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Particle.html#a3accf3496ad8460b4ad8b3f6da2de411">~Particle</a> ()</td></tr>
 <tr class="separator:a3accf3496ad8460b4ad8b3f6da2de411"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4c02d3ea318b8f88c30a6fa32dc7f727"><td class="memItemLeft" align="right" valign="top">const unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Particle.html#a4c02d3ea318b8f88c30a6fa32dc7f727">particle_id</a> () const </td></tr>
-<tr class="separator:a4c02d3ea318b8f88c30a6fa32dc7f727"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a163b07fa0c6a576fa7f21e7eb1efa572"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classgtfs_1_1Vehicle.html">Vehicle</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Particle.html#a163b07fa0c6a576fa7f21e7eb1efa572">vehicle</a> ()</td></tr>
-<tr class="separator:a163b07fa0c6a576fa7f21e7eb1efa572"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aae0765ce4fcd86b55be0395ba468a64e"><td class="memItemLeft" align="right" valign="top">const unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Particle.html#aae0765ce4fcd86b55be0395ba468a64e">parent_id</a> () const </td></tr>
-<tr class="separator:aae0765ce4fcd86b55be0395ba468a64e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff52b6b5e4c8f845f8ab3eefe766c365"><td class="memItemLeft" align="right" valign="top">unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Particle.html#aff52b6b5e4c8f845f8ab3eefe766c365">get_id</a> () const </td></tr>
+<tr class="separator:aff52b6b5e4c8f845f8ab3eefe766c365"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f103db764459e99f6427f8a4ca50b1f"><td class="memItemLeft" align="right" valign="top">unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Particle.html#a4f103db764459e99f6427f8a4ca50b1f">get_parent_id</a> () const </td></tr>
+<tr class="separator:a4f103db764459e99f6427f8a4ca50b1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a81c313d505ecb592d79463f167dfb76c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classgtfs_1_1Vehicle.html">Vehicle</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Particle.html#a81c313d505ecb592d79463f167dfb76c">vehicle</a></td></tr>
+<tr class="separator:a81c313d505ecb592d79463f167dfb76c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="classgtfs_1_1Particle.html">Particle</a> class</p>
@@ -123,7 +135,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">gtfs::Particle::Particle </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classgtfs_1_1Vehicle.html">gtfs::Vehicle</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="classgtfs_1_1Vehicle.html">Vehicle</a> *&#160;</td>
           <td class="paramname"><em>v</em></td><td>)</td>
           <td></td>
         </tr>
@@ -175,28 +187,12 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="aae0765ce4fcd86b55be0395ba468a64e"></a>
+<a class="anchor" id="aff52b6b5e4c8f845f8ab3eefe766c365"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const unsigned long gtfs::Particle::parent_id </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>the parent particle's ID </dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="a4c02d3ea318b8f88c30a6fa32dc7f727"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const unsigned long gtfs::Particle::particle_id </td>
+          <td class="memname">unsigned long gtfs::Particle::get_id </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -207,19 +203,35 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a163b07fa0c6a576fa7f21e7eb1efa572"></a>
+<a class="anchor" id="a4f103db764459e99f6427f8a4ca50b1f"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classgtfs_1_1Vehicle.html">gtfs::Vehicle</a> * gtfs::Particle::vehicle </td>
+          <td class="memname">unsigned long gtfs::Particle::get_parent_id </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td></td>
+          <td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>a pointer to the particle's vehicle </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>a pointer to the particle's vehicle </dd>
+<dd>
+the parent particle's ID </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="a81c313d505ecb592d79463f167dfb76c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classgtfs_1_1Vehicle.html">Vehicle</a>* gtfs::Particle::vehicle</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>pointer to the vehicle that owns this particle </p>
 
 </div>
 </div>

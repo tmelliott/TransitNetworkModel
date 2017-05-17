@@ -1,6 +1,7 @@
 #ifndef GPS_HXX
 #define GPS_HXX
 
+#include <iostream>
 #include <cmath>
 #include <vector>
 

@@ -4,65 +4,67 @@
 
 #include "gtfs.h"
 
-/**
-* Particle constructor.
-*
-* The ID is automatically selected from the parent vehicle.
-*/
-gtfs::Particle::Particle (gtfs::Vehicle* v) : vehicle_ (v), parent_id_ (0) {
-	unsigned long next = v->next_id_++;
-	particle_id_ = next;
-	std::cout << " + Created particle for vehicle " << v->vehicle_id ()
-		<< " with id = " << particle_id_ << std::endl;
-};
+namespace gtfs {
+	/**
+	* Particle constructor.
+	*
+	* The ID is automatically selected from the parent vehicle.
+	*/
+	Particle::Particle (Vehicle* v) : vehicle (v), parent_id (0) {
+		id = v->allocate_id ();
+		std::cout << " + Created particle for vehicle " << v->get_id ()
+			<< " with id = " << id << std::endl;
+	};
 
-/**
- * Particle copy constructor.
- *
- * Makes an almost exact copy of the referenced particle,
- * but gives it a unique ID and sets the parent_id appropriately.
- *
- * @param p the parent particle to be copied
- */
-gtfs::Particle::Particle (const gtfs::Particle &p) {
-	std::cout << " >+ Copying particle " << p.particle_id () << " -> ";
+	/**
+	 * Particle copy constructor.
+	 *
+	 * Makes an almost exact copy of the referenced particle,
+	 * but gives it a unique ID and sets the parent_id appropriately.
+	 *
+	 * @param p the parent particle to be copied
+	 */
+	Particle::Particle (const Particle &p) {
+		std::cout << " >+ Copying particle " << p.get_id () << " -> ";
 
-	// Copy vehicle pointer
-	vehicle_ = p.vehicle_;
-	parent_id_ = p.particle_id_;
+		// Copy vehicle pointer
+		vehicle = p.vehicle;
+		parent_id = p.id;
 
-	// Increment particle id
-	particle_id_ = p.vehicle_->next_id_++;
-	std::cout << particle_id_ << std::endl;
-};
+		// Increment particle id
+		id = p.vehicle->allocate_id ();
+		std::cout << id << std::endl;
+	};
 
-/**
-* Destructor for a particle.
-*/
-gtfs::Particle::~Particle() {
-	std::cout << " - Particle " << particle_id_ << " deleted." << std::endl;
-};
+	/**
+	* Destructor for a particle.
+	*/
+	Particle::~Particle() {
+		std::cout << " - Particle " << id << " deleted." << std::endl;
+	};
 
 
-// --- GETTERS
+	// --- GETTERS
 
-/**
-* @return the particle's ID
-*/
-const unsigned long gtfs::Particle::particle_id () const {
-	return particle_id_;
-};
+	/**
+	* @return the particle's ID
+	*/
+	unsigned long Particle::get_id () const {
+		return id;
+	};
 
-/**
- * @return a pointer to the particle's vehicle
- */
-gtfs::Vehicle* gtfs::Particle::vehicle () {
-	return vehicle_;
-}
+	/**
+	 * @return a pointer to the particle's vehicle
+	 */
+	// Vehicle* Particle::get_vehicle () {
+	// 	return vehicle;
+	// }
 
-/**
- * @return the parent particle's ID
- */
-const unsigned long gtfs::Particle::parent_id () const {
-	return parent_id_;
-}
+	/**
+	 * @return the parent particle's ID
+	 */
+	unsigned long Particle::get_parent_id () const {
+		return parent_id;
+	}
+
+}; // end namespace gtfs

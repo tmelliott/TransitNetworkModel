@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['coord',['Coord',['../classgps_1_1Coord.html#afcc45fae837b48cd7d9bd545c4dc574c',1,'gps::Coord']]],
-  ['crosstrackdistanceto',['crossTrackDistanceTo',['../classgps_1_1Coord.html#a0efb59b2c1fa68551f118bcea3733593',1,'gps::Coord']]]
+  ['bearingto',['bearingTo',['../classgps_1_1Coord.html#a3d3d160c28334979d220dce4112e087d',1,'gps::Coord']]]
 ];

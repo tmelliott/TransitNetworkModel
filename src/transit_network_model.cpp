@@ -8,6 +8,7 @@
  * and finally arrival time predictions made for each vehicle/stop combination.
  *
  * - transit_network_model.cpp
+ * - load_gtfs.cpp
  *
  * @file
  * @author Tom Elliott <tom.elliott@auckland.ac.nz>
@@ -34,7 +35,7 @@
  */
 int main (int argc, char* argv[]) {
 
-	std::vector<std::shared_ptr<gtfs::Vehicle> > vehicles;
+	std::vector<std::unique_ptr<gtfs::Vehicle> > vehicles;
 
 	bool forever = false;
 
@@ -55,13 +56,13 @@ int main (int argc, char* argv[]) {
 	}
 	{
 	for (int i=0; i<3; i++) {
-		// Create "temporary" vehicle object
-		std::shared_ptr<gtfs::Vehicle> vp (new gtfs::Vehicle("CXY" + std::to_string(i)));
+		// Create unique vehicle object
+		std::unique_ptr<gtfs::Vehicle> vp (new gtfs::Vehicle("CXY" + std::to_string(i)));
 
-		// Work with temporary copy
+		// Work with pointer
 
 
-		// Most copy into vector
+		// Most pointer into vector
 		vehicles.push_back(std::move(vp));
 
 		std::cout << std::endl;
@@ -71,23 +72,23 @@ int main (int argc, char* argv[]) {
 
 	int i = 1;
 	for (auto& vp: vehicles) {
-		printf("Vehicle %d has id %s (%d particles).\n", i++, vp->vehicle_id ().c_str(), (int) vp->particles().size ());
-		for (auto& pr: vp->particles ()) {
-			std::cout << " |- Particle " << pr.particle_id () << std::endl;
+		printf("Vehicle %d has id %s (%d particles).\n", i++, vp->get_id ().c_str(), (int) vp->get_particles().size ());
+		for (auto& pr: vp->get_particles ()) {
+			std::cout << " |- Particle " << pr.get_id () << std::endl;
 		}
 		std::cout << ">>----------- (resample)" << std::endl;
 		vp->resample();
 		std::cout << "  -----------<<" << std::endl;
-		for (auto& pr: vp->particles ()) {
-			std::cout << " |- Particle " << pr.particle_id ()
-				<< " is a child of particle " << pr.parent_id () << std::endl;
+		for (auto& pr: vp->get_particles ()) {
+			std::cout << " |- Particle " << pr.get_id ()
+				<< " is a child of particle " << pr.get_parent_id () << std::endl;
 		}
 		std::cout << ">>----------- (resample)" << std::endl;
 		vp->resample();
 		std::cout << "  -----------<<" << std::endl;
-		for (auto& pr: vp->particles ()) {
-			std::cout << " |- Particle " << pr.particle_id ()
-				<< " is a child of particle " << pr.parent_id () << std::endl;
+		for (auto& pr: vp->get_particles ()) {
+			std::cout << " |- Particle " << pr.get_id ()
+				<< " is a child of particle " << pr.get_parent_id () << std::endl;
 		}
 
 		std::cout << std::endl;

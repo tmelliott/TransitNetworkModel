@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include "gps.h"
+
 /**
  * GTFS Namespace
  *
@@ -14,38 +16,34 @@ namespace gtfs {
 	class Vehicle;
 	class Particle;
 
-
 	/**
 	 * Transit vehicle class
 	 *
 	 * A representation of a physical transit vehicle (i.e., a bus),
 	 * including the most recent data associated with that vehicle
 	 * (GPS location, arrival/departure time, etc).
+	 *
+	 * Vehicles are initialized with an ID, so it is not editable.
 	 */
 	class Vehicle {
 	private:
-		std::string vehicle_id_;
-		unsigned int n_particles_;
-		std::vector<Particle> particles_;
-		unsigned long next_id_;
-
-		friend class Particle; // Particle has access to vehicle.
+		std::string id; /*!< ID of vehicle, as per GTFS feed */
+		std::vector<Particle> particles; /*!< the particles associated with the vehicle */
 
 	public:
+		unsigned int n_particles; /*!< the number of particles that will be created in the next sample */
+		unsigned long next_id; /*!< the ID of the next particle to be created */
+
 		// Constructors, destructors
-		Vehicle (std::string vehicle_id);
+		Vehicle (std::string id);
 		~Vehicle();
 
 		// Getters
-		const std::string& vehicle_id () const;
-		const unsigned int& n_particles () const;
-		std::vector<Particle>& particles ();
-		unsigned long& next_id ();
-
-		// Setters
-		void n_particles (unsigned int n);
+		std::string get_id () const;
+		std::vector<Particle>& get_particles ();
 
 		// Methods
+		unsigned long allocate_id ();
 		void resample ();
 	};
 
@@ -58,27 +56,28 @@ namespace gtfs {
 	 */
 	class Particle {
 	private:
-		unsigned long particle_id_;
-		Vehicle* vehicle_;
-		unsigned long parent_id_;
+		unsigned long id;  /*!< a unique particle identifier */
+		unsigned long parent_id;  /*!< unique identifier of the particle that spawned this one */
 
 	public:
+		Vehicle* vehicle;  /*!< pointer to the vehicle that owns this particle */
+
 		// Constructors, destructors
 		Particle (Vehicle* v);
 		Particle (const Particle &p);
 		~Particle ();  // destroy
 
 		// Getters
-		const unsigned long particle_id () const;
-		Vehicle* vehicle ();
-		const unsigned long parent_id () const;
-
-		// Setters
+		unsigned long get_id () const;
+		// Vehicle* get_vehicle ();
+		unsigned long get_parent_id () const;
 
 
 		// Methods
-
+		
 	};
+
+	gps::Coord get_coords (double distance, std::vector<gps::Coord> path);
 
 }; // end GTFS namespace
 

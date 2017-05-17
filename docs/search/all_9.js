@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['transit_20network_20model',['Transit Network Model',['../md_README.html',1,'']]],
-  ['transit_5fnetwork_5fmodel_2ecpp',['transit_network_model.cpp',['../transit__network__model_8cpp.html',1,'']]]
+  ['r',['R',['../namespacegps.html#a336bcadf804afba736e0cf773b5a36e8',1,'gps']]],
+  ['rad',['rad',['../namespacegps.html#ad44ea39876137fc96774486e3a60f004',1,'gps']]],
+  ['resample',['resample',['../classgtfs_1_1Vehicle.html#a46ee9775d11595461315be7141359d8a',1,'gtfs::Vehicle']]]
 ];
