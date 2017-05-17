@@ -1,0 +1,160 @@
+\hypertarget{classgps_1_1Coord}{}\section{gps\+:\+:Coord Class Reference}
+\label{classgps_1_1Coord}\index{gps\+::\+Coord@{gps\+::\+Coord}}
+
+
+{\ttfamily \#include $<$gps.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classgps_1_1Coord_afcc45fae837b48cd7d9bd545c4dc574c}{Coord} (double \hyperlink{classgps_1_1Coord_a17cbbd7580a83c42f650b8f93e14d98e}{lat}, double \hyperlink{classgps_1_1Coord_abca98aaabe2dc3cf50ebdd687c2f47e8}{lng})
+\item 
+double \hyperlink{classgps_1_1Coord_a335589710eec94e6062323ef5c8994ab}{distance\+To} (\hyperlink{classgps_1_1Coord}{gps\+::\+Coord} destination)
+\item 
+double \hyperlink{classgps_1_1Coord_a3d3d160c28334979d220dce4112e087d}{bearing\+To} (\hyperlink{classgps_1_1Coord}{gps\+::\+Coord} destination)
+\item 
+\hyperlink{classgps_1_1Coord}{gps\+::\+Coord} \hyperlink{classgps_1_1Coord_ae76a605c81049d648d4e39ee0f56ff7b}{destination\+Point} (double distance, double bearing)
+\item 
+double \hyperlink{classgps_1_1Coord_a0efb59b2c1fa68551f118bcea3733593}{cross\+Track\+Distance\+To} (\hyperlink{classgps_1_1Coord}{gps\+::\+Coord} p1, \hyperlink{classgps_1_1Coord}{gps\+::\+Coord} p2)
+\item 
+std\+::vector$<$ double $>$ \hyperlink{classgps_1_1Coord_ac2e47c5d6d9a3d54a4086e8003fc7e9a}{project\+Flat} (\hyperlink{classgps_1_1Coord}{gps\+::\+Coord} origin)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+double \hyperlink{classgps_1_1Coord_a17cbbd7580a83c42f650b8f93e14d98e}{lat}
+\item 
+double \hyperlink{classgps_1_1Coord_abca98aaabe2dc3cf50ebdd687c2f47e8}{lng}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Coordinate class represents lat/lng points on the Earth. 
+
+\subsection{Constructor \& Destructor Documentation}
+\index{gps\+::\+Coord@{gps\+::\+Coord}!Coord@{Coord}}
+\index{Coord@{Coord}!gps\+::\+Coord@{gps\+::\+Coord}}
+\subsubsection[{\texorpdfstring{Coord(double lat, double lng)}{Coord(double lat, double lng)}}]{\setlength{\rightskip}{0pt plus 5cm}gps\+::\+Coord\+::\+Coord (
+\begin{DoxyParamCaption}
+\item[{double}]{Lat, }
+\item[{double}]{Lng}
+\end{DoxyParamCaption}
+)}\hypertarget{classgps_1_1Coord_afcc45fae837b48cd7d9bd545c4dc574c}{}\label{classgps_1_1Coord_afcc45fae837b48cd7d9bd545c4dc574c}
+Constructor for a co-\/ordinate 
+\begin{DoxyParams}{Parameters}
+{\em Lat} & the latitude (-\/90, 90), degrees North/\+South from the equator \\
+\hline
+{\em Lng} & the longitude (-\/180, 180), degrees East/\+West from Greenwich, England \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\index{gps\+::\+Coord@{gps\+::\+Coord}!bearing\+To@{bearing\+To}}
+\index{bearing\+To@{bearing\+To}!gps\+::\+Coord@{gps\+::\+Coord}}
+\subsubsection[{\texorpdfstring{bearing\+To(gps\+::\+Coord destination)}{bearingTo(gps::Coord destination)}}]{\setlength{\rightskip}{0pt plus 5cm}double gps\+::\+Coord\+::bearing\+To (
+\begin{DoxyParamCaption}
+\item[{{\bf gps\+::\+Coord}}]{p}
+\end{DoxyParamCaption}
+)}\hypertarget{classgps_1_1Coord_a3d3d160c28334979d220dce4112e087d}{}\label{classgps_1_1Coord_a3d3d160c28334979d220dce4112e087d}
+Compute the (initial) bearing to a point.
+
+This function will compute the initial bearing, in degrees, when traveling from the current point to the destination point. Note that, due to curvature of the Earth, the bearing usually changes along the path (unless its along an axis).
+
+
+\begin{DoxyParams}{Parameters}
+{\em p} & The destination point \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the bearing, in degrees, to the point 
+\end{DoxyReturn}
+\index{gps\+::\+Coord@{gps\+::\+Coord}!cross\+Track\+Distance\+To@{cross\+Track\+Distance\+To}}
+\index{cross\+Track\+Distance\+To@{cross\+Track\+Distance\+To}!gps\+::\+Coord@{gps\+::\+Coord}}
+\subsubsection[{\texorpdfstring{cross\+Track\+Distance\+To(gps\+::\+Coord p1, gps\+::\+Coord p2)}{crossTrackDistanceTo(gps::Coord p1, gps::Coord p2)}}]{\setlength{\rightskip}{0pt plus 5cm}double gps\+::\+Coord\+::cross\+Track\+Distance\+To (
+\begin{DoxyParamCaption}
+\item[{{\bf gps\+::\+Coord}}]{p1, }
+\item[{{\bf gps\+::\+Coord}}]{p2}
+\end{DoxyParamCaption}
+)}\hypertarget{classgps_1_1Coord_a0efb59b2c1fa68551f118bcea3733593}{}\label{classgps_1_1Coord_a0efb59b2c1fa68551f118bcea3733593}
+Compute the cross-\/track distance between the given point, and a path between two points.
+
+This is the shortest distance between a given point, and the path between two points.
+
+
+\begin{DoxyParams}{Parameters}
+{\em p1} & The origin of the path \\
+\hline
+{\em p2} & The desination of the path \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The shortest distance between the point and the path. 
+\end{DoxyReturn}
+\index{gps\+::\+Coord@{gps\+::\+Coord}!destination\+Point@{destination\+Point}}
+\index{destination\+Point@{destination\+Point}!gps\+::\+Coord@{gps\+::\+Coord}}
+\subsubsection[{\texorpdfstring{destination\+Point(double distance, double bearing)}{destinationPoint(double distance, double bearing)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Coord} gps\+::\+Coord\+::destination\+Point (
+\begin{DoxyParamCaption}
+\item[{double}]{d, }
+\item[{double}]{bearing}
+\end{DoxyParamCaption}
+)}\hypertarget{classgps_1_1Coord_ae76a605c81049d648d4e39ee0f56ff7b}{}\label{classgps_1_1Coord_ae76a605c81049d648d4e39ee0f56ff7b}
+Compute the destination given initial bearing and distance from a starting point. 
+\begin{DoxyParams}{Parameters}
+{\em d} & the distance to be traveled \\
+\hline
+{\em bearing} & the initial bearing \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the destination point 
+\end{DoxyReturn}
+\index{gps\+::\+Coord@{gps\+::\+Coord}!distance\+To@{distance\+To}}
+\index{distance\+To@{distance\+To}!gps\+::\+Coord@{gps\+::\+Coord}}
+\subsubsection[{\texorpdfstring{distance\+To(gps\+::\+Coord destination)}{distanceTo(gps::Coord destination)}}]{\setlength{\rightskip}{0pt plus 5cm}double gps\+::\+Coord\+::distance\+To (
+\begin{DoxyParamCaption}
+\item[{{\bf gps\+::\+Coord}}]{p}
+\end{DoxyParamCaption}
+)}\hypertarget{classgps_1_1Coord_a335589710eec94e6062323ef5c8994ab}{}\label{classgps_1_1Coord_a335589710eec94e6062323ef5c8994ab}
+Compute the Great Circle Distance between to a point. 
+\begin{DoxyParams}{Parameters}
+{\em p} & the desination point \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the distance, in meters, to the point 
+\end{DoxyReturn}
+\index{gps\+::\+Coord@{gps\+::\+Coord}!project\+Flat@{project\+Flat}}
+\index{project\+Flat@{project\+Flat}!gps\+::\+Coord@{gps\+::\+Coord}}
+\subsubsection[{\texorpdfstring{project\+Flat(gps\+::\+Coord origin)}{projectFlat(gps::Coord origin)}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::vector$<$ double $>$ gps\+::\+Coord\+::project\+Flat (
+\begin{DoxyParamCaption}
+\item[{{\bf gps\+::\+Coord}}]{origin}
+\end{DoxyParamCaption}
+)}\hypertarget{classgps_1_1Coord_ac2e47c5d6d9a3d54a4086e8003fc7e9a}{}\label{classgps_1_1Coord_ac2e47c5d6d9a3d54a4086e8003fc7e9a}
+Apply the Equirectangular projection to a point using a supplied point as the origin.
+
+The point is centered relative to the origin point, and then the Flat-\/\+Earth coordinates (meters north, east) are computed and returned in a vector.
+
+
+\begin{DoxyParams}{Parameters}
+{\em origin} & the point to be used as the center of the projection \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a cartesian coordinate of the projected point 
+\end{DoxyReturn}
+
+
+\subsection{Member Data Documentation}
+\index{gps\+::\+Coord@{gps\+::\+Coord}!lat@{lat}}
+\index{lat@{lat}!gps\+::\+Coord@{gps\+::\+Coord}}
+\subsubsection[{\texorpdfstring{lat}{lat}}]{\setlength{\rightskip}{0pt plus 5cm}double gps\+::\+Coord\+::lat}\hypertarget{classgps_1_1Coord_a17cbbd7580a83c42f650b8f93e14d98e}{}\label{classgps_1_1Coord_a17cbbd7580a83c42f650b8f93e14d98e}
+the latitude value (-\/90,90) (degrees North/\+South of the equator) \index{gps\+::\+Coord@{gps\+::\+Coord}!lng@{lng}}
+\index{lng@{lng}!gps\+::\+Coord@{gps\+::\+Coord}}
+\subsubsection[{\texorpdfstring{lng}{lng}}]{\setlength{\rightskip}{0pt plus 5cm}double gps\+::\+Coord\+::lng}\hypertarget{classgps_1_1Coord_abca98aaabe2dc3cf50ebdd687c2f47e8}{}\label{classgps_1_1Coord_abca98aaabe2dc3cf50ebdd687c2f47e8}
+the longitude value (-\/180,180) (degrees East/\+West of Greenwich) 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+gps/gps.\+h\item 
+gps/gps.\+cpp\end{DoxyCompactItemize}

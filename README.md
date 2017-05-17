@@ -29,7 +29,9 @@ __OUT__: ETA to remaining stops along route
 
 ****
 ## Dependencies
-- [Google protobuf compiler `protoc`](https://github.com/google/protobuf/blob/master/src/README.md)
+- CMake
+- (optional) Doxygen (for making the Documentation)
+- (optional) [Google protobuf compiler `protoc`](https://github.com/google/protobuf/blob/master/src/README.md)
 
 
 ## To-do

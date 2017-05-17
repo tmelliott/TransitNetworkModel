@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['main',['main',['../transit__network__model_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97',1,'transit_network_model.cpp']]]
+  ['bearingto',['bearingTo',['../classgps_1_1Coord.html#a3d3d160c28334979d220dce4112e087d',1,'gps::Coord']]]
 ];

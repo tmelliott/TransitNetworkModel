@@ -18,39 +18,36 @@
 // @@protoc_insertion_point(includes)
 
 namespace transit_realtime {
-class FeedMessageDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<FeedMessage> {
-} _FeedMessage_default_instance_;
-class FeedHeaderDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<FeedHeader> {
-} _FeedHeader_default_instance_;
-class FeedEntityDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<FeedEntity> {
-} _FeedEntity_default_instance_;
-class TripUpdate_StopTimeEventDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<TripUpdate_StopTimeEvent> {
-} _TripUpdate_StopTimeEvent_default_instance_;
-class TripUpdate_StopTimeUpdateDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<TripUpdate_StopTimeUpdate> {
-} _TripUpdate_StopTimeUpdate_default_instance_;
-class TripUpdateDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<TripUpdate> {
-} _TripUpdate_default_instance_;
-class VehiclePositionDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<VehiclePosition> {
-} _VehiclePosition_default_instance_;
-class AlertDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<Alert> {
-} _Alert_default_instance_;
-class TimeRangeDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<TimeRange> {
-} _TimeRange_default_instance_;
-class PositionDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<Position> {
-} _Position_default_instance_;
-class TripDescriptorDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<TripDescriptor> {
-} _TripDescriptor_default_instance_;
-class VehicleDescriptorDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<VehicleDescriptor> {
-} _VehicleDescriptor_default_instance_;
-class EntitySelectorDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<EntitySelector> {
-} _EntitySelector_default_instance_;
-class TranslatedString_TranslationDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<TranslatedString_Translation> {
-} _TranslatedString_Translation_default_instance_;
-class TranslatedStringDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<TranslatedString> {
-} _TranslatedString_default_instance_;
-
-namespace protobuf_gtfs_2drealtime_2eproto {
-
+class FeedMessageDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<FeedMessage> {};
+FeedMessageDefaultTypeInternal _FeedMessage_default_instance_;
+class FeedHeaderDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<FeedHeader> {};
+FeedHeaderDefaultTypeInternal _FeedHeader_default_instance_;
+class FeedEntityDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<FeedEntity> {};
+FeedEntityDefaultTypeInternal _FeedEntity_default_instance_;
+class TripUpdate_StopTimeEventDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<TripUpdate_StopTimeEvent> {};
+TripUpdate_StopTimeEventDefaultTypeInternal _TripUpdate_StopTimeEvent_default_instance_;
+class TripUpdate_StopTimeUpdateDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<TripUpdate_StopTimeUpdate> {};
+TripUpdate_StopTimeUpdateDefaultTypeInternal _TripUpdate_StopTimeUpdate_default_instance_;
+class TripUpdateDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<TripUpdate> {};
+TripUpdateDefaultTypeInternal _TripUpdate_default_instance_;
+class VehiclePositionDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<VehiclePosition> {};
+VehiclePositionDefaultTypeInternal _VehiclePosition_default_instance_;
+class AlertDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<Alert> {};
+AlertDefaultTypeInternal _Alert_default_instance_;
+class TimeRangeDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<TimeRange> {};
+TimeRangeDefaultTypeInternal _TimeRange_default_instance_;
+class PositionDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<Position> {};
+PositionDefaultTypeInternal _Position_default_instance_;
+class TripDescriptorDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<TripDescriptor> {};
+TripDescriptorDefaultTypeInternal _TripDescriptor_default_instance_;
+class VehicleDescriptorDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<VehicleDescriptor> {};
+VehicleDescriptorDefaultTypeInternal _VehicleDescriptor_default_instance_;
+class EntitySelectorDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<EntitySelector> {};
+EntitySelectorDefaultTypeInternal _EntitySelector_default_instance_;
+class TranslatedString_TranslationDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<TranslatedString_Translation> {};
+TranslatedString_TranslationDefaultTypeInternal _TranslatedString_Translation_default_instance_;
+class TranslatedStringDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<TranslatedString> {};
+TranslatedStringDefaultTypeInternal _TranslatedString_default_instance_;
 
 namespace {
 
@@ -59,194 +56,199 @@ const ::google::protobuf::EnumDescriptor* file_level_enum_descriptors[8];
 
 }  // namespace
 
-const ::google::protobuf::uint32 TableStruct::offsets[] = {
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedMessage, _has_bits_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedMessage, _internal_metadata_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedMessage, _extensions_),
-  ~0u,  // no _oneof_case_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedMessage, header_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedMessage, entity_),
-  0,
-  ~0u,
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedHeader, _has_bits_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedHeader, _internal_metadata_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedHeader, _extensions_),
-  ~0u,  // no _oneof_case_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedHeader, gtfs_realtime_version_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedHeader, incrementality_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedHeader, timestamp_),
-  0,
-  2,
-  1,
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedEntity, _has_bits_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedEntity, _internal_metadata_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedEntity, _extensions_),
-  ~0u,  // no _oneof_case_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedEntity, id_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedEntity, is_deleted_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedEntity, trip_update_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedEntity, vehicle_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedEntity, alert_),
-  0,
-  4,
-  1,
-  2,
-  3,
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate_StopTimeEvent, _has_bits_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate_StopTimeEvent, _internal_metadata_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate_StopTimeEvent, _extensions_),
-  ~0u,  // no _oneof_case_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate_StopTimeEvent, delay_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate_StopTimeEvent, time_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate_StopTimeEvent, uncertainty_),
-  1,
-  0,
-  2,
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate_StopTimeUpdate, _has_bits_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate_StopTimeUpdate, _internal_metadata_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate_StopTimeUpdate, _extensions_),
-  ~0u,  // no _oneof_case_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate_StopTimeUpdate, stop_sequence_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate_StopTimeUpdate, stop_id_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate_StopTimeUpdate, arrival_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate_StopTimeUpdate, departure_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate_StopTimeUpdate, schedule_relationship_),
-  3,
-  0,
-  1,
-  2,
-  4,
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate, _has_bits_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate, _internal_metadata_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate, _extensions_),
-  ~0u,  // no _oneof_case_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate, trip_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate, vehicle_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate, stop_time_update_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate, timestamp_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate, delay_),
-  0,
-  1,
-  ~0u,
-  2,
-  3,
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehiclePosition, _has_bits_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehiclePosition, _internal_metadata_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehiclePosition, _extensions_),
-  ~0u,  // no _oneof_case_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehiclePosition, trip_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehiclePosition, vehicle_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehiclePosition, position_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehiclePosition, current_stop_sequence_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehiclePosition, stop_id_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehiclePosition, current_status_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehiclePosition, timestamp_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehiclePosition, congestion_level_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehiclePosition, occupancy_status_),
-  1,
-  2,
-  3,
-  4,
-  0,
-  8,
-  6,
-  5,
-  7,
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Alert, _has_bits_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Alert, _internal_metadata_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Alert, _extensions_),
-  ~0u,  // no _oneof_case_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Alert, active_period_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Alert, informed_entity_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Alert, cause_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Alert, effect_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Alert, url_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Alert, header_text_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Alert, description_text_),
-  ~0u,
-  ~0u,
-  3,
-  4,
-  0,
-  1,
-  2,
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TimeRange, _has_bits_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TimeRange, _internal_metadata_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TimeRange, _extensions_),
-  ~0u,  // no _oneof_case_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TimeRange, start_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TimeRange, end_),
-  0,
-  1,
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Position, _has_bits_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Position, _internal_metadata_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Position, _extensions_),
-  ~0u,  // no _oneof_case_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Position, latitude_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Position, longitude_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Position, bearing_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Position, odometer_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Position, speed_),
-  0,
-  1,
-  3,
-  2,
-  4,
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripDescriptor, _has_bits_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripDescriptor, _internal_metadata_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripDescriptor, _extensions_),
-  ~0u,  // no _oneof_case_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripDescriptor, trip_id_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripDescriptor, route_id_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripDescriptor, direction_id_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripDescriptor, start_time_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripDescriptor, start_date_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripDescriptor, schedule_relationship_),
-  0,
-  1,
-  4,
-  2,
-  3,
-  5,
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleDescriptor, _has_bits_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleDescriptor, _internal_metadata_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleDescriptor, _extensions_),
-  ~0u,  // no _oneof_case_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleDescriptor, id_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleDescriptor, label_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleDescriptor, license_plate_),
-  0,
-  1,
-  2,
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(EntitySelector, _has_bits_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(EntitySelector, _internal_metadata_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(EntitySelector, _extensions_),
-  ~0u,  // no _oneof_case_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(EntitySelector, agency_id_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(EntitySelector, route_id_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(EntitySelector, route_type_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(EntitySelector, trip_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(EntitySelector, stop_id_),
-  0,
-  1,
-  4,
-  3,
-  2,
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TranslatedString_Translation, _has_bits_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TranslatedString_Translation, _internal_metadata_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TranslatedString_Translation, _extensions_),
-  ~0u,  // no _oneof_case_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TranslatedString_Translation, text_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TranslatedString_Translation, language_),
-  0,
-  1,
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TranslatedString, _has_bits_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TranslatedString, _internal_metadata_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TranslatedString, _extensions_),
-  ~0u,  // no _oneof_case_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TranslatedString, translation_),
-  ~0u,
-};
+
+const ::google::protobuf::uint32* protobuf_Offsets_gtfs_2drealtime_2eproto() GOOGLE_ATTRIBUTE_COLD;
+const ::google::protobuf::uint32* protobuf_Offsets_gtfs_2drealtime_2eproto() {
+  static const ::google::protobuf::uint32 offsets[] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedMessage, _has_bits_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedMessage, _internal_metadata_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedMessage, _extensions_),
+    ~0u,  // no _oneof_case_
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedMessage, header_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedMessage, entity_),
+    0,
+    1,
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedHeader, _has_bits_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedHeader, _internal_metadata_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedHeader, _extensions_),
+    ~0u,  // no _oneof_case_
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedHeader, gtfs_realtime_version_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedHeader, incrementality_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedHeader, timestamp_),
+    0,
+    2,
+    1,
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedEntity, _has_bits_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedEntity, _internal_metadata_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedEntity, _extensions_),
+    ~0u,  // no _oneof_case_
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedEntity, id_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedEntity, is_deleted_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedEntity, trip_update_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedEntity, vehicle_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeedEntity, alert_),
+    0,
+    4,
+    1,
+    2,
+    3,
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate_StopTimeEvent, _has_bits_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate_StopTimeEvent, _internal_metadata_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate_StopTimeEvent, _extensions_),
+    ~0u,  // no _oneof_case_
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate_StopTimeEvent, delay_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate_StopTimeEvent, time_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate_StopTimeEvent, uncertainty_),
+    1,
+    0,
+    2,
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate_StopTimeUpdate, _has_bits_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate_StopTimeUpdate, _internal_metadata_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate_StopTimeUpdate, _extensions_),
+    ~0u,  // no _oneof_case_
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate_StopTimeUpdate, stop_sequence_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate_StopTimeUpdate, stop_id_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate_StopTimeUpdate, arrival_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate_StopTimeUpdate, departure_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate_StopTimeUpdate, schedule_relationship_),
+    3,
+    0,
+    1,
+    2,
+    4,
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate, _has_bits_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate, _internal_metadata_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate, _extensions_),
+    ~0u,  // no _oneof_case_
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate, trip_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate, vehicle_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate, stop_time_update_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate, timestamp_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripUpdate, delay_),
+    0,
+    1,
+    4,
+    2,
+    3,
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehiclePosition, _has_bits_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehiclePosition, _internal_metadata_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehiclePosition, _extensions_),
+    ~0u,  // no _oneof_case_
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehiclePosition, trip_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehiclePosition, vehicle_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehiclePosition, position_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehiclePosition, current_stop_sequence_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehiclePosition, stop_id_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehiclePosition, current_status_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehiclePosition, timestamp_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehiclePosition, congestion_level_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehiclePosition, occupancy_status_),
+    1,
+    2,
+    3,
+    4,
+    0,
+    8,
+    6,
+    5,
+    7,
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Alert, _has_bits_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Alert, _internal_metadata_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Alert, _extensions_),
+    ~0u,  // no _oneof_case_
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Alert, active_period_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Alert, informed_entity_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Alert, cause_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Alert, effect_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Alert, url_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Alert, header_text_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Alert, description_text_),
+    5,
+    6,
+    3,
+    4,
+    0,
+    1,
+    2,
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TimeRange, _has_bits_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TimeRange, _internal_metadata_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TimeRange, _extensions_),
+    ~0u,  // no _oneof_case_
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TimeRange, start_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TimeRange, end_),
+    0,
+    1,
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Position, _has_bits_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Position, _internal_metadata_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Position, _extensions_),
+    ~0u,  // no _oneof_case_
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Position, latitude_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Position, longitude_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Position, bearing_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Position, odometer_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Position, speed_),
+    0,
+    1,
+    3,
+    2,
+    4,
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripDescriptor, _has_bits_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripDescriptor, _internal_metadata_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripDescriptor, _extensions_),
+    ~0u,  // no _oneof_case_
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripDescriptor, trip_id_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripDescriptor, route_id_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripDescriptor, direction_id_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripDescriptor, start_time_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripDescriptor, start_date_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TripDescriptor, schedule_relationship_),
+    0,
+    1,
+    4,
+    2,
+    3,
+    5,
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleDescriptor, _has_bits_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleDescriptor, _internal_metadata_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleDescriptor, _extensions_),
+    ~0u,  // no _oneof_case_
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleDescriptor, id_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleDescriptor, label_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleDescriptor, license_plate_),
+    0,
+    1,
+    2,
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(EntitySelector, _has_bits_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(EntitySelector, _internal_metadata_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(EntitySelector, _extensions_),
+    ~0u,  // no _oneof_case_
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(EntitySelector, agency_id_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(EntitySelector, route_id_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(EntitySelector, route_type_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(EntitySelector, trip_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(EntitySelector, stop_id_),
+    0,
+    1,
+    4,
+    3,
+    2,
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TranslatedString_Translation, _has_bits_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TranslatedString_Translation, _internal_metadata_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TranslatedString_Translation, _extensions_),
+    ~0u,  // no _oneof_case_
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TranslatedString_Translation, text_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TranslatedString_Translation, language_),
+    0,
+    1,
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TranslatedString, _has_bits_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TranslatedString, _internal_metadata_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TranslatedString, _extensions_),
+    ~0u,  // no _oneof_case_
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TranslatedString, translation_),
+    0,
+  };
+  return offsets;
+}
 
 static const ::google::protobuf::internal::MigrationSchema schemas[] = {
   { 0, 6, sizeof(FeedMessage)},
@@ -266,31 +268,31 @@ static const ::google::protobuf::internal::MigrationSchema schemas[] = {
   { 180, 185, sizeof(TranslatedString)},
 };
 
-static ::google::protobuf::Message const * const file_default_instances[] = {
-  reinterpret_cast<const ::google::protobuf::Message*>(&_FeedMessage_default_instance_),
-  reinterpret_cast<const ::google::protobuf::Message*>(&_FeedHeader_default_instance_),
-  reinterpret_cast<const ::google::protobuf::Message*>(&_FeedEntity_default_instance_),
-  reinterpret_cast<const ::google::protobuf::Message*>(&_TripUpdate_StopTimeEvent_default_instance_),
-  reinterpret_cast<const ::google::protobuf::Message*>(&_TripUpdate_StopTimeUpdate_default_instance_),
-  reinterpret_cast<const ::google::protobuf::Message*>(&_TripUpdate_default_instance_),
-  reinterpret_cast<const ::google::protobuf::Message*>(&_VehiclePosition_default_instance_),
-  reinterpret_cast<const ::google::protobuf::Message*>(&_Alert_default_instance_),
-  reinterpret_cast<const ::google::protobuf::Message*>(&_TimeRange_default_instance_),
-  reinterpret_cast<const ::google::protobuf::Message*>(&_Position_default_instance_),
-  reinterpret_cast<const ::google::protobuf::Message*>(&_TripDescriptor_default_instance_),
-  reinterpret_cast<const ::google::protobuf::Message*>(&_VehicleDescriptor_default_instance_),
-  reinterpret_cast<const ::google::protobuf::Message*>(&_EntitySelector_default_instance_),
-  reinterpret_cast<const ::google::protobuf::Message*>(&_TranslatedString_Translation_default_instance_),
-  reinterpret_cast<const ::google::protobuf::Message*>(&_TranslatedString_default_instance_),
+static const ::google::protobuf::internal::DefaultInstanceData file_default_instances[] = {
+  {reinterpret_cast<const ::google::protobuf::Message*>(&_FeedMessage_default_instance_), NULL},
+  {reinterpret_cast<const ::google::protobuf::Message*>(&_FeedHeader_default_instance_), NULL},
+  {reinterpret_cast<const ::google::protobuf::Message*>(&_FeedEntity_default_instance_), NULL},
+  {reinterpret_cast<const ::google::protobuf::Message*>(&_TripUpdate_StopTimeEvent_default_instance_), NULL},
+  {reinterpret_cast<const ::google::protobuf::Message*>(&_TripUpdate_StopTimeUpdate_default_instance_), NULL},
+  {reinterpret_cast<const ::google::protobuf::Message*>(&_TripUpdate_default_instance_), NULL},
+  {reinterpret_cast<const ::google::protobuf::Message*>(&_VehiclePosition_default_instance_), NULL},
+  {reinterpret_cast<const ::google::protobuf::Message*>(&_Alert_default_instance_), NULL},
+  {reinterpret_cast<const ::google::protobuf::Message*>(&_TimeRange_default_instance_), NULL},
+  {reinterpret_cast<const ::google::protobuf::Message*>(&_Position_default_instance_), NULL},
+  {reinterpret_cast<const ::google::protobuf::Message*>(&_TripDescriptor_default_instance_), NULL},
+  {reinterpret_cast<const ::google::protobuf::Message*>(&_VehicleDescriptor_default_instance_), NULL},
+  {reinterpret_cast<const ::google::protobuf::Message*>(&_EntitySelector_default_instance_), NULL},
+  {reinterpret_cast<const ::google::protobuf::Message*>(&_TranslatedString_Translation_default_instance_), NULL},
+  {reinterpret_cast<const ::google::protobuf::Message*>(&_TranslatedString_default_instance_), NULL},
 };
 
 namespace {
 
 void protobuf_AssignDescriptors() {
-  AddDescriptors();
+  protobuf_AddDesc_gtfs_2drealtime_2eproto();
   ::google::protobuf::MessageFactory* factory = NULL;
   AssignDescriptors(
-      "gtfs-realtime.proto", schemas, file_default_instances, TableStruct::offsets, factory,
+      "gtfs-realtime.proto", schemas, file_default_instances, protobuf_Offsets_gtfs_2drealtime_2eproto(), factory,
       file_level_metadata, file_level_enum_descriptors, NULL);
 }
 
@@ -307,7 +309,7 @@ void protobuf_RegisterTypes(const ::std::string&) {
 
 }  // namespace
 
-void TableStruct::Shutdown() {
+void protobuf_ShutdownFile_gtfs_2drealtime_2eproto() {
   _FeedMessage_default_instance_.Shutdown();
   delete file_level_metadata[0].reflection;
   _FeedHeader_default_instance_.Shutdown();
@@ -340,7 +342,7 @@ void TableStruct::Shutdown() {
   delete file_level_metadata[14].reflection;
 }
 
-void TableStruct::InitDefaultsImpl() {
+void protobuf_InitDefaults_gtfs_2drealtime_2eproto_impl() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::internal::InitProtobufDefaults();
@@ -391,12 +393,12 @@ void TableStruct::InitDefaultsImpl() {
       ::transit_realtime::TripDescriptor::internal_default_instance());
 }
 
-void InitDefaults() {
+void protobuf_InitDefaults_gtfs_2drealtime_2eproto() {
   static GOOGLE_PROTOBUF_DECLARE_ONCE(once);
-  ::google::protobuf::GoogleOnceInit(&once, &TableStruct::InitDefaultsImpl);
+  ::google::protobuf::GoogleOnceInit(&once, &protobuf_InitDefaults_gtfs_2drealtime_2eproto_impl);
 }
-void AddDescriptorsImpl() {
-  InitDefaults();
+void protobuf_AddDesc_gtfs_2drealtime_2eproto_impl() {
+  protobuf_InitDefaults_gtfs_2drealtime_2eproto();
   static const char descriptor[] = {
       "\n\023gtfs-realtime.proto\022\020transit_realtime\""
       "q\n\013FeedMessage\022,\n\006header\030\001 \002(\0132\034.transit"
@@ -498,25 +500,23 @@ void AddDescriptorsImpl() {
       descriptor, 3789);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "gtfs-realtime.proto", &protobuf_RegisterTypes);
-  ::google::protobuf::internal::OnShutdown(&TableStruct::Shutdown);
+  ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_gtfs_2drealtime_2eproto);
 }
 
-void AddDescriptors() {
-  static GOOGLE_PROTOBUF_DECLARE_ONCE(once);
-  ::google::protobuf::GoogleOnceInit(&once, &AddDescriptorsImpl);
+GOOGLE_PROTOBUF_DECLARE_ONCE(protobuf_AddDesc_gtfs_2drealtime_2eproto_once_);
+void protobuf_AddDesc_gtfs_2drealtime_2eproto() {
+  ::google::protobuf::GoogleOnceInit(&protobuf_AddDesc_gtfs_2drealtime_2eproto_once_,
+                 &protobuf_AddDesc_gtfs_2drealtime_2eproto_impl);
 }
 // Force AddDescriptors() to be called at static initialization time.
-struct StaticDescriptorInitializer {
-  StaticDescriptorInitializer() {
-    AddDescriptors();
+struct StaticDescriptorInitializer_gtfs_2drealtime_2eproto {
+  StaticDescriptorInitializer_gtfs_2drealtime_2eproto() {
+    protobuf_AddDesc_gtfs_2drealtime_2eproto();
   }
-} static_descriptor_initializer;
-
-}  // namespace protobuf_gtfs_2drealtime_2eproto
-
+} static_descriptor_initializer_gtfs_2drealtime_2eproto_;
 const ::google::protobuf::EnumDescriptor* FeedHeader_Incrementality_descriptor() {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_enum_descriptors[0];
+  protobuf_AssignDescriptorsOnce();
+  return file_level_enum_descriptors[0];
 }
 bool FeedHeader_Incrementality_IsValid(int value) {
   switch (value) {
@@ -536,8 +536,8 @@ const FeedHeader_Incrementality FeedHeader::Incrementality_MAX;
 const int FeedHeader::Incrementality_ARRAYSIZE;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 const ::google::protobuf::EnumDescriptor* TripUpdate_StopTimeUpdate_ScheduleRelationship_descriptor() {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_enum_descriptors[1];
+  protobuf_AssignDescriptorsOnce();
+  return file_level_enum_descriptors[1];
 }
 bool TripUpdate_StopTimeUpdate_ScheduleRelationship_IsValid(int value) {
   switch (value) {
@@ -559,8 +559,8 @@ const TripUpdate_StopTimeUpdate_ScheduleRelationship TripUpdate_StopTimeUpdate::
 const int TripUpdate_StopTimeUpdate::ScheduleRelationship_ARRAYSIZE;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 const ::google::protobuf::EnumDescriptor* VehiclePosition_VehicleStopStatus_descriptor() {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_enum_descriptors[2];
+  protobuf_AssignDescriptorsOnce();
+  return file_level_enum_descriptors[2];
 }
 bool VehiclePosition_VehicleStopStatus_IsValid(int value) {
   switch (value) {
@@ -582,8 +582,8 @@ const VehiclePosition_VehicleStopStatus VehiclePosition::VehicleStopStatus_MAX;
 const int VehiclePosition::VehicleStopStatus_ARRAYSIZE;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 const ::google::protobuf::EnumDescriptor* VehiclePosition_CongestionLevel_descriptor() {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_enum_descriptors[3];
+  protobuf_AssignDescriptorsOnce();
+  return file_level_enum_descriptors[3];
 }
 bool VehiclePosition_CongestionLevel_IsValid(int value) {
   switch (value) {
@@ -609,8 +609,8 @@ const VehiclePosition_CongestionLevel VehiclePosition::CongestionLevel_MAX;
 const int VehiclePosition::CongestionLevel_ARRAYSIZE;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 const ::google::protobuf::EnumDescriptor* VehiclePosition_OccupancyStatus_descriptor() {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_enum_descriptors[4];
+  protobuf_AssignDescriptorsOnce();
+  return file_level_enum_descriptors[4];
 }
 bool VehiclePosition_OccupancyStatus_IsValid(int value) {
   switch (value) {
@@ -640,8 +640,8 @@ const VehiclePosition_OccupancyStatus VehiclePosition::OccupancyStatus_MAX;
 const int VehiclePosition::OccupancyStatus_ARRAYSIZE;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 const ::google::protobuf::EnumDescriptor* Alert_Cause_descriptor() {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_enum_descriptors[5];
+  protobuf_AssignDescriptorsOnce();
+  return file_level_enum_descriptors[5];
 }
 bool Alert_Cause_IsValid(int value) {
   switch (value) {
@@ -681,8 +681,8 @@ const Alert_Cause Alert::Cause_MAX;
 const int Alert::Cause_ARRAYSIZE;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 const ::google::protobuf::EnumDescriptor* Alert_Effect_descriptor() {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_enum_descriptors[6];
+  protobuf_AssignDescriptorsOnce();
+  return file_level_enum_descriptors[6];
 }
 bool Alert_Effect_IsValid(int value) {
   switch (value) {
@@ -716,8 +716,8 @@ const Alert_Effect Alert::Effect_MAX;
 const int Alert::Effect_ARRAYSIZE;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 const ::google::protobuf::EnumDescriptor* TripDescriptor_ScheduleRelationship_descriptor() {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_enum_descriptors[7];
+  protobuf_AssignDescriptorsOnce();
+  return file_level_enum_descriptors[7];
 }
 bool TripDescriptor_ScheduleRelationship_IsValid(int value) {
   switch (value) {
@@ -751,7 +751,7 @@ const int FeedMessage::kEntityFieldNumber;
 FeedMessage::FeedMessage()
   : ::google::protobuf::Message(), _internal_metadata_(NULL) {
   if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
-    protobuf_gtfs_2drealtime_2eproto::InitDefaults();
+    protobuf_InitDefaults_gtfs_2drealtime_2eproto();
   }
   SharedCtor();
   // @@protoc_insertion_point(constructor:transit_realtime.FeedMessage)
@@ -794,12 +794,12 @@ void FeedMessage::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
 const ::google::protobuf::Descriptor* FeedMessage::descriptor() {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_metadata[0].descriptor;
+  protobuf_AssignDescriptorsOnce();
+  return file_level_metadata[0].descriptor;
 }
 
 const FeedMessage& FeedMessage::default_instance() {
-  protobuf_gtfs_2drealtime_2eproto::InitDefaults();
+  protobuf_InitDefaults_gtfs_2drealtime_2eproto();
   return *internal_default_instance();
 }
 
@@ -912,7 +912,7 @@ void FeedMessage::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* FeedMessage::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic;  // Unused
+  (void)deterministic; // Unused
   // @@protoc_insertion_point(serialize_to_array_start:transit_realtime.FeedMessage)
   // required .transit_realtime.FeedHeader header = 1;
   if (has_header()) {
@@ -930,7 +930,7 @@ void FeedMessage::SerializeWithCachedSizes(
 
   // Extension range [1000, 2000)
   target = _extensions_.InternalSerializeWithCachedSizesToArray(
-      1000, 2000, deterministic, target);
+      1000, 2000, false, target);
 
   if (_internal_metadata_.have_unknown_fields()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
@@ -1042,8 +1042,8 @@ void FeedMessage::InternalSwap(FeedMessage* other) {
 }
 
 ::google::protobuf::Metadata FeedMessage::GetMetadata() const {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_metadata[0];
+  protobuf_AssignDescriptorsOnce();
+  return file_level_metadata[0];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -1137,7 +1137,7 @@ const int FeedHeader::kTimestampFieldNumber;
 FeedHeader::FeedHeader()
   : ::google::protobuf::Message(), _internal_metadata_(NULL) {
   if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
-    protobuf_gtfs_2drealtime_2eproto::InitDefaults();
+    protobuf_InitDefaults_gtfs_2drealtime_2eproto();
   }
   SharedCtor();
   // @@protoc_insertion_point(constructor:transit_realtime.FeedHeader)
@@ -1181,12 +1181,12 @@ void FeedHeader::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
 const ::google::protobuf::Descriptor* FeedHeader::descriptor() {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_metadata[1].descriptor;
+  protobuf_AssignDescriptorsOnce();
+  return file_level_metadata[1].descriptor;
 }
 
 const FeedHeader& FeedHeader::default_instance() {
-  protobuf_gtfs_2drealtime_2eproto::InitDefaults();
+  protobuf_InitDefaults_gtfs_2drealtime_2eproto();
   return *internal_default_instance();
 }
 
@@ -1333,7 +1333,7 @@ void FeedHeader::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* FeedHeader::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic;  // Unused
+  (void)deterministic; // Unused
   // @@protoc_insertion_point(serialize_to_array_start:transit_realtime.FeedHeader)
   // required string gtfs_realtime_version = 1;
   if (has_gtfs_realtime_version()) {
@@ -1359,7 +1359,7 @@ void FeedHeader::SerializeWithCachedSizes(
 
   // Extension range [1000, 2000)
   target = _extensions_.InternalSerializeWithCachedSizesToArray(
-      1000, 2000, deterministic, target);
+      1000, 2000, false, target);
 
   if (_internal_metadata_.have_unknown_fields()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
@@ -1480,8 +1480,8 @@ void FeedHeader::InternalSwap(FeedHeader* other) {
 }
 
 ::google::protobuf::Metadata FeedHeader::GetMetadata() const {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_metadata[1];
+  protobuf_AssignDescriptorsOnce();
+  return file_level_metadata[1];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -1613,7 +1613,7 @@ const int FeedEntity::kAlertFieldNumber;
 FeedEntity::FeedEntity()
   : ::google::protobuf::Message(), _internal_metadata_(NULL) {
   if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
-    protobuf_gtfs_2drealtime_2eproto::InitDefaults();
+    protobuf_InitDefaults_gtfs_2drealtime_2eproto();
   }
   SharedCtor();
   // @@protoc_insertion_point(constructor:transit_realtime.FeedEntity)
@@ -1679,12 +1679,12 @@ void FeedEntity::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
 const ::google::protobuf::Descriptor* FeedEntity::descriptor() {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_metadata[2].descriptor;
+  protobuf_AssignDescriptorsOnce();
+  return file_level_metadata[2].descriptor;
 }
 
 const FeedEntity& FeedEntity::default_instance() {
-  protobuf_gtfs_2drealtime_2eproto::InitDefaults();
+  protobuf_InitDefaults_gtfs_2drealtime_2eproto();
   return *internal_default_instance();
 }
 
@@ -1869,7 +1869,7 @@ void FeedEntity::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* FeedEntity::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic;  // Unused
+  (void)deterministic; // Unused
   // @@protoc_insertion_point(serialize_to_array_start:transit_realtime.FeedEntity)
   // required string id = 1;
   if (has_id()) {
@@ -1910,7 +1910,7 @@ void FeedEntity::SerializeWithCachedSizes(
 
   // Extension range [1000, 2000)
   target = _extensions_.InternalSerializeWithCachedSizesToArray(
-      1000, 2000, deterministic, target);
+      1000, 2000, false, target);
 
   if (_internal_metadata_.have_unknown_fields()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
@@ -2061,8 +2061,8 @@ void FeedEntity::InternalSwap(FeedEntity* other) {
 }
 
 ::google::protobuf::Metadata FeedEntity::GetMetadata() const {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_metadata[2];
+  protobuf_AssignDescriptorsOnce();
+  return file_level_metadata[2];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -2302,7 +2302,7 @@ const int TripUpdate_StopTimeEvent::kUncertaintyFieldNumber;
 TripUpdate_StopTimeEvent::TripUpdate_StopTimeEvent()
   : ::google::protobuf::Message(), _internal_metadata_(NULL) {
   if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
-    protobuf_gtfs_2drealtime_2eproto::InitDefaults();
+    protobuf_InitDefaults_gtfs_2drealtime_2eproto();
   }
   SharedCtor();
   // @@protoc_insertion_point(constructor:transit_realtime.TripUpdate.StopTimeEvent)
@@ -2340,12 +2340,12 @@ void TripUpdate_StopTimeEvent::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
 const ::google::protobuf::Descriptor* TripUpdate_StopTimeEvent::descriptor() {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_metadata[3].descriptor;
+  protobuf_AssignDescriptorsOnce();
+  return file_level_metadata[3].descriptor;
 }
 
 const TripUpdate_StopTimeEvent& TripUpdate_StopTimeEvent::default_instance() {
-  protobuf_gtfs_2drealtime_2eproto::InitDefaults();
+  protobuf_InitDefaults_gtfs_2drealtime_2eproto();
   return *internal_default_instance();
 }
 
@@ -2475,7 +2475,7 @@ void TripUpdate_StopTimeEvent::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* TripUpdate_StopTimeEvent::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic;  // Unused
+  (void)deterministic; // Unused
   // @@protoc_insertion_point(serialize_to_array_start:transit_realtime.TripUpdate.StopTimeEvent)
   // optional int32 delay = 1;
   if (has_delay()) {
@@ -2494,7 +2494,7 @@ void TripUpdate_StopTimeEvent::SerializeWithCachedSizes(
 
   // Extension range [1000, 2000)
   target = _extensions_.InternalSerializeWithCachedSizesToArray(
-      1000, 2000, deterministic, target);
+      1000, 2000, false, target);
 
   if (_internal_metadata_.have_unknown_fields()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
@@ -2615,8 +2615,8 @@ void TripUpdate_StopTimeEvent::InternalSwap(TripUpdate_StopTimeEvent* other) {
 }
 
 ::google::protobuf::Metadata TripUpdate_StopTimeEvent::GetMetadata() const {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_metadata[3];
+  protobuf_AssignDescriptorsOnce();
+  return file_level_metadata[3];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -2709,7 +2709,7 @@ const int TripUpdate_StopTimeUpdate::kScheduleRelationshipFieldNumber;
 TripUpdate_StopTimeUpdate::TripUpdate_StopTimeUpdate()
   : ::google::protobuf::Message(), _internal_metadata_(NULL) {
   if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
-    protobuf_gtfs_2drealtime_2eproto::InitDefaults();
+    protobuf_InitDefaults_gtfs_2drealtime_2eproto();
   }
   SharedCtor();
   // @@protoc_insertion_point(constructor:transit_realtime.TripUpdate.StopTimeUpdate)
@@ -2769,12 +2769,12 @@ void TripUpdate_StopTimeUpdate::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
 const ::google::protobuf::Descriptor* TripUpdate_StopTimeUpdate::descriptor() {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_metadata[4].descriptor;
+  protobuf_AssignDescriptorsOnce();
+  return file_level_metadata[4].descriptor;
 }
 
 const TripUpdate_StopTimeUpdate& TripUpdate_StopTimeUpdate::default_instance() {
-  protobuf_gtfs_2drealtime_2eproto::InitDefaults();
+  protobuf_InitDefaults_gtfs_2drealtime_2eproto();
   return *internal_default_instance();
 }
 
@@ -2965,7 +2965,7 @@ void TripUpdate_StopTimeUpdate::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* TripUpdate_StopTimeUpdate::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic;  // Unused
+  (void)deterministic; // Unused
   // @@protoc_insertion_point(serialize_to_array_start:transit_realtime.TripUpdate.StopTimeUpdate)
   // optional uint32 stop_sequence = 1;
   if (has_stop_sequence()) {
@@ -3005,7 +3005,7 @@ void TripUpdate_StopTimeUpdate::SerializeWithCachedSizes(
 
   // Extension range [1000, 2000)
   target = _extensions_.InternalSerializeWithCachedSizesToArray(
-      1000, 2000, deterministic, target);
+      1000, 2000, false, target);
 
   if (_internal_metadata_.have_unknown_fields()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
@@ -3154,8 +3154,8 @@ void TripUpdate_StopTimeUpdate::InternalSwap(TripUpdate_StopTimeUpdate* other) {
 }
 
 ::google::protobuf::Metadata TripUpdate_StopTimeUpdate::GetMetadata() const {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_metadata[4];
+  protobuf_AssignDescriptorsOnce();
+  return file_level_metadata[4];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -3377,7 +3377,7 @@ const int TripUpdate::kDelayFieldNumber;
 TripUpdate::TripUpdate()
   : ::google::protobuf::Message(), _internal_metadata_(NULL) {
   if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
-    protobuf_gtfs_2drealtime_2eproto::InitDefaults();
+    protobuf_InitDefaults_gtfs_2drealtime_2eproto();
   }
   SharedCtor();
   // @@protoc_insertion_point(constructor:transit_realtime.TripUpdate)
@@ -3432,12 +3432,12 @@ void TripUpdate::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
 const ::google::protobuf::Descriptor* TripUpdate::descriptor() {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_metadata[5].descriptor;
+  protobuf_AssignDescriptorsOnce();
+  return file_level_metadata[5].descriptor;
 }
 
 const TripUpdate& TripUpdate::default_instance() {
-  protobuf_gtfs_2drealtime_2eproto::InitDefaults();
+  protobuf_InitDefaults_gtfs_2drealtime_2eproto();
   return *internal_default_instance();
 }
 
@@ -3613,7 +3613,7 @@ void TripUpdate::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* TripUpdate::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic;  // Unused
+  (void)deterministic; // Unused
   // @@protoc_insertion_point(serialize_to_array_start:transit_realtime.TripUpdate)
   // required .transit_realtime.TripDescriptor trip = 1;
   if (has_trip()) {
@@ -3648,7 +3648,7 @@ void TripUpdate::SerializeWithCachedSizes(
 
   // Extension range [1000, 2000)
   target = _extensions_.InternalSerializeWithCachedSizesToArray(
-      1000, 2000, deterministic, target);
+      1000, 2000, false, target);
 
   if (_internal_metadata_.have_unknown_fields()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
@@ -3800,8 +3800,8 @@ void TripUpdate::InternalSwap(TripUpdate* other) {
 }
 
 ::google::protobuf::Metadata TripUpdate::GetMetadata() const {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_metadata[5];
+  protobuf_AssignDescriptorsOnce();
+  return file_level_metadata[5];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -3994,7 +3994,7 @@ const int VehiclePosition::kOccupancyStatusFieldNumber;
 VehiclePosition::VehiclePosition()
   : ::google::protobuf::Message(), _internal_metadata_(NULL) {
   if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
-    protobuf_gtfs_2drealtime_2eproto::InitDefaults();
+    protobuf_InitDefaults_gtfs_2drealtime_2eproto();
   }
   SharedCtor();
   // @@protoc_insertion_point(constructor:transit_realtime.VehiclePosition)
@@ -4063,12 +4063,12 @@ void VehiclePosition::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
 const ::google::protobuf::Descriptor* VehiclePosition::descriptor() {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_metadata[6].descriptor;
+  protobuf_AssignDescriptorsOnce();
+  return file_level_metadata[6].descriptor;
 }
 
 const VehiclePosition& VehiclePosition::default_instance() {
-  protobuf_gtfs_2drealtime_2eproto::InitDefaults();
+  protobuf_InitDefaults_gtfs_2drealtime_2eproto();
   return *internal_default_instance();
 }
 
@@ -4347,7 +4347,7 @@ void VehiclePosition::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* VehiclePosition::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic;  // Unused
+  (void)deterministic; // Unused
   // @@protoc_insertion_point(serialize_to_array_start:transit_realtime.VehiclePosition)
   // optional .transit_realtime.TripDescriptor trip = 1;
   if (has_trip()) {
@@ -4411,7 +4411,7 @@ void VehiclePosition::SerializeWithCachedSizes(
 
   // Extension range [1000, 2000)
   target = _extensions_.InternalSerializeWithCachedSizesToArray(
-      1000, 2000, deterministic, target);
+      1000, 2000, false, target);
 
   if (_internal_metadata_.have_unknown_fields()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
@@ -4605,8 +4605,8 @@ void VehiclePosition::InternalSwap(VehiclePosition* other) {
 }
 
 ::google::protobuf::Metadata VehiclePosition::GetMetadata() const {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_metadata[6];
+  protobuf_AssignDescriptorsOnce();
+  return file_level_metadata[6];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -4949,7 +4949,7 @@ const int Alert::kDescriptionTextFieldNumber;
 Alert::Alert()
   : ::google::protobuf::Message(), _internal_metadata_(NULL) {
   if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
-    protobuf_gtfs_2drealtime_2eproto::InitDefaults();
+    protobuf_InitDefaults_gtfs_2drealtime_2eproto();
   }
   SharedCtor();
   // @@protoc_insertion_point(constructor:transit_realtime.Alert)
@@ -5015,12 +5015,12 @@ void Alert::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
 const ::google::protobuf::Descriptor* Alert::descriptor() {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_metadata[7].descriptor;
+  protobuf_AssignDescriptorsOnce();
+  return file_level_metadata[7].descriptor;
 }
 
 const Alert& Alert::default_instance() {
-  protobuf_gtfs_2drealtime_2eproto::InitDefaults();
+  protobuf_InitDefaults_gtfs_2drealtime_2eproto();
   return *internal_default_instance();
 }
 
@@ -5247,7 +5247,7 @@ void Alert::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* Alert::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic;  // Unused
+  (void)deterministic; // Unused
   // @@protoc_insertion_point(serialize_to_array_start:transit_realtime.Alert)
   // repeated .transit_realtime.TimeRange active_period = 1;
   for (unsigned int i = 0, n = this->active_period_size(); i < n; i++) {
@@ -5298,7 +5298,7 @@ void Alert::SerializeWithCachedSizes(
 
   // Extension range [1000, 2000)
   target = _extensions_.InternalSerializeWithCachedSizesToArray(
-      1000, 2000, deterministic, target);
+      1000, 2000, false, target);
 
   if (_internal_metadata_.have_unknown_fields()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
@@ -5476,8 +5476,8 @@ void Alert::InternalSwap(Alert* other) {
 }
 
 ::google::protobuf::Metadata Alert::GetMetadata() const {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_metadata[7];
+  protobuf_AssignDescriptorsOnce();
+  return file_level_metadata[7];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -5740,7 +5740,7 @@ const int TimeRange::kEndFieldNumber;
 TimeRange::TimeRange()
   : ::google::protobuf::Message(), _internal_metadata_(NULL) {
   if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
-    protobuf_gtfs_2drealtime_2eproto::InitDefaults();
+    protobuf_InitDefaults_gtfs_2drealtime_2eproto();
   }
   SharedCtor();
   // @@protoc_insertion_point(constructor:transit_realtime.TimeRange)
@@ -5778,12 +5778,12 @@ void TimeRange::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
 const ::google::protobuf::Descriptor* TimeRange::descriptor() {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_metadata[8].descriptor;
+  protobuf_AssignDescriptorsOnce();
+  return file_level_metadata[8].descriptor;
 }
 
 const TimeRange& TimeRange::default_instance() {
-  protobuf_gtfs_2drealtime_2eproto::InitDefaults();
+  protobuf_InitDefaults_gtfs_2drealtime_2eproto();
   return *internal_default_instance();
 }
 
@@ -5895,7 +5895,7 @@ void TimeRange::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* TimeRange::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic;  // Unused
+  (void)deterministic; // Unused
   // @@protoc_insertion_point(serialize_to_array_start:transit_realtime.TimeRange)
   // optional uint64 start = 1;
   if (has_start()) {
@@ -5909,7 +5909,7 @@ void TimeRange::SerializeWithCachedSizes(
 
   // Extension range [1000, 2000)
   target = _extensions_.InternalSerializeWithCachedSizesToArray(
-      1000, 2000, deterministic, target);
+      1000, 2000, false, target);
 
   if (_internal_metadata_.have_unknown_fields()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
@@ -6019,8 +6019,8 @@ void TimeRange::InternalSwap(TimeRange* other) {
 }
 
 ::google::protobuf::Metadata TimeRange::GetMetadata() const {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_metadata[8];
+  protobuf_AssignDescriptorsOnce();
+  return file_level_metadata[8];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -6089,7 +6089,7 @@ const int Position::kSpeedFieldNumber;
 Position::Position()
   : ::google::protobuf::Message(), _internal_metadata_(NULL) {
   if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
-    protobuf_gtfs_2drealtime_2eproto::InitDefaults();
+    protobuf_InitDefaults_gtfs_2drealtime_2eproto();
   }
   SharedCtor();
   // @@protoc_insertion_point(constructor:transit_realtime.Position)
@@ -6127,12 +6127,12 @@ void Position::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
 const ::google::protobuf::Descriptor* Position::descriptor() {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_metadata[9].descriptor;
+  protobuf_AssignDescriptorsOnce();
+  return file_level_metadata[9].descriptor;
 }
 
 const Position& Position::default_instance() {
-  protobuf_gtfs_2drealtime_2eproto::InitDefaults();
+  protobuf_InitDefaults_gtfs_2drealtime_2eproto();
   return *internal_default_instance();
 }
 
@@ -6298,7 +6298,7 @@ void Position::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* Position::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic;  // Unused
+  (void)deterministic; // Unused
   // @@protoc_insertion_point(serialize_to_array_start:transit_realtime.Position)
   // required float latitude = 1;
   if (has_latitude()) {
@@ -6327,7 +6327,7 @@ void Position::SerializeWithCachedSizes(
 
   // Extension range [1000, 2000)
   target = _extensions_.InternalSerializeWithCachedSizesToArray(
-      1000, 2000, deterministic, target);
+      1000, 2000, false, target);
 
   if (_internal_metadata_.have_unknown_fields()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
@@ -6477,8 +6477,8 @@ void Position::InternalSwap(Position* other) {
 }
 
 ::google::protobuf::Metadata Position::GetMetadata() const {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_metadata[9];
+  protobuf_AssignDescriptorsOnce();
+  return file_level_metadata[9];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -6620,7 +6620,7 @@ const int TripDescriptor::kScheduleRelationshipFieldNumber;
 TripDescriptor::TripDescriptor()
   : ::google::protobuf::Message(), _internal_metadata_(NULL) {
   if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
-    protobuf_gtfs_2drealtime_2eproto::InitDefaults();
+    protobuf_InitDefaults_gtfs_2drealtime_2eproto();
   }
   SharedCtor();
   // @@protoc_insertion_point(constructor:transit_realtime.TripDescriptor)
@@ -6682,12 +6682,12 @@ void TripDescriptor::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
 const ::google::protobuf::Descriptor* TripDescriptor::descriptor() {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_metadata[10].descriptor;
+  protobuf_AssignDescriptorsOnce();
+  return file_level_metadata[10].descriptor;
 }
 
 const TripDescriptor& TripDescriptor::default_instance() {
-  protobuf_gtfs_2drealtime_2eproto::InitDefaults();
+  protobuf_InitDefaults_gtfs_2drealtime_2eproto();
   return *internal_default_instance();
 }
 
@@ -6923,7 +6923,7 @@ void TripDescriptor::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* TripDescriptor::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic;  // Unused
+  (void)deterministic; // Unused
   // @@protoc_insertion_point(serialize_to_array_start:transit_realtime.TripDescriptor)
   // optional string trip_id = 1;
   if (has_trip_id()) {
@@ -6982,7 +6982,7 @@ void TripDescriptor::SerializeWithCachedSizes(
 
   // Extension range [1000, 2000)
   target = _extensions_.InternalSerializeWithCachedSizesToArray(
-      1000, 2000, deterministic, target);
+      1000, 2000, false, target);
 
   if (_internal_metadata_.have_unknown_fields()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
@@ -7139,8 +7139,8 @@ void TripDescriptor::InternalSwap(TripDescriptor* other) {
 }
 
 ::google::protobuf::Metadata TripDescriptor::GetMetadata() const {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_metadata[10];
+  protobuf_AssignDescriptorsOnce();
+  return file_level_metadata[10];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -7456,7 +7456,7 @@ const int VehicleDescriptor::kLicensePlateFieldNumber;
 VehicleDescriptor::VehicleDescriptor()
   : ::google::protobuf::Message(), _internal_metadata_(NULL) {
   if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
-    protobuf_gtfs_2drealtime_2eproto::InitDefaults();
+    protobuf_InitDefaults_gtfs_2drealtime_2eproto();
   }
   SharedCtor();
   // @@protoc_insertion_point(constructor:transit_realtime.VehicleDescriptor)
@@ -7507,12 +7507,12 @@ void VehicleDescriptor::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
 const ::google::protobuf::Descriptor* VehicleDescriptor::descriptor() {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_metadata[11].descriptor;
+  protobuf_AssignDescriptorsOnce();
+  return file_level_metadata[11].descriptor;
 }
 
 const VehicleDescriptor& VehicleDescriptor::default_instance() {
-  protobuf_gtfs_2drealtime_2eproto::InitDefaults();
+  protobuf_InitDefaults_gtfs_2drealtime_2eproto();
   return *internal_default_instance();
 }
 
@@ -7673,7 +7673,7 @@ void VehicleDescriptor::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* VehicleDescriptor::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic;  // Unused
+  (void)deterministic; // Unused
   // @@protoc_insertion_point(serialize_to_array_start:transit_realtime.VehicleDescriptor)
   // optional string id = 1;
   if (has_id()) {
@@ -7710,7 +7710,7 @@ void VehicleDescriptor::SerializeWithCachedSizes(
 
   // Extension range [1000, 2000)
   target = _extensions_.InternalSerializeWithCachedSizesToArray(
-      1000, 2000, deterministic, target);
+      1000, 2000, false, target);
 
   if (_internal_metadata_.have_unknown_fields()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
@@ -7834,8 +7834,8 @@ void VehicleDescriptor::InternalSwap(VehicleDescriptor* other) {
 }
 
 ::google::protobuf::Metadata VehicleDescriptor::GetMetadata() const {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_metadata[11];
+  protobuf_AssignDescriptorsOnce();
+  return file_level_metadata[11];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -8042,7 +8042,7 @@ const int EntitySelector::kStopIdFieldNumber;
 EntitySelector::EntitySelector()
   : ::google::protobuf::Message(), _internal_metadata_(NULL) {
   if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
-    protobuf_gtfs_2drealtime_2eproto::InitDefaults();
+    protobuf_InitDefaults_gtfs_2drealtime_2eproto();
   }
   SharedCtor();
   // @@protoc_insertion_point(constructor:transit_realtime.EntitySelector)
@@ -8104,12 +8104,12 @@ void EntitySelector::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
 const ::google::protobuf::Descriptor* EntitySelector::descriptor() {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_metadata[12].descriptor;
+  protobuf_AssignDescriptorsOnce();
+  return file_level_metadata[12].descriptor;
 }
 
 const EntitySelector& EntitySelector::default_instance() {
-  protobuf_gtfs_2drealtime_2eproto::InitDefaults();
+  protobuf_InitDefaults_gtfs_2drealtime_2eproto();
   return *internal_default_instance();
 }
 
@@ -8310,7 +8310,7 @@ void EntitySelector::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* EntitySelector::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic;  // Unused
+  (void)deterministic; // Unused
   // @@protoc_insertion_point(serialize_to_array_start:transit_realtime.EntitySelector)
   // optional string agency_id = 1;
   if (has_agency_id()) {
@@ -8359,7 +8359,7 @@ void EntitySelector::SerializeWithCachedSizes(
 
   // Extension range [1000, 2000)
   target = _extensions_.InternalSerializeWithCachedSizesToArray(
-      1000, 2000, deterministic, target);
+      1000, 2000, false, target);
 
   if (_internal_metadata_.have_unknown_fields()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
@@ -8508,8 +8508,8 @@ void EntitySelector::InternalSwap(EntitySelector* other) {
 }
 
 ::google::protobuf::Metadata EntitySelector::GetMetadata() const {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_metadata[12];
+  protobuf_AssignDescriptorsOnce();
+  return file_level_metadata[12];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -8782,7 +8782,7 @@ const int TranslatedString_Translation::kLanguageFieldNumber;
 TranslatedString_Translation::TranslatedString_Translation()
   : ::google::protobuf::Message(), _internal_metadata_(NULL) {
   if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
-    protobuf_gtfs_2drealtime_2eproto::InitDefaults();
+    protobuf_InitDefaults_gtfs_2drealtime_2eproto();
   }
   SharedCtor();
   // @@protoc_insertion_point(constructor:transit_realtime.TranslatedString.Translation)
@@ -8827,12 +8827,12 @@ void TranslatedString_Translation::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
 const ::google::protobuf::Descriptor* TranslatedString_Translation::descriptor() {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_metadata[13].descriptor;
+  protobuf_AssignDescriptorsOnce();
+  return file_level_metadata[13].descriptor;
 }
 
 const TranslatedString_Translation& TranslatedString_Translation::default_instance() {
-  protobuf_gtfs_2drealtime_2eproto::InitDefaults();
+  protobuf_InitDefaults_gtfs_2drealtime_2eproto();
   return *internal_default_instance();
 }
 
@@ -8964,7 +8964,7 @@ void TranslatedString_Translation::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* TranslatedString_Translation::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic;  // Unused
+  (void)deterministic; // Unused
   // @@protoc_insertion_point(serialize_to_array_start:transit_realtime.TranslatedString.Translation)
   // required string text = 1;
   if (has_text()) {
@@ -8990,7 +8990,7 @@ void TranslatedString_Translation::SerializeWithCachedSizes(
 
   // Extension range [1000, 2000)
   target = _extensions_.InternalSerializeWithCachedSizesToArray(
-      1000, 2000, deterministic, target);
+      1000, 2000, false, target);
 
   if (_internal_metadata_.have_unknown_fields()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
@@ -9100,8 +9100,8 @@ void TranslatedString_Translation::InternalSwap(TranslatedString_Translation* ot
 }
 
 ::google::protobuf::Metadata TranslatedString_Translation::GetMetadata() const {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_metadata[13];
+  protobuf_AssignDescriptorsOnce();
+  return file_level_metadata[13];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -9242,7 +9242,7 @@ const int TranslatedString::kTranslationFieldNumber;
 TranslatedString::TranslatedString()
   : ::google::protobuf::Message(), _internal_metadata_(NULL) {
   if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
-    protobuf_gtfs_2drealtime_2eproto::InitDefaults();
+    protobuf_InitDefaults_gtfs_2drealtime_2eproto();
   }
   SharedCtor();
   // @@protoc_insertion_point(constructor:transit_realtime.TranslatedString)
@@ -9276,12 +9276,12 @@ void TranslatedString::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
 const ::google::protobuf::Descriptor* TranslatedString::descriptor() {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_metadata[14].descriptor;
+  protobuf_AssignDescriptorsOnce();
+  return file_level_metadata[14].descriptor;
 }
 
 const TranslatedString& TranslatedString::default_instance() {
-  protobuf_gtfs_2drealtime_2eproto::InitDefaults();
+  protobuf_InitDefaults_gtfs_2drealtime_2eproto();
   return *internal_default_instance();
 }
 
@@ -9373,7 +9373,7 @@ void TranslatedString::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* TranslatedString::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic;  // Unused
+  (void)deterministic; // Unused
   // @@protoc_insertion_point(serialize_to_array_start:transit_realtime.TranslatedString)
   // repeated .transit_realtime.TranslatedString.Translation translation = 1;
   for (unsigned int i = 0, n = this->translation_size(); i < n; i++) {
@@ -9384,7 +9384,7 @@ void TranslatedString::SerializeWithCachedSizes(
 
   // Extension range [1000, 2000)
   target = _extensions_.InternalSerializeWithCachedSizesToArray(
-      1000, 2000, deterministic, target);
+      1000, 2000, false, target);
 
   if (_internal_metadata_.have_unknown_fields()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
@@ -9482,8 +9482,8 @@ void TranslatedString::InternalSwap(TranslatedString* other) {
 }
 
 ::google::protobuf::Metadata TranslatedString::GetMetadata() const {
-  protobuf_gtfs_2drealtime_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_gtfs_2drealtime_2eproto::file_level_metadata[14];
+  protobuf_AssignDescriptorsOnce();
+  return file_level_metadata[14];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
