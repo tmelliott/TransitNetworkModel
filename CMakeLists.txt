@@ -13,7 +13,10 @@ file (GLOB SOURCES src/*.cpp)
 include_directories ("${PROJECT_SOURCE_DIR}/protobuf")
 add_subdirectory (protobuf)
 
+include_directories ("${PROJECT_SOURCE_DIR}/gps")
+add_subdirectory (gps)
+
 add_executable(transit_network_model ${SOURCES}  ${PROTO_SRCS} ${PROTO_HDRS})
 target_link_libraries(transit_network_model gtfs-realtime)
 target_link_libraries(transit_network_model ${PROTOBUF_LIBRARIES})
-
+target_link_libraries(transit_network_model gps)

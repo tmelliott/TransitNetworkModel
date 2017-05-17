@@ -22,6 +22,8 @@
 #include "gtfs-realtime.pb.h"
 #include "gtfs.h"
 
+#include "gps.h"
+
 /**
  * Transit Network Model: a realtime model running indefinitely (while (true) { ... })
  *
@@ -52,7 +54,7 @@ int main (int argc, char* argv[]) {
 			// Update ETA predictions
 		}
 	}
-
+	{
 	for (int i=0; i<3; i++) {
 		// Create "temporary" vehicle object
 		std::shared_ptr<gtfs::Vehicle> vp (new gtfs::Vehicle("CXY" + std::to_string(i)));
@@ -93,5 +95,16 @@ int main (int argc, char* argv[]) {
 	}
 
 	std::cout << "\n";
+	}
+	std::cout << "================ GPS test ...\n\n";
+
+	auto p1 = gps::Coord(-33.23245, 174.2356);
+	auto p2 = gps::Coord(-33.46311, 174.5421);
+
+	std::cout << "Co-ordinate 1: " << p1
+		  << "\nCo-ordinate 2: " << p2 << std::endl;
+
+	std::cout << "Point 1 is " << p1.distanceTo(p2) << "m from p2.\n\n";
+	
 	return 0;
 }
