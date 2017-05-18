@@ -12,7 +12,7 @@ namespace gps {
 	Coord::Coord(double Lat, double Lng) {
 		lat = Lat;
 		lng = Lng;
-	}
+	};
 
 	/**
 	 * Compute the Great Circle Distance between to a point.
@@ -33,7 +33,7 @@ namespace gps {
 	    double d = R * c;
 
 	    return d;
-  	}
+  	};
 
 	/**
 	 * Compute the (initial) bearing to a point.
@@ -56,7 +56,7 @@ namespace gps {
 	    double theta = atan2(y, x);
 
 	    return fmod((deg(theta) + 360), 360);
-	}
+	};
 
 	/**
 	 * Compute the destination given initial bearing and distance from a starting point.
@@ -84,7 +84,7 @@ namespace gps {
 	    double lam2 = lam1 + atan2(y, x);
 
 	    return Coord(deg(phi2), fmod(deg(lam2) + 540, 360) - 180);
-  	}
+  	};
 
 	/**
 	 * Compute the cross-track distance between the given point,
@@ -103,7 +103,7 @@ namespace gps {
 	    double t12 = rad(p1.bearingTo(p2));
 
 	    return asin(sin(d13) * sin(t13 - t12)) * R;
-  	}
+  	};
 
 	/**
 	 * Apply the Equirectangular projection to a point using
@@ -121,14 +121,21 @@ namespace gps {
 	    double y = rad(lat) - rad(origin.lat);
 
 	    return std::vector<double> {R * x, R * y};
-  	}
-  /**
-   * Two coordinates are considered equal if the distance between them is 
-   * less than 1mm.
-   */
-  bool Coord::operator==(const Coord &p) const {
-    return gps::Coord(lat, lng).distanceTo(gps::Coord(p.lat, p.lng)) < 0.001;
-  };
+  	};
+
+	/**
+	 * Comparison operator for two coordinates.
+	 *
+	 * Coordinates are considered equal if the distance between them
+	 * is less than 1mm (1/1000 of a meter).
+	 * In terms of this project, this is adequate.
+	 *
+	 * @param p the point being compared to
+	 * @return bool whether or not the coordinates are the same or not
+	 */
+	bool Coord::operator==(const Coord &p) const {
+		return gps::Coord(lat, lng).distanceTo(gps::Coord(p.lat, p.lng)) < 0.001;
+	};
 
 	/**
 	 * Convert degrees to radians
@@ -140,7 +147,7 @@ namespace gps {
 	 */
 	double rad(double d) {
 		return d * M_PI / 180;
-	}
+	};
 
 	/**
 	 * Convert radians to degrees
@@ -152,5 +159,5 @@ namespace gps {
 	 */
   	double deg(double r) {
     	return r * 180 / M_PI;
-  	}
+  	};
 }; // namespace gps

@@ -87,6 +87,6 @@ namespace gtfs {
 		for (auto& i: pkeep) {
 			particles.push_back(old_particles[i]);
 		}
-	}
+	};
 
 }; // end namespace gtfs

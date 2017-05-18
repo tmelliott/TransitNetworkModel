@@ -54,17 +54,10 @@ namespace gtfs {
 	};
 
 	/**
-	 * @return a pointer to the particle's vehicle
-	 */
-	// Vehicle* Particle::get_vehicle () {
-	// 	return vehicle;
-	// }
-
-	/**
 	 * @return the parent particle's ID
 	 */
 	unsigned long Particle::get_parent_id () const {
 		return parent_id;
-	}
+	};
 
 }; // end namespace gtfs
