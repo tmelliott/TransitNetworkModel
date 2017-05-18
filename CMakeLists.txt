@@ -29,3 +29,13 @@ add_executable(load_gtfs src/load_gtfs.cpp)
 target_link_libraries(load_gtfs
 	gps
 )
+
+
+
+find_package(CxxTest)
+if(CXXTEST_FOUND)
+	include_directories(${CXXTEST_INCLUDE_DIR}, ${PROJECT_SOURCE_DIR}/gps)
+	enable_testing()
+	CXXTEST_ADD_TEST(unittest_gps gps.cpp ${CMAKE_CURRENT_SOURCE_DIR}/tests/gps.h)
+	target_link_libraries(unittest_gps gps)
+endif()
