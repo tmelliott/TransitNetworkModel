@@ -14,6 +14,9 @@ add_subdirectory (protobuf)
 include_directories ("${PROJECT_SOURCE_DIR}/gps")
 add_subdirectory (gps)
 
+include_directories ("${PROJECT_SOURCE_DIR}/sampling")
+add_subdirectory (sampling)
+
 include_directories ("${PROJECT_SOURCE_DIR}/gtfs")
 add_subdirectory (gtfs)
 
@@ -22,6 +25,7 @@ target_link_libraries(transit_network_model
 	gtfs-realtime
 	${PROTOBUF_LIBRARIES}
 	gps
+	sampling
 	gtfs
 )
 
@@ -31,6 +35,8 @@ target_link_libraries(load_gtfs
 )
 
 
+
+
 if (APPLE)
 	set(CXXTEST_INCLUDE_DIR /usr/local/bin/cxxtest-4.4)
 endif ()
@@ -38,6 +44,13 @@ find_package(CxxTest)
 if(CXXTEST_FOUND)
 	include_directories(${CXXTEST_INCLUDE_DIR})
 	enable_testing()
+
 	CXXTEST_ADD_TEST(unittest_gps test_gps.cpp ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_gps.h)
 	target_link_libraries(unittest_gps gps)
+
+	CXXTEST_ADD_TEST(unittest_sampling test_sampling.cpp ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_sampling.h)
+	target_link_libraries(unittest_sampling sampling)
+
+	CXXTEST_ADD_TEST(unittest_gtfs test_gtfs.cpp ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_gtfs.h)
+	target_link_libraries(unittest_gtfs gtfs gps)
 endif()

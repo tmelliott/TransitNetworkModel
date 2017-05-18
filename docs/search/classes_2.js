@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['vehicle',['Vehicle',['../classgtfs_1_1Vehicle.html',1,'gtfs']]]
+  ['rng',['RNG',['../classsampling_1_1RNG.html',1,'sampling']]]
 ];

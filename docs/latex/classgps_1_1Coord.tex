@@ -20,6 +20,8 @@ double \hyperlink{classgps_1_1Coord_a0efb59b2c1fa68551f118bcea3733593}{cross\+Tr
 std\+::vector$<$ double $>$ \hyperlink{classgps_1_1Coord_ac2e47c5d6d9a3d54a4086e8003fc7e9a}{project\+Flat} (\hyperlink{classgps_1_1Coord}{gps\+::\+Coord} origin)
 \item 
 bool \hyperlink{classgps_1_1Coord_a6e0f9d8bff57711675b435ca75fc6183}{operator==} (const \hyperlink{classgps_1_1Coord}{Coord} \&p) const 
+\item 
+bool \hyperlink{classgps_1_1Coord_ac472964776941984f42d1dad1160eae6}{operator!=} (const \hyperlink{classgps_1_1Coord}{Coord} \&p) const 
 \end{DoxyCompactItemize}
 \subsection*{Public Attributes}
 \begin{DoxyCompactItemize}
@@ -125,6 +127,25 @@ Compute the Great Circle Distance between to a point.
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 the distance, in meters, to the point 
+\end{DoxyReturn}
+\index{gps\+::\+Coord@{gps\+::\+Coord}!operator"!=@{operator"!=}}
+\index{operator"!=@{operator"!=}!gps\+::\+Coord@{gps\+::\+Coord}}
+\subsubsection[{\texorpdfstring{operator"!=(const Coord \&p) const }{operator!=(const Coord &p) const }}]{\setlength{\rightskip}{0pt plus 5cm}bool gps\+::\+Coord\+::operator!= (
+\begin{DoxyParamCaption}
+\item[{const {\bf Coord} \&}]{p}
+\end{DoxyParamCaption}
+) const}\hypertarget{classgps_1_1Coord_ac472964776941984f42d1dad1160eae6}{}\label{classgps_1_1Coord_ac472964776941984f42d1dad1160eae6}
+Comparison (not equal) operator for two coordinates.
+
+Coordinates are considered equal if the distance between them is less than 1mm (1/1000 of a meter). In terms of this project, this is adequate.
+
+
+\begin{DoxyParams}{Parameters}
+{\em p} & the point being compared to \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+bool whether or not the coordinates are the same or not 
 \end{DoxyReturn}
 \index{gps\+::\+Coord@{gps\+::\+Coord}!operator==@{operator==}}
 \index{operator==@{operator==}!gps\+::\+Coord@{gps\+::\+Coord}}
