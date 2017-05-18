@@ -47,7 +47,8 @@ namespace gps {
 	 * @return   the bearing, in degrees, to the point
 	 */
 	double Coord::bearingTo(gps::Coord p) {
-		// if (this == p) return 0.0 / 0.0;
+		if (*this == p) return 0.0 / 0.0;
+
 	    double phi1 = rad(lat);
 	    double phi2 = rad(p.lat);
 	    double Dlam = rad(p.lng - lng);
@@ -149,7 +150,7 @@ namespace gps {
 	 * @return bool whether or not the coordinates are the same or not
 	 */
 	bool Coord::operator!=(const Coord &p) const {
-		return gps::Coord(lat, lng).distanceTo(gps::Coord(p.lat, p.lng)) >= 0.001;
+		return ! (gps::Coord(lat, lng) == p);
 	};
 
 	/**
