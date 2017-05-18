@@ -11,14 +11,17 @@ public:
   	void testDistance(void) {
     	TS_ASSERT_EQUALS(round(p1.distanceTo(p2) * 1000), 67769);
     	TS_ASSERT_EQUALS(p1.distanceTo(p1), 0);
+		TS_ASSERT_EQUALS(p1.distanceTo(p2), p2.distanceTo(p1));
   	}
 
   	void testBearings(void) {
     	TS_ASSERT_EQUALS(round(p1.bearingTo(p2) * 1000) / 1000, 49.353);
+		TS_ASSERT_IS_NAN(p1.bearingTo(p1));
   	}
 
   	void testComparisonOperator(void) {
     	TS_ASSERT_EQUALS(p1, p1);
+		TS_ASSERT((p1 == p2) == false); // need to define != operator
   	}
 
   	void testDestination(void) {

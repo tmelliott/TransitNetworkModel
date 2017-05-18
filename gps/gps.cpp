@@ -47,6 +47,7 @@ namespace gps {
 	 * @return   the bearing, in degrees, to the point
 	 */
 	double Coord::bearingTo(gps::Coord p) {
+		// if (this == p) return 0.0 / 0.0;
 	    double phi1 = rad(lat);
 	    double phi2 = rad(p.lat);
 	    double Dlam = rad(p.lng - lng);
@@ -135,6 +136,20 @@ namespace gps {
 	 */
 	bool Coord::operator==(const Coord &p) const {
 		return gps::Coord(lat, lng).distanceTo(gps::Coord(p.lat, p.lng)) < 0.001;
+	};
+
+	/**
+	 * Comparison (not equal) operator for two coordinates.
+	 *
+	 * Coordinates are considered equal if the distance between them
+	 * is less than 1mm (1/1000 of a meter).
+	 * In terms of this project, this is adequate.
+	 *
+	 * @param p the point being compared to
+	 * @return bool whether or not the coordinates are the same or not
+	 */
+	bool Coord::operator!=(const Coord &p) const {
+		return gps::Coord(lat, lng).distanceTo(gps::Coord(p.lat, p.lng)) >= 0.001;
 	};
 
 	/**

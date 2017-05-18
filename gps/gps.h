@@ -34,6 +34,7 @@ namespace gps {
 		std::vector<double> projectFlat(gps::Coord origin);
 
 		bool operator==(const Coord &p) const;
+		bool operator!=(const Coord &p) const;
   	};
 
 	double rad(double d);
