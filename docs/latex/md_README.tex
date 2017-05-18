@@ -88,31 +88,19 @@ Three parts, running in real time\+:
 
 
 \begin{DoxyItemize}
-\item {\ttfamily bin}
+\item {\ttfamily docs}\+: documentation (H\+T\+ML and La\+TeX)
+\item {\ttfamily gps}\+: a library containing methods for dealing with G\+PS coordinates
+\item {\ttfamily gtfs}\+: a library with G\+T\+FS object classes, and methods for modeling them
 \begin{DoxyItemize}
-\item {\ttfamily transit\+\_\+network\+\_\+model}\+: the application that\textquotesingle{}ll run \textquotesingle{}infinitely\textquotesingle{}
-\item {\ttfamily load\+\_\+gtfs}\+: this will load G\+T\+FS when updates released, and do the segmentation
+\item {\ttfamily Vehicle}\+: Class representing a physical vehicle
+\item {\ttfamily Particle}\+: Class representing a single vehicle state estimate
+\item {\ttfamily Segment}\+: Class representing a road segment
 \end{DoxyItemize}
+\item {\ttfamily include}\+: header files for programs
+\item {\ttfamily protobuf}\+: G\+T\+FS Realtime protobuf description and classes
 \item {\ttfamily src}
 \begin{DoxyItemize}
 \item {\ttfamily \hyperlink{transit__network__model_8cpp}{transit\+\_\+network\+\_\+model.\+cpp}}\+: mostly just a wrapper for {\ttfamily while (T\+R\+UE) \{ ... \}}
-\item {\ttfamily laod\+\_\+gtfs.\+cpp}
-\end{DoxyItemize}
-\item {\ttfamily include}
-\begin{DoxyItemize}
-\item {\ttfamily gtfs}\+: descriptions of the gtfs objects (??)
-\begin{DoxyItemize}
-\item {\ttfamily \hyperlink{classgtfs_1_1Vehicle}{gtfs\+::\+Vehicle}} a vehicle object
-\item {\ttfamily \hyperlink{classgtfs_1_1Particle}{gtfs\+::\+Particle}}
-\end{DoxyItemize}
-\item {\ttfamily gps}\+: methods for G\+PS coordinates (distance, etc)
-\item {\ttfamily particle\+\_\+filter}\+: the particle filter model
-\item {\ttfamily kalman\+\_\+filter}\+: the Kalman filter model
-\item {\ttfamily segmentation}\+: the segmentation algorithm for (new) segments
-\item {\ttfamily database}\+: any database methods (connection, S\+E\+L\+E\+CT, I\+N\+S\+E\+RT, etc)
-\end{DoxyItemize}
-\item {\ttfamily lib}
-\begin{DoxyItemize}
-\item {\ttfamily gtfsrealtime.\+proto}\+: the schema for G\+T\+FS protobuf feed 
+\item {\ttfamily \hyperlink{load__gtfs_8cpp}{load\+\_\+gtfs.\+cpp}}\+: a program that imports the latest G\+T\+FS data and segments it 
 \end{DoxyItemize}
 \end{DoxyItemize}

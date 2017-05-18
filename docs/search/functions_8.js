@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['vehicle',['Vehicle',['../classgtfs_1_1Vehicle.html#ac3f8111a611378f5f8b29f7465e48919',1,'gtfs::Vehicle::Vehicle(std::string id)'],['../classgtfs_1_1Vehicle.html#adf892e71483b7f9005846599fd0308e6',1,'gtfs::Vehicle::Vehicle(std::string id, unsigned int n)']]]
+  ['rad',['rad',['../namespacegps.html#ad44ea39876137fc96774486e3a60f004',1,'gps']]],
+  ['resample',['resample',['../classgtfs_1_1Vehicle.html#a46ee9775d11595461315be7141359d8a',1,'gtfs::Vehicle']]]
 ];
