@@ -31,7 +31,9 @@ target_link_libraries(load_gtfs
 )
 
 
-
+if (APPLE)
+	set(CXXTEST_INCLUDE_DIR /usr/local/bin/cxxtest-4.4)
+endif ()
 find_package(CxxTest)
 if(CXXTEST_FOUND)
 	include_directories(${CXXTEST_INCLUDE_DIR})
