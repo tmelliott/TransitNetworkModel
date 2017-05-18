@@ -32,6 +32,8 @@ namespace gps {
 		gps::Coord destinationPoint(double distance, double bearing);
 		double crossTrackDistanceTo(gps::Coord p1, gps::Coord p2);
 		std::vector<double> projectFlat(gps::Coord origin);
+
+		bool operator==(const Coord &p) const;
   	};
 
 	double rad(double d);

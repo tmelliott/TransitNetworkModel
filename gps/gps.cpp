@@ -122,7 +122,13 @@ namespace gps {
 
 	    return std::vector<double> {R * x, R * y};
   	}
-
+  /**
+   * Two coordinates are considered equal if the distance between them is 
+   * less than 1mm.
+   */
+  bool Coord::operator==(const Coord &p) const {
+    return gps::Coord(lat, lng).distanceTo(gps::Coord(p.lat, p.lng)) < 0.001;
+  };
 
 	/**
 	 * Convert degrees to radians
