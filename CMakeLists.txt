@@ -34,8 +34,8 @@ target_link_libraries(load_gtfs
 
 find_package(CxxTest)
 if(CXXTEST_FOUND)
-	include_directories(${CXXTEST_INCLUDE_DIR}, ${PROJECT_SOURCE_DIR}/gps)
+	include_directories(${CXXTEST_INCLUDE_DIR})
 	enable_testing()
-	CXXTEST_ADD_TEST(unittest_gps gps.cpp ${CMAKE_CURRENT_SOURCE_DIR}/tests/gps.h)
+	CXXTEST_ADD_TEST(unittest_gps test_gps.cpp ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_gps.h)
 	target_link_libraries(unittest_gps gps)
 endif()
