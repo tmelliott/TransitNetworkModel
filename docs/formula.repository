@@ -1,4 +1,2 @@
-\form#0:$ x = \theta^\circ \frac{\pi}{180} $
-\form#1:$ x = \theta $
-\form#2:$ x = \frac{\pi}{180} \theta^\circ $
-\form#3:$ \theta^\circ = \frac{180}{\pi} x $
+\form#0:$ x = \frac{\pi}{180} \theta^\circ $
+\form#1:$ \theta^\circ = \frac{180}{\pi} x $
