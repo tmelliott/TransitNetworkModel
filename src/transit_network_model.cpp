@@ -19,8 +19,10 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include <time.h>
 
 #include "gtfs-realtime.pb.h"
+#include "sampling.h"
 #include "gtfs.h"
 #include "gps.h"
 
@@ -99,21 +101,22 @@ int main (int argc, char* argv[]) {
 	}
 
 	{
-		std::cout << "A vehicle with 10 particles:\n\n";
-		auto v (new gtfs::Vehicle("ABUS", 10));
-		std::cout << "\n\n";
-	}
+		std::cout << "-------------- Testing Sampling:\n";
+		sampling::RNG rng (time(NULL));
 
-	{
-		std::cout << "================ GPS test ...\n\n";
-
-		auto p1 = gps::Coord(-33.23245, 174.2356);
-		auto p2 = gps::Coord(-33.46311, 174.5421);
-
-		std::cout << "Co-ordinate 1: " << p1
-		<< "\nCo-ordinate 2: " << p2 << std::endl;
-
-		std::cout << "Point 1 is " << p1.distanceTo(p2) << "m from p2.\n\n";
+		std::cout << "       5 random uniform numbers: ";
+		for (int i=0; i<5; i++) {
+			std::cout << rng.runif () << " ";
+		}
+		std::cout << "\n  5 more random uniform numbers: ";
+		for (int i=0; i<5; i++) {
+			std::cout << rng.runif () << " ";
+		}
+		// std::cout << "\n 5 random uniform[5,10] numbers: ";
+		// for (int i=0; i<5; i++) {
+		// 	std::cout << rng.runif (5.0, 10.0) << " ";
+		// }
+		std::cout << "\n-------------------------------\n\n";
 	}
 
 	return 0;
