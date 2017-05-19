@@ -99,6 +99,18 @@ int main (int argc, char* argv[]) {
 
 		std::cout << "\n";
 	}
-	
+
+	// {
+	// 	sampling::uniform unif;
+	// 	std::cout << "Log[ Pr(x = 0.2 | a = 0, b = 1) ] = "
+	// 		<< unif.pdf_log (0.2)
+	// 		<< "\n";
+	// 	std::cout << "Log[ Pr(x = -0.2 | a = 0, b = 1) ] = "
+	// 		<< unif.pdf_log (-0.2)
+	// 		<< " == " << (-1.0 / 0.0)
+	// 		<< " -> " << (unif.pdf_log (-0.2) == -1.0/0.0)
+	// 		<< "\n";
+	// }
+
 	return 0;
 }
