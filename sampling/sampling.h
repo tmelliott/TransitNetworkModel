@@ -2,9 +2,18 @@
 #define SAMPLING_H value
 
 #include <random>
+#include <vector>
 
-
+/**
+ * All sampling functionality contained in `samping::`.
+ */
 namespace sampling {
+	/**
+	 * Random Number Generator
+	 *
+	 * Ideally one per program, passed by reference.
+	 *
+	 */
 	class RNG {
 	private:
 		std::mt19937_64 gen;
@@ -26,9 +35,15 @@ namespace sampling {
 		double rnorm (void);
 	};
 
+	/**
+	 * Class used for Uniform distributions.
+	 *
+	 * (Log) PDF and random variables
+	 */
 	class uniform {
 	private:
-		double a, b;
+		double a; /*!< lower bound for uniform distibution */
+		double b; /*!< upper bound for uniform distribution */
 
 	public:
 		uniform ();
@@ -40,9 +55,15 @@ namespace sampling {
 		double rand (sampling::RNG &rng);
 	};
 
+	/**
+	 * Class used for Normal distributions.
+	 *
+	 * (Log) PDF and random variables
+	 */
 	class normal {
 	private:
-		double mu, sigma;
+		double mu,     /*!< mean */
+		       sigma;  /*!< standard deviation */
 
 	public:
 		normal ();
@@ -56,7 +77,7 @@ namespace sampling {
 
 	class exponential {
 	private:
-		double lambda; 
+		double lambda;
 
 	public:
 		exponential ();
@@ -67,6 +88,11 @@ namespace sampling {
 
 		double rand (sampling::RNG &rng);
 	};
+
+	// vector<int> sample (int N, sampling::RNG &rng);
+	// vector<int> sample (int N, bool replace, sampling::RNG &rng);
+	// vector<int> sample (int N, vector<double> weights, sampling::RNG &rng);
+	// vector<int> sample (int N, vector<double> weights, bool replace);
 };
 
 #endif

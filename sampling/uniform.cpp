@@ -12,7 +12,7 @@ namespace sampling {
 	uniform::uniform () : a (0), b (1) {};
 
 	/**
-	 * General constructure for a uniform N(mu, sigma^2)
+	 * General constructor for a uniform U(a,b)
 	 */
 	uniform::uniform (double a, double b) : a (a), b (b) {
 		if (a >= b) {

@@ -12,7 +12,7 @@ namespace sampling {
 	normal::normal () : mu (0), sigma (1) {};
 
 	/**
-	 * General constructure for a normal N(mu, sigma^2)
+	 * General constructor for a normal N(mu, sigma^2)
 	 */
 	normal::normal (double mu, double sigma) : mu (mu), sigma (sigma) {
 		if (sigma <= 0) {
