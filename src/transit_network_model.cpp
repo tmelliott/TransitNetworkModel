@@ -38,6 +38,7 @@
 int main (int argc, char* argv[]) {
 
 	std::vector<std::unique_ptr<gtfs::Vehicle> > vehicles;
+	sampling::RNG rng;
 
 	bool forever = false;
 
@@ -98,6 +99,23 @@ int main (int argc, char* argv[]) {
 		}
 
 		std::cout << "\n";
+	}
+
+	{
+
+		std::cout << "Making samples ...\n\n";
+
+		std::cout << "Non-weighted: ";
+		sampling::sample smp (10);
+		auto si = smp.get (rng);
+		for (auto i: si) std::cout << i << ", ";
+		std::cout << "\n";
+
+		std::cout << "    Weighted: ";
+		sampling::sample smp2 ({0.8, 0.2, 0.3, 0.1, 1.0});
+		auto si2 = smp2.get (rng);
+		for (auto i: si2) std::cout << i << ", ";
+		std::cout << "\n\n";
 	}
 
 	// {
