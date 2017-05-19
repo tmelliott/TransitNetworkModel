@@ -1,5 +1,5 @@
-#include <math.h>
 #include <random>
+#include <stdexcept>
 
 #include <sampling.h>
 
@@ -43,5 +43,8 @@ namespace sampling {
 	double RNG::rnorm (void) {
 		return normal (gen);
 	};
+
+
+
 
 }; // end namespace sampling

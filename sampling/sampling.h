@@ -26,17 +26,19 @@ namespace sampling {
 		double rnorm (void);
 	};
 
-	// class normal {
-	// private:
-	// 	double mu, sigma;
-	//
-	// public:
-	// 	normal ();
-	// 	normal (double mu, double sigma);
-	//
-	//
-	//
-	// };
+	class normal {
+	private:
+		double mu, sigma;
+
+	public:
+		normal ();
+		normal (double mu, double sigma);
+
+		double pdf (double x);
+		double pdf_log (double x);
+
+		double rand (sampling::RNG &rng);
+	};
 };
 
 #endif

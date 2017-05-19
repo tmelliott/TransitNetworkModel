@@ -19,8 +19,17 @@ public:
 
 	void testNormal(void) {
 		rng.set_seed (time(NULL) + 1);
-		TS_ASSERT_THROWS_NOTHING (rng.rnorm ());
-		// TS_ASSERT_IS_NAN (rng.rnorm(0, -1));
+
+		TS_ASSERT_THROWS_NOTHING (sampling::normal norm);
+		TS_ASSERT_THROWS_NOTHING (sampling::normal norm (5, 10));
+
+		sampling::normal norm1;
+		sampling::normal norm2 (5, 10);
+		TS_ASSERT_THROWS_NOTHING (norm1.rand (rng));
+		TS_ASSERT_THROWS_NOTHING (norm2.rand (rng));
+		TS_ASSERT_THROWS(sampling::normal norm3 (1, -1), std::invalid_argument);
+
+		TS_ASSERT_EQUALS (round(norm1.pdf (1) * 1e6), 241971)
 	};
 
 	void testSeed(void) {

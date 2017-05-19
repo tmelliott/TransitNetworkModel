@@ -99,25 +99,6 @@ int main (int argc, char* argv[]) {
 
 		std::cout << "\n";
 	}
-
-	{
-		std::cout << "-------------- Testing Sampling:\n";
-		sampling::RNG rng (time(NULL));
-
-		std::cout << "       5 random uniform numbers: ";
-		for (int i=0; i<5; i++) {
-			std::cout << rng.runif () << " ";
-		}
-		std::cout << "\n  5 more random uniform numbers: ";
-		for (int i=0; i<5; i++) {
-			std::cout << rng.runif () << " ";
-		}
-		// std::cout << "\n 5 random uniform[5,10] numbers: ";
-		// for (int i=0; i<5; i++) {
-		// 	std::cout << rng.runif (5.0, 10.0) << " ";
-		// }
-		std::cout << "\n-------------------------------\n\n";
-	}
-
+	
 	return 0;
 }
