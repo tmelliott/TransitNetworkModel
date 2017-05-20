@@ -1,0 +1,94 @@
+\hypertarget{classsampling_1_1sample}{}\section{sampling\+:\+:sample Class Reference}
+\label{classsampling_1_1sample}\index{sampling\+::sample@{sampling\+::sample}}
+
+
+{\ttfamily \#include $<$sampling.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classsampling_1_1sample_a7c217cc7c5f9461835062a0362bec4d1}{sample} (int N)
+\item 
+\hyperlink{classsampling_1_1sample_aa5ce07807a24cd3387626b99b38255ad}{sample} (const std\+::vector$<$ double $>$ \&wts)
+\item 
+std\+::vector$<$ int $>$ \hyperlink{classsampling_1_1sample_addc486d8e1dca7d0a09be0a7fa95fc77}{get} (\hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&rng)
+\item 
+std\+::vector$<$ int $>$ \hyperlink{classsampling_1_1sample_ab2c4a10e7971983a8e4acdbb0ad37055}{get} (int n, \hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&rng)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A class for taking a random (weighted) sample.
+
+All samples are made with replacement. If constructed with an I\+NT, then equal weights are used; otherwise weights are passed as a const reference, otherwise a lot of copying would take place! 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classsampling_1_1sample_a7c217cc7c5f9461835062a0362bec4d1}\label{classsampling_1_1sample_a7c217cc7c5f9461835062a0362bec4d1}} 
+\index{sampling\+::sample@{sampling\+::sample}!sample@{sample}}
+\index{sample@{sample}!sampling\+::sample@{sampling\+::sample}}
+\subsubsection{\texorpdfstring{sample()}{sample()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily sampling\+::sample\+::sample (\begin{DoxyParamCaption}\item[{int}]{N }\end{DoxyParamCaption})}
+
+A non-\/weighted sampler.
+
+
+\begin{DoxyParams}{Parameters}
+{\em N} & the size of the sample to be sampled from. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classsampling_1_1sample_aa5ce07807a24cd3387626b99b38255ad}\label{classsampling_1_1sample_aa5ce07807a24cd3387626b99b38255ad}} 
+\index{sampling\+::sample@{sampling\+::sample}!sample@{sample}}
+\index{sample@{sample}!sampling\+::sample@{sampling\+::sample}}
+\subsubsection{\texorpdfstring{sample()}{sample()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily sampling\+::sample\+::sample (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ double $>$ \&}]{wts }\end{DoxyParamCaption})}
+
+A weighted sampler.
+
+
+\begin{DoxyParams}{Parameters}
+{\em wts} & weights of the sample \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classsampling_1_1sample_addc486d8e1dca7d0a09be0a7fa95fc77}\label{classsampling_1_1sample_addc486d8e1dca7d0a09be0a7fa95fc77}} 
+\index{sampling\+::sample@{sampling\+::sample}!get@{get}}
+\index{get@{get}!sampling\+::sample@{sampling\+::sample}}
+\subsubsection{\texorpdfstring{get()}{get()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily std\+::vector$<$ int $>$ sampling\+::sample\+::get (\begin{DoxyParamCaption}\item[{\hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&}]{rng }\end{DoxyParamCaption})}
+
+Perform resampling, using the same number of observations as in the original sample.
+
+
+\begin{DoxyParams}{Parameters}
+{\em rng} & a random number generator \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a vector of sample indexes 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsampling_1_1sample_ab2c4a10e7971983a8e4acdbb0ad37055}\label{classsampling_1_1sample_ab2c4a10e7971983a8e4acdbb0ad37055}} 
+\index{sampling\+::sample@{sampling\+::sample}!get@{get}}
+\index{get@{get}!sampling\+::sample@{sampling\+::sample}}
+\subsubsection{\texorpdfstring{get()}{get()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily std\+::vector$<$ int $>$ sampling\+::sample\+::get (\begin{DoxyParamCaption}\item[{int}]{n,  }\item[{\hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&}]{rng }\end{DoxyParamCaption})}
+
+Perform resampling, taking a sample of size {\ttfamily n}.
+
+
+\begin{DoxyParams}{Parameters}
+{\em n} & the size of the new sample \\
+\hline
+{\em rng} & a random number generator \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a vector of sample indexes 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+sampling/sampling.\+h\item 
+sampling/sample.\+cpp\end{DoxyCompactItemize}

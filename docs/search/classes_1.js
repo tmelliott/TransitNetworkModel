@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['particle',['Particle',['../classgtfs_1_1Particle.html',1,'gtfs']]]
+  ['exponential',['exponential',['../classsampling_1_1exponential.html',1,'sampling']]]
 ];

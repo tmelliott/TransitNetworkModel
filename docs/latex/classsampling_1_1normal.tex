@@ -1,0 +1,90 @@
+\hypertarget{classsampling_1_1normal}{}\section{sampling\+:\+:normal Class Reference}
+\label{classsampling_1_1normal}\index{sampling\+::normal@{sampling\+::normal}}
+
+
+{\ttfamily \#include $<$sampling.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classsampling_1_1normal_a9dfb3d0da3d1517226d102ed3acd33c1}{normal} ()
+\item 
+\hyperlink{classsampling_1_1normal_a94983a66f0b0b3ef8414e8811660c797}{normal} (double mu, double sigma)
+\item 
+double \hyperlink{classsampling_1_1normal_ad9da5ab3d50569e418f00ace7ac26fa7}{pdf} (double x)
+\item 
+double \hyperlink{classsampling_1_1normal_a9a74b03f4276eb622d3c259fd8a1ea01}{pdf\+\_\+log} (double x)
+\item 
+double \hyperlink{classsampling_1_1normal_a12d6d445fc209f91733aa6f8140001be}{rand} (\hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&rng)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Class used for Normal distributions.
+
+(Log) P\+DF and random variables 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classsampling_1_1normal_a9dfb3d0da3d1517226d102ed3acd33c1}\label{classsampling_1_1normal_a9dfb3d0da3d1517226d102ed3acd33c1}} 
+\index{sampling\+::normal@{sampling\+::normal}!normal@{normal}}
+\index{normal@{normal}!sampling\+::normal@{sampling\+::normal}}
+\subsubsection{\texorpdfstring{normal()}{normal()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily sampling\+::normal\+::normal (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Default constructor for a standard normal, N(0,1) \mbox{\Hypertarget{classsampling_1_1normal_a94983a66f0b0b3ef8414e8811660c797}\label{classsampling_1_1normal_a94983a66f0b0b3ef8414e8811660c797}} 
+\index{sampling\+::normal@{sampling\+::normal}!normal@{normal}}
+\index{normal@{normal}!sampling\+::normal@{sampling\+::normal}}
+\subsubsection{\texorpdfstring{normal()}{normal()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily sampling\+::normal\+::normal (\begin{DoxyParamCaption}\item[{double}]{mu,  }\item[{double}]{sigma }\end{DoxyParamCaption})}
+
+General constructor for a normal N(mu, sigma$^\wedge$2) 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classsampling_1_1normal_ad9da5ab3d50569e418f00ace7ac26fa7}\label{classsampling_1_1normal_ad9da5ab3d50569e418f00ace7ac26fa7}} 
+\index{sampling\+::normal@{sampling\+::normal}!pdf@{pdf}}
+\index{pdf@{pdf}!sampling\+::normal@{sampling\+::normal}}
+\subsubsection{\texorpdfstring{pdf()}{pdf()}}
+{\footnotesize\ttfamily double sampling\+::normal\+::pdf (\begin{DoxyParamCaption}\item[{double}]{x }\end{DoxyParamCaption})}
+
+Computes the P\+DF for a given value of x 
+\begin{DoxyParams}{Parameters}
+{\em x} & the x value to evaluate \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the probability density function at x 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsampling_1_1normal_a9a74b03f4276eb622d3c259fd8a1ea01}\label{classsampling_1_1normal_a9a74b03f4276eb622d3c259fd8a1ea01}} 
+\index{sampling\+::normal@{sampling\+::normal}!pdf\+\_\+log@{pdf\+\_\+log}}
+\index{pdf\+\_\+log@{pdf\+\_\+log}!sampling\+::normal@{sampling\+::normal}}
+\subsubsection{\texorpdfstring{pdf\+\_\+log()}{pdf\_log()}}
+{\footnotesize\ttfamily double sampling\+::normal\+::pdf\+\_\+log (\begin{DoxyParamCaption}\item[{double}]{x }\end{DoxyParamCaption})}
+
+Returns the log P\+DF for a given x 
+\begin{DoxyParams}{Parameters}
+{\em x} & x value to evaluate \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+log probability density at x 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsampling_1_1normal_a12d6d445fc209f91733aa6f8140001be}\label{classsampling_1_1normal_a12d6d445fc209f91733aa6f8140001be}} 
+\index{sampling\+::normal@{sampling\+::normal}!rand@{rand}}
+\index{rand@{rand}!sampling\+::normal@{sampling\+::normal}}
+\subsubsection{\texorpdfstring{rand()}{rand()}}
+{\footnotesize\ttfamily double sampling\+::normal\+::rand (\begin{DoxyParamCaption}\item[{\hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&}]{rng }\end{DoxyParamCaption})}
+
+Sample a random observation from the given normal distribution 
+\begin{DoxyParams}{Parameters}
+{\em rng} & reference to a \hyperlink{classsampling_1_1RNG}{R\+NG} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a random value 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+sampling/sampling.\+h\item 
+sampling/normal.\+cpp\end{DoxyCompactItemize}

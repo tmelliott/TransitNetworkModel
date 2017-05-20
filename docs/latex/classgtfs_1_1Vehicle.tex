@@ -13,13 +13,13 @@
 \item 
 \hyperlink{classgtfs_1_1Vehicle_a08c7450dd0df9406f78b30be044d27d8}{$\sim$\+Vehicle} ()
 \item 
-std\+::string \hyperlink{classgtfs_1_1Vehicle_a1586a271d8c8d7eb61f6f1fac5491e26}{get\+\_\+id} () const 
+std\+::string \hyperlink{classgtfs_1_1Vehicle_a6b388986c9ed4af1eb86f13a3d2de8e0}{get\+\_\+id} () const
 \item 
 std\+::vector$<$ \hyperlink{classgtfs_1_1Particle}{Particle} $>$ \& \hyperlink{classgtfs_1_1Vehicle_a7b12b079c68880f00f532ca25858c368}{get\+\_\+particles} ()
 \item 
 unsigned long \hyperlink{classgtfs_1_1Vehicle_aa9087e973a9821f384ec47f51bdcedc7}{allocate\+\_\+id} ()
 \item 
-void \hyperlink{classgtfs_1_1Vehicle_a46ee9775d11595461315be7141359d8a}{resample} ()
+void \hyperlink{classgtfs_1_1Vehicle_a8367fc70a64b7e596422f880dbff1193}{resample} (\hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&rng)
 \end{DoxyCompactItemize}
 \subsection*{Public Attributes}
 \begin{DoxyCompactItemize}
@@ -38,13 +38,12 @@ A representation of a physical transit vehicle (i.\+e., a bus), including the mo
 Vehicles are initialized with an ID, so it is not editable. 
 
 \subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classgtfs_1_1Vehicle_ac3f8111a611378f5f8b29f7465e48919}\label{classgtfs_1_1Vehicle_ac3f8111a611378f5f8b29f7465e48919}} 
 \index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}!Vehicle@{Vehicle}}
 \index{Vehicle@{Vehicle}!gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}}
-\subsubsection[{\texorpdfstring{Vehicle(std\+::string id)}{Vehicle(std::string id)}}]{\setlength{\rightskip}{0pt plus 5cm}gtfs\+::\+Vehicle\+::\+Vehicle (
-\begin{DoxyParamCaption}
-\item[{std\+::string}]{id}
-\end{DoxyParamCaption}
-)}\hypertarget{classgtfs_1_1Vehicle_ac3f8111a611378f5f8b29f7465e48919}{}\label{classgtfs_1_1Vehicle_ac3f8111a611378f5f8b29f7465e48919}
+\subsubsection{\texorpdfstring{Vehicle()}{Vehicle()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily gtfs\+::\+Vehicle\+::\+Vehicle (\begin{DoxyParamCaption}\item[{std\+::string}]{id }\end{DoxyParamCaption})}
+
 Create a \hyperlink{classgtfs_1_1Vehicle}{Vehicle} object with given ID.
 
 Vehicles are created with a default number of particles.
@@ -54,14 +53,12 @@ Vehicles are created with a default number of particles.
 {\em vehicle\+\_\+id} & the ID of the vehicle as given in the G\+T\+FS feed \\
 \hline
 \end{DoxyParams}
+\mbox{\Hypertarget{classgtfs_1_1Vehicle_adf892e71483b7f9005846599fd0308e6}\label{classgtfs_1_1Vehicle_adf892e71483b7f9005846599fd0308e6}} 
 \index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}!Vehicle@{Vehicle}}
 \index{Vehicle@{Vehicle}!gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}}
-\subsubsection[{\texorpdfstring{Vehicle(std\+::string id, unsigned int n)}{Vehicle(std::string id, unsigned int n)}}]{\setlength{\rightskip}{0pt plus 5cm}gtfs\+::\+Vehicle\+::\+Vehicle (
-\begin{DoxyParamCaption}
-\item[{std\+::string}]{id, }
-\item[{unsigned int}]{n}
-\end{DoxyParamCaption}
-)}\hypertarget{classgtfs_1_1Vehicle_adf892e71483b7f9005846599fd0308e6}{}\label{classgtfs_1_1Vehicle_adf892e71483b7f9005846599fd0308e6}
+\subsubsection{\texorpdfstring{Vehicle()}{Vehicle()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily gtfs\+::\+Vehicle\+::\+Vehicle (\begin{DoxyParamCaption}\item[{std\+::string}]{id,  }\item[{unsigned int}]{n }\end{DoxyParamCaption})}
+
 Create a vehicle with specified number of particles, and ID.
 
 
@@ -71,66 +68,67 @@ Create a vehicle with specified number of particles, and ID.
 {\em n} & integer specifying the number of particles to initialize the vehicle with \\
 \hline
 \end{DoxyParams}
+\mbox{\Hypertarget{classgtfs_1_1Vehicle_a08c7450dd0df9406f78b30be044d27d8}\label{classgtfs_1_1Vehicle_a08c7450dd0df9406f78b30be044d27d8}} 
 \index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}!````~Vehicle@{$\sim$\+Vehicle}}
 \index{````~Vehicle@{$\sim$\+Vehicle}!gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}}
-\subsubsection[{\texorpdfstring{$\sim$\+Vehicle()}{~Vehicle()}}]{\setlength{\rightskip}{0pt plus 5cm}gtfs\+::\+Vehicle\+::$\sim$\+Vehicle (
-\begin{DoxyParamCaption}
-{}
-\end{DoxyParamCaption}
-)}\hypertarget{classgtfs_1_1Vehicle_a08c7450dd0df9406f78b30be044d27d8}{}\label{classgtfs_1_1Vehicle_a08c7450dd0df9406f78b30be044d27d8}
+\subsubsection{\texorpdfstring{$\sim$\+Vehicle()}{~Vehicle()}}
+{\footnotesize\ttfamily gtfs\+::\+Vehicle\+::$\sim$\+Vehicle (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
 Desctructor for a vehicle object, ensuring all particles are deleted too. 
 
 \subsection{Member Function Documentation}
+\mbox{\Hypertarget{classgtfs_1_1Vehicle_aa9087e973a9821f384ec47f51bdcedc7}\label{classgtfs_1_1Vehicle_aa9087e973a9821f384ec47f51bdcedc7}} 
 \index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}!allocate\+\_\+id@{allocate\+\_\+id}}
 \index{allocate\+\_\+id@{allocate\+\_\+id}!gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}}
-\subsubsection[{\texorpdfstring{allocate\+\_\+id()}{allocate_id()}}]{\setlength{\rightskip}{0pt plus 5cm}unsigned long gtfs\+::\+Vehicle\+::allocate\+\_\+id (
-\begin{DoxyParamCaption}
-{}
-\end{DoxyParamCaption}
-)}\hypertarget{classgtfs_1_1Vehicle_aa9087e973a9821f384ec47f51bdcedc7}{}\label{classgtfs_1_1Vehicle_aa9087e973a9821f384ec47f51bdcedc7}
+\subsubsection{\texorpdfstring{allocate\+\_\+id()}{allocate\_id()}}
+{\footnotesize\ttfamily unsigned long gtfs\+::\+Vehicle\+::allocate\+\_\+id (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
 To ensure particles have unique ID\textquotesingle{}s (within a vehicle), the next ID is incremended when requested by a new particle.
 
 \begin{DoxyReturn}{Returns}
 the ID for the next particle. 
 \end{DoxyReturn}
+\mbox{\Hypertarget{classgtfs_1_1Vehicle_a6b388986c9ed4af1eb86f13a3d2de8e0}\label{classgtfs_1_1Vehicle_a6b388986c9ed4af1eb86f13a3d2de8e0}} 
 \index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}!get\+\_\+id@{get\+\_\+id}}
 \index{get\+\_\+id@{get\+\_\+id}!gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}}
-\subsubsection[{\texorpdfstring{get\+\_\+id() const }{get_id() const }}]{\setlength{\rightskip}{0pt plus 5cm}std\+::string gtfs\+::\+Vehicle\+::get\+\_\+id (
-\begin{DoxyParamCaption}
-{}
-\end{DoxyParamCaption}
-) const}\hypertarget{classgtfs_1_1Vehicle_a1586a271d8c8d7eb61f6f1fac5491e26}{}\label{classgtfs_1_1Vehicle_a1586a271d8c8d7eb61f6f1fac5491e26}
+\subsubsection{\texorpdfstring{get\+\_\+id()}{get\_id()}}
+{\footnotesize\ttfamily std\+::string gtfs\+::\+Vehicle\+::get\+\_\+id (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
 \begin{DoxyReturn}{Returns}
 ID of vehicle 
 \end{DoxyReturn}
+\mbox{\Hypertarget{classgtfs_1_1Vehicle_a7b12b079c68880f00f532ca25858c368}\label{classgtfs_1_1Vehicle_a7b12b079c68880f00f532ca25858c368}} 
 \index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}!get\+\_\+particles@{get\+\_\+particles}}
 \index{get\+\_\+particles@{get\+\_\+particles}!gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}}
-\subsubsection[{\texorpdfstring{get\+\_\+particles()}{get_particles()}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::vector$<$ {\bf gtfs\+::\+Particle} $>$ \& gtfs\+::\+Vehicle\+::get\+\_\+particles (
-\begin{DoxyParamCaption}
-{}
-\end{DoxyParamCaption}
-)}\hypertarget{classgtfs_1_1Vehicle_a7b12b079c68880f00f532ca25858c368}{}\label{classgtfs_1_1Vehicle_a7b12b079c68880f00f532ca25858c368}
+\subsubsection{\texorpdfstring{get\+\_\+particles()}{get\_particles()}}
+{\footnotesize\ttfamily std\+::vector$<$ \hyperlink{classgtfs_1_1Particle}{gtfs\+::\+Particle} $>$ \& gtfs\+::\+Vehicle\+::get\+\_\+particles (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
 \begin{DoxyReturn}{Returns}
 vector of particle references (so they can be modifed...) 
 \end{DoxyReturn}
+\mbox{\Hypertarget{classgtfs_1_1Vehicle_a8367fc70a64b7e596422f880dbff1193}\label{classgtfs_1_1Vehicle_a8367fc70a64b7e596422f880dbff1193}} 
 \index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}!resample@{resample}}
 \index{resample@{resample}!gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}}
-\subsubsection[{\texorpdfstring{resample()}{resample()}}]{\setlength{\rightskip}{0pt plus 5cm}void gtfs\+::\+Vehicle\+::resample (
-\begin{DoxyParamCaption}
-{}
-\end{DoxyParamCaption}
-)}\hypertarget{classgtfs_1_1Vehicle_a46ee9775d11595461315be7141359d8a}{}\label{classgtfs_1_1Vehicle_a46ee9775d11595461315be7141359d8a}
+\subsubsection{\texorpdfstring{resample()}{resample()}}
+{\footnotesize\ttfamily void gtfs\+::\+Vehicle\+::resample (\begin{DoxyParamCaption}\item[{\hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&}]{rng }\end{DoxyParamCaption})}
+
 Perform weighted resampling with replacement.
 
 Use the computed particle weights to resample, with replacement, the particles associated with the vehicle. 
 
 \subsection{Member Data Documentation}
+\mbox{\Hypertarget{classgtfs_1_1Vehicle_aa21babc8423abf92bbdf5e0748444f44}\label{classgtfs_1_1Vehicle_aa21babc8423abf92bbdf5e0748444f44}} 
 \index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}!n\+\_\+particles@{n\+\_\+particles}}
 \index{n\+\_\+particles@{n\+\_\+particles}!gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}}
-\subsubsection[{\texorpdfstring{n\+\_\+particles}{n_particles}}]{\setlength{\rightskip}{0pt plus 5cm}unsigned int gtfs\+::\+Vehicle\+::n\+\_\+particles}\hypertarget{classgtfs_1_1Vehicle_aa21babc8423abf92bbdf5e0748444f44}{}\label{classgtfs_1_1Vehicle_aa21babc8423abf92bbdf5e0748444f44}
-the number of particles that will be created in the next sample \index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}!next\+\_\+id@{next\+\_\+id}}
+\subsubsection{\texorpdfstring{n\+\_\+particles}{n\_particles}}
+{\footnotesize\ttfamily unsigned int gtfs\+::\+Vehicle\+::n\+\_\+particles}
+
+the number of particles that will be created in the next sample \mbox{\Hypertarget{classgtfs_1_1Vehicle_aab535dd9953f9650e2adc351965779b1}\label{classgtfs_1_1Vehicle_aab535dd9953f9650e2adc351965779b1}} 
+\index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}!next\+\_\+id@{next\+\_\+id}}
 \index{next\+\_\+id@{next\+\_\+id}!gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}}
-\subsubsection[{\texorpdfstring{next\+\_\+id}{next_id}}]{\setlength{\rightskip}{0pt plus 5cm}unsigned long gtfs\+::\+Vehicle\+::next\+\_\+id}\hypertarget{classgtfs_1_1Vehicle_aab535dd9953f9650e2adc351965779b1}{}\label{classgtfs_1_1Vehicle_aab535dd9953f9650e2adc351965779b1}
+\subsubsection{\texorpdfstring{next\+\_\+id}{next\_id}}
+{\footnotesize\ttfamily unsigned long gtfs\+::\+Vehicle\+::next\+\_\+id}
+
 the ID of the next particle to be created 
 
 The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}

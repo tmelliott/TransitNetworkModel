@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['rng',['RNG',['../classsampling_1_1RNG.html',1,'sampling']]]
+  ['normal',['normal',['../classsampling_1_1normal.html',1,'sampling']]]
 ];

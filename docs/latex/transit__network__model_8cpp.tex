@@ -1,14 +1,14 @@
 \hypertarget{transit__network__model_8cpp}{}\section{src/transit\+\_\+network\+\_\+model.cpp File Reference}
 \label{transit__network__model_8cpp}\index{src/transit\+\_\+network\+\_\+model.\+cpp@{src/transit\+\_\+network\+\_\+model.\+cpp}}
-{\ttfamily \#include $<$iostream$>$}\\*
-{\ttfamily \#include $<$memory$>$}\\*
-{\ttfamily \#include $<$vector$>$}\\*
-{\ttfamily \#include $<$string$>$}\\*
-{\ttfamily \#include $<$time.\+h$>$}\\*
-{\ttfamily \#include \char`\"{}gtfs-\/realtime.\+pb.\+h\char`\"{}}\\*
-{\ttfamily \#include \char`\"{}sampling.\+h\char`\"{}}\\*
-{\ttfamily \#include \char`\"{}gtfs.\+h\char`\"{}}\\*
-{\ttfamily \#include \char`\"{}gps.\+h\char`\"{}}\\*
+{\ttfamily \#include $<$iostream$>$}\newline
+{\ttfamily \#include $<$memory$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include $<$time.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}gtfs-\/realtime.\+pb.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}sampling.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}gtfs.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}gps.\+h\char`\"{}}\newline
 Include dependency graph for transit\+\_\+network\+\_\+model.\+cpp\+:
 \nopagebreak
 \begin{figure}[H]
@@ -34,14 +34,12 @@ Tom Elliott \href{mailto:tom.elliott@auckland.ac.nz}{\tt tom.\+elliott@auckland.
 
 
 \subsection{Function Documentation}
+\mbox{\Hypertarget{transit__network__model_8cpp_a0ddf1224851353fc92bfbff6f499fa97}\label{transit__network__model_8cpp_a0ddf1224851353fc92bfbff6f499fa97}} 
 \index{transit\+\_\+network\+\_\+model.\+cpp@{transit\+\_\+network\+\_\+model.\+cpp}!main@{main}}
 \index{main@{main}!transit\+\_\+network\+\_\+model.\+cpp@{transit\+\_\+network\+\_\+model.\+cpp}}
-\subsubsection[{\texorpdfstring{main(int argc, char $\ast$argv[])}{main(int argc, char *argv[])}}]{\setlength{\rightskip}{0pt plus 5cm}int main (
-\begin{DoxyParamCaption}
-\item[{int}]{argc, }
-\item[{char $\ast$}]{argv\mbox{[}$\,$\mbox{]}}
-\end{DoxyParamCaption}
-)}\hypertarget{transit__network__model_8cpp_a0ddf1224851353fc92bfbff6f499fa97}{}\label{transit__network__model_8cpp_a0ddf1224851353fc92bfbff6f499fa97}
+\subsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily int main (\begin{DoxyParamCaption}\item[{int}]{argc,  }\item[{char $\ast$}]{argv\mbox{[}$\,$\mbox{]} }\end{DoxyParamCaption})}
+
 Transit Network Model\+: a realtime model running indefinitely (while (true) \{ ... \})
 
 Cycles through latest vehicles in the Realtime Feed, and updates/creates accordingly.
