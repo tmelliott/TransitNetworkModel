@@ -1,4 +1,3 @@
-#include <string>
 #include <iostream>
 #include <memory>
 
@@ -75,9 +74,10 @@ namespace gtfs {
 	 * Use the computed particle weights to resample, with replacement,
 	 * the particles associated with the vehicle.
 	 */
-	void Vehicle::resample () {
-		// How many of each particle to keep?
-		std::vector<int> pkeep ({1, 3, 2, 1, 1});
+	void Vehicle::resample (sampling::RNG &rng) {
+		// Re-sampler based on computed weights:
+		sampling::sample smp ({0.1, 0.2, 0.1, 0.1, 0.5});
+		std::vector<int> pkeep (smp.get (rng));
 
 		// Move old particles into temporary holding vector
 		std::vector<gtfs::Particle> old_particles = std::move(particles);

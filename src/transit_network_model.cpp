@@ -81,14 +81,14 @@ int main (int argc, char* argv[]) {
 				std::cout << " |- Particle " << pr.get_id () << std::endl;
 			}
 			std::cout << ">>----------- (resample)" << std::endl;
-			vp->resample();
+			vp->resample(rng);
 			std::cout << "  -----------<<" << std::endl;
 			for (auto& pr: vp->get_particles ()) {
 				std::cout << " |- Particle " << pr.get_id ()
 					<< " is a child of particle " << pr.get_parent_id () << std::endl;
 			}
 			std::cout << ">>----------- (resample)" << std::endl;
-			vp->resample();
+			vp->resample(rng);
 			std::cout << "  -----------<<" << std::endl;
 			for (auto& pr: vp->get_particles ()) {
 				std::cout << " |- Particle " << pr.get_id ()

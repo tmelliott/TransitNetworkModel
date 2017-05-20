@@ -7,6 +7,7 @@
 
 class VehicleTests : public CxxTest::TestSuite {
 public:
+	// Create a test bus with 1 particle
 	gtfs::Vehicle v = gtfs::Vehicle("testbus", 1);
 
 	void testVehicle (void) {

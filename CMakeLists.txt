@@ -52,5 +52,5 @@ if(CXXTEST_FOUND)
 	target_link_libraries(unittest_sampling sampling)
 
 	CXXTEST_ADD_TEST(unittest_gtfs test_gtfs.cpp ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_gtfs.h)
-	target_link_libraries(unittest_gtfs gtfs gps)
+	target_link_libraries(unittest_gtfs gtfs gps sampling)
 endif()

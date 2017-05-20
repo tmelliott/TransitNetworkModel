@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "gps.h"
+#include "sampling.h"
 
 /**
  * GTFS Namespace
@@ -45,7 +46,7 @@ namespace gtfs {
 
 		// Methods
 		unsigned long allocate_id ();
-		void resample ();
+		void resample (sampling::RNG &rng);
 	};
 
 
