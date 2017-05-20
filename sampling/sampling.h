@@ -106,16 +106,16 @@ namespace sampling {
 	 */
 	class sample {
 	private:
-		unsigned int N; /*!< the number of objects in the sample */
+		int N; /*!< the number of objects in the sample */
 		bool weighted;  /*!< whether or not the sample is weighted or not */
 		std::vector<double> weights; /*!< sampling weights */
 
 	public:
-		sample (unsigned int N);
+		sample (int N);
 		sample (const std::vector<double> &wts);
 
 		std::vector<int> get (sampling::RNG &rng);
-		std::vector<int> get (unsigned int n, sampling::RNG &rng);
+		std::vector<int> get (int n, sampling::RNG &rng);
 	};
 };
 

@@ -116,19 +116,8 @@ int main (int argc, char* argv[]) {
 		auto si2 = smp2.get (rng);
 		for (auto i: si2) std::cout << i << ", ";
 		std::cout << "\n\n";
-	}
 
-	// {
-	// 	sampling::uniform unif;
-	// 	std::cout << "Log[ Pr(x = 0.2 | a = 0, b = 1) ] = "
-	// 		<< unif.pdf_log (0.2)
-	// 		<< "\n";
-	// 	std::cout << "Log[ Pr(x = -0.2 | a = 0, b = 1) ] = "
-	// 		<< unif.pdf_log (-0.2)
-	// 		<< " == " << (-1.0 / 0.0)
-	// 		<< " -> " << (unif.pdf_log (-0.2) == -1.0/0.0)
-	// 		<< "\n";
-	// }
+	}
 
 	return 0;
 }

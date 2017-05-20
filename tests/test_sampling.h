@@ -63,18 +63,46 @@ public:
 	void testExponential(void) {
 		rng.set_seed (time(NULL) + 2);
 
-		// TS_ASSERT_THROWS_NOTHING (sampling::exponential ex);
-		// TS_ASSERT_THROWS_NOTHING (sampling::exponential exp (0.1));
-		// TS_ASSERT_THROWS (sampling::exponential exp (-1.0), std::invalid_argument);
+		TS_ASSERT_THROWS_NOTHING (sampling::exponential ex);
+		TS_ASSERT_THROWS_NOTHING (sampling::exponential exp (0.1));
+		TS_ASSERT_THROWS (sampling::exponential exp (-1.0), std::invalid_argument);
 
-		// sampling::exponential exp1;
-		// sampling::exponential exp2 (0.1); // mean = 1/0.1 = 10
-		// TS_ASSERT_THROWS_NOTHING (exp1.rand (rng));
-		// TS_ASSERT_THROWS_NOTHING (exp2.rand (rng));
-		//
-		// TS_ASSERT_EQUALS (round(exp1.pdf (1.0) * 1e6), 367879);
-		// TS_ASSERT_EQUALS (round(exp2.pdf_log (1.0) * 1e6), -2402585);
+		sampling::exponential exp1;
+		sampling::exponential exp2 (0.1); // mean = 1/0.1 = 10
+		TS_ASSERT_THROWS_NOTHING (exp1.rand (rng));
+		TS_ASSERT_THROWS_NOTHING (exp2.rand (rng));
 
+		TS_ASSERT_EQUALS (round(exp1.pdf (1.0) * 1e6), 367879);
+		TS_ASSERT_EQUALS (round(exp2.pdf_log (1.0) * 1e6), -2402585);
 	};
 
+
+	void testSample(void) {
+		rng.set_seed (time(NULL) + 3);
+
+		TS_ASSERT_THROWS_NOTHING (sampling::sample smp (5));
+		TS_ASSERT_THROWS_NOTHING (sampling::sample smp ({1,2,3}));
+		TS_ASSERT_THROWS (sampling::sample smp (-1), std::invalid_argument);
+		TS_ASSERT_THROWS (sampling::sample smp ({1,2,-3}), std::invalid_argument);
+
+		sampling::sample smp (5);
+		sampling::sample smp_wt ({0.4, 0.2, 0.2, 0.1, 0.1});
+		TS_ASSERT_THROWS_NOTHING (smp.get (rng));
+		TS_ASSERT_EQUALS (smp.get (rng).size (), 5);
+		TS_ASSERT_EQUALS (smp.get (1, rng).size (), 1);
+		TS_ASSERT (smp.get (1, rng)[0] >= 0);
+		TS_ASSERT (smp.get (1, rng)[0] < 5);
+
+		TS_ASSERT_THROWS_NOTHING (smp_wt.get (rng));
+		TS_ASSERT_EQUALS (smp_wt.get (rng).size (), 5);
+		TS_ASSERT_EQUALS (smp_wt.get (1, rng).size (), 1);
+		TS_ASSERT (smp_wt.get (1, rng)[0] >= 0);
+		TS_ASSERT (smp_wt.get (1, rng)[0] < 5);
+
+		sampling::sample smp_wt2 ({1,0,0});
+		sampling::sample smp_wt3 ({0,0,0.01});
+		TS_ASSERT_EQUALS (smp_wt2.get (rng)[0], 0);
+		TS_ASSERT_EQUALS (smp_wt3.get (rng)[0], 2);
+
+	};
 };

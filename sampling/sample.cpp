@@ -1,6 +1,8 @@
 #include <random>
 #include <vector>
 
+#include <iostream>
+
 #include "sampling.h"
 
 namespace sampling {
@@ -10,7 +12,9 @@ namespace sampling {
 	 *
 	 * @param  N   the size of the sample to be sampled from.
 	 */
-	sample::sample (unsigned int N) : N (N), weighted (false) {};
+	sample::sample (int N) : N (N), weighted (false) {
+		if (N <= 0) throw std::invalid_argument ("N must be positive (> 0)");
+	};
 
 	/**
 	 * A weighted sampler.
@@ -21,7 +25,8 @@ namespace sampling {
 	: N (wts.size ()), weighted (true) {
 		weights.reserve (N);
 		double ws = 0.0;
-		for (unsigned int i=0; i<N; i++) {
+		for (int i=0; i<N; i++) {
+			if (wts[i] < 0) throw std::invalid_argument ("weights must be non-negative");
 			ws += wts[i];
 			weights[i] = ws;
 		}
@@ -46,12 +51,12 @@ namespace sampling {
 	 * @param rng a random number generator
 	 * @return    a vector of sample indexes
 	 */
-	std::vector<int> sample::get (unsigned int n, RNG &rng) {
+	std::vector<int> sample::get (int n, RNG &rng) {
 		std::vector<int> s;
 		s.reserve (n);
 		if (weighted) {
 			// perform weighted resampling
-			for (unsigned int i=0; i<n; i++) {
+			for (int i=0; i<n; i++) {
 				int j=0;
 				auto u = rng.runif () * weights[N-1];
 				while (weights[j] < u) j++;
@@ -59,7 +64,7 @@ namespace sampling {
 			}
 		} else {
 			// perform non-weighted
-			for (unsigned int i=0; i<n; i++) {
+			for (int i=0; i<n; i++) {
 				s.push_back (floor(rng.runif () * N));
 			}
 		}
