@@ -66,18 +66,18 @@ int main (int argc, char* argv[]) {
 		return 1;
 	}
 
-	std::unique_ptr<gtfs::Vehicle> v;
-	// std::vector<std::unique_ptr<gtfs::Vehicle> > vehicles;
+	// std::unique_ptr<gtfs::Vehicle> v;
+	std::vector<std::unique_ptr<gtfs::Vehicle> > vehicles;
 	sampling::RNG rng;
 
 	bool forever = true;
 
 	while (forever) {
-		transit_realtime::FeedMessage vp_feed;
 		{
 			// Load GTFS feed -> vehicles
 			//
 			// -> triggers particle transition -> resample
+			transit_realtime::FeedMessage vp_feed;
 			std::cout << "Checking for vehicle locations feed: " << vpf << " ... ";
 			std::fstream vp_in (vpf, std::ios::in | std::ios::binary);
 			if (!vp_in) {
@@ -91,9 +91,9 @@ int main (int argc, char* argv[]) {
 			}
 
 			for (auto& vp: vp_feed.entity ()) {
-				std::cout << vp.vehicle ().vehicle ().id () << "\n";
+				// std::cout << ".";
 			}
-			std::cout << "\n";
+			// std::cout << "\n";
 		}
 
 		{
@@ -109,66 +109,66 @@ int main (int argc, char* argv[]) {
 		forever = false;
 	}
 
-	// {
-	// 	for (int i=0; i<3; i++) {
-	// 		// Create unique vehicle object
-	// 		std::unique_ptr<gtfs::Vehicle> vp (new gtfs::Vehicle("CXY" + std::to_string(i)));
-	//
-	// 		// Work with pointer
-	//
-	//
-	// 		// Most pointer into vector
-	// 		vehicles.push_back(std::move(vp));
-	//
-	// 		std::cout << std::endl;
-	// 	}
-	//
-	// 	std::cout << std::endl;
-	//
-	// 	int i = 1;
-	// 	for (auto& vp: vehicles) {
-	// 		printf("Vehicle %d has id %s (%d particles).\n", i++, vp->get_id ().c_str(), (int) vp->get_particles().size ());
-	// 		for (auto& pr: vp->get_particles ()) {
-	// 			std::cout << " |- Particle " << pr.get_id () << std::endl;
-	// 		}
-	// 		std::cout << ">>----------- (resample)" << std::endl;
-	// 		vp->resample(rng);
-	// 		std::cout << "  -----------<<" << std::endl;
-	// 		for (auto& pr: vp->get_particles ()) {
-	// 			std::cout << " |- Particle " << pr.get_id ()
-	// 				<< " is a child of particle " << pr.get_parent_id () << std::endl;
-	// 		}
-	// 		std::cout << ">>----------- (resample)" << std::endl;
-	// 		vp->resample(rng);
-	// 		std::cout << "  -----------<<" << std::endl;
-	// 		for (auto& pr: vp->get_particles ()) {
-	// 			std::cout << " |- Particle " << pr.get_id ()
-	// 				<< " is a child of particle " << pr.get_parent_id () << std::endl;
-	// 		}
-	//
-	// 		std::cout << std::endl;
-	// 	}
-	//
-	// 	std::cout << "\n";
-	// }
-	//
-	// {
-	//
-	// 	std::cout << "Making samples ...\n\n";
-	//
-	// 	std::cout << "Non-weighted: ";
-	// 	sampling::sample smp (10);
-	// 	auto si = smp.get (rng);
-	// 	for (auto i: si) std::cout << i << ", ";
-	// 	std::cout << "\n";
-	//
-	// 	std::cout << "    Weighted: ";
-	// 	sampling::sample smp2 ({0.8, 0.2, 0.3, 0.1, 1.0});
-	// 	auto si2 = smp2.get (rng);
-	// 	for (auto i: si2) std::cout << i << ", ";
-	// 	std::cout << "\n\n";
-	//
-	// }
+	/**{
+		for (int i=0; i<3; i++) {
+			// Create unique vehicle object
+			std::unique_ptr<gtfs::Vehicle> vp (new gtfs::Vehicle("CXY" + std::to_string(i)));
+
+			// Work with pointer
+
+
+			// Most pointer into vector
+			vehicles.push_back(std::move(vp));
+
+			std::cout << std::endl;
+		}
+
+		std::cout << std::endl;
+
+		int i = 1;
+		for (auto& vp: vehicles) {
+			printf("Vehicle %d has id %s (%d particles).\n", i++, vp->get_id ().c_str(), (int) vp->get_particles().size ());
+			for (auto& pr: vp->get_particles ()) {
+				std::cout << " |- Particle " << pr.get_id () << std::endl;
+			}
+			std::cout << ">>----------- (resample)" << std::endl;
+			vp->resample(rng);
+			std::cout << "  -----------<<" << std::endl;
+			for (auto& pr: vp->get_particles ()) {
+				std::cout << " |- Particle " << pr.get_id ()
+					<< " is a child of particle " << pr.get_parent_id () << std::endl;
+			}
+			std::cout << ">>----------- (resample)" << std::endl;
+			vp->resample(rng);
+			std::cout << "  -----------<<" << std::endl;
+			for (auto& pr: vp->get_particles ()) {
+				std::cout << " |- Particle " << pr.get_id ()
+					<< " is a child of particle " << pr.get_parent_id () << std::endl;
+			}
+
+			std::cout << std::endl;
+		}
+
+		std::cout << "\n";
+	}**/
+
+	{
+
+		// std::cout << "Making samples ...\n\n";
+
+		// std::cout << "Non-weighted: ";
+		sampling::sample smp (10);
+		// auto si = smp.get (rng);
+		// for (auto i: si) std::cout << i << ", ";
+		// std::cout << "\n";
+
+		// std::cout << "    Weighted: ";
+		// sampling::sample smp2 ({0.8, 0.2, 0.3, 0.1, 1.0});
+		// auto si2 = smp2.get (rng);
+		// for (auto i: si2) std::cout << i << ", ";
+		// std::cout << "\n\n";
+
+	}
 
 	return 0;
 }
