@@ -91,7 +91,7 @@ int main (int argc, char* argv[]) {
 			}
 
 			for (auto& vp: vp_feed.entity ()) {
-				// std::cout << ".";
+				std::cout << vp.vehicle ().vehicle ().id () << "\n";
 			}
 			// std::cout << "\n";
 		}
@@ -157,7 +157,7 @@ int main (int argc, char* argv[]) {
 		// std::cout << "Making samples ...\n\n";
 
 		// std::cout << "Non-weighted: ";
-		sampling::sample smp (10);
+		// sampling::sample smp (10);
 		// auto si = smp.get (rng);
 		// for (auto i: si) std::cout << i << ", ";
 		// std::cout << "\n";

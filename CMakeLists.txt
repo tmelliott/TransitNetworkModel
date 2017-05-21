@@ -29,8 +29,8 @@ target_link_libraries(transit_network_model
 	${PROTOBUF_LIBRARIES}
 	Boost::program_options
 	gps
-	sampling
 	gtfs
+	sampling
 )
 
 add_executable(load_gtfs src/load_gtfs.cpp)
