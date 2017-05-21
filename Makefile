@@ -9,7 +9,7 @@ docs: $(FILES)
 	doxygen Doxyfile
 
 clean:
-	rm -rf build
+	rm -rf build *.pb
 
 
 

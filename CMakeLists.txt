@@ -3,6 +3,9 @@ project (TransitNetworkModel)
 
 set (CMAKE_CXX_STANDARD 11)
 
+find_package(Boost REQUIRED COMPONENTS program_options)
+include_directories(${Boost_INCLUDE_DIR})
+
 find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIRS})
 
@@ -24,6 +27,7 @@ add_executable(transit_network_model src/transit_network_model.cpp ${PROTO_SRCS}
 target_link_libraries(transit_network_model
 	gtfs-realtime
 	${PROTOBUF_LIBRARIES}
+	Boost::program_options
 	gps
 	sampling
 	gtfs

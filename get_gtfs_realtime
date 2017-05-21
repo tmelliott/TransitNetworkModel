@@ -1,0 +1,3 @@
+#!/bin/bash
+
+scp tom@130.216.51.230:/mnt/storage/vehicle_locations.pb ./vehicle_locations.pb
