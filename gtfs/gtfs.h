@@ -34,13 +34,20 @@ namespace gtfs {
 
 		bool newtrip; /*!< if this is true, the next `update()` will reinitialise the particles */
 
+		// GTFS Realtime Fields
+		std::string trip_id;     /*!< the ID of the trip */
+		std::string route_id;    /*!< the ID of the route */
+		unsigned int stop_sequence;       /*!< the stop number of the last visited stop */
+		uint64_t arrival_time;   /*!< arrival time at last stop */
+		uint64_t departure_time; /*!< departure time at last stop */
+		gps::Coord position;     /*!< last reported GPS position */
+
+		uint64_t timestamp;      /*!< time of last observation */
+		int delta;               /*!< time since previous observation */
+
 	public:
 		unsigned int n_particles; /*!< the number of particles that will be created in the next sample */
-		unsigned long next_id; /*!< the ID of the next particle to be created */
-
-		// GTFS Realtime Fields
-		std::string trip_id;
-
+		unsigned long next_id;    /*!< the ID of the next particle to be created */
 
 		// Constructors, destructors
 		Vehicle (std::string id);

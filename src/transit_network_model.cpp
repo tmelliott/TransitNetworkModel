@@ -90,9 +90,10 @@ int main (int argc, char* argv[]) {
 	 */
 	std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> > vehicles;
 	sampling::RNG rng;
-	bool forever = true;
+	// bool forever = true;
 
-	while (forever) {
+	int i = 2;
+	while (i>0) {
 		{
 			// Load GTFS feed -> vehicles
 			for (auto file: files) {
@@ -115,52 +116,8 @@ int main (int argc, char* argv[]) {
 			// Update ETA predictions
 
 		}
-
-		forever = false;
+		i--;
 	}
-
-	/**{
-		for (int i=0; i<3; i++) {
-			// Create unique vehicle object
-			std::unique_ptr<gtfs::Vehicle> vp (new gtfs::Vehicle("CXY" + std::to_string(i)));
-
-			// Work with pointer
-
-
-			// Most pointer into vector
-			vehicles.push_back(std::move(vp));
-
-			std::cout << std::endl;
-		}
-
-		std::cout << std::endl;
-
-		int i = 1;
-		for (auto& vp: vehicles) {
-			printf("Vehicle %d has id %s (%d particles).\n", i++, vp->get_id ().c_str(), (int) vp->get_particles().size ());
-			for (auto& pr: vp->get_particles ()) {
-				std::cout << " |- Particle " << pr.get_id () << std::endl;
-			}
-			std::cout << ">>----------- (resample)" << std::endl;
-			vp->resample(rng);
-			std::cout << "  -----------<<" << std::endl;
-			for (auto& pr: vp->get_particles ()) {
-				std::cout << " |- Particle " << pr.get_id ()
-					<< " is a child of particle " << pr.get_parent_id () << std::endl;
-			}
-			std::cout << ">>----------- (resample)" << std::endl;
-			vp->resample(rng);
-			std::cout << "  -----------<<" << std::endl;
-			for (auto& pr: vp->get_particles ()) {
-				std::cout << " |- Particle " << pr.get_id ()
-					<< " is a child of particle " << pr.get_parent_id () << std::endl;
-			}
-
-			std::cout << std::endl;
-		}
-
-		std::cout << "\n";
-	}**/
 
 	return 0;
 }
@@ -190,8 +147,10 @@ bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> >
 	// Cycle through feed entities and update associated vehicles, or create a new one.
 	for (auto& ent: feed.entity ()) {
 		std::string vid = ent.vehicle().vehicle ().id ();
-		if (vs.find (vid) == vs.end ())
+		if (vs.find (vid) == vs.end ()) {
+			std::cout << "Creating new vehicle " << vid << "\n";
 			vs.emplace (vid, std::unique_ptr<gtfs::Vehicle> (new gtfs::Vehicle (vid)));
+		}
 
 		if (ent.has_vehicle ()) vs[vid]->update (ent.vehicle ());
 		if (ent.has_trip_update ()) vs[vid]->update (ent.trip_update ());
