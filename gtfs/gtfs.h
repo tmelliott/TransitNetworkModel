@@ -15,8 +15,19 @@
  *
  */
 namespace gtfs {
-	class Vehicle;
-	class Particle;
+	class Vehicle;       // has many particles, belongs to a trip
+	class Particle;      // belongs to a trip, refers to segment/stop by index
+	class Route;         // has many trips, has one shape and many stops
+	struct RouteStop;    // a stop belonging to a route
+	class Trip;          // belongs to a route, has many stop times
+	class Shape;         // belongs to one route (maybe more?), has 1 or more segments
+	class ShapeSegment;  // relates a shape to its child segments, along with leg/distance
+	class Segment;       // belongs to many shapes, is a Coord path + distance + speed (mean, var)
+						 // runs between (STOP,INT), (INT,INT), (INT,STOP)
+	struct ShapePt;      // A single shape point {gps::Coord, seg_dist_traveled}
+	class Intersection;  // belongs to one or more segments
+	class Stop;          // belongs to many routes
+	struct StopTime;     // belongs to one trip and one stop
 
 	/**
 	 * Transit vehicle class
@@ -50,13 +61,15 @@ namespace gtfs {
 		unsigned long next_id;    /*!< the ID of the next particle to be created */
 
 		// Constructors, destructors
-		Vehicle (std::string id);
-		Vehicle (std::string id, unsigned int n);
+		Vehicle (std::string id, sampling::RNG &rng);
+		Vehicle (std::string id, unsigned int n, sampling::RNG &rng);
 		~Vehicle();
 
 		// Getters
 		std::string get_id () const;
 		std::vector<Particle>& get_particles ();
+
+		int get_delta () const;
 
 		// Methods
 		void update ( void );
@@ -75,28 +88,242 @@ namespace gtfs {
 	 */
 	class Particle {
 	private:
-		unsigned long id;  /*!< a unique particle identifier */
+		unsigned long id;         /*!< a unique particle identifier */
 		unsigned long parent_id;  /*!< unique identifier of the particle that spawned this one */
+
+		double distance;          /*!< distance into trip */
+		double velocity;          /*!< velocity (m/s) */
+
+		int stop_index;           /*!< stop index (1-based to match GTFS feed, {1, ..., M}) */
+		uint64_t arrival_time;    /*!< arrival time at stop `stop_index` */
+		int dwell_time;           /*!< dwell time at stop `stop_index`*/
+		                          // departure_time = arrival_time + dwell_time
+
+		int segment_index;        /*!< segment index (0-based, {0, ..., L-1}) */
+		int queue_time;           /*!< cumulative time spent queuing at intersction `segment_index` */
+		uint64_t begin_time;      /*!< time at which bus started along segment `segment_index` */
+
+		double log_likelihood;    /*!< the likelihood of the particle, given the data */
 
 	public:
 		Vehicle* vehicle;  /*!< pointer to the vehicle that owns this particle */
 
+
 		// Constructors, destructors
-		Particle (Vehicle* v);
+		Particle (Vehicle* v, sampling::RNG &rng);
 		Particle (const Particle &p);
-		~Particle ();  // destroy
+		~Particle ();
 
 		// Getters
 		unsigned long get_id () const;
-		// Vehicle* get_vehicle ();
 		unsigned long get_parent_id () const;
 
-
 		// Methods
-
+		void transition (void);
+		void calculate_likelihood (void);
 	};
 
 	gps::Coord get_coords (double distance, std::vector<gps::Coord> path);
+
+
+	/**
+	 * An object of this class represents a unique ROUTE in the GTFS schedule.
+	 *
+	 * A route is a journey from an origin to a destination by a certain
+	 * sequence of stops. It has a shape and a sequence of stops.
+	 */
+	class Route {
+	private:
+		std::string id;                /*!< the ID of this route, as in the GTFS schedule */
+		std::vector<Trip> trips;       /*!< vector of trips that belong to this route */
+		std::string route_short_name;  /*!< short name of the route, e.g., 090, NEX */
+		std::string route_long_name;   /*!< long name of the route, e.g., Westgate to Britomart */
+
+	public:
+		// --- GETTERS
+
+
+		// --- SETTERS
+
+	};
+
+	/**
+	 * A struct representing a route:stop combination.
+	 */
+	struct RouteStop {
+		Stop* stop;                  /*!< a pointer to the relevant stop */
+		double shape_dist_traveled;  /*!< how far along the route this stop is */
+	};
+
+	/**
+	 * An object of this class represents a unique TRIP in the GTFS schedule.
+	 *
+	 * A trip is an instance of a route that occurs at a specific time of day.
+	 * It has a sequence of stop times.
+	 */
+	class Trip {
+	private:
+		std::string id;              /*!< the ID of the trip, as per GTFS */
+		Route* route;                /*!< a pointer back to the route */
+
+		std::string trip_headsign;   /*!< display for that trip, if different from route */
+		std::string trip_short_name; /*!< trip short name, if different from route */
+
+	public:
+		// --- GETTERS
+
+
+		// --- METHODS
+
+	};
+
+	/**
+	 * An object of this class represents the path a vehicles takes
+	 * from origin to destination.
+	 *
+	 * The path is made up of one or more segments, and each is
+	 * associated with an initial distance traveled up until the
+	 * beginning of that segment.
+	 */
+	class Shape {
+	private:
+		std::string id;
+		std::vector<ShapeSegment> segments;
+
+	public:
+		// --- GETTERS
+
+		// /** @return a vector of shape points for the entire shape. */
+		// std::vector<gps::Coord> get_shape (void);
+
+		// /** @return a vector of shape segments */
+		// std::vector<ShapeSegment> get_segments (void);
+
+
+		// --- METHODS
+	};
+
+	/**
+	 * A struct corresponding legs of a shape with segments.
+	 *
+	 * The vector order == leg (0-based sequence).
+	 */
+	struct ShapeSegment {
+		Segment* segment;            /*!< pointer to the segment */
+		double shape_dist_traveled;  /*!< distance along route shape at beginning of this segment */
+		double length;               /*!< the length of this segment */
+	};
+
+	/**
+	 * An object of this class represents a vehicles path
+	 * between two intersections.
+	 *
+	 * The segment has a mean and variance of "speed" along it.
+	 * At the beginning and end of routes, segments are defined
+	 * from the first stop to the first intersection,
+	 * and from the last intersection to the last stop, respectively.
+	 * Each segment has a length, and consists of a sequence of
+	 * gps::Coord's which are in turn associated with a cumulative distance.
+	 */
+	class Segment {
+	private:
+		unsigned long id;            /*!< ID of the segment - should be unique and autoincrement ... */
+		Intersection* start_at;      /*!< pointer to the first intersection */
+		Intersection* end_at;        /*!< pointer to the last intersection */
+		std::vector<ShapePt> path;   /*!< vector of shape points */
+
+		double velocity;             /*!< the mean speed along the segment */
+		double velocity_var;         /*!< the variance of speed along the segment */
+		uint64_t timestamp;          /*!< updated at timestamp */
+
+	public:
+		// --- GETTERS
+
+
+		// --- METHODS
+		// void update (void);
+	};
+
+	/**
+	 * A struct describing a single shape point.
+	 */
+	struct ShapePt {
+		gps::Coord pt;
+		double seg_dist_traveled;
+	};
+
+	/**
+	 * An object of this class represents an intersection.
+	 *
+	 * Intersections are (for now) either traffic lights or roundabouts,
+	 * but in future will encompass all physical intersections.
+	 * Each intersection will eventually get a mean and variance
+	 * for delay at that intersection to represent the typical
+	 * delay at that intersection.
+	 */
+	class Intersection {
+	private:
+		enum IntersectionType {
+			traffic_light,
+			roundabout,
+			uncontrolled
+		};
+
+		unsigned long id;       /*!< ID of the intersection */
+		gps::Coord pos;         /*!< gps location of the intersection */
+		IntersectionType type;  /*!< the type of intersection */
+
+		double delay;           /*!< the average delay at that intersection */
+		double delay_var;       /*!< delay variability at that intersection */
+		uint64_t timestamp;     /*!< updated at timestamp */
+
+	public:
+		// --- GETTERS
+
+
+		// --- METHODS
+		// void update (void);
+	};
+
+	/**
+	 * An object of this class represents a physical stop.
+	 *
+	 * Stops have a position on a map, as well as dwell time parameters
+	 * which can be implemented in the model at a later date
+	 * to help differentiate busy and remote stops.
+	 */
+	class Stop {
+	private:
+		std::string id;    /*!< the ID of the stop, as per GTFS */
+		gps::Coord pos;    /*!< GPS location of the stop */
+
+		double dwell;      /*!< mean dwell time at this stop */
+		double dwell_var;  /*!< variance of dwell time at this stop */
+		uint64_t timestamp;     /*!< updated at timestamp */
+
+	public:
+		// --- GETTERS
+
+
+		// --- METHODS
+		// void update (void);
+	};
+
+
+	/**
+	 * An object of the class represents an instance of a trip arriving at a stop.
+	 *
+	 * NOTE: this may be converted to a struct:
+	 * 		 {string stop_id, uint64_t arrival_time, uint64_t departure_time, bool layover}.
+	 */
+	struct StopTime {
+		Stop* stop;              /*!< pointer to the stop */
+		uint64_t arrival_time;   /*!< the scheduled arrival time */
+		uint64_t departure_time; /*!< the scheduled departure time */
+		bool layover;            /*!< if true, the stop is a layover and we assume
+									  the bus doesn't leave until the scheduled departure time */
+	};
+
 
 }; // end GTFS namespace
 

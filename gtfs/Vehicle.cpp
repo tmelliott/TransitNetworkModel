@@ -11,7 +11,7 @@ namespace gtfs {
 	*
 	* @param vehicle_id the ID of the vehicle as given in the GTFS feed
 	*/
-	Vehicle::Vehicle (std::string id) : Vehicle::Vehicle (id, 5000) {};
+	Vehicle::Vehicle (std::string id, sampling::RNG &rng) : Vehicle::Vehicle (id, 10, rng) {};
 
 	/**
 	 * Create a vehicle with specified number of particles, and ID.
@@ -20,13 +20,13 @@ namespace gtfs {
 	 * @param n  integer specifying the number of particles to initialize
 	 *           the vehicle with
 	 */
-	Vehicle::Vehicle (std::string id, unsigned int n) :
+	Vehicle::Vehicle (std::string id, unsigned int n, sampling::RNG &rng) :
 	id (id), n_particles (n), next_id (1) {
 		std::clog << " ++ Created vehicle " << id << std::endl;
 
 		particles.reserve(n_particles);
 		for (unsigned int i=0; i<n_particles; i++) {
-			particles.emplace_back(this);
+			particles.emplace_back(this, rng);
 		}
 	};
 
@@ -39,20 +39,20 @@ namespace gtfs {
 
 	// -- GETTERS
 
-	/**
-	* @return ID of vehicle
-	*/
+	/** @return ID of vehicle */
 	std::string Vehicle::get_id () const {
 		return id;
 	};
 
-	/**
-	* @return vector of particle references (so they can be modifed...)
-	*/
+	/** @return vector of particle references (so they can be mofidied ...) */
 	std::vector<gtfs::Particle>& Vehicle::get_particles () {
 		return particles;
 	};
 
+	/** @return time in seconds since the previous observation */
+	int Vehicle::get_delta () const {
+		return delta;
+	};
 
 
 
@@ -71,6 +71,8 @@ namespace gtfs {
 		// 	<< "\n   * Timestamp: " << timestamp
 		// 	<< " (" << delta << " seconds since last update)"
 		// 	<< "\n\n";
+
+		for (auto& p: particles) p.transition ();
 	}
 
 	/**
@@ -110,6 +112,11 @@ namespace gtfs {
 	 * @param vp a vehicle position from the realtime feed
 	 */
 	void Vehicle::update (const transit_realtime::TripUpdate &vp) {
+		return; // Ignoring trip updates (for now)
+
+
+
+
 		std::clog << "Updating vehicle trip update!\n";
 		if (vp.has_trip ()) { // TripDescriptor -> (trip_id, route_id)
 			if (vp.trip ().has_trip_id ()) newtrip = vp.trip ().trip_id () != trip_id;
@@ -122,7 +129,7 @@ namespace gtfs {
 			arrival_time = 0;
 			departure_time = 0;
 		}
-		if (vp.stop_time_update_size () > 0) {
+		if (vp.stop_time_update_size () > 0) { // TripUpdate -> StopTimeUpdates -> arrival/departure time
 			for (int i=0; i<vp.stop_time_update_size (); i++) {
 				auto& stu = vp.stop_time_update (i);
 				// only update stop sequence if it's greater than existing one

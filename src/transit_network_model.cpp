@@ -35,7 +35,7 @@
 namespace po = boost::program_options;
 
 bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> > &vs,
-				std::string &feed_file);
+				std::string &feed_file, int N, sampling::RNG &rng);
 
 
 /**
@@ -56,12 +56,16 @@ int main (int argc, char* argv[]) {
 
 	/** vehicle positions file */
 	std::vector<std::string> files;
+	/** database connection to use */
 	std::string db;
+	/** number of particles per vehicle */
+	int N;
 
 	desc.add_options ()
 		("files", po::value<std::vector<std::string> >(&files)->multitoken (),
 			"GTFS Realtime protobuf feed files.")
 		("database", po::value<std::string>(&db), "Database Connection to use.")
+		("N", po::value<int>(&N)->default_value(1000), "Number of particles to initialize each vehicle.")
 		("help", "Print this message and exit.")
 	;
 
@@ -97,7 +101,7 @@ int main (int argc, char* argv[]) {
 		{
 			// Load GTFS feed -> vehicles
 			for (auto file: files) {
-				if ( ! load_feed (vehicles, file) ) {
+				if ( ! load_feed (vehicles, file, N, rng) ) {
 					std::cerr << "Unable to read file.\n";
 					return -1;
 				}
@@ -128,9 +132,11 @@ int main (int argc, char* argv[]) {
  * Load a feed message into vehicle object vector
  * @param vs   reference to vector of vehicle pointers
  * @param feed reference to feed
+ * @param N    the number of particle to initialze new vehicles with
+ * @param rng  reference to a random number generator
  */
 bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> > &vs,
-				std::string &feed_file) {
+				std::string &feed_file, int N, sampling::RNG &rng) {
 	transit_realtime::FeedMessage feed;
 	std::cout << "Checking for vehicle updates in feed: " << feed_file << " ... ";
 	std::fstream feed_in (feed_file, std::ios::in | std::ios::binary);
@@ -157,9 +163,9 @@ bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> >
 			vid = ent.vehicle().vehicle ().id ();
 		}
 		if (vs.find (vid) == vs.end ()) {
-			vs.emplace (vid, std::unique_ptr<gtfs::Vehicle> (new gtfs::Vehicle (vid)));
+			// vehicle doesn't already exist - create it
+			vs.emplace (vid, std::unique_ptr<gtfs::Vehicle> (new gtfs::Vehicle (vid, N, rng)));
 		}
-
 		if (ent.has_vehicle ()) vs[vid]->update (ent.vehicle ());
 		if (ent.has_trip_update ()) vs[vid]->update (ent.trip_update ());
 	}
