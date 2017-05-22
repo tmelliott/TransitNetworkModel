@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "gps.h"
+#include "gtfs-realtime.pb.h"
 #include "sampling.h"
 
 /**
@@ -31,9 +32,15 @@ namespace gtfs {
 		std::string id; /*!< ID of vehicle, as per GTFS feed */
 		std::vector<Particle> particles; /*!< the particles associated with the vehicle */
 
+		bool newtrip; /*!< if this is true, the next `update()` will reinitialise the particles */
+
 	public:
 		unsigned int n_particles; /*!< the number of particles that will be created in the next sample */
 		unsigned long next_id; /*!< the ID of the next particle to be created */
+
+		// GTFS Realtime Fields
+		std::string trip_id;
+
 
 		// Constructors, destructors
 		Vehicle (std::string id);
@@ -45,6 +52,9 @@ namespace gtfs {
 		std::vector<Particle>& get_particles ();
 
 		// Methods
+		void update ( void );
+		void update (const transit_realtime::VehiclePosition &vp);
+		void update (const transit_realtime::TripUpdate &tu);
 		unsigned long allocate_id ();
 		void resample (sampling::RNG &rng);
 	};

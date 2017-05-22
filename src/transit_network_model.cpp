@@ -22,6 +22,7 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
+#include <algorithm>
 #include <time.h>
 
 #include <boost/program_options.hpp>
@@ -67,6 +68,10 @@ int main (int argc, char* argv[]) {
 		return 1;
 	}
 
+
+	// LOAD database into memory
+	// ...
+
 	/**
 	 * An unordered map of vehicles.
 	 *
@@ -94,16 +99,18 @@ int main (int argc, char* argv[]) {
 				std::cout << "done -> " << vp_feed.entity_size () << " vehicle locations loaded.\n";
 			}
 
-			for (auto& vp: vp_feed.entity ()) {
-				std::string vid = vp.vehicle().vehicle ().id ();
-				auto v = vehicles.find (vid);
-				if (v == vehicles.end ()) {
-					std::cout << "Vehicle " << vid << " doesn't exit yet.\n";
+			// Cycle through feed entities and update associated vehicles, or create a new one.
+			for (auto& ent: vp_feed.entity ()) {
+				std::string vid = ent.vehicle().vehicle ().id ();
+				if (vehicles.find (vid) == vehicles.end ())
 					vehicles.emplace (vid, std::unique_ptr<gtfs::Vehicle> (new gtfs::Vehicle (vid)));
-				} else {
-					std::cout << "Found vehicle " << vid << "!\n";
-				}
+
+				if (ent.has_vehicle ()) vehicles[vid]->update (ent.vehicle ());
+				if (ent.has_trip_update ()) vehicles[vid]->update (ent.trip_update ());
 			}
+
+			// Now cycle through vehicle containers and update
+			for (auto& v: vehicles) v.second->update ();
 
 			std::cout << "\n";
 		}

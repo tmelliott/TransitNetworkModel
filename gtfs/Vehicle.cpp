@@ -22,7 +22,7 @@ namespace gtfs {
 	 */
 	Vehicle::Vehicle (std::string id, unsigned int n) :
 	id (id), n_particles (n), next_id (1) {
-		std::cout << " ++ Created vehicle " << id << std::endl;
+		std::clog << " ++ Created vehicle " << id << std::endl;
 
 		particles.reserve(n_particles);
 		for (unsigned int i=0; i<n_particles; i++) {
@@ -34,7 +34,7 @@ namespace gtfs {
 	* Desctructor for a vehicle object, ensuring all particles are deleted too.
 	*/
 	Vehicle::~Vehicle() {
-		std::cout << " -- Vehicle " << id << " deleted!!" << std::endl;
+		std::clog << " -- Vehicle " << id << " deleted!!" << std::endl;
 	};
 
 	// -- GETTERS
@@ -57,6 +57,36 @@ namespace gtfs {
 
 
 	// --- METHODS
+
+	void Vehicle::update ( void ) {
+		std::clog << "Updating particles!\n";
+	}
+
+	/**
+	 * Update the location of the vehicle object.
+	 *
+	 * This does NOT trigger a particle update, as we may need
+	 * to also insert TripUpdates later.
+	 * Check that the trip_id is the same, otherwise set `newtrip = false`
+	 *
+	 * @param vp a vehicle position from the realtime feed
+	 */
+	void Vehicle::update (const transit_realtime::VehiclePosition &vp) {
+		std::clog << "Updating vehicle location!\n";
+	};
+
+	/**
+	 * Add Stop Time Updates to the vehicle object.
+	 *
+	 * This does NOT trigger a particle update, as we may need
+	 * to also insert VehiclePositions later.
+	 *
+	 * @param vp a vehicle position from the realtime feed
+	 */
+	void Vehicle::update (const transit_realtime::TripUpdate &vp) {
+		std::clog << "Updating vehicle trip update!\n";
+
+	};
 
 	/**
 	 * To ensure particles have unique ID's (within a vehicle),

@@ -25,12 +25,12 @@ add_subdirectory (gtfs)
 
 add_executable(transit_network_model src/transit_network_model.cpp ${PROTO_SRCS} ${PROTO_HDRS})
 target_link_libraries(transit_network_model
+	gtfs
 	gtfs-realtime
 	${PROTOBUF_LIBRARIES}
-	Boost::program_options
-	gps
-	gtfs
 	sampling
+	gps
+	Boost::program_options
 )
 
 add_executable(load_gtfs src/load_gtfs.cpp)
