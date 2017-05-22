@@ -21,6 +21,7 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include <unordered_map>
 #include <time.h>
 
 #include <boost/program_options.hpp>
@@ -66,10 +67,13 @@ int main (int argc, char* argv[]) {
 		return 1;
 	}
 
-	// std::unique_ptr<gtfs::Vehicle> v;
-	std::vector<std::unique_ptr<gtfs::Vehicle> > vehicles;
+	/**
+	 * An unordered map of vehicles.
+	 *
+	 * vehicles["VEHICLE_ID"] -> object for vehicle with ID VEHICLE_ID
+	 */
+	std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> > vehicles;
 	sampling::RNG rng;
-
 	bool forever = true;
 
 	while (forever) {
@@ -91,9 +95,17 @@ int main (int argc, char* argv[]) {
 			}
 
 			for (auto& vp: vp_feed.entity ()) {
-				std::cout << vp.vehicle ().vehicle ().id () << "\n";
+				std::string vid = vp.vehicle().vehicle ().id ();
+				auto v = vehicles.find (vid);
+				if (v == vehicles.end ()) {
+					std::cout << "Vehicle " << vid << " doesn't exit yet.\n";
+					vehicles.emplace (vid, std::unique_ptr<gtfs::Vehicle> (new gtfs::Vehicle (vid)));
+				} else {
+					std::cout << "Found vehicle " << vid << "!\n";
+				}
 			}
-			// std::cout << "\n";
+
+			std::cout << "\n";
 		}
 
 		{
@@ -151,24 +163,6 @@ int main (int argc, char* argv[]) {
 
 		std::cout << "\n";
 	}**/
-
-	{
-
-		// std::cout << "Making samples ...\n\n";
-
-		// std::cout << "Non-weighted: ";
-		// sampling::sample smp (10);
-		// auto si = smp.get (rng);
-		// for (auto i: si) std::cout << i << ", ";
-		// std::cout << "\n";
-
-		// std::cout << "    Weighted: ";
-		// sampling::sample smp2 ({0.8, 0.2, 0.3, 0.1, 1.0});
-		// auto si2 = smp2.get (rng);
-		// for (auto i: si2) std::cout << i << ", ";
-		// std::cout << "\n\n";
-
-	}
 
 	return 0;
 }
