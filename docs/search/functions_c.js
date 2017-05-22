@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['uniform',['uniform',['../classsampling_1_1uniform.html#a414a98d445c6a07bbe78ea677db19f69',1,'sampling::uniform::uniform()'],['../classsampling_1_1uniform.html#a67fa371e5e843209c83d584c33dd8957',1,'sampling::uniform::uniform(double a, double b)']]]
+  ['sample',['sample',['../classsampling_1_1sample.html#a7c217cc7c5f9461835062a0362bec4d1',1,'sampling::sample::sample(int N)'],['../classsampling_1_1sample.html#aa5ce07807a24cd3387626b99b38255ad',1,'sampling::sample::sample(const std::vector&lt; double &gt; &amp;wts)']]],
+  ['set_5fseed',['set_seed',['../classsampling_1_1RNG.html#ad739124235d7d9bbe31f86d37f2fb9e5',1,'sampling::RNG']]]
 ];

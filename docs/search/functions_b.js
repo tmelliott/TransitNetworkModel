@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['sample',['sample',['../classsampling_1_1sample.html#a7c217cc7c5f9461835062a0362bec4d1',1,'sampling::sample::sample(int N)'],['../classsampling_1_1sample.html#aa5ce07807a24cd3387626b99b38255ad',1,'sampling::sample::sample(const std::vector&lt; double &gt; &amp;wts)']]],
-  ['set_5fseed',['set_seed',['../classsampling_1_1RNG.html#ad739124235d7d9bbe31f86d37f2fb9e5',1,'sampling::RNG']]]
+  ['rad',['rad',['../namespacegps.html#ad44ea39876137fc96774486e3a60f004',1,'gps']]],
+  ['rand',['rand',['../classsampling_1_1uniform.html#aee0b21aec2c50cdb6d926d5c3890d695',1,'sampling::uniform::rand()'],['../classsampling_1_1normal.html#a12d6d445fc209f91733aa6f8140001be',1,'sampling::normal::rand()'],['../classsampling_1_1exponential.html#ae225fd6ab66ed65ae1ef4cf090060149',1,'sampling::exponential::rand()']]],
+  ['resample',['resample',['../classgtfs_1_1Vehicle.html#a8367fc70a64b7e596422f880dbff1193',1,'gtfs::Vehicle']]],
+  ['rng',['RNG',['../classsampling_1_1RNG.html#ae61ad8991680f68b8c144a03a09a767a',1,'sampling::RNG::RNG()'],['../classsampling_1_1RNG.html#a2fa1a6176fc0fbc96a5c4a4ead6d7927',1,'sampling::RNG::RNG(unsigned int seed)']]]
 ];

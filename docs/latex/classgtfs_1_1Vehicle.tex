@@ -17,6 +17,13 @@ std\+::string \hyperlink{classgtfs_1_1Vehicle_a6b388986c9ed4af1eb86f13a3d2de8e0}
 \item 
 std\+::vector$<$ \hyperlink{classgtfs_1_1Particle}{Particle} $>$ \& \hyperlink{classgtfs_1_1Vehicle_a7b12b079c68880f00f532ca25858c368}{get\+\_\+particles} ()
 \item 
+\mbox{\Hypertarget{classgtfs_1_1Vehicle_aab490aeda8084cfcb8de29f0aedaa416}\label{classgtfs_1_1Vehicle_aab490aeda8084cfcb8de29f0aedaa416}} 
+void {\bfseries update} (void)
+\item 
+void \hyperlink{classgtfs_1_1Vehicle_a50ae70c92d958437a2196b0ce81acff0}{update} (const transit\+\_\+realtime\+::\+Vehicle\+Position \&vp)
+\item 
+void \hyperlink{classgtfs_1_1Vehicle_a4cc25a17473bf7bccc39b37ef5d7c956}{update} (const transit\+\_\+realtime\+::\+Trip\+Update \&tu)
+\item 
 unsigned long \hyperlink{classgtfs_1_1Vehicle_aa9087e973a9821f384ec47f51bdcedc7}{allocate\+\_\+id} ()
 \item 
 void \hyperlink{classgtfs_1_1Vehicle_a8367fc70a64b7e596422f880dbff1193}{resample} (\hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&rng)
@@ -27,6 +34,9 @@ void \hyperlink{classgtfs_1_1Vehicle_a8367fc70a64b7e596422f880dbff1193}{resample
 unsigned int \hyperlink{classgtfs_1_1Vehicle_aa21babc8423abf92bbdf5e0748444f44}{n\+\_\+particles}
 \item 
 unsigned long \hyperlink{classgtfs_1_1Vehicle_aab535dd9953f9650e2adc351965779b1}{next\+\_\+id}
+\item 
+\mbox{\Hypertarget{classgtfs_1_1Vehicle_a5b3e2ea332b8433000f0cbff13a45255}\label{classgtfs_1_1Vehicle_a5b3e2ea332b8433000f0cbff13a45255}} 
+std\+::string {\bfseries trip\+\_\+id}
 \end{DoxyCompactItemize}
 
 
@@ -114,7 +124,37 @@ vector of particle references (so they can be modifed...)
 
 Perform weighted resampling with replacement.
 
-Use the computed particle weights to resample, with replacement, the particles associated with the vehicle. 
+Use the computed particle weights to resample, with replacement, the particles associated with the vehicle. \mbox{\Hypertarget{classgtfs_1_1Vehicle_a50ae70c92d958437a2196b0ce81acff0}\label{classgtfs_1_1Vehicle_a50ae70c92d958437a2196b0ce81acff0}} 
+\index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}!update@{update}}
+\index{update@{update}!gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}}
+\subsubsection{\texorpdfstring{update()}{update()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void gtfs\+::\+Vehicle\+::update (\begin{DoxyParamCaption}\item[{const transit\+\_\+realtime\+::\+Vehicle\+Position \&}]{vp }\end{DoxyParamCaption})}
+
+Update the location of the vehicle object.
+
+This does N\+OT trigger a particle update, as we may need to also insert Trip\+Updates later. Check that the trip\+\_\+id is the same, otherwise set {\ttfamily newtrip = false}
+
+
+\begin{DoxyParams}{Parameters}
+{\em vp} & a vehicle position from the realtime feed \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classgtfs_1_1Vehicle_a4cc25a17473bf7bccc39b37ef5d7c956}\label{classgtfs_1_1Vehicle_a4cc25a17473bf7bccc39b37ef5d7c956}} 
+\index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}!update@{update}}
+\index{update@{update}!gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}}
+\subsubsection{\texorpdfstring{update()}{update()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void gtfs\+::\+Vehicle\+::update (\begin{DoxyParamCaption}\item[{const transit\+\_\+realtime\+::\+Trip\+Update \&}]{vp }\end{DoxyParamCaption})}
+
+Add Stop Time Updates to the vehicle object.
+
+This does N\+OT trigger a particle update, as we may need to also insert Vehicle\+Positions later.
+
+
+\begin{DoxyParams}{Parameters}
+{\em vp} & a vehicle position from the realtime feed \\
+\hline
+\end{DoxyParams}
+
 
 \subsection{Member Data Documentation}
 \mbox{\Hypertarget{classgtfs_1_1Vehicle_aa21babc8423abf92bbdf5e0748444f44}\label{classgtfs_1_1Vehicle_aa21babc8423abf92bbdf5e0748444f44}} 
