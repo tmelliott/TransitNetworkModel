@@ -1,3 +1,4 @@
 #!/bin/bash
 
 scp tom@130.216.51.230:/mnt/storage/vehicle_locations.pb ./vehicle_locations.pb
+scp tom@130.216.51.230:/mnt/storage/trip_updates.pb ./trip_updates.pb

@@ -34,6 +34,10 @@
 
 namespace po = boost::program_options;
 
+bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> > &vs,
+				std::string &feed_file);
+
+
 /**
  * Transit Network Model: a realtime model running indefinitely (while (true) { ... })
  *
@@ -51,11 +55,13 @@ int main (int argc, char* argv[]) {
 	po::options_description desc ("Allowed options");
 
 	/** vehicle positions file */
-	std::string vpf;
+	std::vector<std::string> files;
+	std::string db;
 
 	desc.add_options ()
-		("positions", po::value<std::string>(&vpf)->default_value("vehicle_locations.pb"),
-			"Vehicle positions protobuf file.")
+		("files", po::value<std::vector<std::string> >(&files)->multitoken (),
+			"GTFS Realtime protobuf feed files.")
+		("database", po::value<std::string>(&db), "Database Connection to use.")
 		("help", "Print this message and exit.")
 	;
 
@@ -66,6 +72,11 @@ int main (int argc, char* argv[]) {
 	if (vm.count ("help")) {
 		std::cout << desc << "\n";
 		return 1;
+	}
+
+	if (!vm.count ("files")) {
+		std::cerr << "No file specified.\n";
+		return -1;
 	}
 
 
@@ -84,35 +95,15 @@ int main (int argc, char* argv[]) {
 	while (forever) {
 		{
 			// Load GTFS feed -> vehicles
-			//
+			for (auto file: files) {
+				if ( ! load_feed (vehicles, file) ) {
+					std::cerr << "Unable to read file.\n";
+					return -1;
+				}
+			}
+
 			// -> triggers particle transition -> resample
-			transit_realtime::FeedMessage vp_feed;
-			std::cout << "Checking for vehicle locations feed: " << vpf << " ... ";
-			std::fstream vp_in (vpf, std::ios::in | std::ios::binary);
-			if (!vp_in) {
-				std::cerr << "file not found!\n";
-				return -1;
-			} else if (!vp_feed.ParseFromIstream (&vp_in)) {
-				std::cerr << "failed to parse GTFS realtime feed!\n";
-				return -1;
-			} else {
-				std::cout << "done -> " << vp_feed.entity_size () << " vehicle locations loaded.\n";
-			}
-
-			// Cycle through feed entities and update associated vehicles, or create a new one.
-			for (auto& ent: vp_feed.entity ()) {
-				std::string vid = ent.vehicle().vehicle ().id ();
-				if (vehicles.find (vid) == vehicles.end ())
-					vehicles.emplace (vid, std::unique_ptr<gtfs::Vehicle> (new gtfs::Vehicle (vid)));
-
-				if (ent.has_vehicle ()) vehicles[vid]->update (ent.vehicle ());
-				if (ent.has_trip_update ()) vehicles[vid]->update (ent.trip_update ());
-			}
-
-			// Now cycle through vehicle containers and update
 			for (auto& v: vehicles) v.second->update ();
-
-			std::cout << "\n";
 		}
 
 		{
@@ -172,4 +163,39 @@ int main (int argc, char* argv[]) {
 	}**/
 
 	return 0;
+}
+
+
+
+/**
+ * Load a feed message into vehicle object vector
+ * @param vs   reference to vector of vehicle pointers
+ * @param feed reference to feed
+ */
+bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> > &vs,
+				std::string &feed_file) {
+	transit_realtime::FeedMessage feed;
+	std::cout << "Checking for vehicle updates in feed: " << feed_file << " ... ";
+	std::fstream feed_in (feed_file, std::ios::in | std::ios::binary);
+	if (!feed_in) {
+		std::cerr << "file not found!\n";
+		return false;
+	} else if (!feed.ParseFromIstream (&feed_in)) {
+		std::cerr << "failed to parse GTFS realtime feed!\n";
+		return false;
+	} else {
+		std::cout << "done -> " << feed.entity_size () << " updates loaded.\n";
+	}
+
+	// Cycle through feed entities and update associated vehicles, or create a new one.
+	for (auto& ent: feed.entity ()) {
+		std::string vid = ent.vehicle().vehicle ().id ();
+		if (vs.find (vid) == vs.end ())
+			vs.emplace (vid, std::unique_ptr<gtfs::Vehicle> (new gtfs::Vehicle (vid)));
+
+		if (ent.has_vehicle ()) vs[vid]->update (ent.vehicle ());
+		if (ent.has_trip_update ()) vs[vid]->update (ent.trip_update ());
+	}
+
+	return true;
 }
