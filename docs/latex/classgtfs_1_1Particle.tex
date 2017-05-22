@@ -16,7 +16,7 @@ Collaboration diagram for gtfs\+:\+:Particle\+:\nopagebreak
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\hyperlink{classgtfs_1_1Particle_ad7f42e77c6c7f3042c977fd5a42ff82f}{Particle} (\hyperlink{classgtfs_1_1Vehicle}{Vehicle} $\ast$v)
+\hyperlink{classgtfs_1_1Particle_ae59d459c6ff20eb081a933b304289794}{Particle} (\hyperlink{classgtfs_1_1Vehicle}{Vehicle} $\ast$v, \hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&rng)
 \item 
 \hyperlink{classgtfs_1_1Particle_ac386e64b43b1e317063f9a6666d604ce}{Particle} (const \hyperlink{classgtfs_1_1Particle}{Particle} \&p)
 \item 
@@ -25,6 +25,10 @@ Collaboration diagram for gtfs\+:\+:Particle\+:\nopagebreak
 unsigned long \hyperlink{classgtfs_1_1Particle_a3131eb93ac902a4cccf42061e1a7296b}{get\+\_\+id} () const
 \item 
 unsigned long \hyperlink{classgtfs_1_1Particle_a9372dbbfe702b9931b9eb1ee217afcba}{get\+\_\+parent\+\_\+id} () const
+\item 
+void \hyperlink{classgtfs_1_1Particle_a768469c09fdebd8e190c91a653b25b76}{transition} (void)
+\item 
+void \hyperlink{classgtfs_1_1Particle_a88627efbe0eb2e289315ae82627d3a39}{calculate\+\_\+likelihood} (void)
 \end{DoxyCompactItemize}
 \subsection*{Public Attributes}
 \begin{DoxyCompactItemize}
@@ -39,15 +43,15 @@ unsigned long \hyperlink{classgtfs_1_1Particle_a9372dbbfe702b9931b9eb1ee217afcba
 A single \char`\"{}point estimate\char`\"{} of the unknown state of the transit vehicle, including its velocity. 
 
 \subsection{Constructor \& Destructor Documentation}
-\mbox{\Hypertarget{classgtfs_1_1Particle_ad7f42e77c6c7f3042c977fd5a42ff82f}\label{classgtfs_1_1Particle_ad7f42e77c6c7f3042c977fd5a42ff82f}} 
+\mbox{\Hypertarget{classgtfs_1_1Particle_ae59d459c6ff20eb081a933b304289794}\label{classgtfs_1_1Particle_ae59d459c6ff20eb081a933b304289794}} 
 \index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!Particle@{Particle}}
 \index{Particle@{Particle}!gtfs\+::\+Particle@{gtfs\+::\+Particle}}
 \subsubsection{\texorpdfstring{Particle()}{Particle()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily gtfs\+::\+Particle\+::\+Particle (\begin{DoxyParamCaption}\item[{\hyperlink{classgtfs_1_1Vehicle}{Vehicle} $\ast$}]{v }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily gtfs\+::\+Particle\+::\+Particle (\begin{DoxyParamCaption}\item[{\hyperlink{classgtfs_1_1Vehicle}{Vehicle} $\ast$}]{v,  }\item[{\hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&}]{rng }\end{DoxyParamCaption})}
 
 \hyperlink{classgtfs_1_1Particle}{Particle} constructor.
 
-The ID is automatically selected from the parent vehicle. \mbox{\Hypertarget{classgtfs_1_1Particle_ac386e64b43b1e317063f9a6666d604ce}\label{classgtfs_1_1Particle_ac386e64b43b1e317063f9a6666d604ce}} 
+The ID is automatically selected from the parent vehicle. Values are computed based on the approximate location of the bus, allowing for noise. R\+NG required otherwise the particles would all be identical! \mbox{\Hypertarget{classgtfs_1_1Particle_ac386e64b43b1e317063f9a6666d604ce}\label{classgtfs_1_1Particle_ac386e64b43b1e317063f9a6666d604ce}} 
 \index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!Particle@{Particle}}
 \index{Particle@{Particle}!gtfs\+::\+Particle@{gtfs\+::\+Particle}}
 \subsubsection{\texorpdfstring{Particle()}{Particle()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
@@ -71,7 +75,13 @@ Makes an almost exact copy of the referenced particle, but gives it a unique ID 
 Destructor for a particle. 
 
 \subsection{Member Function Documentation}
-\mbox{\Hypertarget{classgtfs_1_1Particle_a3131eb93ac902a4cccf42061e1a7296b}\label{classgtfs_1_1Particle_a3131eb93ac902a4cccf42061e1a7296b}} 
+\mbox{\Hypertarget{classgtfs_1_1Particle_a88627efbe0eb2e289315ae82627d3a39}\label{classgtfs_1_1Particle_a88627efbe0eb2e289315ae82627d3a39}} 
+\index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!calculate\+\_\+likelihood@{calculate\+\_\+likelihood}}
+\index{calculate\+\_\+likelihood@{calculate\+\_\+likelihood}!gtfs\+::\+Particle@{gtfs\+::\+Particle}}
+\subsubsection{\texorpdfstring{calculate\+\_\+likelihood()}{calculate\_likelihood()}}
+{\footnotesize\ttfamily void gtfs\+::\+Particle\+::calculate\+\_\+likelihood (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+Compute the likelihood of the particle given the bus\textquotesingle{}s reported location and stop updates. \mbox{\Hypertarget{classgtfs_1_1Particle_a3131eb93ac902a4cccf42061e1a7296b}\label{classgtfs_1_1Particle_a3131eb93ac902a4cccf42061e1a7296b}} 
 \index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!get\+\_\+id@{get\+\_\+id}}
 \index{get\+\_\+id@{get\+\_\+id}!gtfs\+::\+Particle@{gtfs\+::\+Particle}}
 \subsubsection{\texorpdfstring{get\+\_\+id()}{get\_id()}}
@@ -89,7 +99,13 @@ the particle\textquotesingle{}s ID
 \begin{DoxyReturn}{Returns}
 the parent particle\textquotesingle{}s ID 
 \end{DoxyReturn}
+\mbox{\Hypertarget{classgtfs_1_1Particle_a768469c09fdebd8e190c91a653b25b76}\label{classgtfs_1_1Particle_a768469c09fdebd8e190c91a653b25b76}} 
+\index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!transition@{transition}}
+\index{transition@{transition}!gtfs\+::\+Particle@{gtfs\+::\+Particle}}
+\subsubsection{\texorpdfstring{transition()}{transition()}}
+{\footnotesize\ttfamily void gtfs\+::\+Particle\+::transition (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
 
+Move the particle according to speed, shape/segments/stops, and {\ttfamily delta}. 
 
 \subsection{Member Data Documentation}
 \mbox{\Hypertarget{classgtfs_1_1Particle_a81c313d505ecb592d79463f167dfb76c}\label{classgtfs_1_1Particle_a81c313d505ecb592d79463f167dfb76c}} 

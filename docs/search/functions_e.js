@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['vehicle',['Vehicle',['../classgtfs_1_1Vehicle.html#ac3f8111a611378f5f8b29f7465e48919',1,'gtfs::Vehicle::Vehicle(std::string id)'],['../classgtfs_1_1Vehicle.html#adf892e71483b7f9005846599fd0308e6',1,'gtfs::Vehicle::Vehicle(std::string id, unsigned int n)']]]
+  ['uniform',['uniform',['../classsampling_1_1uniform.html#a414a98d445c6a07bbe78ea677db19f69',1,'sampling::uniform::uniform()'],['../classsampling_1_1uniform.html#a67fa371e5e843209c83d584c33dd8957',1,'sampling::uniform::uniform(double a, double b)']]],
+  ['update',['update',['../classgtfs_1_1Vehicle.html#a50ae70c92d958437a2196b0ce81acff0',1,'gtfs::Vehicle::update(const transit_realtime::VehiclePosition &amp;vp)'],['../classgtfs_1_1Vehicle.html#a4cc25a17473bf7bccc39b37ef5d7c956',1,'gtfs::Vehicle::update(const transit_realtime::TripUpdate &amp;tu)']]]
 ];

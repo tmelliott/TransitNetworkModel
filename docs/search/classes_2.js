@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['normal',['normal',['../classsampling_1_1normal.html',1,'sampling']]]
+  ['intersection',['Intersection',['../classgtfs_1_1Intersection.html',1,'gtfs']]]
 ];

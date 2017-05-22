@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['n_5fparticles',['n_particles',['../classgtfs_1_1Vehicle.html#aa21babc8423abf92bbdf5e0748444f44',1,'gtfs::Vehicle']]],
-  ['next_5fid',['next_id',['../classgtfs_1_1Vehicle.html#aab535dd9953f9650e2adc351965779b1',1,'gtfs::Vehicle']]]
+  ['departure_5ftime',['departure_time',['../structgtfs_1_1StopTime.html#ad9059c8a036e22b917870bd6e6457f4b',1,'gtfs::StopTime']]]
 ];

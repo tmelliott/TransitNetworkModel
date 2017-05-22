@@ -7,15 +7,17 @@
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\hyperlink{classgtfs_1_1Vehicle_ac3f8111a611378f5f8b29f7465e48919}{Vehicle} (std\+::string id)
+\hyperlink{classgtfs_1_1Vehicle_a8838934149e47eeb7160f1755012dcd4}{Vehicle} (std\+::string id, \hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&rng)
 \item 
-\hyperlink{classgtfs_1_1Vehicle_adf892e71483b7f9005846599fd0308e6}{Vehicle} (std\+::string id, unsigned int n)
+\hyperlink{classgtfs_1_1Vehicle_a12765a61077b4be7e65ab67b63eb9fcc}{Vehicle} (std\+::string id, unsigned int n, \hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&rng)
 \item 
 \hyperlink{classgtfs_1_1Vehicle_a08c7450dd0df9406f78b30be044d27d8}{$\sim$\+Vehicle} ()
 \item 
 std\+::string \hyperlink{classgtfs_1_1Vehicle_a6b388986c9ed4af1eb86f13a3d2de8e0}{get\+\_\+id} () const
 \item 
 std\+::vector$<$ \hyperlink{classgtfs_1_1Particle}{Particle} $>$ \& \hyperlink{classgtfs_1_1Vehicle_a7b12b079c68880f00f532ca25858c368}{get\+\_\+particles} ()
+\item 
+int \hyperlink{classgtfs_1_1Vehicle_a23c0a191559e4066423d5f3cbfb70b46}{get\+\_\+delta} () const
 \item 
 \mbox{\Hypertarget{classgtfs_1_1Vehicle_aab490aeda8084cfcb8de29f0aedaa416}\label{classgtfs_1_1Vehicle_aab490aeda8084cfcb8de29f0aedaa416}} 
 void {\bfseries update} (void)
@@ -34,9 +36,6 @@ void \hyperlink{classgtfs_1_1Vehicle_a8367fc70a64b7e596422f880dbff1193}{resample
 unsigned int \hyperlink{classgtfs_1_1Vehicle_aa21babc8423abf92bbdf5e0748444f44}{n\+\_\+particles}
 \item 
 unsigned long \hyperlink{classgtfs_1_1Vehicle_aab535dd9953f9650e2adc351965779b1}{next\+\_\+id}
-\item 
-\mbox{\Hypertarget{classgtfs_1_1Vehicle_a5b3e2ea332b8433000f0cbff13a45255}\label{classgtfs_1_1Vehicle_a5b3e2ea332b8433000f0cbff13a45255}} 
-std\+::string {\bfseries trip\+\_\+id}
 \end{DoxyCompactItemize}
 
 
@@ -48,11 +47,11 @@ A representation of a physical transit vehicle (i.\+e., a bus), including the mo
 Vehicles are initialized with an ID, so it is not editable. 
 
 \subsection{Constructor \& Destructor Documentation}
-\mbox{\Hypertarget{classgtfs_1_1Vehicle_ac3f8111a611378f5f8b29f7465e48919}\label{classgtfs_1_1Vehicle_ac3f8111a611378f5f8b29f7465e48919}} 
+\mbox{\Hypertarget{classgtfs_1_1Vehicle_a8838934149e47eeb7160f1755012dcd4}\label{classgtfs_1_1Vehicle_a8838934149e47eeb7160f1755012dcd4}} 
 \index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}!Vehicle@{Vehicle}}
 \index{Vehicle@{Vehicle}!gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}}
 \subsubsection{\texorpdfstring{Vehicle()}{Vehicle()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily gtfs\+::\+Vehicle\+::\+Vehicle (\begin{DoxyParamCaption}\item[{std\+::string}]{id }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily gtfs\+::\+Vehicle\+::\+Vehicle (\begin{DoxyParamCaption}\item[{std\+::string}]{id,  }\item[{\hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&}]{rng }\end{DoxyParamCaption})}
 
 Create a \hyperlink{classgtfs_1_1Vehicle}{Vehicle} object with given ID.
 
@@ -63,11 +62,11 @@ Vehicles are created with a default number of particles.
 {\em vehicle\+\_\+id} & the ID of the vehicle as given in the G\+T\+FS feed \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{classgtfs_1_1Vehicle_adf892e71483b7f9005846599fd0308e6}\label{classgtfs_1_1Vehicle_adf892e71483b7f9005846599fd0308e6}} 
+\mbox{\Hypertarget{classgtfs_1_1Vehicle_a12765a61077b4be7e65ab67b63eb9fcc}\label{classgtfs_1_1Vehicle_a12765a61077b4be7e65ab67b63eb9fcc}} 
 \index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}!Vehicle@{Vehicle}}
 \index{Vehicle@{Vehicle}!gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}}
 \subsubsection{\texorpdfstring{Vehicle()}{Vehicle()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily gtfs\+::\+Vehicle\+::\+Vehicle (\begin{DoxyParamCaption}\item[{std\+::string}]{id,  }\item[{unsigned int}]{n }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily gtfs\+::\+Vehicle\+::\+Vehicle (\begin{DoxyParamCaption}\item[{std\+::string}]{id,  }\item[{unsigned int}]{n,  }\item[{\hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&}]{rng }\end{DoxyParamCaption})}
 
 Create a vehicle with specified number of particles, and ID.
 
@@ -98,6 +97,15 @@ To ensure particles have unique ID\textquotesingle{}s (within a vehicle), the ne
 \begin{DoxyReturn}{Returns}
 the ID for the next particle. 
 \end{DoxyReturn}
+\mbox{\Hypertarget{classgtfs_1_1Vehicle_a23c0a191559e4066423d5f3cbfb70b46}\label{classgtfs_1_1Vehicle_a23c0a191559e4066423d5f3cbfb70b46}} 
+\index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}!get\+\_\+delta@{get\+\_\+delta}}
+\index{get\+\_\+delta@{get\+\_\+delta}!gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}}
+\subsubsection{\texorpdfstring{get\+\_\+delta()}{get\_delta()}}
+{\footnotesize\ttfamily int gtfs\+::\+Vehicle\+::get\+\_\+delta (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\begin{DoxyReturn}{Returns}
+time in seconds since the previous observation 
+\end{DoxyReturn}
 \mbox{\Hypertarget{classgtfs_1_1Vehicle_a6b388986c9ed4af1eb86f13a3d2de8e0}\label{classgtfs_1_1Vehicle_a6b388986c9ed4af1eb86f13a3d2de8e0}} 
 \index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}!get\+\_\+id@{get\+\_\+id}}
 \index{get\+\_\+id@{get\+\_\+id}!gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}}
@@ -114,7 +122,7 @@ ID of vehicle
 {\footnotesize\ttfamily std\+::vector$<$ \hyperlink{classgtfs_1_1Particle}{gtfs\+::\+Particle} $>$ \& gtfs\+::\+Vehicle\+::get\+\_\+particles (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
 
 \begin{DoxyReturn}{Returns}
-vector of particle references (so they can be modifed...) 
+vector of particle references (so they can be mofidied ...) 
 \end{DoxyReturn}
 \mbox{\Hypertarget{classgtfs_1_1Vehicle_a8367fc70a64b7e596422f880dbff1193}\label{classgtfs_1_1Vehicle_a8367fc70a64b7e596422f880dbff1193}} 
 \index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}!resample@{resample}}
@@ -145,7 +153,7 @@ This does N\+OT trigger a particle update, as we may need to also insert Trip\+U
 \subsubsection{\texorpdfstring{update()}{update()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily void gtfs\+::\+Vehicle\+::update (\begin{DoxyParamCaption}\item[{const transit\+\_\+realtime\+::\+Trip\+Update \&}]{vp }\end{DoxyParamCaption})}
 
-Add Stop Time Updates to the vehicle object.
+Add \hyperlink{classgtfs_1_1Stop}{Stop} Time Updates to the vehicle object.
 
 This does N\+OT trigger a particle update, as we may need to also insert Vehicle\+Positions later.
 

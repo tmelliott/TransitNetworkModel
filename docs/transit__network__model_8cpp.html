@@ -95,8 +95,8 @@ Include dependency graph for transit_network_model.cpp:</div>
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ae615d12ff3688624b22bae729cfb3651"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="transit__network__model_8cpp.html#ae615d12ff3688624b22bae729cfb3651">load_feed</a> (std::unordered_map&lt; std::string, std::unique_ptr&lt; <a class="el" href="classgtfs_1_1Vehicle.html">gtfs::Vehicle</a> &gt; &gt; &amp;vs, std::string &amp;feed_file)</td></tr>
-<tr class="separator:ae615d12ff3688624b22bae729cfb3651"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab312ff31c4e093b701da654030fae5c2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="transit__network__model_8cpp.html#ab312ff31c4e093b701da654030fae5c2">load_feed</a> (std::unordered_map&lt; std::string, std::unique_ptr&lt; <a class="el" href="classgtfs_1_1Vehicle.html">gtfs::Vehicle</a> &gt; &gt; &amp;vs, std::string &amp;feed_file, int N, <a class="el" href="classsampling_1_1RNG.html">sampling::RNG</a> &amp;rng)</td></tr>
+<tr class="separator:ab312ff31c4e093b701da654030fae5c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ddf1224851353fc92bfbff6f499fa97"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="transit__network__model_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97">main</a> (int argc, char *argv[])</td></tr>
 <tr class="separator:a0ddf1224851353fc92bfbff6f499fa97"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -104,8 +104,8 @@ Functions</h2></td></tr>
 <div class="textblock"><dl class="section author"><dt>Author</dt><dd>Tom Elliott <a href="#" onclick="location.href='mai'+'lto:'+'tom'+'.e'+'lli'+'ot'+'t@a'+'uc'+'kla'+'nd'+'.ac'+'.n'+'z'; return false;">tom.e<span style="display: none;">.nosp@m.</span>llio<span style="display: none;">.nosp@m.</span>tt@au<span style="display: none;">.nosp@m.</span>ckla<span style="display: none;">.nosp@m.</span>nd.ac<span style="display: none;">.nosp@m.</span>.nz</a> </dd></dl>
 <dl class="section version"><dt>Version</dt><dd>0.0.1 </dd></dl>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="ae615d12ff3688624b22bae729cfb3651"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae615d12ff3688624b22bae729cfb3651">&#9670;&nbsp;</a></span>load_feed()</h2>
+<a id="ab312ff31c4e093b701da654030fae5c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab312ff31c4e093b701da654030fae5c2">&#9670;&nbsp;</a></span>load_feed()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -120,7 +120,19 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">std::string &amp;&#160;</td>
-          <td class="paramname"><em>feed_file</em>&#160;</td>
+          <td class="paramname"><em>feed_file</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>N</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classsampling_1_1RNG.html">sampling::RNG</a> &amp;&#160;</td>
+          <td class="paramname"><em>rng</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -133,6 +145,8 @@ Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">vs</td><td>reference to vector of vehicle pointers </td></tr>
     <tr><td class="paramname">feed</td><td>reference to feed </td></tr>
+    <tr><td class="paramname">N</td><td>the number of particle to initialze new vehicles with </td></tr>
+    <tr><td class="paramname">rng</td><td>reference to a random number generator </td></tr>
   </table>
   </dd>
 </dl>
@@ -175,6 +189,8 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>int 0 (although this will never happen because of the while forever loop) </dd></dl>
 <p>vehicle positions file</p>
+<p>database connection to use</p>
+<p>number of particles per vehicle</p>
 <p>An unordered map of vehicles.</p>
 <p>vehicles["VEHICLE_ID"] -&gt; object for vehicle with ID VEHICLE_ID</p>
 
