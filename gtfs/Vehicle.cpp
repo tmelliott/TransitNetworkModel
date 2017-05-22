@@ -11,7 +11,7 @@ namespace gtfs {
 	*
 	* @param vehicle_id the ID of the vehicle as given in the GTFS feed
 	*/
-	Vehicle::Vehicle (std::string id) : Vehicle::Vehicle (id, 5) {};
+	Vehicle::Vehicle (std::string id) : Vehicle::Vehicle (id, 5000) {};
 
 	/**
 	 * Create a vehicle with specified number of particles, and ID.
@@ -61,16 +61,16 @@ namespace gtfs {
 	void Vehicle::update ( void ) {
 		std::clog << "Updating particles!\n";
 
-		std::cout << "Vehicle " << id << " has the current data:"
-			<< "\n   * Trip ID: " << trip_id
-			<< "\n   * Route ID: " << route_id
-			<< "\n   * Stop Sequence: " << stop_sequence
-			<< "\n   * Arrival Time: " << arrival_time
-			<< "\n   * Departure Time: " << departure_time
-			<< "\n   * Position: " << position
-			<< "\n   * Timestamp: " << timestamp
-			<< " (" << delta << " seconds since last update)"
-			<< "\n\n";
+		// std::cout << "Vehicle " << id << " has the current data:"
+		// 	<< "\n   * Trip ID: " << trip_id
+		// 	<< "\n   * Route ID: " << route_id
+		// 	<< "\n   * Stop Sequence: " << stop_sequence
+		// 	<< "\n   * Arrival Time: " << arrival_time
+		// 	<< "\n   * Departure Time: " << departure_time
+		// 	<< "\n   * Position: " << position
+		// 	<< "\n   * Timestamp: " << timestamp
+		// 	<< " (" << delta << " seconds since last update)"
+		// 	<< "\n\n";
 	}
 
 	/**
@@ -117,18 +117,17 @@ namespace gtfs {
 			route_id = vp.trip ().route_id ();
 		}
 		// reset stop sequence if starting a new trip
-		// if (newtrip) {
-		// 	stop_sequence = 0;
-		// 	arrival_time = 0;
-		// 	departure_time = 0;
-		// }
+		if (newtrip) {
+			stop_sequence = 0;
+			arrival_time = 0;
+			departure_time = 0;
+		}
 		if (vp.stop_time_update_size () > 0) {
 			for (int i=0; i<vp.stop_time_update_size (); i++) {
 				auto& stu = vp.stop_time_update (i);
 				// only update stop sequence if it's greater than existing one
 				if (stu.has_stop_sequence () && stu.stop_sequence () >= stop_sequence) {
 					stop_sequence = stu.stop_sequence ();
-					std::cout << "stu " << i << "(" << stop_sequence << ") ";
 					if (stu.has_arrival () && stu.arrival ().has_time ()) {
 						arrival_time = stu.arrival ().time ();
 					}
@@ -164,7 +163,7 @@ namespace gtfs {
 	 */
 	void Vehicle::resample (sampling::RNG &rng) {
 		// Re-sampler based on computed weights:
-		sampling::sample smp ({0.1, 0.2, 0.1, 0.1, 0.5});
+		sampling::sample smp (particles.size ());
 		std::vector<int> pkeep (smp.get (rng));
 
 		// Move old particles into temporary holding vector

@@ -145,16 +145,25 @@ bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> >
 	}
 
 	// Cycle through feed entities and update associated vehicles, or create a new one.
-	for (auto& ent: feed.entity ()) {
-		std::string vid = ent.vehicle().vehicle ().id ();
+
+	for (int i=0; i<feed.entity_size (); i++) {
+		printf(" * Processing feed: %*d%%\r", 3, (int)(100 * (i+1) / feed.entity_size ()));
+		std::cout.flush ();
+		auto& ent = feed.entity (i);
+		std::string vid;
+		if (ent.has_trip_update () && ent.trip_update ().has_vehicle ()) {
+			vid = ent.trip_update ().vehicle ().id ();
+		} else if (ent.has_vehicle () && ent.vehicle ().has_vehicle ()) {
+			vid = ent.vehicle().vehicle ().id ();
+		}
 		if (vs.find (vid) == vs.end ()) {
-			std::cout << "Creating new vehicle " << vid << "\n";
 			vs.emplace (vid, std::unique_ptr<gtfs::Vehicle> (new gtfs::Vehicle (vid)));
 		}
 
 		if (ent.has_vehicle ()) vs[vid]->update (ent.vehicle ());
 		if (ent.has_trip_update ()) vs[vid]->update (ent.trip_update ());
 	}
+	std::cout << "\n";
 
 	return true;
 }
