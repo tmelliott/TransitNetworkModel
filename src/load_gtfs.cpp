@@ -85,6 +85,7 @@ int main (int argc, char* argv[]) {
 	// convert shapes -> segments
 	std::cout << " * Converting shapes to segments ... ";
 	convert_shapes (db);
+	std::cout << "done.\n";
 
 	return 0;
 	// STEP THREE:
@@ -120,18 +121,52 @@ static int callback(void *data, int argc, char **argv, char **azColName) {
 };
 
 void convert_shapes (sqlite3* db) {
-	char *zErrMsg = 0;
-   	int rc;
-   	char *sql;
-   	const char* data = "Callback function called";
+  sqlite3_stmt* stmt;
+  sqlite3_stmt* stmt_seg_ins;
+  sqlite3_stmt* stmt_get_seg_id;
+        if (sqlite3_prepare_v2 (db, "SELECT DISTINCT shape_id FROM shapes_tmp LIMIT 5",
+				-1, &stmt, 0) == SQLITE_OK) {
+	  std::cout << "\n   - SELECT query prepared ";
+	  
+	  if (sqlite3_prepare_v2  (db, "INSERT INTO segments (length) VALUES (?); SELECT last_insert_rowid()", -1, &stmt_seg_ins, 0) == SQLITE_OK) {
+	    std::cout << "\n   - INSERT query prepared ";
+	  } else {
+	    std::cerr << "\n   x Unable to prepare INSERT query ";
+	  }
+	  // if (sqlite3_prepare_v2 (db, "SELECT MAX(segment_id) FROM segments", -1, &stmt_get_seg_id, 0) == SQLITE_OK) {
+	  //   std::cout << "\n   - SELECT segment_id query prepared ";
+	  // } else {
+	  //   std::cerr << "\n   x Unable to prepare SELECT segment_id query ";
+	  // }
+	  
+	  while (sqlite3_step (stmt) == SQLITE_ROW) {
+	    std::string shape_id = (char*)sqlite3_column_text (stmt, 0);
+	    std::cout << "\n     + " << shape_id;
+	    // LOAD SHAPE - COMPUTE LENGTH
+	    double length = 0;
+	    
+	    // INSERT INTO segments (length) VALUES (?) - [length]
+	    int segment_id;
+	    if (sqlite3_bind_double (stmt_seg_ins, 1, length) &&
+		sqlite3_step (stmt_seg_ins) == SQLITE_ROW) {
+	      // if (sqlite3_step(stmt_get_seg_id) == SQLITE_ROW) {
+	      // 	segment_id = sqlite3_column_int (stmt_get_seg_id, 1);
+	      // }
+	      segment_id = sqlite3_column_int (stmt_seg_ins, 1);
+	    }
+	    sqlite3_reset (stmt_seg_ins);
+	    // sqlite3_reset (stmt_get_seg_id);
+	    
+	    // RETURN ID of new segment
+	    
+	    std::cout << " -> segment_id: " << segment_id;
 
-	// database is already open
-	sql = "SELECT * FROM trips LIMIT 5";
-	rc = sqlite3_exec(db, sql, callback, (void*)data, &zErrMsg);
-	if( rc != SQLITE_OK ){
-      	fprintf(stderr, "SQL error: %s\n", zErrMsg);
-      	sqlite3_free(zErrMsg);
-   	} else {
-      	fprintf(stdout, "done\n");
-   	}
+	    // INSERT INTO shapes (shape_id, leg, segment_id, shape_dist_traveled)
+	    //      VALUES (?, 0, ?, 0) - [shape_id, segment_id]
+	    
+	  }
+	  std::cout << "\n   ";
+	} else {
+	  std::cerr << "unable to prepare query.\n";
+	}
 };
