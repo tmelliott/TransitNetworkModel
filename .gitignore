@@ -1,6 +1,6 @@
 bin
 build
-data
+data/*.txt
 *.o
 gtfs.zip
 gtfs.db

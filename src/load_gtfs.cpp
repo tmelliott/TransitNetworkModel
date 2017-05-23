@@ -84,16 +84,18 @@ int main (int argc, char* argv[]) {
 	// STEP TWO:
 	// convert shapes -> segments
 	std::cout << " * Converting shapes to segments ... ";
-	convert_shapes (db);
-	std::cout << "done.\n";
+	// convert_shapes (db); // -- temporary dont let it run (though it should die since shapes_tmp not present)
+	std::cout << "\n   ... done.\n";
 
-	return 0;
 	// STEP THREE:
 	// importing intersections.json and segmenting segments:
 	std::cout << " * Importing intersections ... ";
 
 	std::cout << "done.\n";
 
+	// !! --- TOM: before you do anything, BACKUP gtfs.db -> gtfs.db-backup
+
+	return 0;
 	// Get all segments, and split into more segments
 	for (int i=0;i<1000;i++) {
 		printf(" * Segmenting shapes ... %*d%%\r", 3, (i+1)/1000 * 100);
