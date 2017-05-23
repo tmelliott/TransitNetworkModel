@@ -63,6 +63,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classgtfs_1_1Route-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">gtfs::Route Class Reference</div>  </div>
@@ -70,11 +71,127 @@ $(function() {
 <div class="contents">
 
 <p><code>#include &lt;<a class="el" href="gtfs_8h_source.html">gtfs.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a0fedb911da23329a08298a6b7fee0629"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Route.html#a0fedb911da23329a08298a6b7fee0629">Route</a> (std::string &amp;id, std::string &amp;short_name, std::string &amp;long_name, <a class="el" href="classgtfs_1_1Shape.html">Shape</a> *shape)</td></tr>
+<tr class="separator:a0fedb911da23329a08298a6b7fee0629"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abaca9da2c173387571e1628402eece98"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classgtfs_1_1Trip.html">Trip</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Route.html#abaca9da2c173387571e1628402eece98">get_trips</a> () const</td></tr>
+<tr class="separator:abaca9da2c173387571e1628402eece98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02a7b087a0989501dcfbdf4af033f1f5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classgtfs_1_1Shape.html">Shape</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Route.html#a02a7b087a0989501dcfbdf4af033f1f5">get_shape</a> () const</td></tr>
+<tr class="separator:a02a7b087a0989501dcfbdf4af033f1f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6029f8e970cc520ca03f58cb8e348b79"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Route.html#a6029f8e970cc520ca03f58cb8e348b79">add_trip</a> (<a class="el" href="classgtfs_1_1Trip.html">Trip</a> *trip)</td></tr>
+<tr class="separator:a6029f8e970cc520ca03f58cb8e348b79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>An object of this class represents a unique ROUTE in the GTFS schedule.</p>
 <p>A route is a journey from an origin to a destination by a certain sequence of stops. It has a shape and a sequence of stops. </p>
-</div><hr/>The documentation for this class was generated from the following file:<ul>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a0fedb911da23329a08298a6b7fee0629"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0fedb911da23329a08298a6b7fee0629">&#9670;&nbsp;</a></span>Route()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">gtfs::Route::Route </td>
+          <td>(</td>
+          <td class="paramtype">std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string &amp;&#160;</td>
+          <td class="paramname"><em>short_name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string &amp;&#160;</td>
+          <td class="paramname"><em>long_name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classgtfs_1_1Shape.html">Shape</a> *&#160;</td>
+          <td class="paramname"><em>shape</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Constructor for a route object, taking an ID, short and long name, and a shape pointer. </p><dl class="section return"><dt>Returns</dt><dd>[description] </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a6029f8e970cc520ca03f58cb8e348b79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6029f8e970cc520ca03f58cb8e348b79">&#9670;&nbsp;</a></span>add_trip()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void gtfs::Route::add_trip </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classgtfs_1_1Trip.html">Trip</a> *&#160;</td>
+          <td class="paramname"><em>trip</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Add a trip to a route. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">trip</td><td>a pointer to the new trip </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a02a7b087a0989501dcfbdf4af033f1f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02a7b087a0989501dcfbdf4af033f1f5">&#9670;&nbsp;</a></span>get_shape()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classgtfs_1_1Shape.html">Shape</a> * gtfs::Route::get_shape </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>a shape pointer </dd></dl>
+
+</div>
+</div>
+<a id="abaca9da2c173387571e1628402eece98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abaca9da2c173387571e1628402eece98">&#9670;&nbsp;</a></span>get_trips()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="classgtfs_1_1Trip.html">Trip</a> * &gt; gtfs::Route::get_trips </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>a vector of trip pointers </dd></dl>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
 <li>gtfs/<a class="el" href="gtfs_8h_source.html">gtfs.h</a></li>
+<li>gtfs/Route.cpp</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

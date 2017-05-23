@@ -70,18 +70,27 @@ $(function() {
 <div class="contents">
 <div class="textblock"><code>#include &lt;iostream&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
+<code>#include &lt;stdlib.h&gt;</code><br />
+<code>#include &lt;boost/program_options.hpp&gt;</code><br />
+<code>#include &lt;sqlite3.h&gt;</code><br />
 <code>#include &quot;gps.h&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for load_gtfs.cpp:</div>
 <div class="dyncontent">
 <div class="center"><img src="load__gtfs_8cpp__incl.png" border="0" usemap="#src_2load__gtfs_8cpp" alt=""/></div>
 <map name="src_2load__gtfs_8cpp" id="src_2load__gtfs_8cpp">
-<area shape="rect" id="node4" href="gps_8h_source.html" title="gps.h" alt="" coords="103,80,158,107"/>
+<area shape="rect" id="node7" href="gps_8h_source.html" title="gps.h" alt="" coords="103,80,158,107"/>
 </map>
 </div>
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:acc289d9bfee4c154322662aef55c5438"><td class="memItemLeft" align="right" valign="top"><a id="acc289d9bfee4c154322662aef55c5438"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>system</b> (std::string const &amp;s)</td></tr>
+<tr class="separator:acc289d9bfee4c154322662aef55c5438"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f311128b9bf5549011dc5d2a288a0b0"><td class="memItemLeft" align="right" valign="top"><a id="a4f311128b9bf5549011dc5d2a288a0b0"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>convert_shapes</b> (sqlite3 *db)</td></tr>
+<tr class="separator:a4f311128b9bf5549011dc5d2a288a0b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ddf1224851353fc92bfbff6f499fa97"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="load__gtfs_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97">main</a> (int argc, char *argv[])</td></tr>
 <tr class="separator:a0ddf1224851353fc92bfbff6f499fa97"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -126,6 +135,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 if everything went OK; 1 if it didn't </dd></dl>
+<p>database connection to use </p>
 
 </div>
 </div>

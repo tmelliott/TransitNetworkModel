@@ -2,16 +2,26 @@
 \label{load__gtfs_8cpp}\index{src/load\+\_\+gtfs.\+cpp@{src/load\+\_\+gtfs.\+cpp}}
 {\ttfamily \#include $<$iostream$>$}\newline
 {\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$boost/program\+\_\+options.\+hpp$>$}\newline
+{\ttfamily \#include $<$sqlite3.\+h$>$}\newline
 {\ttfamily \#include \char`\"{}gps.\+h\char`\"{}}\newline
-Include dependency graph for load\+\_\+gtfs.\+cpp\+:\nopagebreak
+Include dependency graph for load\+\_\+gtfs.\+cpp\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[width=258pt]{load__gtfs_8cpp__incl}
+\includegraphics[width=350pt]{load__gtfs_8cpp__incl}
 \end{center}
 \end{figure}
 \subsection*{Functions}
 \begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{load__gtfs_8cpp_acc289d9bfee4c154322662aef55c5438}\label{load__gtfs_8cpp_acc289d9bfee4c154322662aef55c5438}} 
+int {\bfseries system} (std\+::string const \&s)
+\item 
+\mbox{\Hypertarget{load__gtfs_8cpp_a4f311128b9bf5549011dc5d2a288a0b0}\label{load__gtfs_8cpp_a4f311128b9bf5549011dc5d2a288a0b0}} 
+void {\bfseries convert\+\_\+shapes} (sqlite3 $\ast$db)
 \item 
 int \hyperlink{load__gtfs_8cpp_a0ddf1224851353fc92bfbff6f499fa97}{main} (int argc, char $\ast$argv\mbox{[}$\,$\mbox{]})
 \end{DoxyCompactItemize}
@@ -51,3 +61,4 @@ Loads G\+T\+FS file into database and segments as necessary.
 \begin{DoxyReturn}{Returns}
 0 if everything went OK; 1 if it didn\textquotesingle{}t 
 \end{DoxyReturn}
+database connection to use 

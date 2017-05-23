@@ -4,6 +4,17 @@
 
 {\ttfamily \#include $<$gtfs.\+h$>$}
 
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classgtfs_1_1Route_a0fedb911da23329a08298a6b7fee0629}{Route} (std\+::string \&id, std\+::string \&short\+\_\+name, std\+::string \&long\+\_\+name, \hyperlink{classgtfs_1_1Shape}{Shape} $\ast$shape)
+\item 
+std\+::vector$<$ \hyperlink{classgtfs_1_1Trip}{Trip} $\ast$ $>$ \hyperlink{classgtfs_1_1Route_abaca9da2c173387571e1628402eece98}{get\+\_\+trips} () const
+\item 
+\hyperlink{classgtfs_1_1Shape}{Shape} $\ast$ \hyperlink{classgtfs_1_1Route_a02a7b087a0989501dcfbdf4af033f1f5}{get\+\_\+shape} () const
+\item 
+void \hyperlink{classgtfs_1_1Route_a6029f8e970cc520ca03f58cb8e348b79}{add\+\_\+trip} (\hyperlink{classgtfs_1_1Trip}{Trip} $\ast$trip)
+\end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
@@ -11,6 +22,51 @@ An object of this class represents a unique R\+O\+U\+TE in the G\+T\+FS schedule
 
 A route is a journey from an origin to a destination by a certain sequence of stops. It has a shape and a sequence of stops. 
 
-The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classgtfs_1_1Route_a0fedb911da23329a08298a6b7fee0629}\label{classgtfs_1_1Route_a0fedb911da23329a08298a6b7fee0629}} 
+\index{gtfs\+::\+Route@{gtfs\+::\+Route}!Route@{Route}}
+\index{Route@{Route}!gtfs\+::\+Route@{gtfs\+::\+Route}}
+\subsubsection{\texorpdfstring{Route()}{Route()}}
+{\footnotesize\ttfamily gtfs\+::\+Route\+::\+Route (\begin{DoxyParamCaption}\item[{std\+::string \&}]{id,  }\item[{std\+::string \&}]{short\+\_\+name,  }\item[{std\+::string \&}]{long\+\_\+name,  }\item[{\hyperlink{classgtfs_1_1Shape}{Shape} $\ast$}]{shape }\end{DoxyParamCaption})}
+
+Constructor for a route object, taking an ID, short and long name, and a shape pointer. \begin{DoxyReturn}{Returns}
+\mbox{[}description\mbox{]} 
+\end{DoxyReturn}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classgtfs_1_1Route_a6029f8e970cc520ca03f58cb8e348b79}\label{classgtfs_1_1Route_a6029f8e970cc520ca03f58cb8e348b79}} 
+\index{gtfs\+::\+Route@{gtfs\+::\+Route}!add\+\_\+trip@{add\+\_\+trip}}
+\index{add\+\_\+trip@{add\+\_\+trip}!gtfs\+::\+Route@{gtfs\+::\+Route}}
+\subsubsection{\texorpdfstring{add\+\_\+trip()}{add\_trip()}}
+{\footnotesize\ttfamily void gtfs\+::\+Route\+::add\+\_\+trip (\begin{DoxyParamCaption}\item[{\hyperlink{classgtfs_1_1Trip}{Trip} $\ast$}]{trip }\end{DoxyParamCaption})}
+
+Add a trip to a route. 
+\begin{DoxyParams}{Parameters}
+{\em trip} & a pointer to the new trip \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classgtfs_1_1Route_a02a7b087a0989501dcfbdf4af033f1f5}\label{classgtfs_1_1Route_a02a7b087a0989501dcfbdf4af033f1f5}} 
+\index{gtfs\+::\+Route@{gtfs\+::\+Route}!get\+\_\+shape@{get\+\_\+shape}}
+\index{get\+\_\+shape@{get\+\_\+shape}!gtfs\+::\+Route@{gtfs\+::\+Route}}
+\subsubsection{\texorpdfstring{get\+\_\+shape()}{get\_shape()}}
+{\footnotesize\ttfamily \hyperlink{classgtfs_1_1Shape}{Shape} $\ast$ gtfs\+::\+Route\+::get\+\_\+shape (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\begin{DoxyReturn}{Returns}
+a shape pointer 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classgtfs_1_1Route_abaca9da2c173387571e1628402eece98}\label{classgtfs_1_1Route_abaca9da2c173387571e1628402eece98}} 
+\index{gtfs\+::\+Route@{gtfs\+::\+Route}!get\+\_\+trips@{get\+\_\+trips}}
+\index{get\+\_\+trips@{get\+\_\+trips}!gtfs\+::\+Route@{gtfs\+::\+Route}}
+\subsubsection{\texorpdfstring{get\+\_\+trips()}{get\_trips()}}
+{\footnotesize\ttfamily std\+::vector$<$ \hyperlink{classgtfs_1_1Trip}{Trip} $\ast$ $>$ gtfs\+::\+Route\+::get\+\_\+trips (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\begin{DoxyReturn}{Returns}
+a vector of trip pointers 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
 \item 
-gtfs/gtfs.\+h\end{DoxyCompactItemize}
+gtfs/gtfs.\+h\item 
+gtfs/Route.\+cpp\end{DoxyCompactItemize}

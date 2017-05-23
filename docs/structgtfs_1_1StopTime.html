@@ -84,10 +84,10 @@ Collaboration diagram for gtfs::StopTime:</div>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a258bc40f919b9d804797d7d75f0c0eca"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classgtfs_1_1Stop.html">Stop</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structgtfs_1_1StopTime.html#a258bc40f919b9d804797d7d75f0c0eca">stop</a></td></tr>
 <tr class="separator:a258bc40f919b9d804797d7d75f0c0eca"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a121c4634f247313bb598e7dfc2bebe91"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structgtfs_1_1StopTime.html#a121c4634f247313bb598e7dfc2bebe91">arrival_time</a></td></tr>
-<tr class="separator:a121c4634f247313bb598e7dfc2bebe91"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad9059c8a036e22b917870bd6e6457f4b"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structgtfs_1_1StopTime.html#ad9059c8a036e22b917870bd6e6457f4b">departure_time</a></td></tr>
-<tr class="separator:ad9059c8a036e22b917870bd6e6457f4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a994ec898edd96675200f759acd76a57c"><td class="memItemLeft" align="right" valign="top">boost::posix_time::time_duration&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structgtfs_1_1StopTime.html#a994ec898edd96675200f759acd76a57c">arrival_time</a></td></tr>
+<tr class="separator:a994ec898edd96675200f759acd76a57c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad11c398eca36ff99f0934883141de3c9"><td class="memItemLeft" align="right" valign="top">boost::posix_time::time_duration&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structgtfs_1_1StopTime.html#ad11c398eca36ff99f0934883141de3c9">departure_time</a></td></tr>
+<tr class="separator:ad11c398eca36ff99f0934883141de3c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af8cc780329a837a49a5d6af60b74b9bf"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structgtfs_1_1StopTime.html#af8cc780329a837a49a5d6af60b74b9bf">layover</a></td></tr>
 <tr class="separator:af8cc780329a837a49a5d6af60b74b9bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -95,14 +95,14 @@ Public Attributes</h2></td></tr>
 <div class="textblock"><p>An object of the class represents an instance of a trip arriving at a stop.</p>
 <p>NOTE: this may be converted to a struct: {string stop_id, uint64_t arrival_time, uint64_t departure_time, bool layover}. </p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
-<a id="a121c4634f247313bb598e7dfc2bebe91"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a121c4634f247313bb598e7dfc2bebe91">&#9670;&nbsp;</a></span>arrival_time</h2>
+<a id="a994ec898edd96675200f759acd76a57c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a994ec898edd96675200f759acd76a57c">&#9670;&nbsp;</a></span>arrival_time</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">uint64_t gtfs::StopTime::arrival_time</td>
+          <td class="memname">boost::posix_time::time_duration gtfs::StopTime::arrival_time</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -110,14 +110,14 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="ad9059c8a036e22b917870bd6e6457f4b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad9059c8a036e22b917870bd6e6457f4b">&#9670;&nbsp;</a></span>departure_time</h2>
+<a id="ad11c398eca36ff99f0934883141de3c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad11c398eca36ff99f0934883141de3c9">&#9670;&nbsp;</a></span>departure_time</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">uint64_t gtfs::StopTime::departure_time</td>
+          <td class="memname">boost::posix_time::time_duration gtfs::StopTime::departure_time</td>
         </tr>
       </table>
 </div><div class="memdoc">
