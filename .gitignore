@@ -1,5 +1,8 @@
 bin
 build
+data
 *.o
+gtfs.zip
+gtfs.db
 
 protobuf/*.pb.*

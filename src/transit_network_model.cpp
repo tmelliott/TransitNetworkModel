@@ -85,7 +85,10 @@ int main (int argc, char* argv[]) {
 
 
 	// LOAD database into memory
-	// ...
+	std::vector<gtfs::Trip> trips;
+	std::vector<gtfs::Route> routes;
+	std::vector<gtfs::Shape> shapes;
+	std::vector<gtfs::Segment> segments;
 
 	/**
 	 * An unordered map of vehicles.
@@ -130,10 +133,10 @@ int main (int argc, char* argv[]) {
 
 /**
  * Load a feed message into vehicle object vector
- * @param vs   reference to vector of vehicle pointers
- * @param feed reference to feed
- * @param N    the number of particle to initialze new vehicles with
- * @param rng  reference to a random number generator
+ * @param vs        reference to vector of vehicle pointers
+ * @param feed_file reference to feed
+ * @param N         the number of particle to initialze new vehicles with
+ * @param rng       reference to a random number generator
  */
 bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> > &vs,
 				std::string &feed_file, int N, sampling::RNG &rng) {

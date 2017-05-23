@@ -1,5 +1,4 @@
 #include <iostream>
-#include <memory>
 
 #include "gtfs.h"
 
@@ -37,7 +36,14 @@ namespace gtfs {
 		std::clog << " -- Vehicle " << id << " deleted!!" << std::endl;
 	};
 
-	// -- GETTERS
+
+	// --- SETTERS
+
+	void Vehicle::set_trip (std::string trip_id) {
+
+	};
+
+	// --- GETTERS
 
 	/** @return ID of vehicle */
 	std::string Vehicle::get_id () const {
@@ -48,6 +54,10 @@ namespace gtfs {
 	std::vector<gtfs::Particle>& Vehicle::get_particles () {
 		return particles;
 	};
+
+	Trip* Vehicle::get_trip () {
+		return trip;
+	}
 
 	/** @return time in seconds since the previous observation */
 	int Vehicle::get_delta () const {
@@ -62,8 +72,7 @@ namespace gtfs {
 		std::clog << "Updating particles!\n";
 
 		// std::cout << "Vehicle " << id << " has the current data:"
-		// 	<< "\n   * Trip ID: " << trip_id
-		// 	<< "\n   * Route ID: " << route_id
+		// 	<< "\n   * Trip ID: " << trip->get_id ()
 		// 	<< "\n   * Stop Sequence: " << stop_sequence
 		// 	<< "\n   * Arrival Time: " << arrival_time
 		// 	<< "\n   * Departure Time: " << departure_time
@@ -87,9 +96,8 @@ namespace gtfs {
 	void Vehicle::update (const transit_realtime::VehiclePosition &vp) {
 		std::clog << "Updating vehicle location!\n";
 		if (vp.has_trip ()) { // TripDescriptor -> (trip_id, route_id)
-			if (vp.trip ().has_trip_id ()) newtrip = vp.trip ().trip_id () != trip_id;
-			trip_id = vp.trip ().trip_id ();
-			route_id = vp.trip ().route_id ();
+			if (vp.trip ().has_trip_id ()) newtrip = vp.trip ().trip_id () != trip->get_id ();
+			set_trip (vp.trip ().trip_id ());
 		}
 		if (vp.has_position ()) { // VehiclePosition -> (lat, lon)
 			position = gps::Coord(vp.position ().latitude (),
@@ -119,9 +127,8 @@ namespace gtfs {
 
 		std::clog << "Updating vehicle trip update!\n";
 		if (vp.has_trip ()) { // TripDescriptor -> (trip_id, route_id)
-			if (vp.trip ().has_trip_id ()) newtrip = vp.trip ().trip_id () != trip_id;
-			trip_id = vp.trip ().trip_id ();
-			route_id = vp.trip ().route_id ();
+			if (vp.trip ().has_trip_id ()) newtrip = vp.trip ().trip_id () != trip->get_id ();
+			set_trip (vp.trip ().trip_id ());
 		}
 		// reset stop sequence if starting a new trip
 		if (newtrip) {

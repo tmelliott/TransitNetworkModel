@@ -25,3 +25,14 @@ build/protobuf: build/protobuf.zip
 
 build/protobuf.zip: build
 	wget https://github.com/google/protobuf/archive/master.zip -O $@
+
+
+
+database: data
+	sqlite3
+
+data: gtfs.zip
+	unzip $< -d $@
+
+gtfs.zip:
+	curl -S https://cdn01.at.govt.nz/data/gtfs.zip -o gtfs.zip

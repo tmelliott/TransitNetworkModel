@@ -3,6 +3,9 @@
 
 #include <string>
 #include <vector>
+#include <memory>
+
+#include "boost/date_time/posix_time/posix_time.hpp"
 
 #include "gps.h"
 #include "gtfs-realtime.pb.h"
@@ -15,19 +18,18 @@
  *
  */
 namespace gtfs {
-	class Vehicle;       // has many particles, belongs to a trip
-	class Particle;      // belongs to a trip, refers to segment/stop by index
-	class Route;         // has many trips, has one shape and many stops
-	struct RouteStop;    // a stop belonging to a route
-	class Trip;          // belongs to a route, has many stop times
-	class Shape;         // belongs to one route (maybe more?), has 1 or more segments
-	class ShapeSegment;  // relates a shape to its child segments, along with leg/distance
-	class Segment;       // belongs to many shapes, is a Coord path + distance + speed (mean, var)
-						 // runs between (STOP,INT), (INT,INT), (INT,STOP)
-	struct ShapePt;      // A single shape point {gps::Coord, seg_dist_traveled}
-	class Intersection;  // belongs to one or more segments
-	class Stop;          // belongs to many routes
-	struct StopTime;     // belongs to one trip and one stop
+	class Vehicle;
+	class Particle;
+	class Route;
+	struct RouteStop;
+	class Trip;
+	class Shape;
+	class ShapeSegment;
+	class Segment;
+	struct ShapePt;
+	class Intersection;
+	class Stop;
+	struct StopTime;
 
 	/**
 	 * Transit vehicle class
@@ -46,8 +48,7 @@ namespace gtfs {
 		bool newtrip; /*!< if this is true, the next `update()` will reinitialise the particles */
 
 		// GTFS Realtime Fields
-		std::string trip_id;     /*!< the ID of the trip */
-		std::string route_id;    /*!< the ID of the route */
+		Trip* trip;     /*!< the ID of the trip */
 		unsigned int stop_sequence;       /*!< the stop number of the last visited stop */
 		uint64_t arrival_time;   /*!< arrival time at last stop */
 		uint64_t departure_time; /*!< departure time at last stop */
@@ -65,11 +66,16 @@ namespace gtfs {
 		Vehicle (std::string id, unsigned int n, sampling::RNG &rng);
 		~Vehicle();
 
+		// Setters
+		void set_trip (std::string trip_id);
+
 		// Getters
 		std::string get_id () const;
 		std::vector<Particle>& get_particles ();
+		Trip* get_trip ();
 
 		int get_delta () const;
+
 
 		// Methods
 		void update ( void );
@@ -135,16 +141,24 @@ namespace gtfs {
 	class Route {
 	private:
 		std::string id;                /*!< the ID of this route, as in the GTFS schedule */
-		std::vector<Trip> trips;       /*!< vector of trips that belong to this route */
+		std::vector<Trip*> trips;      /*!< vector of pointers to trips that belong to this route */
 		std::string route_short_name;  /*!< short name of the route, e.g., 090, NEX */
 		std::string route_long_name;   /*!< long name of the route, e.g., Westgate to Britomart */
+		Shape* shape;                  /*!< pointer to the route's shape */
 
 	public:
-		// --- GETTERS
+		// --- Constructor, destructor
+		Route (std::string& id,
+			   std::string& short_name,
+			   std::string& long_name,
+			   Shape* shape);
 
+		// --- GETTERS
+		std::vector<Trip*> get_trips () const;
+		Shape* get_shape () const;
 
 		// --- SETTERS
-
+		void add_trip (Trip* trip);
 	};
 
 	/**
@@ -166,12 +180,10 @@ namespace gtfs {
 		std::string id;              /*!< the ID of the trip, as per GTFS */
 		Route* route;                /*!< a pointer back to the route */
 
-		std::string trip_headsign;   /*!< display for that trip, if different from route */
-		std::string trip_short_name; /*!< trip short name, if different from route */
-
 	public:
 		// --- GETTERS
-
+		std::string get_id (void) const { return id; };
+		Route* get_route (void) { return route; };
 
 		// --- METHODS
 
@@ -211,7 +223,6 @@ namespace gtfs {
 	struct ShapeSegment {
 		Segment* segment;            /*!< pointer to the segment */
 		double shape_dist_traveled;  /*!< distance along route shape at beginning of this segment */
-		double length;               /*!< the length of this segment */
 	};
 
 	/**
@@ -231,6 +242,7 @@ namespace gtfs {
 		Intersection* start_at;      /*!< pointer to the first intersection */
 		Intersection* end_at;        /*!< pointer to the last intersection */
 		std::vector<ShapePt> path;   /*!< vector of shape points */
+		double length;               /*!< the length of this segment */
 
 		double velocity;             /*!< the mean speed along the segment */
 		double velocity_var;         /*!< the variance of speed along the segment */
@@ -248,8 +260,8 @@ namespace gtfs {
 	 * A struct describing a single shape point.
 	 */
 	struct ShapePt {
-		gps::Coord pt;
-		double seg_dist_traveled;
+		gps::Coord pt;             /*!< GPS coordinate of the point */
+		double seg_dist_traveled;  /*!< cumulative distance traveled along the shape */
 	};
 
 	/**
@@ -317,11 +329,12 @@ namespace gtfs {
 	 * 		 {string stop_id, uint64_t arrival_time, uint64_t departure_time, bool layover}.
 	 */
 	struct StopTime {
-		Stop* stop;              /*!< pointer to the stop */
-		uint64_t arrival_time;   /*!< the scheduled arrival time */
-		uint64_t departure_time; /*!< the scheduled departure time */
-		bool layover;            /*!< if true, the stop is a layover and we assume
-									  the bus doesn't leave until the scheduled departure time */
+		Stop* stop;          /*!< pointer to the stop */
+		boost::posix_time::time_duration arrival_time;   /*!< the scheduled arrival time */
+		boost::posix_time::time_duration departure_time; /*!< the scheduled departure time */
+		bool layover;        /*!< if true, the stop is a layover and we assume
+	   				              the bus doesn't leave until the
+								  scheduled departure time */
 	};
 
 

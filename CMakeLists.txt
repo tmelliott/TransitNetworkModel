@@ -9,6 +9,9 @@ include_directories(${Boost_INCLUDE_DIR})
 find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIRS})
 
+find_package(SQLite3 REQUIRED)
+include_directories(${SQLITE3_INCLUDE_DIR})
+
 include_directories(include)
 
 include_directories ("${PROJECT_SOURCE_DIR}/protobuf")
@@ -35,7 +38,10 @@ target_link_libraries(transit_network_model
 
 add_executable(load_gtfs src/load_gtfs.cpp)
 target_link_libraries(load_gtfs
+	gtfs
 	gps
+	Boost::program_options
+	${SQLITE3_LIBRARY}
 )
 
 
