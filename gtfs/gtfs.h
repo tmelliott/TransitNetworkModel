@@ -189,6 +189,10 @@ namespace gtfs {
 		Trip (std::string& id);      /*!< constructor for a trip without a route!? */
 		Trip (std::string& id, Route* route);
 
+		Trip (const Trip &t) {
+			std::cout << "Copying trip ...\n";
+		};
+
 		// --- GETTERS
 		std::string get_id (void) const { return id; };
 		Route* get_route (void) { return route; };

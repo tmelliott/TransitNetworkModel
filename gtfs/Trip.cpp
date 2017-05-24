@@ -13,10 +13,8 @@ namespace gtfs {
 	) : id (id), route (route) {
 		std::clog << " + Created trip " << id << "\n";
 		// Also going to point route to the trip
-		// route->add_trip (this);
+		route->add_trip (this);
 	};
-
-
 
 
 }; // end namespace gtfs

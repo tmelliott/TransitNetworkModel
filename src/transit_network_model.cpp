@@ -117,19 +117,23 @@ int main (int argc, char* argv[]) {
 	std::cout << "   - " << routes.size () << " routes\n";
 	std::cout << "   - " << trips.size () << " trips\n";
 
-	for (auto rp = routes.begin (); rp != routes.end (); rp++) {
-		gtfs::Route* r = &rp->second;
-		std::cout << " + Route " << r->get_id () << "\n    Trips: ";
-		std::vector<gtfs::Trip*> tv = r->get_trips ();
-		std::cout << tv.size () << " of them!\n";
-		// for (auto* tp: tv) {
-		for (int i=0; i<tv.size (); i++) {
-			std::cout << tv[i]->get_id () << ", ";
-		}
-		std::cout << "\n";
-		// std::cout << " + Trip " << t.second.get_id ()
-		// 	<< " belongs to route " << t.second.get_route ()->get_id () << "\n";
-	}
+	// for (auto rp = routes.begin (); rp != routes.end (); rp++) {
+	// 	gtfs::Route* r = &rp->second;
+	// 	std::cout << " + Route " << r->get_id () << "\n    Trips: ";
+	// 	std::vector<gtfs::Trip*> tv = r->get_trips ();
+	// 	for (int i=0; i<tv.size (); i++) {
+	// 		std::cout << tv[i]->get_id ();
+	// 		if (i < 3 && i < tv.size () - 1) {
+	// 			std::cout << ", ";
+	// 		} else if (i < tv.size () - 1) {
+	// 			std::cout << " ...";
+	// 			break;
+	// 		}
+	// 	}
+	// 	std::cout << "\n";
+	// 	// std::cout << " + Trip " << t.second.get_id ()
+	// 	// 	<< " belongs to route " << t.second.get_route ()->get_id () << "\n";
+	// }
 
 
 	return 0;
@@ -234,9 +238,12 @@ int load_gtfs_database (std::string dbname,std::string version,
 		std::string route_id = (char*)sqlite3_column_text (stmt_trips, 1);
 		auto routei = routes->find (route_id);
 		gtfs::Route* route = &routei->second;
-		trips->insert (make_pair (trip_id, gtfs::Trip(trip_id, route)));
+		// trips->insert (make_pair (trip_id, gtfs::Trip(trip_id, route)));
+		trips->emplace (std::piecewise_construct,
+						std::forward_as_tuple (trip_id),
+						std::forward_as_tuple (trip_id, route));
 		gtfs::Trip* trip = &(trips->find (trip_id))->second;
-		route->add_trip (trip);
+		// route->add_trip (trip);
 	}
 	sqlite3_finalize (stmt_trips);
 	std::cout << "\n";
