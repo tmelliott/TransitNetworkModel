@@ -91,12 +91,9 @@ int main (int argc, char* argv[]) {
 	std::cout << " * Importing intersections ... ";
 	std::vector<std::string> files {dir + "/data/intersections_trafficlights.json",
 									dir + "/data/intersections_roundabouts.json"};
-	import_intersections (db, files);
+	// import_intersections (db, files);
 	std::cout << "done.\n";
 
-	// !! --- TOM: before you do anything, BACKUP gtfs.db -> gtfs.db-backup
-
-	return 0;
 	// Get all segments, and split into more segments
 	for (int i=0;i<1000;i++) {
 		printf(" * Segmenting shapes ... %*d%%\r", 3, (i+1)/1000 * 100);

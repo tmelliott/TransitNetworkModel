@@ -3,6 +3,6 @@ build
 data/*.txt
 *.o
 gtfs.zip
-gtfs.db
+*.db
 
 protobuf/*.pb.*
