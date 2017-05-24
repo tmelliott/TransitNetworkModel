@@ -17,19 +17,21 @@
 #include <iostream>
 #include <vector>
 #include <stdlib.h>
+#include <fstream>
 
 #include <boost/program_options.hpp>
 #include <sqlite3.h>
 
 #include "gps.h"
 
+#include "json.hpp"
+
 namespace po = boost::program_options;
 
 
 int system (std::string const& s) { return system (s.c_str ()); }
-
-static int callback(void *data, int argc, char **argv, char **azColName);
 void convert_shapes (sqlite3* db);
+void import_intersections (sqlite3* db, std::vector<std::string> files);
 
 /**
  * Loads GTFS file into database and segments as necessary.
@@ -61,6 +63,9 @@ int main (int argc, char* argv[]) {
 		return 1;
 	}
 
+
+	// STEP ONE:
+	// connect to the SQLite database:
 	std::cout << "Loading GTFS data into database `" << dbname << "`\n";
 	sqlite3 *db;
 	char *zErrMsg = 0;
@@ -74,13 +79,6 @@ int main (int argc, char* argv[]) {
     	fprintf(stderr, " * Opened database successfully\n");
 	}
 
-	// // STEP ONE:
-	// // run the load_gtfs.sql script to import the txt files -> database
-	// std::cout << " * Importing GTFS text files ... ";
-	// std::cout.flush();
-	// auto so = system("cd " + dir + " && rm -f " + dbname + " && sqlite3 " + dbname + " < load_gtfs.sql");
-	// std::cout << "done: " << so << "\n";
-
 	// STEP TWO:
 	// convert shapes -> segments
 	std::cout << " * Converting shapes to segments ... ";
@@ -90,7 +88,9 @@ int main (int argc, char* argv[]) {
 	// STEP THREE:
 	// importing intersections.json and segmenting segments:
 	std::cout << " * Importing intersections ... ";
-
+	std::vector<std::string> files {//dir + "/data/intersections_trafficlights.json",
+									dir + "/data/intersections_roundabouts.json"};
+	import_intersections (db, files);
 	std::cout << "done.\n";
 
 	// !! --- TOM: before you do anything, BACKUP gtfs.db -> gtfs.db-backup
@@ -286,3 +286,157 @@ void convert_shapes (sqlite3* db) {
 	// Delete TMP tables
 	sqlite3_exec (db, "DROP TABLE shapes_tmp", NULL, NULL, NULL);
 };
+
+
+
+
+void import_intersections (sqlite3* db, std::vector<std::string> files) {
+	using json = nlohmann::json;
+
+	// read json file
+	std::vector<gps::Coord> ints;
+	std::vector<int> types; // 0 = traffic light, 1 = roundabout
+	for (auto file: files) {
+		std::ifstream f(file.c_str ());
+		json j;
+		f >> j;
+
+		int type = 0;
+		if (file.find ("roundabout") != std::string::npos) type = 1;
+
+		// get coordinates
+		for (auto i: j["elements"]) {
+			if (!i["lat"].empty () && !i["lon"].empty ()) {
+				ints.emplace_back (i["lat"], i["lon"]);
+				types.push_back (type);
+			}
+		}
+	}
+
+	std::ofstream f("ints.csv");
+	f << "lat,lng\n";
+	for (auto i: ints) f << i.lat << "," << i.lng << "\n";
+	f.close ();
+
+	// Compute distance between each 'intersection' point
+	double threshold = 40.0;
+	std::cout << "\n   + Loaded " << ints.size () << " intersections.\n";
+	int N = ints.size ();
+	std::vector<std::vector<double> > distmat (N, std::vector<double> (N, 0));
+	for (int i=0; i<N; i++) {
+		printf("   + Calculating distance matrix ... %*d%%\r", 3, 100 * (i+1) / N);
+		std::cout.flush ();
+		for (int j=i+1; j<N; j++) {
+			distmat[i][j] = ints[i].distanceTo (ints[j]);
+			distmat[j][i] = distmat[i][j];
+		}
+	}
+	std::cout << "   + Calculating distance matrix ... done.\n";
+
+	f.open("distmat.txt");
+	for (auto r: distmat) {
+		for (auto c: r) f << c << " ";
+		f << "\n";
+	}
+	f.close ();
+
+	// Kick out rows that are singletons
+	std::cout << "   + Finding groups of intersections that could be just one intersection ... ";
+	std::cout.flush ();
+	std::vector<int> wkeep;
+	for (int i=0; i<N; i++) {
+		int sum = 0;
+		for (int j=0; j<N; j++) sum += (int)(distmat[i][j] < threshold);
+		if (sum > 1) wkeep.push_back (i);
+	}
+	// dmat is a logical matrix of clumped intersections
+	N = wkeep.size ();
+	std::vector<std::vector<bool> > dmat (N, std::vector<bool> (N, 0));
+	for (int i=0; i<N; i++) {
+		for (int j=0; j<N; j++) {
+			dmat[i][j] = (distmat[wkeep[i]][wkeep[j]] < threshold);
+		}
+	}
+	std::cout << "done.\n";
+
+	f.open("dmat.txt");
+	for (auto r: dmat) {
+		for (auto c: r) f << c << " ";
+		f << "\n";
+	}
+	f.close ();
+
+	// Go through and find individual clusters
+	std::cout << "   + Identifying clusters ... \r";
+	std::cout.flush ();
+	std::vector<std::vector<int> > y;
+	for (int i=0; i<N; i++) {
+		printf("   + Identifying clusters ... %*d%%\r", 3, (int) (100 * (i+1) / N));
+		std::cout.flush ();
+		std::vector<int> xi;
+		for (int j=0; j<N; j++) {
+			if (dmat[i][j]) xi.push_back (j);
+		}
+		std::vector<int> xj;
+		for (int j=0; j<xi.size (); j++) {
+			for (int k=0; k<N; k++) {
+				if (dmat[k][xi[j]]) xj.push_back (k);
+			}
+		}
+		if (xj.size () > 0) {
+			for (int j=0; j<xj.size (); j++) for (int k=0; k<N; k++) dmat[xj[j]][k] = false;
+			y.emplace_back (xj);
+		}
+	}
+	std::cout << "   + Identifying clusters ... done.\n";
+
+	// Compute means and unify intersection clusters
+	std::cout << "   + Create new intersections in the middle of clusters ... ";
+	std::cout.flush ();
+	for (int i=0; i<y.size (); i++) {
+		auto newint = gps::Coord(0, 0);
+		for (int j=0; j<y[i].size (); j++) {
+			newint.lat += ints[wkeep[y[i][j]]].lat;
+			newint.lng += ints[wkeep[y[i][j]]].lng;
+		}
+		newint.lat = newint.lat / y[i].size ();
+		newint.lng = newint.lng / y[i].size ();
+		ints[wkeep[y[i][1]]] = newint;
+		for (int j=1; j<y[i].size (); j++) {
+			ints[wkeep[y[i][j]]] = gps::Coord(1.0/0.0, 1.0/0.0);
+		}
+	}
+	std::cout << "done.\n";
+
+	std::cout << "   + Inserting intersections into database ... ";
+	std::cout.flush ();
+
+
+	// NOTE: not yet storing the intersection type ...
+	sqlite3_stmt* stmt;
+	if (sqlite3_prepare_v2 (db, "INSERT INTO intersections (type, lat, lng) VALUES ('traffic_light',?1,?2)",
+							-1, &stmt, 0) != SQLITE_OK) {
+		std::cerr << "\n   x Error preparing insert query ";
+		return;
+	}
+	sqlite3_exec (db, "BEGIN", NULL, NULL, NULL);
+	int Nfinal = 0;
+	for (auto i: ints) {
+		if (i.lat == INFINITY || i.lng == INFINITY) continue;
+		if (sqlite3_bind_double (stmt, 1, i.lat) != SQLITE_OK ||
+			sqlite3_bind_double (stmt, 2, i.lng) != SQLITE_OK) {
+			std::cerr << "   Error binding parameters.\n";
+			return;
+		}
+		if (sqlite3_step (stmt) != SQLITE_DONE) {
+			std::cerr << "   Error running insert query.\n";
+		}
+		sqlite3_reset (stmt);
+		Nfinal++;
+	}
+	sqlite3_exec (db, "COMMIT", NULL, NULL, NULL);
+	sqlite3_finalize (stmt);
+
+	std::cout << "done.\n"
+		<< "   -> Inserted " << Nfinal << " intersections.\n";
+}

@@ -13,6 +13,7 @@ find_package(SQLite3 REQUIRED)
 include_directories(${SQLITE3_INCLUDE_DIR})
 
 include_directories(include)
+include_directories(libs)
 
 include_directories ("${PROJECT_SOURCE_DIR}/protobuf")
 add_subdirectory (protobuf)
