@@ -18,6 +18,7 @@
 #include <vector>
 #include <stdlib.h>
 #include <fstream>
+#include <algorithm>
 
 #include <boost/program_options.hpp>
 #include <sqlite3.h>
@@ -88,7 +89,7 @@ int main (int argc, char* argv[]) {
 	// STEP THREE:
 	// importing intersections.json and segmenting segments:
 	std::cout << " * Importing intersections ... ";
-	std::vector<std::string> files {//dir + "/data/intersections_trafficlights.json",
+	std::vector<std::string> files {dir + "/data/intersections_trafficlights.json",
 									dir + "/data/intersections_roundabouts.json"};
 	import_intersections (db, files);
 	std::cout << "done.\n";
@@ -313,10 +314,10 @@ void import_intersections (sqlite3* db, std::vector<std::string> files) {
 		}
 	}
 
-	std::ofstream f("ints.csv");
-	f << "lat,lng\n";
-	for (auto i: ints) f << i.lat << "," << i.lng << "\n";
-	f.close ();
+	// auto Ints = ints;
+	// ints.clear();
+	// for (int i=0; i<200; i++) ints.push_back (Ints[i]);
+
 
 	// Compute distance between each 'intersection' point
 	double threshold = 40.0;
@@ -333,12 +334,11 @@ void import_intersections (sqlite3* db, std::vector<std::string> files) {
 	}
 	std::cout << "   + Calculating distance matrix ... done.\n";
 
-	f.open("distmat.txt");
-	for (auto r: distmat) {
-		for (auto c: r) f << c << " ";
-		f << "\n";
-	}
-	f.close ();
+	// for (auto& r: distmat) {
+	// 	for (auto& c: r) printf(" %*.2f ", 8, c);
+	// 	std::cout << "\n";
+	// }
+
 
 	// Kick out rows that are singletons
 	std::cout << "   + Finding groups of intersections that could be just one intersection ... ";
@@ -359,13 +359,6 @@ void import_intersections (sqlite3* db, std::vector<std::string> files) {
 	}
 	std::cout << "done.\n";
 
-	f.open("dmat.txt");
-	for (auto r: dmat) {
-		for (auto c: r) f << c << " ";
-		f << "\n";
-	}
-	f.close ();
-
 	// Go through and find individual clusters
 	std::cout << "   + Identifying clusters ... \r";
 	std::cout.flush ();
@@ -380,7 +373,8 @@ void import_intersections (sqlite3* db, std::vector<std::string> files) {
 		std::vector<int> xj;
 		for (int j=0; j<xi.size (); j++) {
 			for (int k=0; k<N; k++) {
-				if (dmat[k][xi[j]]) xj.push_back (k);
+				if (dmat[k][xi[j]] && std::find (xj.begin(), xj.end (), k) == xj.end ())
+					xj.push_back (k);
 			}
 		}
 		if (xj.size () > 0) {
