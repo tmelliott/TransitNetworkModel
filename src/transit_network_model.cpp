@@ -41,7 +41,8 @@ int load_gtfs_database (std::string dbname, std::string version,
 						std::unordered_map<std::string, gtfs::Shape> *shapes,
 						std::unordered_map<std::string, gtfs::Segment> *segments);
 bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> > &vs,
-				std::string &feed_file, int N, sampling::RNG &rng);
+				std::string &feed_file, int N, sampling::RNG &rng,
+				std::unordered_map<std::string, gtfs::Trip> *trips);
 
 
 /**
@@ -136,7 +137,6 @@ int main (int argc, char* argv[]) {
 	// }
 
 
-	return 0;
 	/**
 	 * An unordered map of vehicles.
 	 *
@@ -151,7 +151,7 @@ int main (int argc, char* argv[]) {
 		{
 			// Load GTFS feed -> vehicles
 			for (auto file: files) {
-				if ( ! load_feed (vehicles, file, N, rng) ) {
+				if ( ! load_feed (vehicles, file, N, rng, &trips) ) {
 					std::cerr << "Unable to read file.\n";
 					return -1;
 				}
@@ -204,6 +204,10 @@ int load_gtfs_database (std::string dbname,std::string version,
 	}
 
 	std::string qry;
+
+	// Load all gtfs `shapes` into Shapes*
+	// sqlite3_stmt* stmt_shapes;
+	// qry = "SELECT shape_id, leg, segment_id, shape_dist_traveled FROM shapes"
 
 	// Load all gtfs `routes` into Routes*
 	sqlite3_stmt* stmt_routes;
@@ -262,7 +266,8 @@ int load_gtfs_database (std::string dbname,std::string version,
  * @param rng       reference to a random number generator
  */
 bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> > &vs,
-				std::string &feed_file, int N, sampling::RNG &rng) {
+				std::string &feed_file, int N, sampling::RNG &rng,
+				std::unordered_map<std::string, gtfs::Trip> *trips) {
 	transit_realtime::FeedMessage feed;
 	std::cout << "Checking for vehicle updates in feed: " << feed_file << " ... ";
 	std::fstream feed_in (feed_file, std::ios::in | std::ios::binary);
