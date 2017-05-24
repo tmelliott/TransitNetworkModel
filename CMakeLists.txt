@@ -35,6 +35,7 @@ target_link_libraries(transit_network_model
 	sampling
 	gps
 	Boost::program_options
+	${SQLITE3_LIBRARY}
 )
 
 add_executable(load_gtfs src/load_gtfs.cpp)

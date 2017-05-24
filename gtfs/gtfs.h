@@ -150,10 +150,14 @@ namespace gtfs {
 		// --- Constructor, destructor
 		Route (std::string& id,
 			   std::string& short_name,
+			   std::string& long_name);
+		Route (std::string& id,
+			   std::string& short_name,
 			   std::string& long_name,
 			   Shape* shape);
 
 		// --- GETTERS
+		std::string get_id (void) const { return id; };
 		std::vector<Trip*> get_trips () const;
 		Shape* get_shape () const;
 
@@ -181,6 +185,10 @@ namespace gtfs {
 		Route* route;                /*!< a pointer back to the route */
 
 	public:
+		// Construtors etc.
+		Trip (std::string& id);      /*!< constructor for a trip without a route!? */
+		Trip (std::string& id, Route* route);
+
 		// --- GETTERS
 		std::string get_id (void) const { return id; };
 		Route* get_route (void) { return route; };

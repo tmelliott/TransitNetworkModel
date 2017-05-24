@@ -40,7 +40,7 @@ namespace gtfs {
 	// --- SETTERS
 
 	void Vehicle::set_trip (std::string trip_id) {
-
+	  std::cout << "DOKS" << "\n";
 	};
 
 	// --- GETTERS
@@ -95,6 +95,7 @@ namespace gtfs {
 	 */
 	void Vehicle::update (const transit_realtime::VehiclePosition &vp) {
 		std::clog << "Updating vehicle location!\n";
+		
 		if (vp.has_trip ()) { // TripDescriptor -> (trip_id, route_id)
 			if (vp.trip ().has_trip_id ()) newtrip = vp.trip ().trip_id () != trip->get_id ();
 			set_trip (vp.trip ().trip_id ());

@@ -10,6 +10,13 @@ namespace gtfs {
 	Route::Route (
 		std::string& id,
 		std::string& short_name,
+		std::string& long_name
+	) : id (id), route_short_name (short_name), route_long_name (long_name) {
+		std::clog << " + Created route " << id << "\n";
+	};
+	Route::Route (
+		std::string& id,
+		std::string& short_name,
 		std::string& long_name,
 		Shape* shape
 	) : id (id), route_short_name (short_name), route_long_name (long_name), shape (shape) {};

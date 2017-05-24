@@ -110,16 +110,6 @@ int main (int argc, char* argv[]) {
 }
 
 
-static int callback(void *data, int argc, char **argv, char **azColName) {
-	int i;
-   	fprintf(stderr, "%s\n", (const char*)data);
-   	for(i=0; i<argc; i++){
-      	printf("   + %s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
-   	}
-   	printf("\n");
-   	return 0;
-};
-
 void convert_shapes (sqlite3* db) {
 	sqlite3_stmt* stmt;
 	sqlite3_stmt* stmt_get_shape;
