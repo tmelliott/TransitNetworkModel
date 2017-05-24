@@ -117,6 +117,20 @@ int main (int argc, char* argv[]) {
 	std::cout << "   - " << routes.size () << " routes\n";
 	std::cout << "   - " << trips.size () << " trips\n";
 
+	for (auto rp = routes.begin (); rp != routes.end (); rp++) {
+		gtfs::Route* r = &rp->second;
+		std::cout << " + Route " << r->get_id () << "\n    Trips: ";
+		std::vector<gtfs::Trip*> tv = r->get_trips ();
+		std::cout << tv.size () << " of them!\n";
+		// for (auto* tp: tv) {
+		for (int i=0; i<tv.size (); i++) {
+			std::cout << tv[i]->get_id () << ", ";
+		}
+		std::cout << "\n";
+		// std::cout << " + Trip " << t.second.get_id ()
+		// 	<< " belongs to route " << t.second.get_route ()->get_id () << "\n";
+	}
+
 
 	return 0;
 	/**
@@ -202,6 +216,7 @@ int load_gtfs_database (std::string dbname,std::string version,
 		std::string long_name = (char*)sqlite3_column_text (stmt_routes, 2);
 		routes->insert (make_pair (route_id, gtfs::Route(route_id, short_name, long_name)));
 	}
+	sqlite3_finalize (stmt_routes);
 
 
 	// Load all gtfs `trips` into Trips*
@@ -217,11 +232,13 @@ int load_gtfs_database (std::string dbname,std::string version,
 		// Load that trip into memory: [id, (route)]
 		std::string trip_id = (char*)sqlite3_column_text (stmt_trips, 0);
 		std::string route_id = (char*)sqlite3_column_text (stmt_trips, 1);
-		auto route = routes->find ("00254-20170503090230_v54.6");
-		// std::cout << typeid(route).name() << "\n";
-		std::cout << typeid(route->second).name () << "\n";
-		trips->emplace (trip_id, trip_id);
+		auto routei = routes->find (route_id);
+		gtfs::Route* route = &routei->second;
+		trips->insert (make_pair (trip_id, gtfs::Trip(trip_id, route)));
+		gtfs::Trip* trip = &(trips->find (trip_id))->second;
+		route->add_trip (trip);
 	}
+	sqlite3_finalize (stmt_trips);
 	std::cout << "\n";
 
 
