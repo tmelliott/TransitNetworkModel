@@ -38,9 +38,8 @@ namespace gtfs {
 
 
 	// --- SETTERS
-
-	void Vehicle::set_trip (Trip* trip) {
-		trip = trip;
+	void Vehicle::set_trip (std::shared_ptr<Trip> tp) {
+		trip = tp;
 	};
 
 	// --- GETTERS
@@ -55,7 +54,7 @@ namespace gtfs {
 		return particles;
 	};
 
-	Trip* Vehicle::get_trip () {
+	const std::shared_ptr<Trip>& Vehicle::get_trip () const {
 		return trip;
 	}
 
@@ -71,17 +70,23 @@ namespace gtfs {
 	void Vehicle::update ( void ) {
 		std::clog << "Updating particles!\n";
 
-		// std::cout << "Vehicle " << id << " has the current data:"
-		// 	<< "\n   * Trip ID: " << trip->get_id ()
-		// 	<< "\n   * Stop Sequence: " << stop_sequence
-		// 	<< "\n   * Arrival Time: " << arrival_time
-		// 	<< "\n   * Departure Time: " << departure_time
-		// 	<< "\n   * Position: " << position
-		// 	<< "\n   * Timestamp: " << timestamp
-		// 	<< " (" << delta << " seconds since last update)"
-		// 	<< "\n\n";
+		std::cout << "Vehicle " << id << " has the current data:";
+		if (trip == nullptr) {
+			std::cout << "\n   * Trip ID: null";
+		} else {
+			std::cout << "\n   * Trip ID: " << trip->get_id ();
+			std::cout << ", Route #" << trip->get_route ()->get_short_name ();
+			std::cout << ", Shape ID: " << trip->get_route ()->get_shape ()->get_id ();
+		}
+		std::cout << "\n   * Stop Sequence: " << stop_sequence
+			<< "\n   * Arrival Time: " << arrival_time
+			<< "\n   * Departure Time: " << departure_time
+			<< "\n   * Position: " << position
+			<< "\n   * Timestamp: " << timestamp
+			<< " (" << delta << " seconds since last update)"
+			<< "\n\n";
 
-		for (auto& p: particles) p.transition ();
+		// for (auto& p: particles) p.transition ();
 	}
 
 	/**
@@ -93,12 +98,17 @@ namespace gtfs {
 	 *
 	 * @param vp a vehicle position from the realtime feed
 	 */
-	void Vehicle::update (const transit_realtime::VehiclePosition &vp) {
+	void Vehicle::update (const transit_realtime::VehiclePosition &vp, GTFS &gtfs) {
 		std::clog << "Updating vehicle location!\n";
 
+		newtrip = true; // always assume a new trip unless we know otherwise
 		if (vp.has_trip ()) { // TripDescriptor -> (trip_id, route_id)
-			if (vp.trip ().has_trip_id ()) newtrip = vp.trip ().trip_id () != trip->get_id ();
-			set_trip (vp.trip ().trip_id ());
+		  	if (vp.trip ().has_trip_id () && trip != nullptr) newtrip = vp.trip ().trip_id () != trip->get_id ();
+			if (vp.trip ().has_trip_id () && newtrip) {
+				std::string trip_id = vp.trip ().trip_id ();
+				auto ti = gtfs.get_trip (trip_id);
+				if (ti != nullptr) set_trip (ti);
+			}
 		}
 		if (vp.has_position ()) { // VehiclePosition -> (lat, lon)
 			position = gps::Coord(vp.position ().latitude (),
@@ -120,16 +130,16 @@ namespace gtfs {
 	 *
 	 * @param vp a vehicle position from the realtime feed
 	 */
-	void Vehicle::update (const transit_realtime::TripUpdate &vp) {
-		return; // Ignoring trip updates (for now)
-
-
-
-
+	void Vehicle::update (const transit_realtime::TripUpdate &vp, GTFS &gtfs) {
 		std::clog << "Updating vehicle trip update!\n";
+		newtrip = true;
 		if (vp.has_trip ()) { // TripDescriptor -> (trip_id, route_id)
-			if (vp.trip ().has_trip_id ()) newtrip = vp.trip ().trip_id () != trip->get_id ();
-			set_trip (vp.trip ().trip_id ());
+		  	if (vp.trip ().has_trip_id () && trip != nullptr) newtrip = vp.trip ().trip_id () != trip->get_id ();
+			if (vp.trip ().has_trip_id () && newtrip) {
+				std::string trip_id = vp.trip ().trip_id ();
+				auto ti = gtfs.get_trip (trip_id);
+				if (ti != nullptr) set_trip (ti);
+			}
 		}
 		// reset stop sequence if starting a new trip
 		if (newtrip) {
@@ -142,6 +152,11 @@ namespace gtfs {
 				auto& stu = vp.stop_time_update (i);
 				// only update stop sequence if it's greater than existing one
 				if (stu.has_stop_sequence () && stu.stop_sequence () >= stop_sequence) {
+					if (stu.stop_sequence () > stop_sequence) {
+						// necessary to reset arrival/departure time if stop sequence is increased
+						arrival_time = 0;
+						departure_time = 0;
+					}
 					stop_sequence = stu.stop_sequence ();
 					if (stu.has_arrival () && stu.arrival ().has_time ()) {
 						arrival_time = stu.arrival ().time ();
@@ -151,12 +166,6 @@ namespace gtfs {
 					}
 				}
 			}
-		}
-		if (vp.has_timestamp () && timestamp != vp.timestamp ()) {
-			if (timestamp > 0) {
-				delta = vp.timestamp () - timestamp;
-			}
-			timestamp = vp.timestamp ();
 		}
 	};
 

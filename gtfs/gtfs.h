@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <unordered_map>
 
 #include "boost/date_time/posix_time/posix_time.hpp"
 
@@ -18,8 +19,11 @@
  *
  */
 namespace gtfs {
+    class GTFS;
+
 	class Vehicle;
 	class Particle;
+
 	class Route;
 	struct RouteStop;
 	class Trip;
@@ -30,6 +34,46 @@ namespace gtfs {
 	class Intersection;
 	class Stop;
 	struct StopTime;
+
+	/**
+	 * GTFS Schedule Information class
+	 *
+	 * This class is used to provide convenient access to the static
+	 * GTFS data stored in memory. It contains the individual objects
+	 * such as trips, routes, etc. all initializaed as interrelated classes.
+	 * Initialized once, an object of this class can be passed by reference
+	 * to any functions/classes that require access to the static
+	 * GTFS data.
+	 *
+	 * Those functions that need access are expected to know what it is
+	 * they need. For example a vehicle needs it's trip,
+	 * ```
+	 * auto trp = gtfs.trip (TRIP_ID); // A pointer to a trip object
+	 * trp->get_route ()->get_short_name ();
+	 * ```
+	 */
+	class GTFS {
+	private:
+	    std::string version_;  /*!< when initialized, the version is set. */
+		std::string database_; /*!< the database file loaded into memory. */
+
+		std::unordered_map<std::string, std::shared_ptr<Trip> > trips; /*!< A map of trip pointers */
+		std::unordered_map<std::string, std::shared_ptr<Route> > routes; /*!< A map of route objects */
+		std::unordered_map<std::string, std::shared_ptr<Shape> > shapes; /*!< A map of shape objects */
+		std::unordered_map<std::string, std::shared_ptr<Segment> > segments; /*!< A map of segment objects */
+
+	public:
+		GTFS (std::string& dbname, std::string& v);
+
+		std::shared_ptr<Trip> get_trip (std::string& t) const; // this is expected to be the most common
+		std::shared_ptr<Route> get_route (std::string& r) const;
+		std::shared_ptr<Shape> get_shape (std::string& s) const;
+
+		std::unordered_map<std::string, std::shared_ptr<Route> > get_routes (void) { return routes; };
+		std::unordered_map<std::string, std::shared_ptr<Trip> > get_trips (void) { return trips; };
+		std::unordered_map<std::string, std::shared_ptr<Shape> > get_shapes (void) { return shapes; };
+
+	};
 
 	/**
 	 * Transit vehicle class
@@ -48,7 +92,7 @@ namespace gtfs {
 		bool newtrip; /*!< if this is true, the next `update()` will reinitialise the particles */
 
 		// GTFS Realtime Fields
-		Trip* trip;     /*!< the ID of the trip */
+		std::shared_ptr<Trip> trip;     /*!< the ID of the trip */
 		unsigned int stop_sequence;       /*!< the stop number of the last visited stop */
 		uint64_t arrival_time;   /*!< arrival time at last stop */
 		uint64_t departure_time; /*!< departure time at last stop */
@@ -67,20 +111,20 @@ namespace gtfs {
 		~Vehicle();
 
 		// Setters
-		void set_trip (std::string trip_id);
+		void set_trip (std::shared_ptr<Trip> tp);
 
 		// Getters
 		std::string get_id () const;
 		std::vector<Particle>& get_particles ();
-		Trip* get_trip ();
+		const std::shared_ptr<Trip>& get_trip () const;
 
 		int get_delta () const;
 
 
 		// Methods
 		void update ( void );
-		void update (const transit_realtime::VehiclePosition &vp);
-		void update (const transit_realtime::TripUpdate &tu);
+		void update (const transit_realtime::VehiclePosition &vp, GTFS &gtfs);
+		void update (const transit_realtime::TripUpdate &tu, GTFS &gtfs);
 		unsigned long allocate_id ();
 		void resample (sampling::RNG &rng);
 	};
@@ -141,10 +185,10 @@ namespace gtfs {
 	class Route {
 	private:
 		std::string id;                /*!< the ID of this route, as in the GTFS schedule */
-		std::vector<Trip*> trips;      /*!< vector of pointers to trips that belong to this route */
+		std::vector<std::shared_ptr<Trip> > trips; /*!< vector of pointers to trips that belong to this route */
 		std::string route_short_name;  /*!< short name of the route, e.g., 090, NEX */
 		std::string route_long_name;   /*!< long name of the route, e.g., Westgate to Britomart */
-		Shape* shape;                  /*!< pointer to the route's shape */
+		std::shared_ptr<Shape> shape;  /*!< pointer to the route's shape */
 
 	public:
 		// --- Constructor, destructor
@@ -154,15 +198,17 @@ namespace gtfs {
 		Route (std::string& id,
 			   std::string& short_name,
 			   std::string& long_name,
-			   Shape* shape);
+			   std::shared_ptr<Shape> shape);
 
 		// --- GETTERS
-		std::string get_id (void) const { return id; };
-		std::vector<Trip*> get_trips () const;
-		Shape* get_shape () const;
+		const std::string& get_id (void) const { return id; };
+		std::vector<std::shared_ptr<Trip> > get_trips () const;
+		const std::string& get_short_name (void) const { return route_short_name; };
+		const std::string& get_long_name (void) const { return route_long_name; };
+		std::shared_ptr<Shape> get_shape () const;
 
 		// --- SETTERS
-		void add_trip (Trip* trip);
+		void add_trip (std::shared_ptr<Trip> trip);
 	};
 
 	/**
@@ -179,15 +225,14 @@ namespace gtfs {
 	 * A trip is an instance of a route that occurs at a specific time of day.
 	 * It has a sequence of stop times.
 	 */
-	class Trip {
+	class Trip : public std::enable_shared_from_this<Trip> {
 	private:
 		std::string id;              /*!< the ID of the trip, as per GTFS */
-		Route* route;                /*!< a pointer back to the route */
+		std::shared_ptr<Route> route;                /*!< a pointer back to the route */
 
 	public:
 		// Construtors etc.
-		Trip (std::string& id);      /*!< constructor for a trip without a route!? */
-		Trip (std::string& id, Route* route);
+		Trip (std::string& id, std::shared_ptr<Route> route);
 
 		Trip (const Trip &t) {
 			std::cout << "Copying trip ...\n";
@@ -195,7 +240,7 @@ namespace gtfs {
 
 		// --- GETTERS
 		std::string get_id (void) const { return id; };
-		Route* get_route (void) { return route; };
+		std::shared_ptr<Route> get_route (void) { return route; };
 
 		// --- METHODS
 
@@ -215,13 +260,19 @@ namespace gtfs {
 		std::vector<ShapeSegment> segments;
 
 	public:
+		Shape (std::string& id) : id (id) {};
+
 		// --- GETTERS
+		std::string get_id (void) const { return id; };
 
 		// /** @return a vector of shape points for the entire shape. */
 		// std::vector<gps::Coord> get_shape (void);
 
 		// /** @return a vector of shape segments */
-		// std::vector<ShapeSegment> get_segments (void);
+		const std::vector<ShapeSegment>& get_segments (void) const { return segments; };
+
+		// --- SETTERS
+		void add_segment (std::shared_ptr<Segment> segment, double distance);
 
 
 		// --- METHODS
@@ -233,8 +284,9 @@ namespace gtfs {
 	 * The vector order == leg (0-based sequence).
 	 */
 	struct ShapeSegment {
-		Segment* segment;            /*!< pointer to the segment */
-		double shape_dist_traveled;  /*!< distance along route shape at beginning of this segment */
+		ShapeSegment (std::shared_ptr<Segment> segment, double distance) : segment (segment), shape_dist_traveled (distance) {};
+		std::shared_ptr<Segment> segment; /*!< pointer to the segment */
+		double shape_dist_traveled;       /*!< distance along route shape at beginning of this segment */
 	};
 
 	/**

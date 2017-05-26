@@ -83,7 +83,7 @@ int main (int argc, char* argv[]) {
 	// STEP TWO:
 	// convert shapes -> segments
 	std::cout << " * Converting shapes to segments ... ";
-	// convert_shapes (db); // -- temporary dont let it run (though it should die since shapes_tmp not present)
+	convert_shapes (db); // -- temporary dont let it run (though it should die since shapes_tmp not present)
 	std::cout << "\n   ... done.\n";
 
 	// STEP THREE:
@@ -91,7 +91,7 @@ int main (int argc, char* argv[]) {
 	std::cout << " * Importing intersections ... ";
 	std::vector<std::string> files {dir + "/data/intersections_trafficlights.json",
 									dir + "/data/intersections_roundabouts.json"};
-	// import_intersections (db, files);
+	import_intersections (db, files);
 	std::cout << "done.\n";
 
 	// Get all segments, and split into more segments

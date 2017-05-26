@@ -35,14 +35,9 @@
 
 namespace po = boost::program_options;
 
-int load_gtfs_database (std::string dbname, std::string version,
-						std::unordered_map<std::string, gtfs::Trip> *trips,
-						std::unordered_map<std::string, gtfs::Route> *routes,
-						std::unordered_map<std::string, gtfs::Shape> *shapes,
-						std::unordered_map<std::string, gtfs::Segment> *segments);
 bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> > &vs,
 				std::string &feed_file, int N, sampling::RNG &rng,
-				std::unordered_map<std::string, gtfs::Trip> *trips);
+				gtfs::GTFS &gtfs);
 
 
 /**
@@ -101,40 +96,18 @@ int main (int argc, char* argv[]) {
 		version = "";
 	}
 
-	// Prepare a set of pointers to GTFS "tables"
-	// Trip -> Route -> Shape -> Segment  [[ initialize in reverse order ]]
-	std::unordered_map<std::string, gtfs::Segment> segments;
-	std::unordered_map<std::string, gtfs::Shape> shapes;
-	std::unordered_map<std::string, gtfs::Route> routes;
-	std::unordered_map<std::string, gtfs::Trip> trips;
-
-	// LOAD database into memory - returns -1 if it fails
-	if ( load_gtfs_database (dbname, version, &trips, &routes, &shapes, &segments) ) {
-	    std::cerr << " * Unable to load GTFS database.\n";
-		return -1;
-	}
+	// Load the global GTFS database object:
+	gtfs::GTFS gtfs (dbname, version);
 	std::cout << " * Database loaded into memory:\n";
+	std::cout << "   - " << gtfs.get_routes ().size () << " routes\n";
+	std::cout << "   - " << gtfs.get_trips ().size () << " trips\n";
+	std::cout << "   - " << gtfs.get_shapes ().size () << " shapes\n";
 
-	std::cout << "   - " << routes.size () << " routes\n";
-	std::cout << "   - " << trips.size () << " trips\n";
-
-	// for (auto rp = routes.begin (); rp != routes.end (); rp++) {
-	// 	gtfs::Route* r = &rp->second;
-	// 	std::cout << " + Route " << r->get_id () << "\n    Trips: ";
-	// 	std::vector<gtfs::Trip*> tv = r->get_trips ();
-	// 	for (int i=0; i<tv.size (); i++) {
-	// 		std::cout << tv[i]->get_id ();
-	// 		if (i < 3 && i < tv.size () - 1) {
-	// 			std::cout << ", ";
-	// 		} else if (i < tv.size () - 1) {
-	// 			std::cout << " ...";
-	// 			break;
-	// 		}
-	// 	}
-	// 	std::cout << "\n";
-	// 	// std::cout << " + Trip " << t.second.get_id ()
-	// 	// 	<< " belongs to route " << t.second.get_route ()->get_id () << "\n";
-	// }
+	for (auto si: gtfs.get_shapes ()) {
+		auto s = si.second;
+		std::cout << "Shape " << s->get_id () << " has "
+			<< s->get_segments ().size () << " segments:\n";
+	}
 
 
 	/**
@@ -144,21 +117,30 @@ int main (int argc, char* argv[]) {
 	 */
 	std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> > vehicles;
 	sampling::RNG rng;
-	// bool forever = true;
+	bool forever = true;
 
-	int i = 2;
-	while (i>0) {
+	// Initialize vehicles wiht _1
+	std::vector<std::string> fs {"vehicle_locations.pbz", "trip_updates.pbz"};
+	for (auto file: fs) {
+		if ( ! load_feed (vehicles, file, N, rng, gtfs) ) {
+			std::cerr << "Unable to read file.\n";
+			return -1;
+		}
+	}
+
+	while (forever) {
+		forever = false;
 		{
 			// Load GTFS feed -> vehicles
 			for (auto file: files) {
-				if ( ! load_feed (vehicles, file, N, rng, &trips) ) {
+				if ( ! load_feed (vehicles, file, N, rng, gtfs) ) {
 					std::cerr << "Unable to read file.\n";
 					return -1;
 				}
 			}
 
 			// -> triggers particle transition -> resample
-			for (auto& v: vehicles) v.second->update ();
+			// for (auto& v: vehicles) v.second->update ();
 		}
 
 		{
@@ -170,88 +152,7 @@ int main (int argc, char* argv[]) {
 			// Update ETA predictions
 
 		}
-		i--;
 	}
-
-	return 0;
-}
-
-
-/**
- * Loads GTFS tables from a given GTFS database into memory.
- *
- * The tables are stored in unordered maps that can be accessed
- * by `trip_id` key.
- *
- * @param  dbname   [description]
- * @param  trips    [description]
- * @param  routes   [description]
- * @param  shapes   [description]
- * @param  segments [description]
- * @return          [description]
- */
-int load_gtfs_database (std::string dbname,std::string version,
-						std::unordered_map<std::string, gtfs::Trip> *trips,
-						std::unordered_map<std::string, gtfs::Route> *routes,
-						std::unordered_map<std::string, gtfs::Shape> *shapes,
-						std::unordered_map<std::string, gtfs::Segment> *segments) {
-    sqlite3 *db;
-	if (sqlite3_open (dbname.c_str (), &db)) {
-	    std::cerr << " * Can't open database: " << sqlite3_errmsg (db) << "\n";
-		return -1;
-	} else {
-	    std::cout << " * Connected to database \"" << dbname << "\"\n";
-	}
-
-	std::string qry;
-
-	// Load all gtfs `shapes` into Shapes*
-	// sqlite3_stmt* stmt_shapes;
-	// qry = "SELECT shape_id, leg, segment_id, shape_dist_traveled FROM shapes"
-
-	// Load all gtfs `routes` into Routes*
-	sqlite3_stmt* stmt_routes;
-	qry = "SELECT route_id, route_short_name, route_long_name FROM routes";
-	if (version != "") qry += " WHERE route_id LIKE '%_v" + version + "'";
-	if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &stmt_routes, 0) != SQLITE_OK) {
-		std::cerr << " * Can't prepare query " << qry << "\n";
-		return -1;
-	}
-	std::cout << " * [prepared] " << qry << "\n";
-	while (sqlite3_step (stmt_routes) == SQLITE_ROW) {
-		std::string route_id = (char*)sqlite3_column_text (stmt_routes, 0);
-		std::string short_name = (char*)sqlite3_column_text (stmt_routes, 1);
-		std::string long_name = (char*)sqlite3_column_text (stmt_routes, 2);
-		routes->insert (make_pair (route_id, gtfs::Route(route_id, short_name, long_name)));
-	}
-	sqlite3_finalize (stmt_routes);
-
-
-	// Load all gtfs `trips` into Trips*
-	sqlite3_stmt* stmt_trips;
-	qry = "SELECT trip_id, route_id FROM trips";
-	if (version != "") qry += " WHERE trip_id LIKE '%_v" + version + "'";
-	if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &stmt_trips, 0) != SQLITE_OK) {
-	    std::cerr << " * Can't prepare query " << qry << "\n";
-		return -1;
-	}
-	std::cout << " * [prepared] " << qry << "\n";
-	while (sqlite3_step (stmt_trips) == SQLITE_ROW) {
-		// Load that trip into memory: [id, (route)]
-		std::string trip_id = (char*)sqlite3_column_text (stmt_trips, 0);
-		std::string route_id = (char*)sqlite3_column_text (stmt_trips, 1);
-		auto routei = routes->find (route_id);
-		gtfs::Route* route = &routei->second;
-		// trips->insert (make_pair (trip_id, gtfs::Trip(trip_id, route)));
-		trips->emplace (std::piecewise_construct,
-						std::forward_as_tuple (trip_id),
-						std::forward_as_tuple (trip_id, route));
-		gtfs::Trip* trip = &(trips->find (trip_id))->second;
-		// route->add_trip (trip);
-	}
-	sqlite3_finalize (stmt_trips);
-	std::cout << "\n";
-
 
 	return 0;
 }
@@ -267,7 +168,7 @@ int load_gtfs_database (std::string dbname,std::string version,
  */
 bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> > &vs,
 				std::string &feed_file, int N, sampling::RNG &rng,
-				std::unordered_map<std::string, gtfs::Trip> *trips) {
+				gtfs::GTFS &gtfs) {
 	transit_realtime::FeedMessage feed;
 	std::cout << "Checking for vehicle updates in feed: " << feed_file << " ... ";
 	std::fstream feed_in (feed_file, std::ios::in | std::ios::binary);
@@ -297,8 +198,8 @@ bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> >
 			// vehicle doesn't already exist - create it
 			vs.emplace (vid, std::unique_ptr<gtfs::Vehicle> (new gtfs::Vehicle (vid, N, rng)));
 		}
-		if (ent.has_vehicle ()) vs[vid]->update (ent.vehicle ());
-		if (ent.has_trip_update ()) vs[vid]->update (ent.trip_update ());
+		if (ent.has_vehicle ()) vs[vid]->update (ent.vehicle (), gtfs);
+		if (ent.has_trip_update ()) vs[vid]->update (ent.trip_update (), gtfs);
 	}
 	std::cout << "\n";
 

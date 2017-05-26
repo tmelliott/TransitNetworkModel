@@ -28,9 +28,6 @@ build/protobuf.zip: build
 
 
 
-database: data
-	sqlite3
-
 data: gtfs.zip
 	unzip $< -d $@
 
