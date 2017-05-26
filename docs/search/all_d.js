@@ -1,14 +1,16 @@
 var searchData=
 [
-  ['sample',['sample',['../classsampling_1_1sample.html',1,'sampling::sample'],['../classsampling_1_1sample.html#a7c217cc7c5f9461835062a0362bec4d1',1,'sampling::sample::sample(int N)'],['../classsampling_1_1sample.html#aa5ce07807a24cd3387626b99b38255ad',1,'sampling::sample::sample(const std::vector&lt; double &gt; &amp;wts)']]],
-  ['sampling',['sampling',['../namespacesampling.html',1,'']]],
-  ['seg_5fdist_5ftraveled',['seg_dist_traveled',['../structgtfs_1_1ShapePt.html#ad3fe477575279af15fe33e0ce36eaad2',1,'gtfs::ShapePt']]],
-  ['segment',['Segment',['../classgtfs_1_1Segment.html',1,'gtfs::Segment'],['../structgtfs_1_1ShapeSegment.html#a30eb5db589498e40bb110402314a602b',1,'gtfs::ShapeSegment::segment()']]],
-  ['set_5fseed',['set_seed',['../classsampling_1_1RNG.html#ad739124235d7d9bbe31f86d37f2fb9e5',1,'sampling::RNG']]],
-  ['shape',['Shape',['../classgtfs_1_1Shape.html',1,'gtfs']]],
-  ['shape_5fdist_5ftraveled',['shape_dist_traveled',['../structgtfs_1_1RouteStop.html#ab738c008a00eab17953ab124a86ca207',1,'gtfs::RouteStop::shape_dist_traveled()'],['../structgtfs_1_1ShapeSegment.html#a64afdd03235b9bc256fc18652c6f9c47',1,'gtfs::ShapeSegment::shape_dist_traveled()']]],
-  ['shapept',['ShapePt',['../structgtfs_1_1ShapePt.html',1,'gtfs']]],
-  ['shapesegment',['ShapeSegment',['../structgtfs_1_1ShapeSegment.html',1,'gtfs']]],
-  ['stop',['Stop',['../classgtfs_1_1Stop.html',1,'gtfs::Stop'],['../structgtfs_1_1RouteStop.html#ae14c110356572344748f08c07fea1b0c',1,'gtfs::RouteStop::stop()'],['../structgtfs_1_1StopTime.html#a258bc40f919b9d804797d7d75f0c0eca',1,'gtfs::StopTime::stop()']]],
-  ['stoptime',['StopTime',['../structgtfs_1_1StopTime.html',1,'gtfs']]]
+  ['detail',['detail',['../namespacenlohmann_1_1detail.html',1,'nlohmann']]],
+  ['n_5fparticles',['n_particles',['../classgtfs_1_1Vehicle.html#aa21babc8423abf92bbdf5e0748444f44',1,'gtfs::Vehicle']]],
+  ['negation',['negation',['../structnlohmann_1_1detail_1_1negation.html',1,'nlohmann::detail']]],
+  ['next_5fid',['next_id',['../classgtfs_1_1Vehicle.html#aab535dd9953f9650e2adc351965779b1',1,'gtfs::Vehicle']]],
+  ['nlohmann',['nlohmann',['../namespacenlohmann.html',1,'']]],
+  ['normal',['normal',['../classsampling_1_1normal.html',1,'sampling::normal'],['../classsampling_1_1normal.html#a9dfb3d0da3d1517226d102ed3acd33c1',1,'sampling::normal::normal()'],['../classsampling_1_1normal.html#a94983a66f0b0b3ef8414e8811660c797',1,'sampling::normal::normal(double mu, double sigma)']]],
+  ['null',['null',['../namespacenlohmann_1_1detail.html#a90aa5ef615aa8305e9ea20d8a947980fa37a6259cc0c1dae299a7866489dff0bd',1,'nlohmann::detail']]],
+  ['number_5ffloat',['number_float',['../namespacenlohmann_1_1detail.html#a90aa5ef615aa8305e9ea20d8a947980fad9966ecb59667235a57b4b999a649eef',1,'nlohmann::detail']]],
+  ['number_5ffloat_5ft',['number_float_t',['../classnlohmann_1_1basic__json.html#a88d6103cb3620410b35200ee8e313d97',1,'nlohmann::basic_json']]],
+  ['number_5finteger',['number_integer',['../namespacenlohmann_1_1detail.html#a90aa5ef615aa8305e9ea20d8a947980fa5763da164f8659d94a56e29df64b4bcc',1,'nlohmann::detail']]],
+  ['number_5finteger_5ft',['number_integer_t',['../classnlohmann_1_1basic__json.html#a98e611d67b7bd75307de99c9358ab2dc',1,'nlohmann::basic_json']]],
+  ['number_5funsigned',['number_unsigned',['../namespacenlohmann_1_1detail.html#a90aa5ef615aa8305e9ea20d8a947980fadce7cc8ec29055c4158828921f2f265e',1,'nlohmann::detail']]],
+  ['number_5funsigned_5ft',['number_unsigned_t',['../classnlohmann_1_1basic__json.html#ab906e29b5d83ac162e823ada2156b989',1,'nlohmann::basic_json']]]
 ];

@@ -4,6 +4,20 @@
 
 {\ttfamily \#include $<$gtfs.\+h$>$}
 
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classgtfs_1_1Shape_ace6a58f57452ab0d2830b518a0ed2bde}\label{classgtfs_1_1Shape_ace6a58f57452ab0d2830b518a0ed2bde}} 
+{\bfseries Shape} (std\+::string \&id)
+\item 
+\mbox{\Hypertarget{classgtfs_1_1Shape_ad8f8c0c5c19d4a8e840be1ed9a89de9e}\label{classgtfs_1_1Shape_ad8f8c0c5c19d4a8e840be1ed9a89de9e}} 
+std\+::string {\bfseries get\+\_\+id} (void) const
+\item 
+const std\+::vector$<$ \hyperlink{structgtfs_1_1ShapeSegment}{Shape\+Segment} $>$ \& \hyperlink{classgtfs_1_1Shape_ab6959c8c957c2548313e4cf76bd2a2dd}{get\+\_\+segments} (void) const
+\item 
+\mbox{\Hypertarget{classgtfs_1_1Shape_afb5bfd99bafb82eb085198218fe13342}\label{classgtfs_1_1Shape_afb5bfd99bafb82eb085198218fe13342}} 
+void {\bfseries add\+\_\+segment} (std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Segment}{Segment} $>$ segment, double distance)
+\end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
@@ -11,6 +25,21 @@ An object of this class represents the path a vehicles takes from origin to dest
 
 The path is made up of one or more segments, and each is associated with an initial distance traveled up until the beginning of that segment. 
 
-The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classgtfs_1_1Shape_ab6959c8c957c2548313e4cf76bd2a2dd}\label{classgtfs_1_1Shape_ab6959c8c957c2548313e4cf76bd2a2dd}} 
+\index{gtfs\+::\+Shape@{gtfs\+::\+Shape}!get\+\_\+segments@{get\+\_\+segments}}
+\index{get\+\_\+segments@{get\+\_\+segments}!gtfs\+::\+Shape@{gtfs\+::\+Shape}}
+\subsubsection{\texorpdfstring{get\+\_\+segments()}{get\_segments()}}
+{\footnotesize\ttfamily const std\+::vector$<$\hyperlink{structgtfs_1_1ShapeSegment}{Shape\+Segment}$>$\& gtfs\+::\+Shape\+::get\+\_\+segments (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+a vector of shape points for the entire shape. 
+
+a vector of shape segments 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
 \item 
-gtfs/gtfs.\+h\end{DoxyCompactItemize}
+gtfs/gtfs.\+h\item 
+gtfs/Shape.\+cpp\end{DoxyCompactItemize}

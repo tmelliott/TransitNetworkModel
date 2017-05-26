@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['sampling',['sampling',['../namespacesampling.html',1,'']]]
+  ['detail',['detail',['../namespacenlohmann_1_1detail.html',1,'nlohmann']]],
+  ['nlohmann',['nlohmann',['../namespacenlohmann.html',1,'']]]
 ];

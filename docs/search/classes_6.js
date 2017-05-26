@@ -1,10 +1,7 @@
 var searchData=
 [
-  ['sample',['sample',['../classsampling_1_1sample.html',1,'sampling']]],
-  ['segment',['Segment',['../classgtfs_1_1Segment.html',1,'gtfs']]],
-  ['shape',['Shape',['../classgtfs_1_1Shape.html',1,'gtfs']]],
-  ['shapept',['ShapePt',['../structgtfs_1_1ShapePt.html',1,'gtfs']]],
-  ['shapesegment',['ShapeSegment',['../structgtfs_1_1ShapeSegment.html',1,'gtfs']]],
-  ['stop',['Stop',['../classgtfs_1_1Stop.html',1,'gtfs']]],
-  ['stoptime',['StopTime',['../structgtfs_1_1StopTime.html',1,'gtfs']]]
+  ['has_5ffrom_5fjson',['has_from_json',['../structnlohmann_1_1detail_1_1has__from__json.html',1,'nlohmann::detail']]],
+  ['has_5fnon_5fdefault_5ffrom_5fjson',['has_non_default_from_json',['../structnlohmann_1_1detail_1_1has__non__default__from__json.html',1,'nlohmann::detail']]],
+  ['has_5fto_5fjson',['has_to_json',['../structnlohmann_1_1detail_1_1has__to__json.html',1,'nlohmann::detail']]],
+  ['hash_3c_20nlohmann_3a_3ajson_20_3e',['hash&lt; nlohmann::json &gt;',['../structstd_1_1hash_3_01nlohmann_1_1json_01_4.html',1,'std']]]
 ];

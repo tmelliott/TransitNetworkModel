@@ -4,19 +4,16 @@
 
 {\ttfamily \#include $<$gtfs.\+h$>$}
 
-
-
-Collaboration diagram for gtfs\+:\+:Shape\+Segment\+:\nopagebreak
-\begin{figure}[H]
-\begin{center}
-\leavevmode
-\includegraphics[width=186pt]{structgtfs_1_1ShapeSegment__coll__graph}
-\end{center}
-\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structgtfs_1_1ShapeSegment_af1bdb1504d16a49ab6ac8ea34da59c5f}\label{structgtfs_1_1ShapeSegment_af1bdb1504d16a49ab6ac8ea34da59c5f}} 
+{\bfseries Shape\+Segment} (std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Segment}{Segment} $>$ \hyperlink{structgtfs_1_1ShapeSegment_a3253b76a15e2645f894a75be55006e09}{segment}, double distance)
+\end{DoxyCompactItemize}
 \subsection*{Public Attributes}
 \begin{DoxyCompactItemize}
 \item 
-\hyperlink{classgtfs_1_1Segment}{Segment} $\ast$ \hyperlink{structgtfs_1_1ShapeSegment_a30eb5db589498e40bb110402314a602b}{segment}
+std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Segment}{Segment} $>$ \hyperlink{structgtfs_1_1ShapeSegment_a3253b76a15e2645f894a75be55006e09}{segment}
 \item 
 double \hyperlink{structgtfs_1_1ShapeSegment_a64afdd03235b9bc256fc18652c6f9c47}{shape\+\_\+dist\+\_\+traveled}
 \end{DoxyCompactItemize}
@@ -28,11 +25,11 @@ A struct corresponding legs of a shape with segments.
 The vector order == leg (0-\/based sequence). 
 
 \subsection{Member Data Documentation}
-\mbox{\Hypertarget{structgtfs_1_1ShapeSegment_a30eb5db589498e40bb110402314a602b}\label{structgtfs_1_1ShapeSegment_a30eb5db589498e40bb110402314a602b}} 
+\mbox{\Hypertarget{structgtfs_1_1ShapeSegment_a3253b76a15e2645f894a75be55006e09}\label{structgtfs_1_1ShapeSegment_a3253b76a15e2645f894a75be55006e09}} 
 \index{gtfs\+::\+Shape\+Segment@{gtfs\+::\+Shape\+Segment}!segment@{segment}}
 \index{segment@{segment}!gtfs\+::\+Shape\+Segment@{gtfs\+::\+Shape\+Segment}}
 \subsubsection{\texorpdfstring{segment}{segment}}
-{\footnotesize\ttfamily \hyperlink{classgtfs_1_1Segment}{Segment}$\ast$ gtfs\+::\+Shape\+Segment\+::segment}
+{\footnotesize\ttfamily std\+::shared\+\_\+ptr$<$\hyperlink{classgtfs_1_1Segment}{Segment}$>$ gtfs\+::\+Shape\+Segment\+::segment}
 
 pointer to the segment \mbox{\Hypertarget{structgtfs_1_1ShapeSegment_a64afdd03235b9bc256fc18652c6f9c47}\label{structgtfs_1_1ShapeSegment_a64afdd03235b9bc256fc18652c6f9c47}} 
 \index{gtfs\+::\+Shape\+Segment@{gtfs\+::\+Shape\+Segment}!shape\+\_\+dist\+\_\+traveled@{shape\+\_\+dist\+\_\+traveled}}

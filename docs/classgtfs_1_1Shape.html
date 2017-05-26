@@ -63,6 +63,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classgtfs_1_1Shape-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">gtfs::Shape Class Reference</div>  </div>
@@ -70,11 +71,57 @@ $(function() {
 <div class="contents">
 
 <p><code>#include &lt;<a class="el" href="gtfs_8h_source.html">gtfs.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:ace6a58f57452ab0d2830b518a0ed2bde"><td class="memItemLeft" align="right" valign="top"><a id="ace6a58f57452ab0d2830b518a0ed2bde"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Shape</b> (std::string &amp;id)</td></tr>
+<tr class="separator:ace6a58f57452ab0d2830b518a0ed2bde"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8f8c0c5c19d4a8e840be1ed9a89de9e"><td class="memItemLeft" align="right" valign="top"><a id="ad8f8c0c5c19d4a8e840be1ed9a89de9e"></a>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><b>get_id</b> (void) const</td></tr>
+<tr class="separator:ad8f8c0c5c19d4a8e840be1ed9a89de9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6959c8c957c2548313e4cf76bd2a2dd"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="structgtfs_1_1ShapeSegment.html">ShapeSegment</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Shape.html#ab6959c8c957c2548313e4cf76bd2a2dd">get_segments</a> (void) const</td></tr>
+<tr class="separator:ab6959c8c957c2548313e4cf76bd2a2dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb5bfd99bafb82eb085198218fe13342"><td class="memItemLeft" align="right" valign="top"><a id="afb5bfd99bafb82eb085198218fe13342"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>add_segment</b> (std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Segment.html">Segment</a> &gt; segment, double distance)</td></tr>
+<tr class="separator:afb5bfd99bafb82eb085198218fe13342"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>An object of this class represents the path a vehicles takes from origin to destination.</p>
 <p>The path is made up of one or more segments, and each is associated with an initial distance traveled up until the beginning of that segment. </p>
-</div><hr/>The documentation for this class was generated from the following file:<ul>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="ab6959c8c957c2548313e4cf76bd2a2dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6959c8c957c2548313e4cf76bd2a2dd">&#9670;&nbsp;</a></span>get_segments()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt;<a class="el" href="structgtfs_1_1ShapeSegment.html">ShapeSegment</a>&gt;&amp; gtfs::Shape::get_segments </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>a vector of shape points for the entire shape. </dd>
+<dd>
+a vector of shape segments </dd></dl>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
 <li>gtfs/<a class="el" href="gtfs_8h_source.html">gtfs.h</a></li>
+<li>gtfs/Shape.cpp</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

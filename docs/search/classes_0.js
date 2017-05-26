@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['coord',['Coord',['../classgps_1_1Coord.html',1,'gps']]]
+  ['adl_5fserializer',['adl_serializer',['../structnlohmann_1_1adl__serializer.html',1,'nlohmann']]]
 ];

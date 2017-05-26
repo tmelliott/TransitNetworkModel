@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['exponential',['exponential',['../classsampling_1_1exponential.html',1,'sampling']]]
+  ['basic_5fjson',['basic_json',['../classnlohmann_1_1basic__json.html',1,'nlohmann']]]
 ];

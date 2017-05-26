@@ -9,6 +9,7 @@
 {\ttfamily \#include $<$unordered\+\_\+map$>$}\newline
 {\ttfamily \#include $<$algorithm$>$}\newline
 {\ttfamily \#include $<$time.\+h$>$}\newline
+{\ttfamily \#include $<$sqlite3.\+h$>$}\newline
 {\ttfamily \#include $<$boost/program\+\_\+options.\+hpp$>$}\newline
 {\ttfamily \#include \char`\"{}gtfs-\/realtime.\+pb.\+h\char`\"{}}\newline
 {\ttfamily \#include \char`\"{}sampling.\+h\char`\"{}}\newline
@@ -25,7 +26,7 @@ Include dependency graph for transit\+\_\+network\+\_\+model.\+cpp\+:
 \subsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
-bool \hyperlink{transit__network__model_8cpp_ab312ff31c4e093b701da654030fae5c2}{load\+\_\+feed} (std\+::unordered\+\_\+map$<$ std\+::string, std\+::unique\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Vehicle}{gtfs\+::\+Vehicle} $>$ $>$ \&vs, std\+::string \&feed\+\_\+file, int N, \hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&rng)
+bool \hyperlink{transit__network__model_8cpp_a9df5b6525dce5514a8f465ea2c156e4f}{load\+\_\+feed} (std\+::unordered\+\_\+map$<$ std\+::string, std\+::unique\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Vehicle}{gtfs\+::\+Vehicle} $>$ $>$ \&vs, std\+::string \&feed\+\_\+file, int N, \hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&rng, \hyperlink{classgtfs_1_1GTFS}{gtfs\+::\+G\+T\+FS} \&gtfs)
 \item 
 int \hyperlink{transit__network__model_8cpp_a0ddf1224851353fc92bfbff6f499fa97}{main} (int argc, char $\ast$argv\mbox{[}$\,$\mbox{]})
 \end{DoxyCompactItemize}
@@ -41,11 +42,11 @@ Tom Elliott \href{mailto:tom.elliott@auckland.ac.nz}{\tt tom.\+elliott@auckland.
 
 
 \subsection{Function Documentation}
-\mbox{\Hypertarget{transit__network__model_8cpp_ab312ff31c4e093b701da654030fae5c2}\label{transit__network__model_8cpp_ab312ff31c4e093b701da654030fae5c2}} 
+\mbox{\Hypertarget{transit__network__model_8cpp_a9df5b6525dce5514a8f465ea2c156e4f}\label{transit__network__model_8cpp_a9df5b6525dce5514a8f465ea2c156e4f}} 
 \index{transit\+\_\+network\+\_\+model.\+cpp@{transit\+\_\+network\+\_\+model.\+cpp}!load\+\_\+feed@{load\+\_\+feed}}
 \index{load\+\_\+feed@{load\+\_\+feed}!transit\+\_\+network\+\_\+model.\+cpp@{transit\+\_\+network\+\_\+model.\+cpp}}
 \subsubsection{\texorpdfstring{load\+\_\+feed()}{load\_feed()}}
-{\footnotesize\ttfamily bool load\+\_\+feed (\begin{DoxyParamCaption}\item[{std\+::unordered\+\_\+map$<$ std\+::string, std\+::unique\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Vehicle}{gtfs\+::\+Vehicle} $>$ $>$ \&}]{vs,  }\item[{std\+::string \&}]{feed\+\_\+file,  }\item[{int}]{N,  }\item[{\hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&}]{rng }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily bool load\+\_\+feed (\begin{DoxyParamCaption}\item[{std\+::unordered\+\_\+map$<$ std\+::string, std\+::unique\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Vehicle}{gtfs\+::\+Vehicle} $>$ $>$ \&}]{vs,  }\item[{std\+::string \&}]{feed\+\_\+file,  }\item[{int}]{N,  }\item[{\hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&}]{rng,  }\item[{\hyperlink{classgtfs_1_1GTFS}{gtfs\+::\+G\+T\+FS} \&}]{gtfs }\end{DoxyParamCaption})}
 
 Load a feed message into vehicle object vector 
 \begin{DoxyParams}{Parameters}

@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['n_5fparticles',['n_particles',['../classgtfs_1_1Vehicle.html#aa21babc8423abf92bbdf5e0748444f44',1,'gtfs::Vehicle']]],
-  ['next_5fid',['next_id',['../classgtfs_1_1Vehicle.html#aab535dd9953f9650e2adc351965779b1',1,'gtfs::Vehicle']]],
-  ['normal',['normal',['../classsampling_1_1normal.html',1,'sampling::normal'],['../classsampling_1_1normal.html#a9dfb3d0da3d1517226d102ed3acd33c1',1,'sampling::normal::normal()'],['../classsampling_1_1normal.html#a94983a66f0b0b3ef8414e8811660c797',1,'sampling::normal::normal(double mu, double sigma)']]]
+  ['json',['json',['../namespacenlohmann.html#a2bfd99e845a2e5cd90aeaf1b1431f474',1,'nlohmann']]],
+  ['json_5fpointer',['json_pointer',['../classnlohmann_1_1basic__json_1_1json__pointer.html',1,'nlohmann::basic_json&lt; ObjectType, ArrayType, StringType, BooleanType, NumberIntegerType, NumberUnsignedType, NumberFloatType, AllocatorType, JSONSerializer &gt;::json_pointer'],['../classnlohmann_1_1basic__json_1_1json__pointer.html#abaa66b0d30811b8a8670a673c686b75a',1,'nlohmann::basic_json::json_pointer::json_pointer()']]],
+  ['json_5freverse_5fiterator',['json_reverse_iterator',['../classnlohmann_1_1basic__json_1_1json__reverse__iterator.html',1,'nlohmann::basic_json&lt; ObjectType, ArrayType, StringType, BooleanType, NumberIntegerType, NumberUnsignedType, NumberFloatType, AllocatorType, JSONSerializer &gt;::json_reverse_iterator&lt; Base &gt;'],['../classnlohmann_1_1basic__json_1_1json__reverse__iterator.html#a1270fe04d4801caf51e7464273305ba8',1,'nlohmann::basic_json::json_reverse_iterator::json_reverse_iterator(const typename base_iterator::iterator_type &amp;it) noexcept'],['../classnlohmann_1_1basic__json_1_1json__reverse__iterator.html#af04099cd32946ab37cfa6004ad5a7863',1,'nlohmann::basic_json::json_reverse_iterator::json_reverse_iterator(const base_iterator &amp;it) noexcept']]]
 ];

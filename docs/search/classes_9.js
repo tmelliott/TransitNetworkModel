@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['vehicle',['Vehicle',['../classgtfs_1_1Vehicle.html',1,'gtfs']]]
+  ['negation',['negation',['../structnlohmann_1_1detail_1_1negation.html',1,'nlohmann::detail']]],
+  ['normal',['normal',['../classsampling_1_1normal.html',1,'sampling']]]
 ];

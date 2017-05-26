@@ -71,21 +71,71 @@ $(function() {
 <div class="contents">
 
 <p><code>#include &lt;<a class="el" href="gtfs_8h_source.html">gtfs.h</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for gtfs::Trip:</div>
+<div class="dyncontent">
+<div class="center"><img src="classgtfs_1_1Trip__inherit__graph.png" border="0" usemap="#gtfs_1_1Trip_inherit__map" alt="Inheritance graph"/></div>
+<map name="gtfs_1_1Trip_inherit__map" id="gtfs_1_1Trip_inherit__map">
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for gtfs::Trip:</div>
+<div class="dyncontent">
+<div class="center"><img src="classgtfs_1_1Trip__coll__graph.png" border="0" usemap="#gtfs_1_1Trip_coll__map" alt="Collaboration graph"/></div>
+<map name="gtfs_1_1Trip_coll__map" id="gtfs_1_1Trip_coll__map">
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a3014ee32fdb5abd550ad20088c91aae6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Trip.html#a3014ee32fdb5abd550ad20088c91aae6">Trip</a> (std::string &amp;id, std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Route.html">Route</a> &gt; route)</td></tr>
+<tr class="separator:a3014ee32fdb5abd550ad20088c91aae6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb48f29b83c759f5a9242b6cf42c2ff6"><td class="memItemLeft" align="right" valign="top"><a id="adb48f29b83c759f5a9242b6cf42c2ff6"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Trip</b> (const <a class="el" href="classgtfs_1_1Trip.html">Trip</a> &amp;t)</td></tr>
+<tr class="separator:adb48f29b83c759f5a9242b6cf42c2ff6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac4c80cbf34f7c715104cc1c33b082f58"><td class="memItemLeft" align="right" valign="top"><a id="ac4c80cbf34f7c715104cc1c33b082f58"></a>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>get_id</b> (void) const</td></tr>
 <tr class="separator:ac4c80cbf34f7c715104cc1c33b082f58"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8181ea60bc504255a7a7c0850cc35575"><td class="memItemLeft" align="right" valign="top"><a id="a8181ea60bc504255a7a7c0850cc35575"></a>
-<a class="el" href="classgtfs_1_1Route.html">Route</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>get_route</b> (void)</td></tr>
-<tr class="separator:a8181ea60bc504255a7a7c0850cc35575"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b6cc135946d7e7db7bb35951987e35c"><td class="memItemLeft" align="right" valign="top"><a id="a2b6cc135946d7e7db7bb35951987e35c"></a>
+std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Route.html">Route</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>get_route</b> (void)</td></tr>
+<tr class="separator:a2b6cc135946d7e7db7bb35951987e35c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>An object of this class represents a unique TRIP in the GTFS schedule.</p>
+<div class="textblock"><p>An object of this class represents a unique TRIP in the <a class="el" href="classgtfs_1_1GTFS.html">GTFS</a> schedule.</p>
 <p>A trip is an instance of a route that occurs at a specific time of day. It has a sequence of stop times. </p>
-</div><hr/>The documentation for this class was generated from the following file:<ul>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a3014ee32fdb5abd550ad20088c91aae6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3014ee32fdb5abd550ad20088c91aae6">&#9670;&nbsp;</a></span>Trip()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">gtfs::Trip::Trip </td>
+          <td>(</td>
+          <td class="paramtype">std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Route.html">Route</a> &gt;&#160;</td>
+          <td class="paramname"><em>route</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Constructor for a trip object, taking an ID and a route pointer. </p><dl class="section return"><dt>Returns</dt><dd>[description] </dd></dl>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
 <li>gtfs/<a class="el" href="gtfs_8h_source.html">gtfs.h</a></li>
+<li>gtfs/Trip.cpp</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

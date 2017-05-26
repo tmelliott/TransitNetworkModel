@@ -74,21 +74,33 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a0fedb911da23329a08298a6b7fee0629"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Route.html#a0fedb911da23329a08298a6b7fee0629">Route</a> (std::string &amp;id, std::string &amp;short_name, std::string &amp;long_name, <a class="el" href="classgtfs_1_1Shape.html">Shape</a> *shape)</td></tr>
-<tr class="separator:a0fedb911da23329a08298a6b7fee0629"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abaca9da2c173387571e1628402eece98"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classgtfs_1_1Trip.html">Trip</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Route.html#abaca9da2c173387571e1628402eece98">get_trips</a> () const</td></tr>
-<tr class="separator:abaca9da2c173387571e1628402eece98"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a02a7b087a0989501dcfbdf4af033f1f5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classgtfs_1_1Shape.html">Shape</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Route.html#a02a7b087a0989501dcfbdf4af033f1f5">get_shape</a> () const</td></tr>
-<tr class="separator:a02a7b087a0989501dcfbdf4af033f1f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6029f8e970cc520ca03f58cb8e348b79"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Route.html#a6029f8e970cc520ca03f58cb8e348b79">add_trip</a> (<a class="el" href="classgtfs_1_1Trip.html">Trip</a> *trip)</td></tr>
-<tr class="separator:a6029f8e970cc520ca03f58cb8e348b79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32550fdfee780a26c596172184b86148"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Route.html#a32550fdfee780a26c596172184b86148">Route</a> (std::string &amp;id, std::string &amp;short_name, std::string &amp;long_name)</td></tr>
+<tr class="separator:a32550fdfee780a26c596172184b86148"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa216efacee7f9eeab810e044894d3ec0"><td class="memItemLeft" align="right" valign="top"><a id="aa216efacee7f9eeab810e044894d3ec0"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Route</b> (std::string &amp;id, std::string &amp;short_name, std::string &amp;long_name, std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Shape.html">Shape</a> &gt; shape)</td></tr>
+<tr class="separator:aa216efacee7f9eeab810e044894d3ec0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d1ee4193b52ab7b8c7eb3160850cf71"><td class="memItemLeft" align="right" valign="top"><a id="a2d1ee4193b52ab7b8c7eb3160850cf71"></a>
+const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get_id</b> (void) const</td></tr>
+<tr class="separator:a2d1ee4193b52ab7b8c7eb3160850cf71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a763ea7a09f20972019198515da6a1c05"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Trip.html">Trip</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Route.html#a763ea7a09f20972019198515da6a1c05">get_trips</a> () const</td></tr>
+<tr class="separator:a763ea7a09f20972019198515da6a1c05"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a0fcdf687d5e326b20c5043c9db874f"><td class="memItemLeft" align="right" valign="top"><a id="a2a0fcdf687d5e326b20c5043c9db874f"></a>
+const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get_short_name</b> (void) const</td></tr>
+<tr class="separator:a2a0fcdf687d5e326b20c5043c9db874f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa943d312f934a91c3a56aec19d51cc90"><td class="memItemLeft" align="right" valign="top"><a id="aa943d312f934a91c3a56aec19d51cc90"></a>
+const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get_long_name</b> (void) const</td></tr>
+<tr class="separator:aa943d312f934a91c3a56aec19d51cc90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d3d7b29be342ae806041801327762a8"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Shape.html">Shape</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Route.html#a4d3d7b29be342ae806041801327762a8">get_shape</a> () const</td></tr>
+<tr class="separator:a4d3d7b29be342ae806041801327762a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8a666e5a8f197835764874c983e6601"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Route.html#aa8a666e5a8f197835764874c983e6601">add_trip</a> (std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Trip.html">Trip</a> &gt; trip)</td></tr>
+<tr class="separator:aa8a666e5a8f197835764874c983e6601"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>An object of this class represents a unique ROUTE in the GTFS schedule.</p>
+<div class="textblock"><p>An object of this class represents a unique ROUTE in the <a class="el" href="classgtfs_1_1GTFS.html">GTFS</a> schedule.</p>
 <p>A route is a journey from an origin to a destination by a certain sequence of stops. It has a shape and a sequence of stops. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a0fedb911da23329a08298a6b7fee0629"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0fedb911da23329a08298a6b7fee0629">&#9670;&nbsp;</a></span>Route()</h2>
+<a id="a32550fdfee780a26c596172184b86148"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32550fdfee780a26c596172184b86148">&#9670;&nbsp;</a></span>Route()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -109,13 +121,7 @@ Public Member Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">std::string &amp;&#160;</td>
-          <td class="paramname"><em>long_name</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classgtfs_1_1Shape.html">Shape</a> *&#160;</td>
-          <td class="paramname"><em>shape</em>&#160;</td>
+          <td class="paramname"><em>long_name</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -129,8 +135,8 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a6029f8e970cc520ca03f58cb8e348b79"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6029f8e970cc520ca03f58cb8e348b79">&#9670;&nbsp;</a></span>add_trip()</h2>
+<a id="aa8a666e5a8f197835764874c983e6601"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8a666e5a8f197835764874c983e6601">&#9670;&nbsp;</a></span>add_trip()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -138,7 +144,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void gtfs::Route::add_trip </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classgtfs_1_1Trip.html">Trip</a> *&#160;</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Trip.html">Trip</a> &gt;&#160;</td>
           <td class="paramname"><em>trip</em></td><td>)</td>
           <td></td>
         </tr>
@@ -153,14 +159,14 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a02a7b087a0989501dcfbdf4af033f1f5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a02a7b087a0989501dcfbdf4af033f1f5">&#9670;&nbsp;</a></span>get_shape()</h2>
+<a id="a4d3d7b29be342ae806041801327762a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d3d7b29be342ae806041801327762a8">&#9670;&nbsp;</a></span>get_shape()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classgtfs_1_1Shape.html">Shape</a> * gtfs::Route::get_shape </td>
+          <td class="memname">std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Shape.html">Shape</a> &gt; gtfs::Route::get_shape </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -171,15 +177,16 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="abaca9da2c173387571e1628402eece98"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abaca9da2c173387571e1628402eece98">&#9670;&nbsp;</a></span>get_trips()</h2>
+<a id="a763ea7a09f20972019198515da6a1c05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a763ea7a09f20972019198515da6a1c05">&#9670;&nbsp;</a></span>get_trips()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt; <a class="el" href="classgtfs_1_1Trip.html">Trip</a> * &gt; gtfs::Route::get_trips </td>
+          <td class="memname">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Trip.html">Trip</a> &gt; &gt; gtfs::Route::get_trips </td>
           <td>(</td>
+          <td class="paramtype">void&#160;</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
         </tr>

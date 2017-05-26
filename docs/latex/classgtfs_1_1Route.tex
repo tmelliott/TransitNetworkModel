@@ -7,27 +7,39 @@
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\hyperlink{classgtfs_1_1Route_a0fedb911da23329a08298a6b7fee0629}{Route} (std\+::string \&id, std\+::string \&short\+\_\+name, std\+::string \&long\+\_\+name, \hyperlink{classgtfs_1_1Shape}{Shape} $\ast$shape)
+\hyperlink{classgtfs_1_1Route_a32550fdfee780a26c596172184b86148}{Route} (std\+::string \&id, std\+::string \&short\+\_\+name, std\+::string \&long\+\_\+name)
 \item 
-std\+::vector$<$ \hyperlink{classgtfs_1_1Trip}{Trip} $\ast$ $>$ \hyperlink{classgtfs_1_1Route_abaca9da2c173387571e1628402eece98}{get\+\_\+trips} () const
+\mbox{\Hypertarget{classgtfs_1_1Route_aa216efacee7f9eeab810e044894d3ec0}\label{classgtfs_1_1Route_aa216efacee7f9eeab810e044894d3ec0}} 
+{\bfseries Route} (std\+::string \&id, std\+::string \&short\+\_\+name, std\+::string \&long\+\_\+name, std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Shape}{Shape} $>$ shape)
 \item 
-\hyperlink{classgtfs_1_1Shape}{Shape} $\ast$ \hyperlink{classgtfs_1_1Route_a02a7b087a0989501dcfbdf4af033f1f5}{get\+\_\+shape} () const
+\mbox{\Hypertarget{classgtfs_1_1Route_a2d1ee4193b52ab7b8c7eb3160850cf71}\label{classgtfs_1_1Route_a2d1ee4193b52ab7b8c7eb3160850cf71}} 
+const std\+::string \& {\bfseries get\+\_\+id} (void) const
 \item 
-void \hyperlink{classgtfs_1_1Route_a6029f8e970cc520ca03f58cb8e348b79}{add\+\_\+trip} (\hyperlink{classgtfs_1_1Trip}{Trip} $\ast$trip)
+std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Trip}{Trip} $>$ $>$ \hyperlink{classgtfs_1_1Route_a763ea7a09f20972019198515da6a1c05}{get\+\_\+trips} () const
+\item 
+\mbox{\Hypertarget{classgtfs_1_1Route_a2a0fcdf687d5e326b20c5043c9db874f}\label{classgtfs_1_1Route_a2a0fcdf687d5e326b20c5043c9db874f}} 
+const std\+::string \& {\bfseries get\+\_\+short\+\_\+name} (void) const
+\item 
+\mbox{\Hypertarget{classgtfs_1_1Route_aa943d312f934a91c3a56aec19d51cc90}\label{classgtfs_1_1Route_aa943d312f934a91c3a56aec19d51cc90}} 
+const std\+::string \& {\bfseries get\+\_\+long\+\_\+name} (void) const
+\item 
+std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Shape}{Shape} $>$ \hyperlink{classgtfs_1_1Route_a4d3d7b29be342ae806041801327762a8}{get\+\_\+shape} () const
+\item 
+void \hyperlink{classgtfs_1_1Route_aa8a666e5a8f197835764874c983e6601}{add\+\_\+trip} (std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Trip}{Trip} $>$ trip)
 \end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
-An object of this class represents a unique R\+O\+U\+TE in the G\+T\+FS schedule.
+An object of this class represents a unique R\+O\+U\+TE in the \hyperlink{classgtfs_1_1GTFS}{G\+T\+FS} schedule.
 
 A route is a journey from an origin to a destination by a certain sequence of stops. It has a shape and a sequence of stops. 
 
 \subsection{Constructor \& Destructor Documentation}
-\mbox{\Hypertarget{classgtfs_1_1Route_a0fedb911da23329a08298a6b7fee0629}\label{classgtfs_1_1Route_a0fedb911da23329a08298a6b7fee0629}} 
+\mbox{\Hypertarget{classgtfs_1_1Route_a32550fdfee780a26c596172184b86148}\label{classgtfs_1_1Route_a32550fdfee780a26c596172184b86148}} 
 \index{gtfs\+::\+Route@{gtfs\+::\+Route}!Route@{Route}}
 \index{Route@{Route}!gtfs\+::\+Route@{gtfs\+::\+Route}}
 \subsubsection{\texorpdfstring{Route()}{Route()}}
-{\footnotesize\ttfamily gtfs\+::\+Route\+::\+Route (\begin{DoxyParamCaption}\item[{std\+::string \&}]{id,  }\item[{std\+::string \&}]{short\+\_\+name,  }\item[{std\+::string \&}]{long\+\_\+name,  }\item[{\hyperlink{classgtfs_1_1Shape}{Shape} $\ast$}]{shape }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily gtfs\+::\+Route\+::\+Route (\begin{DoxyParamCaption}\item[{std\+::string \&}]{id,  }\item[{std\+::string \&}]{short\+\_\+name,  }\item[{std\+::string \&}]{long\+\_\+name }\end{DoxyParamCaption})}
 
 Constructor for a route object, taking an ID, short and long name, and a shape pointer. \begin{DoxyReturn}{Returns}
 \mbox{[}description\mbox{]} 
@@ -35,31 +47,31 @@ Constructor for a route object, taking an ID, short and long name, and a shape p
 
 
 \subsection{Member Function Documentation}
-\mbox{\Hypertarget{classgtfs_1_1Route_a6029f8e970cc520ca03f58cb8e348b79}\label{classgtfs_1_1Route_a6029f8e970cc520ca03f58cb8e348b79}} 
+\mbox{\Hypertarget{classgtfs_1_1Route_aa8a666e5a8f197835764874c983e6601}\label{classgtfs_1_1Route_aa8a666e5a8f197835764874c983e6601}} 
 \index{gtfs\+::\+Route@{gtfs\+::\+Route}!add\+\_\+trip@{add\+\_\+trip}}
 \index{add\+\_\+trip@{add\+\_\+trip}!gtfs\+::\+Route@{gtfs\+::\+Route}}
 \subsubsection{\texorpdfstring{add\+\_\+trip()}{add\_trip()}}
-{\footnotesize\ttfamily void gtfs\+::\+Route\+::add\+\_\+trip (\begin{DoxyParamCaption}\item[{\hyperlink{classgtfs_1_1Trip}{Trip} $\ast$}]{trip }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily void gtfs\+::\+Route\+::add\+\_\+trip (\begin{DoxyParamCaption}\item[{std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Trip}{Trip} $>$}]{trip }\end{DoxyParamCaption})}
 
 Add a trip to a route. 
 \begin{DoxyParams}{Parameters}
 {\em trip} & a pointer to the new trip \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{classgtfs_1_1Route_a02a7b087a0989501dcfbdf4af033f1f5}\label{classgtfs_1_1Route_a02a7b087a0989501dcfbdf4af033f1f5}} 
+\mbox{\Hypertarget{classgtfs_1_1Route_a4d3d7b29be342ae806041801327762a8}\label{classgtfs_1_1Route_a4d3d7b29be342ae806041801327762a8}} 
 \index{gtfs\+::\+Route@{gtfs\+::\+Route}!get\+\_\+shape@{get\+\_\+shape}}
 \index{get\+\_\+shape@{get\+\_\+shape}!gtfs\+::\+Route@{gtfs\+::\+Route}}
 \subsubsection{\texorpdfstring{get\+\_\+shape()}{get\_shape()}}
-{\footnotesize\ttfamily \hyperlink{classgtfs_1_1Shape}{Shape} $\ast$ gtfs\+::\+Route\+::get\+\_\+shape (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+{\footnotesize\ttfamily std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Shape}{Shape} $>$ gtfs\+::\+Route\+::get\+\_\+shape (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
 \begin{DoxyReturn}{Returns}
 a shape pointer 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classgtfs_1_1Route_abaca9da2c173387571e1628402eece98}\label{classgtfs_1_1Route_abaca9da2c173387571e1628402eece98}} 
+\mbox{\Hypertarget{classgtfs_1_1Route_a763ea7a09f20972019198515da6a1c05}\label{classgtfs_1_1Route_a763ea7a09f20972019198515da6a1c05}} 
 \index{gtfs\+::\+Route@{gtfs\+::\+Route}!get\+\_\+trips@{get\+\_\+trips}}
 \index{get\+\_\+trips@{get\+\_\+trips}!gtfs\+::\+Route@{gtfs\+::\+Route}}
 \subsubsection{\texorpdfstring{get\+\_\+trips()}{get\_trips()}}
-{\footnotesize\ttfamily std\+::vector$<$ \hyperlink{classgtfs_1_1Trip}{Trip} $\ast$ $>$ gtfs\+::\+Route\+::get\+\_\+trips (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+{\footnotesize\ttfamily std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Trip}{Trip} $>$ $>$ gtfs\+::\+Route\+::get\+\_\+trips (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption}) const}
 
 \begin{DoxyReturn}{Returns}
 a vector of trip pointers 

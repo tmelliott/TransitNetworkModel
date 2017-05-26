@@ -4,22 +4,60 @@
 
 {\ttfamily \#include $<$gtfs.\+h$>$}
 
+
+
+Inheritance diagram for gtfs\+:\+:Trip\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=179pt]{classgtfs_1_1Trip__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for gtfs\+:\+:Trip\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=179pt]{classgtfs_1_1Trip__coll__graph}
+\end{center}
+\end{figure}
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
+\item 
+\hyperlink{classgtfs_1_1Trip_a3014ee32fdb5abd550ad20088c91aae6}{Trip} (std\+::string \&id, std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Route}{Route} $>$ route)
+\item 
+\mbox{\Hypertarget{classgtfs_1_1Trip_adb48f29b83c759f5a9242b6cf42c2ff6}\label{classgtfs_1_1Trip_adb48f29b83c759f5a9242b6cf42c2ff6}} 
+{\bfseries Trip} (const \hyperlink{classgtfs_1_1Trip}{Trip} \&t)
 \item 
 \mbox{\Hypertarget{classgtfs_1_1Trip_ac4c80cbf34f7c715104cc1c33b082f58}\label{classgtfs_1_1Trip_ac4c80cbf34f7c715104cc1c33b082f58}} 
 std\+::string {\bfseries get\+\_\+id} (void) const
 \item 
-\mbox{\Hypertarget{classgtfs_1_1Trip_a8181ea60bc504255a7a7c0850cc35575}\label{classgtfs_1_1Trip_a8181ea60bc504255a7a7c0850cc35575}} 
-\hyperlink{classgtfs_1_1Route}{Route} $\ast$ {\bfseries get\+\_\+route} (void)
+\mbox{\Hypertarget{classgtfs_1_1Trip_a2b6cc135946d7e7db7bb35951987e35c}\label{classgtfs_1_1Trip_a2b6cc135946d7e7db7bb35951987e35c}} 
+std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Route}{Route} $>$ {\bfseries get\+\_\+route} (void)
 \end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
-An object of this class represents a unique T\+R\+IP in the G\+T\+FS schedule.
+An object of this class represents a unique T\+R\+IP in the \hyperlink{classgtfs_1_1GTFS}{G\+T\+FS} schedule.
 
 A trip is an instance of a route that occurs at a specific time of day. It has a sequence of stop times. 
 
-The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classgtfs_1_1Trip_a3014ee32fdb5abd550ad20088c91aae6}\label{classgtfs_1_1Trip_a3014ee32fdb5abd550ad20088c91aae6}} 
+\index{gtfs\+::\+Trip@{gtfs\+::\+Trip}!Trip@{Trip}}
+\index{Trip@{Trip}!gtfs\+::\+Trip@{gtfs\+::\+Trip}}
+\subsubsection{\texorpdfstring{Trip()}{Trip()}}
+{\footnotesize\ttfamily gtfs\+::\+Trip\+::\+Trip (\begin{DoxyParamCaption}\item[{std\+::string \&}]{id,  }\item[{std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Route}{Route} $>$}]{route }\end{DoxyParamCaption})}
+
+Constructor for a trip object, taking an ID and a route pointer. \begin{DoxyReturn}{Returns}
+\mbox{[}description\mbox{]} 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
 \item 
-gtfs/gtfs.\+h\end{DoxyCompactItemize}
+gtfs/gtfs.\+h\item 
+gtfs/Trip.\+cpp\end{DoxyCompactItemize}

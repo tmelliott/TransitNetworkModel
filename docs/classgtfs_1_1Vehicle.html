@@ -81,25 +81,25 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a12765a61077b4be7e65ab67b63eb9fcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a08c7450dd0df9406f78b30be044d27d8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Vehicle.html#a08c7450dd0df9406f78b30be044d27d8">~Vehicle</a> ()</td></tr>
 <tr class="separator:a08c7450dd0df9406f78b30be044d27d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad8f6cf91e89d6ba1199bf805c0b67b98"><td class="memItemLeft" align="right" valign="top"><a id="ad8f6cf91e89d6ba1199bf805c0b67b98"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>set_trip</b> (std::string trip_id)</td></tr>
-<tr class="separator:ad8f6cf91e89d6ba1199bf805c0b67b98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47ceaf4bb31c01dd4b26a12f1b7b7089"><td class="memItemLeft" align="right" valign="top"><a id="a47ceaf4bb31c01dd4b26a12f1b7b7089"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>set_trip</b> (std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Trip.html">Trip</a> &gt; tp)</td></tr>
+<tr class="separator:a47ceaf4bb31c01dd4b26a12f1b7b7089"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6b388986c9ed4af1eb86f13a3d2de8e0"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Vehicle.html#a6b388986c9ed4af1eb86f13a3d2de8e0">get_id</a> () const</td></tr>
 <tr class="separator:a6b388986c9ed4af1eb86f13a3d2de8e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7b12b079c68880f00f532ca25858c368"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classgtfs_1_1Particle.html">Particle</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Vehicle.html#a7b12b079c68880f00f532ca25858c368">get_particles</a> ()</td></tr>
 <tr class="separator:a7b12b079c68880f00f532ca25858c368"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a71319d7bb44820a5bfc418f363d2d77d"><td class="memItemLeft" align="right" valign="top"><a id="a71319d7bb44820a5bfc418f363d2d77d"></a>
-<a class="el" href="classgtfs_1_1Trip.html">Trip</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>get_trip</b> ()</td></tr>
-<tr class="separator:a71319d7bb44820a5bfc418f363d2d77d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a616c83927f0d2d513d33277a9ebd3537"><td class="memItemLeft" align="right" valign="top"><a id="a616c83927f0d2d513d33277a9ebd3537"></a>
+const std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Trip.html">Trip</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get_trip</b> () const</td></tr>
+<tr class="separator:a616c83927f0d2d513d33277a9ebd3537"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a23c0a191559e4066423d5f3cbfb70b46"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Vehicle.html#a23c0a191559e4066423d5f3cbfb70b46">get_delta</a> () const</td></tr>
 <tr class="separator:a23c0a191559e4066423d5f3cbfb70b46"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aab490aeda8084cfcb8de29f0aedaa416"><td class="memItemLeft" align="right" valign="top"><a id="aab490aeda8084cfcb8de29f0aedaa416"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>update</b> (void)</td></tr>
 <tr class="separator:aab490aeda8084cfcb8de29f0aedaa416"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a50ae70c92d958437a2196b0ce81acff0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Vehicle.html#a50ae70c92d958437a2196b0ce81acff0">update</a> (const transit_realtime::VehiclePosition &amp;vp)</td></tr>
-<tr class="separator:a50ae70c92d958437a2196b0ce81acff0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4cc25a17473bf7bccc39b37ef5d7c956"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Vehicle.html#a4cc25a17473bf7bccc39b37ef5d7c956">update</a> (const transit_realtime::TripUpdate &amp;tu)</td></tr>
-<tr class="separator:a4cc25a17473bf7bccc39b37ef5d7c956"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add9266d843398c88d3fcc22239f586a9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Vehicle.html#add9266d843398c88d3fcc22239f586a9">update</a> (const transit_realtime::VehiclePosition &amp;vp, <a class="el" href="classgtfs_1_1GTFS.html">GTFS</a> &amp;gtfs)</td></tr>
+<tr class="separator:add9266d843398c88d3fcc22239f586a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9944f06fb0bde02f2d7c21f2dc33787"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Vehicle.html#ae9944f06fb0bde02f2d7c21f2dc33787">update</a> (const transit_realtime::TripUpdate &amp;tu, <a class="el" href="classgtfs_1_1GTFS.html">GTFS</a> &amp;gtfs)</td></tr>
+<tr class="separator:ae9944f06fb0bde02f2d7c21f2dc33787"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa9087e973a9821f384ec47f51bdcedc7"><td class="memItemLeft" align="right" valign="top">unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Vehicle.html#aa9087e973a9821f384ec47f51bdcedc7">allocate_id</a> ()</td></tr>
 <tr class="separator:aa9087e973a9821f384ec47f51bdcedc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8367fc70a64b7e596422f880dbff1193"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Vehicle.html#a8367fc70a64b7e596422f880dbff1193">resample</a> (<a class="el" href="classsampling_1_1RNG.html">sampling::RNG</a> &amp;rng)</td></tr>
@@ -146,7 +146,7 @@ Public Attributes</h2></td></tr>
 <p>Vehicles are created with a default number of particles.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">vehicle_id</td><td>the ID of the vehicle as given in the GTFS feed </td></tr>
+    <tr><td class="paramname">vehicle_id</td><td>the ID of the vehicle as given in the <a class="el" href="classgtfs_1_1GTFS.html">GTFS</a> feed </td></tr>
   </table>
   </dd>
 </dl>
@@ -187,7 +187,7 @@ Public Attributes</h2></td></tr>
 <p>Create a vehicle with specified number of particles, and ID.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">id</td><td>the ID of the vehicle as given in the GTFS feed </td></tr>
+    <tr><td class="paramname">id</td><td>the ID of the vehicle as given in the <a class="el" href="classgtfs_1_1GTFS.html">GTFS</a> feed </td></tr>
     <tr><td class="paramname">n</td><td>integer specifying the number of particles to initialize the vehicle with </td></tr>
   </table>
   </dd>
@@ -307,8 +307,8 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a50ae70c92d958437a2196b0ce81acff0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a50ae70c92d958437a2196b0ce81acff0">&#9670;&nbsp;</a></span>update() <span class="overload">[1/2]</span></h2>
+<a id="add9266d843398c88d3fcc22239f586a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add9266d843398c88d3fcc22239f586a9">&#9670;&nbsp;</a></span>update() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -317,8 +317,18 @@ Public Attributes</h2></td></tr>
           <td class="memname">void gtfs::Vehicle::update </td>
           <td>(</td>
           <td class="paramtype">const transit_realtime::VehiclePosition &amp;&#160;</td>
-          <td class="paramname"><em>vp</em></td><td>)</td>
+          <td class="paramname"><em>vp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype"><a class="el" href="classgtfs_1_1GTFS.html">GTFS</a> &amp;&#160;</td>
+          <td class="paramname"><em>gtfs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -333,8 +343,8 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a4cc25a17473bf7bccc39b37ef5d7c956"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4cc25a17473bf7bccc39b37ef5d7c956">&#9670;&nbsp;</a></span>update() <span class="overload">[2/2]</span></h2>
+<a id="ae9944f06fb0bde02f2d7c21f2dc33787"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9944f06fb0bde02f2d7c21f2dc33787">&#9670;&nbsp;</a></span>update() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -343,8 +353,18 @@ Public Attributes</h2></td></tr>
           <td class="memname">void gtfs::Vehicle::update </td>
           <td>(</td>
           <td class="paramtype">const transit_realtime::TripUpdate &amp;&#160;</td>
-          <td class="paramname"><em>vp</em></td><td>)</td>
+          <td class="paramname"><em>vp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype"><a class="el" href="classgtfs_1_1GTFS.html">GTFS</a> &amp;&#160;</td>
+          <td class="paramname"><em>gtfs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
