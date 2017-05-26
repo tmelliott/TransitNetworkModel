@@ -102,11 +102,15 @@ int main (int argc, char* argv[]) {
 	std::cout << "   - " << gtfs.get_routes ().size () << " routes\n";
 	std::cout << "   - " << gtfs.get_trips ().size () << " trips\n";
 	std::cout << "   - " << gtfs.get_shapes ().size () << " shapes\n";
+	std::cout << "   - " << gtfs.get_segments ().size () << " segments\n";
 
 	for (auto si: gtfs.get_shapes ()) {
 		auto s = si.second;
 		std::cout << "Shape " << s->get_id () << " has "
-			<< s->get_segments ().size () << " segments:\n";
+			<< s->get_segments ().size () << " segments: ";
+		for (auto& seg: s->get_segments ())
+			std::cout << seg.segment->get_id () << " [" << seg.segment->get_length () << " meters] ";
+		std::cout << "\n";
 	}
 
 

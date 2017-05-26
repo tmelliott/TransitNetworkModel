@@ -60,18 +60,22 @@ namespace gtfs {
 		std::unordered_map<std::string, std::shared_ptr<Trip> > trips; /*!< A map of trip pointers */
 		std::unordered_map<std::string, std::shared_ptr<Route> > routes; /*!< A map of route objects */
 		std::unordered_map<std::string, std::shared_ptr<Shape> > shapes; /*!< A map of shape objects */
-		std::unordered_map<std::string, std::shared_ptr<Segment> > segments; /*!< A map of segment objects */
+		std::unordered_map<unsigned long, std::shared_ptr<Segment> > segments; /*!< A map of segment objects */
 
 	public:
 		GTFS (std::string& dbname, std::string& v);
 
+		// Get individual objects
 		std::shared_ptr<Trip> get_trip (std::string& t) const; // this is expected to be the most common
 		std::shared_ptr<Route> get_route (std::string& r) const;
 		std::shared_ptr<Shape> get_shape (std::string& s) const;
+		std::shared_ptr<Segment> get_segment (unsigned long s) const;
 
+		// Get all objects ...
 		std::unordered_map<std::string, std::shared_ptr<Route> > get_routes (void) { return routes; };
 		std::unordered_map<std::string, std::shared_ptr<Trip> > get_trips (void) { return trips; };
 		std::unordered_map<std::string, std::shared_ptr<Shape> > get_shapes (void) { return shapes; };
+		std::unordered_map<unsigned long, std::shared_ptr<Segment> > get_segments (void) { return segments; };
 
 	};
 
@@ -303,8 +307,8 @@ namespace gtfs {
 	class Segment {
 	private:
 		unsigned long id;            /*!< ID of the segment - should be unique and autoincrement ... */
-		Intersection* start_at;      /*!< pointer to the first intersection */
-		Intersection* end_at;        /*!< pointer to the last intersection */
+		std::shared_ptr<Intersection> start_at;      /*!< pointer to the first intersection */
+		std::shared_ptr<Intersection> end_at;        /*!< pointer to the last intersection */
 		std::vector<ShapePt> path;   /*!< vector of shape points */
 		double length;               /*!< the length of this segment */
 
@@ -313,8 +317,15 @@ namespace gtfs {
 		uint64_t timestamp;          /*!< updated at timestamp */
 
 	public:
+		Segment (unsigned long id,
+				 std::shared_ptr<Intersection> start,
+				 std::shared_ptr<Intersection> end,
+				 std::vector<ShapePt>& path,
+				 double length) : id (id), start_at (start), end_at (end), path (path), length (length) {};
 		// --- GETTERS
-
+		const unsigned long& get_id (void) const { return id; };
+		const std::vector<ShapePt>& get_path (void) const { return path; };
+		double get_length (void) { return length; };
 
 		// --- METHODS
 		// void update (void);
@@ -324,6 +335,7 @@ namespace gtfs {
 	 * A struct describing a single shape point.
 	 */
 	struct ShapePt {
+		ShapePt (gps::Coord pt, double distance) : pt (pt), seg_dist_traveled (distance) {};
 		gps::Coord pt;             /*!< GPS coordinate of the point */
 		double seg_dist_traveled;  /*!< cumulative distance traveled along the shape */
 	};

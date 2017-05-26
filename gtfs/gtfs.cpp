@@ -18,7 +18,50 @@ namespace gtfs {
 		std::string qry;
 
 		// Load all gtfs `segments`
-		
+		sqlite3_stmt* stmt_segs;
+		qry = "SELECT segment_id, start_id, end_id, length FROM segments";
+		if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &stmt_segs, 0) != SQLITE_OK) {
+			std::cerr << " * Can't prepare query " << qry << "\n";
+			throw std::runtime_error ("Cannot prepare query.");
+		}
+		std::cout << " * [prepared] " << qry << "\n";
+		// PREPARE query for segment path
+		sqlite3_stmt* stmt_path;
+		if (sqlite3_prepare_v2 (db, "SELECT lat, lng, seg_dist_traveled FROM segment_pt WHERE segment_id=?1 ORDER BY seg_pt_sequence", -1, &stmt_path, 0) != SQLITE_OK) {
+			throw std::runtime_error ("Cannot prepare SELECT PATH query.");
+		}
+		std::cout << " * [prepared] SELECT path\n ";
+		while (sqlite3_step (stmt_segs) == SQLITE_ROW) {
+			unsigned long segment_id = sqlite3_column_int (stmt_segs, 0);
+			std::shared_ptr<Intersection> start_at, end_at;
+			if (sqlite3_column_type (stmt_segs, 1) != SQLITE_NULL) {
+				unsigned long start_id = sqlite3_column_int (stmt_segs, 1);
+				// get intersection object
+
+			}
+			if (sqlite3_column_type (stmt_segs, 2) != SQLITE_NULL) {
+				unsigned long end_id = sqlite3_column_int (stmt_segs, 2);
+				// get intersection object
+
+			}
+			double length = sqlite3_column_double (stmt_segs, 3);
+			// Get the segment's PATH:
+			if (sqlite3_bind_int64 (stmt_path, 1, segment_id) != SQLITE_OK) {
+				throw std::runtime_error ("Cannot fetch segment path.");
+			}
+			std::vector<ShapePt> path;
+			std::cout << segment_id << "\r";
+			std::cout.flush ();
+			while (sqlite3_step (stmt_path) == SQLITE_ROW) {
+				path.emplace_back (gps::Coord (sqlite3_column_double (stmt_path, 0),
+											   sqlite3_column_double (stmt_path, 1)),
+								   sqlite3_column_double (stmt_path, 2));
+			}
+			sqlite3_reset (stmt_path);
+			std::shared_ptr<Segment> segment (new Segment (segment_id, start_at, end_at, path, length));
+			segments.emplace (segment_id, segment);
+		}
+		sqlite3_finalize (stmt_segs);
 
 		// Load all gtfs `shapes`
 		sqlite3_stmt* stmt_shapes;
@@ -41,7 +84,8 @@ namespace gtfs {
 				shapes.emplace (shape_id, shape);
 			}
 			// Find segment:
-			shape->add_segment (nullptr, sqlite3_column_double (stmt_shapes, 3));
+			std::shared_ptr<Segment> segment = get_segment (sqlite3_column_int (stmt_shapes, 2));
+			shape->add_segment (segment, sqlite3_column_double (stmt_shapes, 3));
 		}
 		sqlite3_finalize (stmt_shapes);
 
@@ -106,6 +150,15 @@ namespace gtfs {
 	std::shared_ptr<Shape> GTFS::get_shape (std::string& s) const {
 		auto si = shapes.find (s);
 		if (si == shapes.end ()) {
+			return nullptr;
+		} else {
+			return si->second;
+		}
+	}
+
+	std::shared_ptr<Segment> GTFS::get_segment (unsigned long s) const {
+		auto si = segments.find (s);
+		if (si == segments.end ()) {
 			return nullptr;
 		} else {
 			return si->second;
