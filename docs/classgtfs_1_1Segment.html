@@ -63,6 +63,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classgtfs_1_1Segment-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">gtfs::Segment Class Reference</div>  </div>
@@ -70,6 +71,22 @@ $(function() {
 <div class="contents">
 
 <p><code>#include &lt;<a class="el" href="gtfs_8h_source.html">gtfs.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:ac1457d5864e30d591eede10e92f6fd85"><td class="memItemLeft" align="right" valign="top"><a id="ac1457d5864e30d591eede10e92f6fd85"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Segment</b> (unsigned long id, std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Intersection.html">Intersection</a> &gt; start, std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Intersection.html">Intersection</a> &gt; end, std::vector&lt; <a class="el" href="structgtfs_1_1ShapePt.html">ShapePt</a> &gt; &amp;path, double length)</td></tr>
+<tr class="separator:ac1457d5864e30d591eede10e92f6fd85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c324888b7535df4623d8f32d907fca3"><td class="memItemLeft" align="right" valign="top"><a id="a5c324888b7535df4623d8f32d907fca3"></a>
+const unsigned long &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get_id</b> (void) const</td></tr>
+<tr class="separator:a5c324888b7535df4623d8f32d907fca3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ba2506020d090ccfcd0623b58101a3b"><td class="memItemLeft" align="right" valign="top"><a id="a9ba2506020d090ccfcd0623b58101a3b"></a>
+const std::vector&lt; <a class="el" href="structgtfs_1_1ShapePt.html">ShapePt</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get_path</b> (void) const</td></tr>
+<tr class="separator:a9ba2506020d090ccfcd0623b58101a3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f42ea597e18e54c9ec506697eb333a9"><td class="memItemLeft" align="right" valign="top"><a id="a4f42ea597e18e54c9ec506697eb333a9"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>get_length</b> (void)</td></tr>
+<tr class="separator:a4f42ea597e18e54c9ec506697eb333a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>An object of this class represents a vehicles path between two intersections.</p>
 <p>The segment has a mean and variance of "speed" along it. At the beginning and end of routes, segments are defined from the first stop to the first intersection, and from the last intersection to the last stop, respectively. Each segment has a length, and consists of a sequence of <a class="el" href="classgps_1_1Coord.html">gps::Coord</a>'s which are in turn associated with a cumulative distance. </p>
