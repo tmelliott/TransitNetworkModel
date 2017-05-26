@@ -1,0 +1,48 @@
+\hypertarget{classgtfs_1_1GTFS}{}\section{gtfs\+:\+:G\+T\+FS Class Reference}
+\label{classgtfs_1_1GTFS}\index{gtfs\+::\+G\+T\+FS@{gtfs\+::\+G\+T\+FS}}
+
+
+{\ttfamily \#include $<$gtfs.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classgtfs_1_1GTFS_abe065541610fe5d9673bc4befd0bcf94}\label{classgtfs_1_1GTFS_abe065541610fe5d9673bc4befd0bcf94}} 
+{\bfseries G\+T\+FS} (std\+::string \&dbname, std\+::string \&v)
+\item 
+\mbox{\Hypertarget{classgtfs_1_1GTFS_aec86fae3dee1e13f541798266fb2317e}\label{classgtfs_1_1GTFS_aec86fae3dee1e13f541798266fb2317e}} 
+std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Trip}{Trip} $>$ {\bfseries get\+\_\+trip} (std\+::string \&t) const
+\item 
+\mbox{\Hypertarget{classgtfs_1_1GTFS_a47cfbb8ca6cb8986e95f1038dcc7c04b}\label{classgtfs_1_1GTFS_a47cfbb8ca6cb8986e95f1038dcc7c04b}} 
+std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Route}{Route} $>$ {\bfseries get\+\_\+route} (std\+::string \&r) const
+\item 
+\mbox{\Hypertarget{classgtfs_1_1GTFS_a59d1a7209999120b2446298f9fac4564}\label{classgtfs_1_1GTFS_a59d1a7209999120b2446298f9fac4564}} 
+std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Shape}{Shape} $>$ {\bfseries get\+\_\+shape} (std\+::string \&s) const
+\item 
+\mbox{\Hypertarget{classgtfs_1_1GTFS_aef6a88c15cdf8bf788e41c81a14ecc76}\label{classgtfs_1_1GTFS_aef6a88c15cdf8bf788e41c81a14ecc76}} 
+std\+::unordered\+\_\+map$<$ std\+::string, std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Route}{Route} $>$ $>$ {\bfseries get\+\_\+routes} (void)
+\item 
+\mbox{\Hypertarget{classgtfs_1_1GTFS_ad526fc627fe1ce81b8a669f6187be0c0}\label{classgtfs_1_1GTFS_ad526fc627fe1ce81b8a669f6187be0c0}} 
+std\+::unordered\+\_\+map$<$ std\+::string, std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Trip}{Trip} $>$ $>$ {\bfseries get\+\_\+trips} (void)
+\item 
+\mbox{\Hypertarget{classgtfs_1_1GTFS_a91ada6a3f02e3ee9b6a723a6c6fc50af}\label{classgtfs_1_1GTFS_a91ada6a3f02e3ee9b6a723a6c6fc50af}} 
+std\+::unordered\+\_\+map$<$ std\+::string, std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Shape}{Shape} $>$ $>$ {\bfseries get\+\_\+shapes} (void)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\hyperlink{classgtfs_1_1GTFS}{G\+T\+FS} Schedule Information class
+
+This class is used to provide convenient access to the static \hyperlink{classgtfs_1_1GTFS}{G\+T\+FS} data stored in memory. It contains the individual objects such as trips, routes, etc. all initializaed as interrelated classes. Initialized once, an object of this class can be passed by reference to any functions/classes that require access to the static \hyperlink{classgtfs_1_1GTFS}{G\+T\+FS} data.
+
+Those functions that need access are expected to know what it is they need. For example a vehicle needs it\textquotesingle{}s trip, 
+\begin{DoxyCode}
+\textcolor{keyword}{auto} trp = \hyperlink{namespacegtfs}{gtfs}.trip (TRIP\_ID); \textcolor{comment}{// A pointer to a trip object}
+trp->get\_route ()->get\_short\_name ();
+\end{DoxyCode}
+ 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+gtfs/gtfs.\+h\item 
+gtfs/gtfs.\+cpp\end{DoxyCompactItemize}
