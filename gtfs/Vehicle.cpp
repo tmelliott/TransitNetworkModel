@@ -68,6 +68,7 @@ namespace gtfs {
 	// --- METHODS
 
 	void Vehicle::update ( void ) {
+	    if (trip->get_route ()->get_short_name () != "274") return;
 		std::clog << "Updating particles!\n";
 
 		std::cout << "Vehicle " << id << " has the current data:";

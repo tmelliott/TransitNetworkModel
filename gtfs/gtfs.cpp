@@ -19,7 +19,10 @@ namespace gtfs {
 
 		// Load all gtfs `segments`
 		sqlite3_stmt* stmt_segs;
-		qry = "SELECT segment_id, start_id, end_id, length FROM segments";
+		qry = "SELECT segment_id, start_id, end_id, length FROM segments " 
+		  "WHERE segment_id IN (SELECT segment_id FROM shapes WHERE shape_id IN (" 
+		  "SELECT shape_id FROM routes WHERE route_short_name IN ('274')" 
+		  "))";
 		if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &stmt_segs, 0) != SQLITE_OK) {
 			std::cerr << " * Can't prepare query " << qry << "\n";
 			throw std::runtime_error ("Cannot prepare query.");
@@ -85,7 +88,9 @@ namespace gtfs {
 			}
 			// Find segment:
 			std::shared_ptr<Segment> segment = get_segment (sqlite3_column_int (stmt_shapes, 2));
-			shape->add_segment (segment, sqlite3_column_double (stmt_shapes, 3));
+			if (segment != nullptr) {
+			  shape->add_segment (segment, sqlite3_column_double (stmt_shapes, 3));
+			}
 		}
 		sqlite3_finalize (stmt_shapes);
 
