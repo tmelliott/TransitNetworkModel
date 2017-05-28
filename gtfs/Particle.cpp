@@ -30,13 +30,24 @@ namespace gtfs {
 	Particle::Particle (const Particle &p) {
 		std::clog << " >+ Copying particle " << p.get_id () << " -> ";
 
+		distance = p.get_distance ();
+		velocity = p.get_velocity ();
+		stop_index = p.get_stop_index ();
+		arrival_time = p.get_arrival_time ();
+		dwell_time = p.get_dwell_time ();
+		segment_index = p.get_segment_index ();
+		queue_time = p.get_queue_time ();
+		begin_time = p.get_begin_time ();
+		log_likelihood = p.get_likelihood ();
+
 		// Copy vehicle pointer
 		vehicle = p.vehicle;
 		parent_id = p.id;
 
+
 		// Increment particle id
 		id = p.vehicle->allocate_id ();
-		std::cout << id << std::endl;
+		std::clog << id << std::endl;
 	};
 
 	/**

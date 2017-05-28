@@ -71,7 +71,6 @@ namespace gtfs {
 	    if (trip->get_route ()->get_short_name () != "274") return;
 
 		if (newtrip) {
-			std::cout << position << " ";
 			std::cout << " * Initializing particles: ";
 
 			// Detect initial range of vehicle's "distance into trip"
@@ -98,7 +97,16 @@ namespace gtfs {
 			for (auto& p: particles) p.initialize (udist, uspeed, rng);
 		} else {
 			std::cout << " * Updating particles:\n";
+			return;
+			// for (auto& p: particles) p.transition ();
 		}
+
+		// Resample them!
+		std::cout << " * Resampling \n";
+		resample (rng);
+		for (auto& p: particles)
+			std::cout << "  -> " << p << " -> "
+				<< p.get_likelihood () << "\n";
 
 		// std::cout << "Vehicle " << id << " has the current data:";
 		// if (trip == nullptr) {
@@ -115,13 +123,16 @@ namespace gtfs {
 		// 	<< "\n   * Timestamp: " << timestamp
 		// 	<< " (" << delta << " seconds since last update)"
 		// 	<< "\n\n";
-
-		// for (auto& p: particles) p.transition ();
 	}
 
 	/**
 	 * Update the location of the vehicle object.
-	 *
+	 *6
+7
+8
+9
+10
+
 	 * This does NOT trigger a particle update, as we may need
 	 * to also insert TripUpdates later.
 	 * Check that the trip_id is the same, otherwise set `newtrip = false`
@@ -216,7 +227,10 @@ namespace gtfs {
 	 */
 	void Vehicle::resample (sampling::RNG &rng) {
 		// Re-sampler based on computed weights:
-		sampling::sample smp (particles.size ());
+		std::vector<double> lh;
+		lh.reserve (particles.size ());
+		for (auto& p: particles) lh.push_back (exp(p.get_likelihood ()));
+		sampling::sample smp (lh);
 		std::vector<int> pkeep (smp.get (rng));
 
 		// Move old particles into temporary holding vector
@@ -224,9 +238,8 @@ namespace gtfs {
 
 		// Copy new particles, incrementing their IDs (copy constructor does this)
 		particles.reserve(n_particles);
-		for (auto& i: pkeep) {
-			particles.push_back(old_particles[i]);
-		}
+		for (auto& i: pkeep) particles.push_back(old_particles[i]);
+
 	};
 
 }; // end namespace gtfs

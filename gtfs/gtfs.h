@@ -179,6 +179,11 @@ namespace gtfs {
 		int get_stop_index () const { return stop_index; };
 		const uint64_t& get_arrival_time () const { return arrival_time; };
 		int get_dwell_time () const { return dwell_time; };
+		int get_segment_index () const {return segment_index; };
+		int get_queue_time () const {return queue_time; };
+		const uint64_t& get_begin_time () const { return begin_time; };
+
+		const double& get_likelihood () const { return log_likelihood; };
 
 		// Methods
 		void initialize (sampling::uniform& unif, sampling::uniform& speed, sampling::RNG& rng);
