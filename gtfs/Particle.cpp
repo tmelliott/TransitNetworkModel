@@ -13,18 +13,10 @@ namespace gtfs {
 	* allowing for noise.
 	* RNG required otherwise the particles would all be identical!
 	*/
-	Particle::Particle (Vehicle* v, sampling::RNG &rng) : vehicle (v), parent_id (0) {
+	Particle::Particle (Vehicle* v) : vehicle (v), parent_id (0) {
 		id = v->allocate_id ();
 		std::clog << " + Created particle for vehicle " << v->get_id ()
-			<< " with id = " << id;
-
-		// Set up some random number generating devices
-		sampling::uniform unif {0, 30};
-		// initialize with defaults etc.
-		distance = 0;
-		velocity = unif.rand (rng);
-
-		std::clog << " (" << distance << ", " << velocity << ")\n";
+			<< " with id = " << id << "\n";
 	};
 
 	/**
@@ -75,6 +67,20 @@ namespace gtfs {
 	// --- METHODS
 
 	/**
+	 * Initialize particle with distance etc.
+	 * @param unif a uniform number generator with parameters a and b
+	 * @param rng  a random number generator
+	 */
+	void Particle::initialize (sampling::uniform& dist, sampling::uniform& speed, sampling::RNG& rng) {
+		distance = dist.rand (rng);
+		velocity = speed.rand (rng);
+
+		std::cout << "   - " << *this << " -> ";
+		calculate_likelihood ();
+		std::cout << log_likelihood <<  "\n";
+	}
+
+	/**
 	 * Move the particle according to speed,
 	 * shape/segments/stops, and `delta`.
 	 */
@@ -88,7 +94,16 @@ namespace gtfs {
 	 * and stop updates.
 	 */
 	void Particle::calculate_likelihood (void) {
+		gps::Coord x = get_coords (distance, vehicle->get_trip ()->get_route ()->get_shape ());
+		// std::cout << x;
+		std::vector<double> z (x.projectFlat(vehicle->get_position ()));
 
+		double llhood = 0.0;
+		double sigy   = 5;
+		llhood -= log (2 * M_PI * sigy);
+		llhood -= (pow(z[0], 2) + pow(z[1], 2)) / (2 * pow(sigy, 2));
+
+		log_likelihood = llhood;
 	};
 
 }; // end namespace gtfs

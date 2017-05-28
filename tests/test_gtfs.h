@@ -9,7 +9,7 @@ class VehicleTests : public CxxTest::TestSuite {
 public:
 	// Create a test bus with 1 particle
 	sampling::RNG rng;
-	gtfs::Vehicle v = gtfs::Vehicle("testbus", 1, rng);
+	gtfs::Vehicle v = gtfs::Vehicle("testbus", 1);
 
 	void testVehicle (void) {
 		gtfs::Vehicle& vr = v;

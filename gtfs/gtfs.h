@@ -5,6 +5,7 @@
 #include <vector>
 #include <memory>
 #include <unordered_map>
+#include <inttypes.h>
 
 #include "boost/date_time/posix_time/posix_time.hpp"
 
@@ -110,8 +111,8 @@ namespace gtfs {
 		unsigned long next_id;    /*!< the ID of the next particle to be created */
 
 		// Constructors, destructors
-		Vehicle (std::string id, sampling::RNG &rng);
-		Vehicle (std::string id, unsigned int n, sampling::RNG &rng);
+		Vehicle (std::string id);
+		Vehicle (std::string id, unsigned int n);
 		~Vehicle();
 
 		// Setters
@@ -121,12 +122,13 @@ namespace gtfs {
 		std::string get_id () const;
 		std::vector<Particle>& get_particles ();
 		const std::shared_ptr<Trip>& get_trip () const;
+		const gps::Coord& get_position () const { return position; };
 
 		int get_delta () const;
 
 
 		// Methods
-		void update ( void );
+		void update ( sampling::RNG& rng );
 		void update (const transit_realtime::VehiclePosition &vp, GTFS &gtfs);
 		void update (const transit_realtime::TripUpdate &tu, GTFS &gtfs);
 		unsigned long allocate_id ();
@@ -164,7 +166,7 @@ namespace gtfs {
 
 
 		// Constructors, destructors
-		Particle (Vehicle* v, sampling::RNG &rng);
+		Particle (Vehicle* v);
 		Particle (const Particle &p);
 		~Particle ();
 
@@ -172,12 +174,28 @@ namespace gtfs {
 		unsigned long get_id () const;
 		unsigned long get_parent_id () const;
 
+		const double& get_distance () const { return distance; };
+		const double& get_velocity () const { return velocity; };
+		int get_stop_index () const { return stop_index; };
+		const uint64_t& get_arrival_time () const { return arrival_time; };
+		int get_dwell_time () const { return dwell_time; };
+
 		// Methods
+		void initialize (sampling::uniform& unif, sampling::uniform& speed, sampling::RNG& rng);
 		void transition (void);
 		void calculate_likelihood (void);
 	};
 
-	gps::Coord get_coords (double distance, std::vector<gps::Coord> path);
+	inline std::ostream& operator<< (std::ostream& os, const Particle& p) {
+		char buff [45];
+		sprintf(buff, "[%*.0f, %*.1f, %*d, %*" PRIu64 ", %*d]",
+				8, p.get_distance (),  4, p.get_velocity (),  2, p.get_stop_index (),
+				13, p.get_arrival_time (), 4, p.get_dwell_time ());
+
+		return os << buff;
+	};
+
+	gps::Coord get_coords (double distance, std::shared_ptr<Shape> shape);
 
 
 	/**
@@ -268,9 +286,6 @@ namespace gtfs {
 
 		// --- GETTERS
 		std::string get_id (void) const { return id; };
-
-		// /** @return a vector of shape points for the entire shape. */
-		// std::vector<gps::Coord> get_shape (void);
 
 		// /** @return a vector of shape segments */
 		const std::vector<ShapeSegment>& get_segments (void) const { return segments; };

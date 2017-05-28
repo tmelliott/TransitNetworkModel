@@ -27,11 +27,11 @@ namespace gps {
       	Coord(double lat, double lng);
 
 		// Member functions:
-		double distanceTo(gps::Coord destination);
-		double bearingTo(gps::Coord destination);
-		gps::Coord destinationPoint(double distance, double bearing);
-		double crossTrackDistanceTo(gps::Coord p1, gps::Coord p2);
-		std::vector<double> projectFlat(gps::Coord origin);
+		double distanceTo(gps::Coord destination) const;
+		double bearingTo(gps::Coord destination) const;
+		gps::Coord destinationPoint(double distance, double bearing) const;
+		double crossTrackDistanceTo(gps::Coord p1, gps::Coord p2) const;
+		std::vector<double> projectFlat(gps::Coord origin) const;
 
 		bool operator==(const Coord &p) const;
 		bool operator!=(const Coord &p) const;

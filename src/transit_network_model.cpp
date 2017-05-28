@@ -98,20 +98,11 @@ int main (int argc, char* argv[]) {
 
 	// Load the global GTFS database object:
 	gtfs::GTFS gtfs (dbname, version);
-	std::cout << " * Database loaded into memory:\n";
-	std::cout << "   - " << gtfs.get_routes ().size () << " routes\n";
-	std::cout << "   - " << gtfs.get_trips ().size () << " trips\n";
-	std::cout << "   - " << gtfs.get_shapes ().size () << " shapes\n";
-	std::cout << "   - " << gtfs.get_segments ().size () << " segments\n";
-
-	for (auto si: gtfs.get_shapes ()) {
-		auto s = si.second;
-		std::cout << "Shape " << s->get_id () << " has "
-			<< s->get_segments ().size () << " segments: ";
-		for (auto& seg: s->get_segments ())
-			std::cout << seg.segment->get_id () << " [" << seg.segment->get_length () << " meters] ";
-		std::cout << "\n";
-	}
+	std::cout << " * Database loaded into memory\n\n";
+	// std::cout << "   - " << gtfs.get_routes ().size () << " routes\n";
+	// std::cout << "   - " << gtfs.get_trips ().size () << " trips\n";
+	// std::cout << "   - " << gtfs.get_shapes ().size () << " shapes\n";
+	// std::cout << "   - " << gtfs.get_segments ().size () << " segments\n";
 
 
 	/**
@@ -132,6 +123,10 @@ int main (int argc, char* argv[]) {
 		}
 	}
 
+	std::cout << "\n";
+	for (auto& v: vehicles) v.second->update (rng);
+	std::cout << "\n";
+
 	while (forever) {
 		forever = false;
 		{
@@ -143,8 +138,9 @@ int main (int argc, char* argv[]) {
 				}
 			}
 
+			std::cout << "\n";
 			// -> triggers particle transition -> resample
-			// for (auto& v: vehicles) v.second->update ();
+			for (auto& v: vehicles) v.second->update (rng);
 		}
 
 		{
@@ -200,7 +196,7 @@ bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> >
 		}
 		if (vs.find (vid) == vs.end ()) {
 			// vehicle doesn't already exist - create it
-			vs.emplace (vid, std::unique_ptr<gtfs::Vehicle> (new gtfs::Vehicle (vid, N, rng)));
+			vs.emplace (vid, std::unique_ptr<gtfs::Vehicle> (new gtfs::Vehicle (vid, N)));
 		}
 		if (ent.has_vehicle ()) vs[vid]->update (ent.vehicle (), gtfs);
 		if (ent.has_trip_update ()) vs[vid]->update (ent.trip_update (), gtfs);

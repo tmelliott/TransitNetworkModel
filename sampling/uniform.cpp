@@ -44,7 +44,7 @@ namespace sampling {
 	 * @return     a random value
 	 */
 	double uniform::rand (sampling::RNG &rng) {
-		return rng.runif () * b + a;
+		return rng.runif () * (b - a) + a;
 	};
 
 }; // end namespace sampling

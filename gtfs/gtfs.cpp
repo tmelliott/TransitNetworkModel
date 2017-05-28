@@ -13,27 +13,36 @@ namespace gtfs {
 			std::cerr << " * Can't open database: " << sqlite3_errmsg (db) << "\n";
 			throw std::runtime_error ("Can't open database.");
 		}
-		std::cout << " * Connected to database \"" << database_ << "\"\n";
+		std::clog << " * Connected to database \"" << database_ << "\"\n";
 
 		std::string qry;
 
+		// N segments:
+		sqlite3_stmt* stmt_n;
+		int Nseg = 0;
+		std::string qwhere;
+		qwhere = " WHERE segment_id IN (SELECT segment_id FROM shapes WHERE shape_id IN ("
+			"SELECT shape_id FROM routes WHERE route_short_name IN ('274') ) )";
+		if (sqlite3_prepare_v2 (db, ("SELECT count(segment_id) FROM segments" + qwhere).c_str (),
+								-1, &stmt_n, 0) == SQLITE_OK &&
+			sqlite3_step (stmt_n) == SQLITE_ROW) {
+			Nseg = sqlite3_column_int (stmt_n, 0);
+		}
 		// Load all gtfs `segments`
 		sqlite3_stmt* stmt_segs;
-		qry = "SELECT segment_id, start_id, end_id, length FROM segments " 
-		  "WHERE segment_id IN (SELECT segment_id FROM shapes WHERE shape_id IN (" 
-		  "SELECT shape_id FROM routes WHERE route_short_name IN ('274')" 
-		  "))";
+		qry = "SELECT segment_id, start_id, end_id, length FROM segments" + qwhere;
+
 		if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &stmt_segs, 0) != SQLITE_OK) {
 			std::cerr << " * Can't prepare query " << qry << "\n";
 			throw std::runtime_error ("Cannot prepare query.");
 		}
-		std::cout << " * [prepared] " << qry << "\n";
+		std::clog << " * [prepared] " << qry << "\n";
 		// PREPARE query for segment path
 		sqlite3_stmt* stmt_path;
 		if (sqlite3_prepare_v2 (db, "SELECT lat, lng, seg_dist_traveled FROM segment_pt WHERE segment_id=?1 ORDER BY seg_pt_sequence", -1, &stmt_path, 0) != SQLITE_OK) {
 			throw std::runtime_error ("Cannot prepare SELECT PATH query.");
 		}
-		std::cout << " * [prepared] SELECT path\n ";
+		int i = 0;
 		while (sqlite3_step (stmt_segs) == SQLITE_ROW) {
 			unsigned long segment_id = sqlite3_column_int (stmt_segs, 0);
 			std::shared_ptr<Intersection> start_at, end_at;
@@ -53,8 +62,6 @@ namespace gtfs {
 				throw std::runtime_error ("Cannot fetch segment path.");
 			}
 			std::vector<ShapePt> path;
-			std::cout << segment_id << "\r";
-			std::cout.flush ();
 			while (sqlite3_step (stmt_path) == SQLITE_ROW) {
 				path.emplace_back (gps::Coord (sqlite3_column_double (stmt_path, 0),
 											   sqlite3_column_double (stmt_path, 1)),
@@ -63,6 +70,9 @@ namespace gtfs {
 			sqlite3_reset (stmt_path);
 			std::shared_ptr<Segment> segment (new Segment (segment_id, start_at, end_at, path, length));
 			segments.emplace (segment_id, segment);
+
+			printf(" * Loading shapes: %*d%%\r", 3, 100 * (++i) / Nseg);
+			std::cout.flush ();
 		}
 		sqlite3_finalize (stmt_segs);
 
@@ -75,7 +85,7 @@ namespace gtfs {
 			std::cerr << " * Can't prepare query " << qry << "\n";
 			throw std::runtime_error ("Cannot prepare query.");
 		}
-		std::cout << " * [prepared] " << qry << "\n";
+		std::clog << " * [prepared] " << qry << "\n";
 		while (sqlite3_step (stmt_shapes) == SQLITE_ROW) {
 			std::string shape_id = (char*)sqlite3_column_text (stmt_shapes, 0);
 			std::shared_ptr<Shape> shape (get_shape (shape_id));
@@ -102,7 +112,7 @@ namespace gtfs {
 			std::cerr << " * Can't prepare query " << qry << "\n";
 			throw std::runtime_error ("Cannot prepare query.");
 		}
-		std::cout << " * [prepared] " << qry << "\n";
+		std::clog << " * [prepared] " << qry << "\n";
 		while (sqlite3_step (stmt_routes) == SQLITE_ROW) {
 			std::string route_id = (char*)sqlite3_column_text (stmt_routes, 0);
 			std::string short_name = (char*)sqlite3_column_text (stmt_routes, 1);
@@ -122,7 +132,7 @@ namespace gtfs {
 			std::cerr << " * Can't prepare query " << qry << "\n";
 			throw std::runtime_error ("Cannot prepare query.");
 		}
-		std::cout << " * [prepared] " << qry << "\n";
+		std::clog << " * [prepared] " << qry << "\n";
 		while (sqlite3_step (stmt_trips) == SQLITE_ROW) {
 			// Load that trip into memory: [id, (route)]
 			std::string trip_id = (char*)sqlite3_column_text (stmt_trips, 0);
@@ -133,7 +143,7 @@ namespace gtfs {
 			trips.emplace (trip_id, trip);
 		}
 		sqlite3_finalize (stmt_trips);
-		std::cout << "\n";
+		std::clog << "\n";
 
 	};
 
@@ -172,12 +182,28 @@ namespace gtfs {
 
 
 	/**
-	 * Get the coordinates of a point a given distance along a path.
+	 * Get the coordinates of a point a given distance along a shape.
 	 * @param  distance total distance traveled along path, in meters
-	 * @param  path     the path being traveled along
+	 * @param  path     the shape path being traveled along
 	 * @return          a coordinate object
 	 */
-	gps::Coord get_coords (double distance, std::vector<gps::Coord> path) {
-		return gps::Coord (-33.2, 174.5);
+	gps::Coord get_coords (double distance, std::shared_ptr<Shape> shape) {
+		for (auto& seg: shape->get_segments ()) {
+			if (seg.shape_dist_traveled + seg.segment->get_length () < distance) continue;
+			// Point is somewhere along this segment ...
+			auto path = seg.segment->get_path ();
+			for (int i=0; i<path.size (); i++) {
+				if (seg.shape_dist_traveled + path[i+1].seg_dist_traveled > distance) {
+					return path[i].pt.destinationPoint (
+						distance - (seg.shape_dist_traveled + path[i].seg_dist_traveled),
+						path[i].pt.bearingTo (path[i+1].pt)
+					);
+					break;
+				}
+
+			}
+		}
+
+		return gps::Coord (0, 0);
 	};
 };

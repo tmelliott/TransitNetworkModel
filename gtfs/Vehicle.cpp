@@ -10,7 +10,7 @@ namespace gtfs {
 	*
 	* @param vehicle_id the ID of the vehicle as given in the GTFS feed
 	*/
-	Vehicle::Vehicle (std::string id, sampling::RNG &rng) : Vehicle::Vehicle (id, 10, rng) {};
+	Vehicle::Vehicle (std::string id) : Vehicle::Vehicle (id, 10) {};
 
 	/**
 	 * Create a vehicle with specified number of particles, and ID.
@@ -19,13 +19,13 @@ namespace gtfs {
 	 * @param n  integer specifying the number of particles to initialize
 	 *           the vehicle with
 	 */
-	Vehicle::Vehicle (std::string id, unsigned int n, sampling::RNG &rng) :
+	Vehicle::Vehicle (std::string id, unsigned int n) :
 	id (id), n_particles (n), next_id (1) {
 		std::clog << " ++ Created vehicle " << id << std::endl;
 
 		particles.reserve(n_particles);
 		for (unsigned int i=0; i<n_particles; i++) {
-			particles.emplace_back(this, rng);
+			particles.emplace_back(this);
 		}
 	};
 
@@ -67,25 +67,54 @@ namespace gtfs {
 
 	// --- METHODS
 
-	void Vehicle::update ( void ) {
+	void Vehicle::update ( sampling::RNG& rng ) {
 	    if (trip->get_route ()->get_short_name () != "274") return;
-		std::clog << "Updating particles!\n";
 
-		std::cout << "Vehicle " << id << " has the current data:";
-		if (trip == nullptr) {
-			std::cout << "\n   * Trip ID: null";
+		if (newtrip) {
+			std::cout << position << " ";
+			std::cout << " * Initializing particles: ";
+
+			// Detect initial range of vehicle's "distance into trip"
+			// -- just rough, so find points on the route within 100m of the GPS position
+			std::vector<double> init_range {100000.0, 0.0};
+			auto segs = trip->get_route ()->get_shape ()->get_segments ();
+			for (auto& seg: segs) {
+				double d (seg.shape_dist_traveled);
+				for (auto& p: seg.segment->get_path ()) {
+					if (p.pt.distanceTo(this->position) < 100.0) {
+						double ds (d + p.seg_dist_traveled);
+						if (ds < init_range[0]) init_range[0] = ds;
+						if (ds > init_range[1]) init_range[1] = ds;
+					}
+				}
+				printf("between %*.2f and %*.2f m\n", 8, init_range[0], 8, init_range[1]);
+			}
+			if (init_range[0] > init_range[1]) {
+				std::cout << "   -> unable to locate vehicle on route -> cannot initialize.\n";
+				return;
+			}
+			sampling::uniform udist (init_range[0], init_range[1]);
+			sampling::uniform uspeed (0, 30);
+			for (auto& p: particles) p.initialize (udist, uspeed, rng);
 		} else {
-			std::cout << "\n   * Trip ID: " << trip->get_id ();
-			std::cout << ", Route #" << trip->get_route ()->get_short_name ();
-			std::cout << ", Shape ID: " << trip->get_route ()->get_shape ()->get_id ();
+			std::cout << " * Updating particles:\n";
 		}
-		std::cout << "\n   * Stop Sequence: " << stop_sequence
-			<< "\n   * Arrival Time: " << arrival_time
-			<< "\n   * Departure Time: " << departure_time
-			<< "\n   * Position: " << position
-			<< "\n   * Timestamp: " << timestamp
-			<< " (" << delta << " seconds since last update)"
-			<< "\n\n";
+
+		// std::cout << "Vehicle " << id << " has the current data:";
+		// if (trip == nullptr) {
+		// 	std::cout << "\n   * Trip ID: null";
+		// } else {
+		// 	std::cout << "\n   * Trip ID: " << trip->get_id ();
+		// 	std::cout << ", Route #" << trip->get_route ()->get_short_name ();
+		// 	std::cout << ", Shape ID: " << trip->get_route ()->get_shape ()->get_id ();
+		// }
+		// std::cout << "\n   * Stop Sequence: " << stop_sequence
+		// 	<< "\n   * Arrival Time: " << arrival_time
+		// 	<< "\n   * Departure Time: " << departure_time
+		// 	<< "\n   * Position: " << position
+		// 	<< "\n   * Timestamp: " << timestamp
+		// 	<< " (" << delta << " seconds since last update)"
+		// 	<< "\n\n";
 
 		// for (auto& p: particles) p.transition ();
 	}
@@ -127,19 +156,18 @@ namespace gtfs {
 	 * Add Stop Time Updates to the vehicle object.
 	 *
 	 * This does NOT trigger a particle update, as we may need
-	 * to also insert VehiclePositions later.
+	 * to also insert VehiclevoidPositions later.
 	 *
 	 * @param vp a vehicle position from the realtime feed
 	 */
 	void Vehicle::update (const transit_realtime::TripUpdate &vp, GTFS &gtfs) {
 		std::clog << "Updating vehicle trip update!\n";
-		newtrip = true;
 		if (vp.has_trip ()) { // TripDescriptor -> (trip_id, route_id)
-		  	if (vp.trip ().has_trip_id () && trip != nullptr) newtrip = vp.trip ().trip_id () != trip->get_id ();
-			if (vp.trip ().has_trip_id () && newtrip) {
-				std::string trip_id = vp.trip ().trip_id ();
-				auto ti = gtfs.get_trip (trip_id);
-				if (ti != nullptr) set_trip (ti);
+		  	if (vp.trip ().has_trip_id () &&
+				trip != nullptr &&
+				vp.trip ().trip_id () != trip->get_id ()) {
+				// If the TRIP UPDATE trip doesn't match vehicle position, ignore it.
+				return;
 			}
 		}
 		// reset stop sequence if starting a new trip

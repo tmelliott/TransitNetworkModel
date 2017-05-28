@@ -19,7 +19,7 @@ namespace gps {
 	 * @param  p the desination point
 	 * @return   the distance, in meters, to the point
 	 */
-  	double Coord::distanceTo(gps::Coord p) {
+  	double Coord::distanceTo(gps::Coord p) const {
 	    double phi1 = rad(lat);
 	    double phi2 = rad(p.lat);
 	    double lam1 = rad(lng);
@@ -46,7 +46,7 @@ namespace gps {
 	 * @param  p The destination point
 	 * @return   the bearing, in degrees, to the point
 	 */
-	double Coord::bearingTo(gps::Coord p) {
+	double Coord::bearingTo(gps::Coord p) const {
 		if (*this == p) return 0.0 / 0.0;
 
 	    double phi1 = rad(lat);
@@ -66,7 +66,7 @@ namespace gps {
 	 * @param  bearing the initial bearing
 	 * @return         the destination point
 	 */
-  	Coord Coord::destinationPoint(double d, double bearing) {
+  	Coord Coord::destinationPoint(double d, double bearing) const {
 	    double delta = d / R;
 	    double theta = rad(bearing);
 	    double phi1 = rad(lat);
@@ -99,7 +99,7 @@ namespace gps {
 	 * @param  p2 The desination of the path
 	 * @return    The shortest distance between the point and the path.
 	 */
-  	double Coord::crossTrackDistanceTo(gps::Coord p1, gps::Coord p2) {
+  	double Coord::crossTrackDistanceTo(gps::Coord p1, gps::Coord p2) const {
 	    double d13 = p1.distanceTo(*this) / R;
 	    double t13 = rad(p1.bearingTo(*this));
 	    double t12 = rad(p1.bearingTo(p2));
@@ -118,7 +118,7 @@ namespace gps {
 	 * @param  origin the point to be used as the center of the projection
 	 * @return        a cartesian coordinate of the projected point
 	 */
-  	std::vector<double> Coord::projectFlat(gps::Coord origin) {
+  	std::vector<double> Coord::projectFlat(gps::Coord origin) const {
 	    double x = (rad(lng) - rad(origin.lng)) * cos(rad(origin.lat));
 	    double y = rad(lat) - rad(origin.lat);
 
