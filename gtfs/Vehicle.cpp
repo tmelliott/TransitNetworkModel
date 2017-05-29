@@ -85,7 +85,10 @@ namespace gtfs {
 	 * @param rng A random number generator
 	 */
 	void Vehicle::update ( sampling::RNG& rng ) {
-	    // if (trip->get_route ()->get_short_name () != "274") return;
+	    if (trip->get_route ()->get_short_name () != "274" &&
+			trip->get_route ()->get_short_name () != "224" &&
+			trip->get_route ()->get_short_name () != "258" &&
+			trip->get_route ()->get_short_name () != "277") return;
 		if (delta <= 0) return;
 
 		if (newtrip) {
