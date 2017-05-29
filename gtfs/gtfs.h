@@ -109,6 +109,7 @@ namespace gtfs {
 
 		uint64_t timestamp;      /*!< time of last observation */
 		int delta;               /*!< time since previous observation */
+		bool initialized;        /*!< logical; set to TRUE once particles have successfully been initialized */
 
 	public:
 		unsigned int n_particles; /*!< the number of particles that will be created in the next sample */
@@ -129,6 +130,8 @@ namespace gtfs {
 		/** Return the vehicle's position */
 		const gps::Coord& get_position () const { return position; };
 
+		/** @return the time the observation was last taken */
+		const uint64_t& get_timestamp () const { return timestamp; };
 		int get_delta () const;
 
 
@@ -154,6 +157,7 @@ namespace gtfs {
 
 		double distance;          /*!< distance into trip */
 		double velocity;          /*!< velocity (m/s) */
+		bool finished;            /*!< set to TRUE once particle reaches end of route */
 
 		int stop_index;           /*!< stop index (1-based to match GTFS feed, {1, ..., M}) */
 		uint64_t arrival_time;    /*!< arrival time at stop `stop_index` */
@@ -163,7 +167,7 @@ namespace gtfs {
 		int segment_index;        /*!< segment index (0-based, {0, ..., L-1}) */
 		int queue_time;           /*!< cumulative time spent queuing at intersction `segment_index` */
 		uint64_t begin_time;      /*!< time at which bus started along segment `segment_index` */
-		
+
 		double log_likelihood;    /*!< the likelihood of the particle, given the data */
 
 	public:
@@ -183,6 +187,8 @@ namespace gtfs {
 		const double& get_distance () const { return distance; };
 		/** @return the particle's velocity */
 		const double& get_velocity () const { return velocity; };
+		/** @return true if the particle is at end of route; false otherwise */
+		bool is_finished () const { return finished; };
 		/** @return the particle's stop index */
 		int get_stop_index () const { return stop_index; };
 		/** @return the particle's arrival time at stop `stop_index` */

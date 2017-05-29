@@ -38,6 +38,8 @@ namespace gtfs {
 			sqlite3_step (stmt_n) == SQLITE_ROW) {
 			Nseg = sqlite3_column_int (stmt_n, 0);
 		}
+		sqlite3_finalize (stmt_n);
+
 		// Load all gtfs `segments`
 		sqlite3_stmt* stmt_segs;
 		qry = "SELECT segment_id, start_id, end_id, length FROM segments" + qwhere;
@@ -85,6 +87,7 @@ namespace gtfs {
 			std::cout.flush ();
 		}
 		sqlite3_finalize (stmt_segs);
+		sqlite3_finalize (stmt_path);
 
 		// Load all gtfs `shapes`
 		sqlite3_stmt* stmt_shapes;
@@ -154,6 +157,8 @@ namespace gtfs {
 		}
 		sqlite3_finalize (stmt_trips);
 		std::clog << "\n";
+
+		sqlite3_close (db);
 
 	};
 

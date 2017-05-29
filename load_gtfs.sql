@@ -75,3 +75,16 @@ INSERT INTO stop_times
 	SELECT stop_id, trip_id, CAST(stop_sequence AS INT) AS stop_sequence, arrival_time, departure_time
 	  FROM stop_times_tmp;
 DROP TABLE stop_times_tmp;
+
+
+
+CREATE TABLE particles (
+	particle_id    BIGINT,
+	vehicle_id     TEXT,
+	trip_id        TEXT,
+	distance       REAL,
+	velocity       REAL,
+	timestamp      TIMESTAMP,
+	log_likelihood REAL,
+	parent_id      BIGINT
+);

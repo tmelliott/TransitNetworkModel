@@ -22,6 +22,7 @@ namespace gtfs {
 			<< " with id = " << id << "\n";
 		distance = 0;
 		velocity = 0;
+		finished = false;
 		stop_index = 0;
 		arrival_time = 0;
 		dwell_time = 0;
@@ -44,6 +45,7 @@ namespace gtfs {
 
 		distance = p.get_distance ();
 		velocity = p.get_velocity ();
+		finished = p.is_finished ();
 		stop_index = p.get_stop_index ();
 		arrival_time = p.get_arrival_time ();
 		dwell_time = p.get_dwell_time ();
@@ -111,18 +113,22 @@ namespace gtfs {
 	 * @param rng a random number generator
 	 */
 	void Particle::transition (sampling::RNG& rng) {
-		if (vehicle->get_delta () == 0) return;
+		if (vehicle->get_delta () == 0 || finished) return;
 
 		std::clog << "   - " << *this << " -> ";
 
 		double sigv (2);
 		double vel = 0.0;
-		while (vel <= 0 || velocity >= 30) vel = rng.rnorm () * sigv + velocity;
+		while (vel <= 0 || vel >= 30) vel = rng.rnorm () * sigv + velocity;
 		velocity = vel;
 
-		distance = MIN(vehicle->get_trip ()->get_route ()
-							->get_shape ()->get_segments ().back ().segment->get_length (),
-					   distance + velocity * vehicle->get_delta ());
+		double dmax = vehicle->get_trip ()->get_route ()
+			->get_shape ()->get_segments ().back ().segment->get_length ();
+		distance = distance + velocity * vehicle->get_delta ();
+		if (distance >= dmax) {
+			distance = dmax;
+			finished = true;
+		}
 		std::clog << *this << " -> ";
 
 		calculate_likelihood ();

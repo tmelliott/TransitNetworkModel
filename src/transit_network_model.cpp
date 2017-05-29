@@ -101,14 +101,17 @@ int main (int argc, char* argv[]) {
 		version = "";
 	}
 
+	// sqlite3* db;
+	// if (sqlite3_open (dbname.c_str (), &db)) {
+	// 	fprintf(stderr, " * Can't open db connection: %s\n", sqlite3_errmsg (db));
+	// } else {
+	// 	sqlite3_exec (db, "DELETE FROM particles", NULL, NULL, NULL);
+	// 	sqlite3_close (db);
+	// }
+
 	// Load the global GTFS database object:
 	gtfs::GTFS gtfs (dbname, version);
 	std::cout << " * Database loaded into memory\n\n";
-	// std::cout << "   - " << gtfs.get_routes ().size () << " routes\n";
-	// std::cout << "   - " << gtfs.get_trips ().size () << " trips\n";
-	// std::cout << "   - " << gtfs.get_shapes ().size () << " shapes\n";
-	// std::cout << "   - " << gtfs.get_segments ().size () << " segments\n";
-
 
 	/**
 	 * An unordered map of vehicles.
@@ -121,38 +124,6 @@ int main (int argc, char* argv[]) {
 
 	std::clock_t clockstart;
 	std::clock_t clockend;
-
-	// Initialize vehicles
-	// auto wallstart = std::chrono::high_resolution_clock::now();
-	// auto wallend = std::chrono::high_resolution_clock::now();
-	// std::vector<std::string> fs {"vehicle_locations.pbz", "trip_updates.pbz"};
-	// for (auto file: fs) {
-	// 	if ( ! load_feed (vehicles, file, N, rng, gtfs) ) {
-	// 		std::cerr << "Unable to read file.\n";
-	// 		return -1;
-	// 	}
-	// }
-	//
-	// clockend =  std::clock();
-	// wallend = std::chrono::high_resolution_clock::now();
-	// std::cout << std::fixed << std::setprecision(3)
-	// 	<< "=== TIME: " << (clockend - clockstart) / (double)(CLOCKS_PER_SEC / 1000) << " ms / "
-	// 	<< std::chrono::duration<double, std::milli>(wallend - wallstart).count() << " ms\n";
-	// std::cout.flush();
-	//
-	//
-	// wallstart = std::chrono::high_resolution_clock::now();
-	// wallend = std::chrono::high_resolution_clock::now();
-	// std::cout << "\n";
-	// for (auto& v: vehicles) v.second->update (rng);
-	// std::cout << "\n";
-	//
-	// clockend =  std::clock();
-	// wallend = std::chrono::high_resolution_clock::now();
-	// std::cout << std::fixed << std::setprecision(3)
-	// 	<< "=== TIME: " << (clockend - clockstart) / (double)(CLOCKS_PER_SEC / 1000) << " ms / "
-	// 	<< std::chrono::duration<double, std::milli>(wallend - wallstart).count() << " ms\n";
-	// std::cout.flush();
 
 	while (forever) {
 		// forever = false;
@@ -175,7 +146,12 @@ int main (int argc, char* argv[]) {
 
 			std::cout << "\n";
 			// -> triggers particle transition -> resample
+			std::vector<std::string> USEDtrips {"274", "224", "277", "258"};
 			for (auto& v: vehicles) {
+				if (std::find (USEDtrips.begin (), USEDtrips.end (),
+							   v.second->get_trip ()->get_route ()->get_short_name ()) == USEDtrips.end ()) {
+				    continue;
+			    }
 				std::cout << "- Route " << v.second->get_trip ()->get_route ()->get_short_name () << "\n";
 				v.second->update (rng);
 			}
@@ -188,6 +164,51 @@ int main (int argc, char* argv[]) {
                 << std::chrono::duration<double, std::milli>(wallend - wallstart).count() << " ms\n";
             std::cout.flush();
 
+			std::cout << "\n * Writing particles to db ...";
+			std::cout.flush ();
+			sqlite3* db;
+			sqlite3_stmt* stmt_ins;
+			if (sqlite3_open (dbname.c_str (), &db)) {
+				fprintf(stderr, " * Can't open db connection: %s\n", sqlite3_errmsg (db));
+			} else {
+				sqlite3_exec (db, "DELETE FROM particles", NULL, NULL, NULL);
+				sqlite3_exec (db, "BEGIN IMMEDIATE", NULL, NULL, NULL);
+
+				if (sqlite3_prepare_v2 (db, "INSERT INTO particles VALUES ($1,$2,$3,$4,$5,$6,$7,$8)",
+					 	   					   -1, &stmt_ins, 0) != SQLITE_OK) {
+					std::cerr << "\n  x Unable to prepare INSERT query ";
+				} else {
+					// prepared OK
+					for (auto& v: vehicles) {
+						std::string tid = v.second->get_trip ()->get_id ();//.c_str ();
+						// std::cout << tid.c_str () << "\n";
+						for (auto& p: v.second->get_particles ()) {
+							sqlite3_bind_int (stmt_ins, 1, p.get_id ());
+							sqlite3_bind_text (stmt_ins, 2, v.second->get_id ().c_str (), -1, SQLITE_STATIC);
+							sqlite3_bind_text (stmt_ins, 3, tid.c_str (), -1, SQLITE_STATIC);
+							sqlite3_bind_double (stmt_ins, 4, p.get_distance ());
+							sqlite3_bind_double (stmt_ins, 5, p.get_velocity ());
+							sqlite3_bind_int64 (stmt_ins, 6, v.second->get_timestamp ());
+							sqlite3_bind_double (stmt_ins, 7, p.get_likelihood ());
+							sqlite3_bind_int (stmt_ins, 8, p.get_parent_id ());
+
+							if (sqlite3_step (stmt_ins) != SQLITE_DONE) {
+								std::cerr << " x Error inserting value: " << sqlite3_errmsg (db);
+							}
+							sqlite3_reset (stmt_ins);
+						}
+					}
+				}
+				sqlite3_finalize (stmt_ins);
+
+				char* zErrMsg = 0;
+				if (sqlite3_exec (db, "COMMIT", NULL, NULL, &zErrMsg) == 0) {
+					std::cout << " done\n";
+				} else {
+					std::cout << "\nTransaction couldn't complete: " << zErrMsg << "\n";
+				}
+				sqlite3_close (db);
+			}
 		}
 
 		{
@@ -200,7 +221,7 @@ int main (int argc, char* argv[]) {
 
 		}
 
-		std::this_thread::sleep_for (std::chrono::milliseconds (10 * 1000));
+		if (forever) std::this_thread::sleep_for (std::chrono::milliseconds (10 * 1000));
 	}
 
 	return 0;

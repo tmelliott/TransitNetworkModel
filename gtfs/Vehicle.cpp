@@ -20,7 +20,7 @@ namespace gtfs {
 	 *           the vehicle with
 	 */
 	Vehicle::Vehicle (std::string id, unsigned int n) :
-	id (id), n_particles (n), next_id (1) {
+	id (id), n_particles (n), next_id (1), initialized (false) {
 		std::clog << " ++ Created vehicle " << id << std::endl;
 
 		particles.reserve(n_particles);
@@ -85,13 +85,14 @@ namespace gtfs {
 	 * @param rng A random number generator
 	 */
 	void Vehicle::update ( sampling::RNG& rng ) {
-	    if (trip->get_route ()->get_short_name () != "274" &&
-			trip->get_route ()->get_short_name () != "224" &&
-			trip->get_route ()->get_short_name () != "258" &&
-			trip->get_route ()->get_short_name () != "277") return;
-		if (delta <= 0) return;
+		std::cout << "Vehicle ID: " << id
+			<< " " << position
+			<< " - ts=" << timestamp
+			<< " (" << delta << " seconds since last observation)";
+		if (newtrip) std::cout << " - newtrip";
+		std::cout << "\n";
 
-		if (newtrip) {
+		if (newtrip || !initialized) {
 			std::cout << " * Initializing particles: ";
 
 			// Detect initial range of vehicle's "distance into trip"
@@ -112,11 +113,16 @@ namespace gtfs {
 			if (init_range[0] > init_range[1]) {
 				std::cout << "   -> unable to locate vehicle on route -> cannot initialize.\n";
 				return;
+			} else if (init_range[0] == init_range[1]) {
+				init_range[0] = init_range[0] - 100;
+				init_range[1] = init_range[1] + 100;
 			}
 			sampling::uniform udist (init_range[0], init_range[1]);
 			sampling::uniform uspeed (0, 30);
 			for (auto& p: particles) p.initialize (udist, uspeed, rng);
-		} else {
+
+			initialized = true;
+		} else if (delta > 0 ){
 			std::cout << " * Updating particles: " << delta << "s\n";
 
 			double dbar = 0;
@@ -129,7 +135,18 @@ namespace gtfs {
 				   5, dbar / particles.size (), 5, vbar / particles.size ());
 
 			for (auto& p: particles) p.transition (rng);
+		} else {
+			return;
 		}
+
+		// No particles near? Oh ...
+		std::vector<double> llh (particles.size ());
+		for (auto& p: particles) llh.push_back (p.get_likelihood ());
+		if (*std::max_element (llh.begin (), llh.end ()) < - log(particles.size ())) {
+			initialized = false;
+			return;
+		}
+
 
 		// Resample them!
 		std::cout << "   - Resampling \n";
@@ -250,6 +267,8 @@ namespace gtfs {
 		std::vector<double> lh;
 		lh.reserve (particles.size ());
 		for (auto& p: particles) lh.push_back (exp(p.get_likelihood ()));
+		std::cout << "Max likelihood: " << *std::max_element (lh.begin (), lh.end ()) << "\n";
+		if (*std::max_element (lh.begin (), lh.end ()) < 1.0 / particles.size ()) return;
 		sampling::sample smp (lh);
 		std::vector<int> pkeep (smp.get (rng));
 
@@ -258,7 +277,9 @@ namespace gtfs {
 
 		// Copy new particles, incrementing their IDs (copy constructor does this)
 		particles.reserve(n_particles);
-		for (auto& i: pkeep) particles.push_back(old_particles[i]);
+		for (auto& i: pkeep) {
+			particles.push_back(old_particles[i]);
+		}
 
 	};
 
