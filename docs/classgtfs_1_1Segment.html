@@ -74,23 +74,166 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ac1457d5864e30d591eede10e92f6fd85"><td class="memItemLeft" align="right" valign="top"><a id="ac1457d5864e30d591eede10e92f6fd85"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Segment</b> (unsigned long id, std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Intersection.html">Intersection</a> &gt; start, std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Intersection.html">Intersection</a> &gt; end, std::vector&lt; <a class="el" href="structgtfs_1_1ShapePt.html">ShapePt</a> &gt; &amp;path, double length)</td></tr>
+<tr class="memitem:ac1457d5864e30d591eede10e92f6fd85"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Segment.html#ac1457d5864e30d591eede10e92f6fd85">Segment</a> (unsigned long id, std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Intersection.html">Intersection</a> &gt; start, std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Intersection.html">Intersection</a> &gt; end, std::vector&lt; <a class="el" href="structgtfs_1_1ShapePt.html">ShapePt</a> &gt; &amp;path, double length)</td></tr>
 <tr class="separator:ac1457d5864e30d591eede10e92f6fd85"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5c324888b7535df4623d8f32d907fca3"><td class="memItemLeft" align="right" valign="top"><a id="a5c324888b7535df4623d8f32d907fca3"></a>
-const unsigned long &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get_id</b> (void) const</td></tr>
+<tr class="memitem:a5c324888b7535df4623d8f32d907fca3"><td class="memItemLeft" align="right" valign="top">const unsigned long &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Segment.html#a5c324888b7535df4623d8f32d907fca3">get_id</a> (void) const</td></tr>
 <tr class="separator:a5c324888b7535df4623d8f32d907fca3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9ba2506020d090ccfcd0623b58101a3b"><td class="memItemLeft" align="right" valign="top"><a id="a9ba2506020d090ccfcd0623b58101a3b"></a>
-const std::vector&lt; <a class="el" href="structgtfs_1_1ShapePt.html">ShapePt</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get_path</b> (void) const</td></tr>
+<tr class="memitem:a9ba2506020d090ccfcd0623b58101a3b"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="structgtfs_1_1ShapePt.html">ShapePt</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Segment.html#a9ba2506020d090ccfcd0623b58101a3b">get_path</a> (void) const</td></tr>
 <tr class="separator:a9ba2506020d090ccfcd0623b58101a3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4f42ea597e18e54c9ec506697eb333a9"><td class="memItemLeft" align="right" valign="top"><a id="a4f42ea597e18e54c9ec506697eb333a9"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>get_length</b> (void)</td></tr>
+<tr class="memitem:a4f42ea597e18e54c9ec506697eb333a9"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Segment.html#a4f42ea597e18e54c9ec506697eb333a9">get_length</a> (void)</td></tr>
 <tr class="separator:a4f42ea597e18e54c9ec506697eb333a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>An object of this class represents a vehicles path between two intersections.</p>
 <p>The segment has a mean and variance of "speed" along it. At the beginning and end of routes, segments are defined from the first stop to the first intersection, and from the last intersection to the last stop, respectively. Each segment has a length, and consists of a sequence of <a class="el" href="classgps_1_1Coord.html">gps::Coord</a>'s which are in turn associated with a cumulative distance. </p>
-</div><hr/>The documentation for this class was generated from the following file:<ul>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="ac1457d5864e30d591eede10e92f6fd85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1457d5864e30d591eede10e92f6fd85">&#9670;&nbsp;</a></span>Segment()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">gtfs::Segment::Segment </td>
+          <td>(</td>
+          <td class="paramtype">unsigned long&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Intersection.html">Intersection</a> &gt;&#160;</td>
+          <td class="paramname"><em>start</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Intersection.html">Intersection</a> &gt;&#160;</td>
+          <td class="paramname"><em>end</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structgtfs_1_1ShapePt.html">ShapePt</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>length</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>The default constructor for a segment. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">id</td><td>the segment's ID </td></tr>
+    <tr><td class="paramname">start</td><td>the intersection at the beginning of the segment </td></tr>
+    <tr><td class="paramname">end</td><td>the intersection at the end of the segment </td></tr>
+    <tr><td class="paramname">path</td><td>a vector of shape points defining the shape of the segment </td></tr>
+    <tr><td class="paramname">length</td><td>the length of the segment </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a5c324888b7535df4623d8f32d907fca3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c324888b7535df4623d8f32d907fca3">&#9670;&nbsp;</a></span>get_id()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const unsigned long&amp; gtfs::Segment::get_id </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>the segment's ID </dd></dl>
+
+</div>
+</div>
+<a id="a4f42ea597e18e54c9ec506697eb333a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f42ea597e18e54c9ec506697eb333a9">&#9670;&nbsp;</a></span>get_length()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double gtfs::Segment::get_length </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>the length of the segment </dd></dl>
+
+</div>
+</div>
+<a id="a9ba2506020d090ccfcd0623b58101a3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ba2506020d090ccfcd0623b58101a3b">&#9670;&nbsp;</a></span>get_path()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt;<a class="el" href="structgtfs_1_1ShapePt.html">ShapePt</a>&gt;&amp; gtfs::Segment::get_path </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>a vector of shape points defining the segment's shape </dd></dl>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
 <li>gtfs/<a class="el" href="gtfs_8h_source.html">gtfs.h</a></li>
 </ul>
 </div><!-- contents -->

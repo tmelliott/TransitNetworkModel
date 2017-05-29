@@ -13,6 +13,8 @@ namespace gtfs {
 	* Values are computed based on the approximate location of the bus,
 	* allowing for noise.
 	* RNG required otherwise the particles would all be identical!
+	*
+	* @param v the vehicle object pointer to which the particle belongs
 	*/
 	Particle::Particle (Vehicle* v) : vehicle (v), parent_id (0) {
 		id = v->allocate_id ();
@@ -80,8 +82,9 @@ namespace gtfs {
 
 	/**
 	 * Initialize particle with distance etc.
-	 * @param unif a uniform number generator with parameters a and b
-	 * @param rng  a random number generator
+	 * @param dist  a uniform number generator for the particle's distance into trip
+	 * @param speed a uniform number generator for the particle's velocity
+	 * @param rng   a random number generator
 	 */
 	void Particle::initialize (sampling::uniform& dist, sampling::uniform& speed, sampling::RNG& rng) {
 		distance = dist.rand (rng);

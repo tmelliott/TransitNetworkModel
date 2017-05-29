@@ -8,7 +8,7 @@ namespace gtfs {
 	*
 	* Vehicles are created with a default number of particles.
 	*
-	* @param vehicle_id the ID of the vehicle as given in the GTFS feed
+	* @param id the ID of the vehicle as given in the GTFS feed
 	*/
 	Vehicle::Vehicle (std::string id) : Vehicle::Vehicle (id, 10) {};
 
@@ -38,6 +38,11 @@ namespace gtfs {
 
 
 	// --- SETTERS
+
+	/**
+	 * Specify the vehicles trip.
+	 * @param tp A shared trip pointer
+	 */
 	void Vehicle::set_trip (std::shared_ptr<Trip> tp) {
 		trip = tp;
 	};
@@ -54,6 +59,7 @@ namespace gtfs {
 		return particles;
 	};
 
+	/** @return a pointer to the vehicle's trip object */
 	const std::shared_ptr<Trip>& Vehicle::get_trip () const {
 		return trip;
 	}
@@ -67,6 +73,17 @@ namespace gtfs {
 
 	// --- METHODS
 
+	/**
+	 * Update the vehicle state after loading GTFS feeds.
+	 *
+	 * The vehicle's particles will be updated, which involves
+	 * initialization if the vehicle is starting a new trip,
+	 * otherwise the particles will be transitioned.
+	 *
+	 * Likelihoods are calculated and weighted resampling takes place.
+	 *
+	 * @param rng A random number generator
+	 */
 	void Vehicle::update ( sampling::RNG& rng ) {
 	    if (trip->get_route ()->get_short_name () != "274") return;
 		if (delta <= 0) return;
@@ -127,17 +144,13 @@ namespace gtfs {
 
 	/**
 	 * Update the location of the vehicle object.
-	 *6
-7
-8
-9
-10
-
+	 *
 	 * This does NOT trigger a particle update, as we may need
 	 * to also insert TripUpdates later.
 	 * Check that the trip_id is the same, otherwise set `newtrip = false`
 	 *
-	 * @param vp a vehicle position from the realtime feed
+	 * @param vp   a vehicle position from the realtime feed
+	 * @param gtfs a GTFS object containing the GTFS static data
 	 */
 	void Vehicle::update (const transit_realtime::VehiclePosition &vp, GTFS &gtfs) {
 		std::clog << "Updating vehicle location!\n";
@@ -170,6 +183,7 @@ namespace gtfs {
 	 * to also insert VehiclevoidPositions later.
 	 *
 	 * @param vp a vehicle position from the realtime feed
+	 * @param gtfs a GTFS object containing the GTFS static data
 	 */
 	void Vehicle::update (const transit_realtime::TripUpdate &vp, GTFS &gtfs) {
 		std::clog << "Updating vehicle trip update!\n";

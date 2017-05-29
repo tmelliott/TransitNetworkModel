@@ -67,15 +67,19 @@ namespace gtfs {
 		GTFS (std::string& dbname, std::string& v);
 
 		// Get individual objects
-		std::shared_ptr<Trip> get_trip (std::string& t) const; // this is expected to be the most common
+		std::shared_ptr<Trip> get_trip (std::string& t) const;
 		std::shared_ptr<Route> get_route (std::string& r) const;
 		std::shared_ptr<Shape> get_shape (std::string& s) const;
 		std::shared_ptr<Segment> get_segment (unsigned long s) const;
 
 		// Get all objects ...
+		/** @return an unordered map of Route objects */
 		std::unordered_map<std::string, std::shared_ptr<Route> > get_routes (void) { return routes; };
+		/** @return an unordered map of Trip objects */
 		std::unordered_map<std::string, std::shared_ptr<Trip> > get_trips (void) { return trips; };
+		/** @return an unordered map of Shape objects */
 		std::unordered_map<std::string, std::shared_ptr<Shape> > get_shapes (void) { return shapes; };
+		/** @return an unordered map of Segment objects */
 		std::unordered_map<unsigned long, std::shared_ptr<Segment> > get_segments (void) { return segments; };
 
 	};
@@ -122,6 +126,7 @@ namespace gtfs {
 		std::string get_id () const;
 		std::vector<Particle>& get_particles ();
 		const std::shared_ptr<Trip>& get_trip () const;
+		/** Return the vehicle's position */
 		const gps::Coord& get_position () const { return position; };
 
 		int get_delta () const;
@@ -174,15 +179,24 @@ namespace gtfs {
 		unsigned long get_id () const;
 		unsigned long get_parent_id () const;
 
+		/** @return the particle's distance into trip */
 		const double& get_distance () const { return distance; };
+		/** @return the particle's velocity */
 		const double& get_velocity () const { return velocity; };
+		/** @return the particle's stop index */
 		int get_stop_index () const { return stop_index; };
+		/** @return the particle's arrival time at stop `stop_index` */
 		const uint64_t& get_arrival_time () const { return arrival_time; };
+		/** @return the particle's dwell time at stop `stop_index` */
 		int get_dwell_time () const { return dwell_time; };
+		/** @return the particle's segment index */
 		int get_segment_index () const {return segment_index; };
+		/** @return the particle's queue time at segment `segment_index` */
 		int get_queue_time () const {return queue_time; };
+		/** @return the particle's begin time at segment `segment_index` */
 		const uint64_t& get_begin_time () const { return begin_time; };
 
+		/** @return the particle's likelihood */
 		const double& get_likelihood () const { return log_likelihood; };
 
 		// Methods
@@ -191,6 +205,12 @@ namespace gtfs {
 		void calculate_likelihood (void);
 	};
 
+	/**
+	 * Print a particle object state.
+	 * @param  os       the ostream to write to
+	 * @param  p        the particle to print
+	 * @return          an ostream instance
+	 */
 	inline std::ostream& operator<< (std::ostream& os, const Particle& p) {
 		char buff [45];
 		sprintf(buff, "[%*.0f, %*.1f, %*d, %*" PRIu64 ", %*d]",
@@ -199,7 +219,7 @@ namespace gtfs {
 
 		return os << buff;
 	};
-
+	
 	gps::Coord get_coords (double distance, std::shared_ptr<Shape> shape);
 
 
@@ -228,9 +248,12 @@ namespace gtfs {
 			   std::shared_ptr<Shape> shape);
 
 		// --- GETTERS
+		/** @return the route's ID */
 		const std::string& get_id (void) const { return id; };
 		std::vector<std::shared_ptr<Trip> > get_trips () const;
+		/** @return the route's short name */
 		const std::string& get_short_name (void) const { return route_short_name; };
+		/** @return the route's long name */
 		const std::string& get_long_name (void) const { return route_long_name; };
 		std::shared_ptr<Shape> get_shape () const;
 
@@ -266,7 +289,9 @@ namespace gtfs {
 		// };
 
 		// --- GETTERS
+		/** @return the trip's ID */
 		std::string get_id (void) const { return id; };
+		/** @return a pointer to the trip's route */
 		std::shared_ptr<Route> get_route (void) { return route; };
 
 		// --- METHODS
@@ -287,9 +312,14 @@ namespace gtfs {
 		std::vector<ShapeSegment> segments;
 
 	public:
+		/**
+		 * Default constructor for a shape object.
+		 * @param id the ID of the shape
+		 */
 		Shape (std::string& id) : id (id) {};
 
 		// --- GETTERS
+		/** @return the shape's ID */
 		std::string get_id (void) const { return id; };
 
 		// /** @return a vector of shape segments */
@@ -308,6 +338,15 @@ namespace gtfs {
 	 * The vector order == leg (0-based sequence).
 	 */
 	struct ShapeSegment {
+		/**
+		 * Default constructor for a Shape Segment.
+		 *
+		 * This is simply a relationship between a GTFS SHAPE and it's segment information.
+		 * That is, it's a 'pivot table'.
+		 *
+		 * @param segment  the segment ID
+		 * @param distance how far into the overall shape this segment starts at
+		 */
 		ShapeSegment (std::shared_ptr<Segment> segment, double distance) : segment (segment), shape_dist_traveled (distance) {};
 		std::shared_ptr<Segment> segment; /*!< pointer to the segment */
 		double shape_dist_traveled;       /*!< distance along route shape at beginning of this segment */
@@ -337,14 +376,25 @@ namespace gtfs {
 		uint64_t timestamp;          /*!< updated at timestamp */
 
 	public:
+		/**
+		 * The default constructor for a segment.
+		 * @param id     the segment's ID
+		 * @param start  the intersection at the beginning of the segment
+		 * @param end    the intersection at the end of the segment
+		 * @param path   a vector of shape points defining the shape of the segment
+		 * @param length the length of the segment
+		 */
 		Segment (unsigned long id,
 				 std::shared_ptr<Intersection> start,
 				 std::shared_ptr<Intersection> end,
 				 std::vector<ShapePt>& path,
 				 double length) : id (id), start_at (start), end_at (end), path (path), length (length) {};
 		// --- GETTERS
+		/** @return the segment's ID */
 		const unsigned long& get_id (void) const { return id; };
+		/** @return a vector of shape points defining the segment's shape */
 		const std::vector<ShapePt>& get_path (void) const { return path; };
+		/** @return the length of the segment */
 		double get_length (void) { return length; };
 
 		// --- METHODS
@@ -355,6 +405,13 @@ namespace gtfs {
 	 * A struct describing a single shape point.
 	 */
 	struct ShapePt {
+		/**
+		 * Default constructor for a shape point,
+		 * which defines a GPS location and how far into the shape that point is.
+		 *
+		 * @param pt       GPS position of the point
+		 * @param distance the distance into the segment of the point
+		 */
 		ShapePt (gps::Coord pt, double distance) : pt (pt), seg_dist_traveled (distance) {};
 		gps::Coord pt;             /*!< GPS coordinate of the point */
 		double seg_dist_traveled;  /*!< cumulative distance traveled along the shape */

@@ -12,8 +12,7 @@ double \hyperlink{namespacegps_ad44ea39876137fc96774486e3a60f004}{rad} (double d
 \item 
 double \hyperlink{namespacegps_a5c00877fe5fce323f1c834c324018c8f}{deg} (double r)
 \item 
-\mbox{\Hypertarget{namespacegps_a5fb543469635387159ce1b8e24f6f78a}\label{namespacegps_a5fb543469635387159ce1b8e24f6f78a}} 
-std\+::ostream \& {\bfseries operator$<$$<$} (std\+::ostream \&os, const \hyperlink{classgps_1_1Coord}{Coord} \&p)
+std\+::ostream \& \hyperlink{namespacegps_a5fb543469635387159ce1b8e24f6f78a}{operator$<$$<$} (std\+::ostream \&os, const \hyperlink{classgps_1_1Coord}{Coord} \&p)
 \end{DoxyCompactItemize}
 \subsection*{Variables}
 \begin{DoxyCompactItemize}
@@ -45,6 +44,22 @@ $ \theta^\circ = \frac{180}{\pi} x $
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 an angle in degrees 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacegps_a5fb543469635387159ce1b8e24f6f78a}\label{namespacegps_a5fb543469635387159ce1b8e24f6f78a}} 
+\index{gps@{gps}!operator$<$$<$@{operator$<$$<$}}
+\index{operator$<$$<$@{operator$<$$<$}!gps@{gps}}
+\subsubsection{\texorpdfstring{operator$<$$<$()}{operator<<()}}
+{\footnotesize\ttfamily std\+::ostream\& gps\+::operator$<$$<$ (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{os,  }\item[{const \hyperlink{classgps_1_1Coord}{Coord} \&}]{p }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Print a coord object. 
+\begin{DoxyParams}{Parameters}
+{\em os} & the ostream to write to \\
+\hline
+{\em p} & the point to print \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+an ostream instance 
 \end{DoxyReturn}
 \mbox{\Hypertarget{namespacegps_ad44ea39876137fc96774486e3a60f004}\label{namespacegps_ad44ea39876137fc96774486e3a60f004}} 
 \index{gps@{gps}!rad@{rad}}

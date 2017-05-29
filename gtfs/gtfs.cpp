@@ -7,6 +7,15 @@
 #include "gps.h"
 
 namespace gtfs {
+	/**
+	 * Default constructor for the main GTFS object.
+	 *
+	 * This contains the actual values of all the GTFS static data,
+	 * so it can be accessed throughout the program.
+	 *
+	 * @param dbname the name of the database to pull the GTFS data from
+	 * @param v      a version string to limit how much data is loaded
+	 */
 	GTFS::GTFS (std::string& dbname, std::string& v) : database_ (dbname), version_ (v) {
 		sqlite3 *db;
 		if (sqlite3_open (database_.c_str (), &db)) {
@@ -147,12 +156,22 @@ namespace gtfs {
 
 	};
 
+	/**
+	 * Load a Route object.
+	 * @param  r the ID of the route we want
+	 * @return a Route object, or null pointer if it wasn't found
+	 */
 	std::shared_ptr<Route> GTFS::get_route (std::string& r) const {
 		auto ri = routes.find (r);
 		if (ri == routes.end ()) return nullptr;
 		return ri->second;
 	}
 
+	/**
+	 * Load a Trip object.
+	 * @param  t the ID of the trip we want
+	 * @return a Trip object, or null pointer if it wasn't found
+	 */
 	std::shared_ptr<Trip> GTFS::get_trip (std::string& t) const {
 		auto ti = trips.find (t);
 		if (ti == trips.end ()) {
@@ -162,6 +181,11 @@ namespace gtfs {
 		}
 	}
 
+	/**
+	 * Load a Shape object.
+	 * @param  s the ID of the shape we want
+	 * @return a Shape object, or null pointer if it wasn't found
+	 */
 	std::shared_ptr<Shape> GTFS::get_shape (std::string& s) const {
 		auto si = shapes.find (s);
 		if (si == shapes.end ()) {
@@ -171,6 +195,11 @@ namespace gtfs {
 		}
 	}
 
+	/**
+	 * Load a Segment object.
+	 * @param  s the ID of the segment we want
+	 * @return a Segment object, or null pointer if it wasn't found
+	 */
 	std::shared_ptr<Segment> GTFS::get_segment (unsigned long s) const {
 		auto si = segments.find (s);
 		if (si == segments.end ()) {
@@ -184,7 +213,7 @@ namespace gtfs {
 	/**
 	 * Get the coordinates of a point a given distance along a shape.
 	 * @param  distance total distance traveled along path, in meters
-	 * @param  path     the shape path being traveled along
+	 * @param  shape    the shape path being traveled along
 	 * @return          a coordinate object
 	 */
 	gps::Coord get_coords (double distance, std::shared_ptr<Shape> shape) {

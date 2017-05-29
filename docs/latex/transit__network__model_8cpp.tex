@@ -10,6 +10,8 @@
 {\ttfamily \#include $<$algorithm$>$}\newline
 {\ttfamily \#include $<$time.\+h$>$}\newline
 {\ttfamily \#include $<$sqlite3.\+h$>$}\newline
+{\ttfamily \#include $<$chrono$>$}\newline
+{\ttfamily \#include $<$ctime$>$}\newline
 {\ttfamily \#include $<$boost/program\+\_\+options.\+hpp$>$}\newline
 {\ttfamily \#include \char`\"{}gtfs-\/realtime.\+pb.\+h\char`\"{}}\newline
 {\ttfamily \#include \char`\"{}sampling.\+h\char`\"{}}\newline
@@ -57,7 +59,12 @@ Load a feed message into vehicle object vector
 \hline
 {\em rng} & reference to a random number generator \\
 \hline
+{\em gtfs} & A G\+T\+FS object containing the static data \\
+\hline
 \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if the feed is loaded correctly, false if it is not 
+\end{DoxyReturn}
 \mbox{\Hypertarget{transit__network__model_8cpp_a0ddf1224851353fc92bfbff6f499fa97}\label{transit__network__model_8cpp_a0ddf1224851353fc92bfbff6f499fa97}} 
 \index{transit\+\_\+network\+\_\+model.\+cpp@{transit\+\_\+network\+\_\+model.\+cpp}!main@{main}}
 \index{main@{main}!transit\+\_\+network\+\_\+model.\+cpp@{transit\+\_\+network\+\_\+model.\+cpp}}

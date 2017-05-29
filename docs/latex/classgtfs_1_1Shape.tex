@@ -7,16 +7,13 @@
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\Hypertarget{classgtfs_1_1Shape_ace6a58f57452ab0d2830b518a0ed2bde}\label{classgtfs_1_1Shape_ace6a58f57452ab0d2830b518a0ed2bde}} 
-{\bfseries Shape} (std\+::string \&id)
+\hyperlink{classgtfs_1_1Shape_ace6a58f57452ab0d2830b518a0ed2bde}{Shape} (std\+::string \&id)
 \item 
-\mbox{\Hypertarget{classgtfs_1_1Shape_ad8f8c0c5c19d4a8e840be1ed9a89de9e}\label{classgtfs_1_1Shape_ad8f8c0c5c19d4a8e840be1ed9a89de9e}} 
-std\+::string {\bfseries get\+\_\+id} (void) const
+std\+::string \hyperlink{classgtfs_1_1Shape_ad8f8c0c5c19d4a8e840be1ed9a89de9e}{get\+\_\+id} (void) const
 \item 
 const std\+::vector$<$ \hyperlink{structgtfs_1_1ShapeSegment}{Shape\+Segment} $>$ \& \hyperlink{classgtfs_1_1Shape_ab6959c8c957c2548313e4cf76bd2a2dd}{get\+\_\+segments} (void) const
 \item 
-\mbox{\Hypertarget{classgtfs_1_1Shape_afb5bfd99bafb82eb085198218fe13342}\label{classgtfs_1_1Shape_afb5bfd99bafb82eb085198218fe13342}} 
-void {\bfseries add\+\_\+segment} (std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Segment}{Segment} $>$ segment, double distance)
+void \hyperlink{classgtfs_1_1Shape_afb5bfd99bafb82eb085198218fe13342}{add\+\_\+segment} (std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Segment}{Segment} $>$ segment, double distance)
 \end{DoxyCompactItemize}
 
 
@@ -25,7 +22,43 @@ An object of this class represents the path a vehicles takes from origin to dest
 
 The path is made up of one or more segments, and each is associated with an initial distance traveled up until the beginning of that segment. 
 
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classgtfs_1_1Shape_ace6a58f57452ab0d2830b518a0ed2bde}\label{classgtfs_1_1Shape_ace6a58f57452ab0d2830b518a0ed2bde}} 
+\index{gtfs\+::\+Shape@{gtfs\+::\+Shape}!Shape@{Shape}}
+\index{Shape@{Shape}!gtfs\+::\+Shape@{gtfs\+::\+Shape}}
+\subsubsection{\texorpdfstring{Shape()}{Shape()}}
+{\footnotesize\ttfamily gtfs\+::\+Shape\+::\+Shape (\begin{DoxyParamCaption}\item[{std\+::string \&}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Default constructor for a shape object. 
+\begin{DoxyParams}{Parameters}
+{\em id} & the ID of the shape \\
+\hline
+\end{DoxyParams}
+
+
 \subsection{Member Function Documentation}
+\mbox{\Hypertarget{classgtfs_1_1Shape_afb5bfd99bafb82eb085198218fe13342}\label{classgtfs_1_1Shape_afb5bfd99bafb82eb085198218fe13342}} 
+\index{gtfs\+::\+Shape@{gtfs\+::\+Shape}!add\+\_\+segment@{add\+\_\+segment}}
+\index{add\+\_\+segment@{add\+\_\+segment}!gtfs\+::\+Shape@{gtfs\+::\+Shape}}
+\subsubsection{\texorpdfstring{add\+\_\+segment()}{add\_segment()}}
+{\footnotesize\ttfamily void gtfs\+::\+Shape\+::add\+\_\+segment (\begin{DoxyParamCaption}\item[{std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Segment}{Segment} $>$}]{segment,  }\item[{double}]{distance }\end{DoxyParamCaption})}
+
+Add a segment to a shape. 
+\begin{DoxyParams}{Parameters}
+{\em segment} & Pointer to the segment object. \\
+\hline
+{\em distance} & How far into the overall shape this segment begins at. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classgtfs_1_1Shape_ad8f8c0c5c19d4a8e840be1ed9a89de9e}\label{classgtfs_1_1Shape_ad8f8c0c5c19d4a8e840be1ed9a89de9e}} 
+\index{gtfs\+::\+Shape@{gtfs\+::\+Shape}!get\+\_\+id@{get\+\_\+id}}
+\index{get\+\_\+id@{get\+\_\+id}!gtfs\+::\+Shape@{gtfs\+::\+Shape}}
+\subsubsection{\texorpdfstring{get\+\_\+id()}{get\_id()}}
+{\footnotesize\ttfamily std\+::string gtfs\+::\+Shape\+::get\+\_\+id (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the shape\textquotesingle{}s ID 
+\end{DoxyReturn}
 \mbox{\Hypertarget{classgtfs_1_1Shape_ab6959c8c957c2548313e4cf76bd2a2dd}\label{classgtfs_1_1Shape_ab6959c8c957c2548313e4cf76bd2a2dd}} 
 \index{gtfs\+::\+Shape@{gtfs\+::\+Shape}!get\+\_\+segments@{get\+\_\+segments}}
 \index{get\+\_\+segments@{get\+\_\+segments}!gtfs\+::\+Shape@{gtfs\+::\+Shape}}
@@ -33,8 +66,6 @@ The path is made up of one or more segments, and each is associated with an init
 {\footnotesize\ttfamily const std\+::vector$<$\hyperlink{structgtfs_1_1ShapeSegment}{Shape\+Segment}$>$\& gtfs\+::\+Shape\+::get\+\_\+segments (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 \begin{DoxyReturn}{Returns}
-a vector of shape points for the entire shape. 
-
 a vector of shape segments 
 \end{DoxyReturn}
 

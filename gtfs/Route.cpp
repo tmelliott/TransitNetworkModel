@@ -4,8 +4,10 @@
 
 namespace gtfs {
 	/**
-	 * Constructor for a route object, taking an ID, short and long name, and a shape pointer.
-	 * @return [description]
+	 * Constructor for a route object, taking an ID, short and long name, without a shape pointer.
+	 * @param id         the route's ID
+	 * @param short_name the route's short name
+	 * @param long_name  the route's long name
 	 */
 	Route::Route (
 		std::string& id,
@@ -14,6 +16,13 @@ namespace gtfs {
 	) : id (id), route_short_name (short_name), route_long_name (long_name) {
 		std::clog << " + Created route " << id << "\n";
 	};
+	/**
+	 * Constructor for a route object, with a shape pointer.
+	 * @param id         the route's ID
+	 * @param short_name the route's short name
+	 * @param long_name  the route's long name
+	 * @param shape      pointer to the route's shape object
+	 */
 	Route::Route (
 		std::string& id,
 		std::string& short_name,

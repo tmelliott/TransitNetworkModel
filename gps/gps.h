@@ -40,6 +40,12 @@ namespace gps {
 	double rad(double d);
 	double deg(double r);
 
+	/**
+	 * Print a coord object.
+	 * @param os the ostream to write to
+	 * @param p  the point to print
+	 * @return   an ostream instance
+	 */
   	inline std::ostream& operator<< (std::ostream& os, const Coord& p) {
     	return os << "(" << p.lat << ", " << p.lng << ")";
   	};

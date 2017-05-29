@@ -1,8 +1,7 @@
 var searchData=
 [
-  ['rad',['rad',['../namespacegps.html#ad44ea39876137fc96774486e3a60f004',1,'gps']]],
-  ['rand',['rand',['../classsampling_1_1uniform.html#aee0b21aec2c50cdb6d926d5c3890d695',1,'sampling::uniform::rand()'],['../classsampling_1_1normal.html#a12d6d445fc209f91733aa6f8140001be',1,'sampling::normal::rand()'],['../classsampling_1_1exponential.html#ae225fd6ab66ed65ae1ef4cf090060149',1,'sampling::exponential::rand()']]],
-  ['resample',['resample',['../classgtfs_1_1Vehicle.html#a8367fc70a64b7e596422f880dbff1193',1,'gtfs::Vehicle']]],
-  ['rng',['RNG',['../classsampling_1_1RNG.html#ae61ad8991680f68b8c144a03a09a767a',1,'sampling::RNG::RNG()'],['../classsampling_1_1RNG.html#a2fa1a6176fc0fbc96a5c4a4ead6d7927',1,'sampling::RNG::RNG(unsigned int seed)']]],
-  ['route',['Route',['../classgtfs_1_1Route.html#a32550fdfee780a26c596172184b86148',1,'gtfs::Route']]]
+  ['particle',['Particle',['../classgtfs_1_1Particle.html#ad7f42e77c6c7f3042c977fd5a42ff82f',1,'gtfs::Particle::Particle(Vehicle *v)'],['../classgtfs_1_1Particle.html#ac386e64b43b1e317063f9a6666d604ce',1,'gtfs::Particle::Particle(const Particle &amp;p)']]],
+  ['pdf',['pdf',['../classsampling_1_1uniform.html#a9fcb1597ca643fb1c2184f6febc69b0d',1,'sampling::uniform::pdf()'],['../classsampling_1_1normal.html#ad9da5ab3d50569e418f00ace7ac26fa7',1,'sampling::normal::pdf()'],['../classsampling_1_1exponential.html#aa839d6994b83c79b91993b35bb8173e9',1,'sampling::exponential::pdf()']]],
+  ['pdf_5flog',['pdf_log',['../classsampling_1_1uniform.html#a30fa2f2be90f2f9f2d46069540019fb4',1,'sampling::uniform::pdf_log()'],['../classsampling_1_1normal.html#a9a74b03f4276eb622d3c259fd8a1ea01',1,'sampling::normal::pdf_log()'],['../classsampling_1_1exponential.html#af1a70f21711c1a0da8643c0103b51f37',1,'sampling::exponential::pdf_log()']]],
+  ['projectflat',['projectFlat',['../classgps_1_1Coord.html#a43b8263439170e923db7b21a32b653f8',1,'gps::Coord']]]
 ];

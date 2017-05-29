@@ -7,8 +7,7 @@
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\Hypertarget{structgtfs_1_1ShapeSegment_af1bdb1504d16a49ab6ac8ea34da59c5f}\label{structgtfs_1_1ShapeSegment_af1bdb1504d16a49ab6ac8ea34da59c5f}} 
-{\bfseries Shape\+Segment} (std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Segment}{Segment} $>$ \hyperlink{structgtfs_1_1ShapeSegment_a3253b76a15e2645f894a75be55006e09}{segment}, double distance)
+\hyperlink{structgtfs_1_1ShapeSegment_af1bdb1504d16a49ab6ac8ea34da59c5f}{Shape\+Segment} (std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Segment}{Segment} $>$ \hyperlink{structgtfs_1_1ShapeSegment_a3253b76a15e2645f894a75be55006e09}{segment}, double distance)
 \end{DoxyCompactItemize}
 \subsection*{Public Attributes}
 \begin{DoxyCompactItemize}
@@ -23,6 +22,26 @@ double \hyperlink{structgtfs_1_1ShapeSegment_a64afdd03235b9bc256fc18652c6f9c47}{
 A struct corresponding legs of a shape with segments.
 
 The vector order == leg (0-\/based sequence). 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{structgtfs_1_1ShapeSegment_af1bdb1504d16a49ab6ac8ea34da59c5f}\label{structgtfs_1_1ShapeSegment_af1bdb1504d16a49ab6ac8ea34da59c5f}} 
+\index{gtfs\+::\+Shape\+Segment@{gtfs\+::\+Shape\+Segment}!Shape\+Segment@{Shape\+Segment}}
+\index{Shape\+Segment@{Shape\+Segment}!gtfs\+::\+Shape\+Segment@{gtfs\+::\+Shape\+Segment}}
+\subsubsection{\texorpdfstring{Shape\+Segment()}{ShapeSegment()}}
+{\footnotesize\ttfamily gtfs\+::\+Shape\+Segment\+::\+Shape\+Segment (\begin{DoxyParamCaption}\item[{std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Segment}{Segment} $>$}]{segment,  }\item[{double}]{distance }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Default constructor for a \hyperlink{classgtfs_1_1Shape}{Shape} \hyperlink{classgtfs_1_1Segment}{Segment}.
+
+This is simply a relationship between a \hyperlink{classgtfs_1_1GTFS}{G\+T\+FS} S\+H\+A\+PE and it\textquotesingle{}s segment information. That is, it\textquotesingle{}s a \textquotesingle{}pivot table\textquotesingle{}.
+
+
+\begin{DoxyParams}{Parameters}
+{\em segment} & the segment ID \\
+\hline
+{\em distance} & how far into the overall shape this segment starts at \\
+\hline
+\end{DoxyParams}
+
 
 \subsection{Member Data Documentation}
 \mbox{\Hypertarget{structgtfs_1_1ShapeSegment_a3253b76a15e2645f894a75be55006e09}\label{structgtfs_1_1ShapeSegment_a3253b76a15e2645f894a75be55006e09}} 

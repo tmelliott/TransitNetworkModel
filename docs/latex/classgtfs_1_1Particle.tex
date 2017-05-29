@@ -16,7 +16,7 @@ Collaboration diagram for gtfs\+:\+:Particle\+:\nopagebreak
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\hyperlink{classgtfs_1_1Particle_ae59d459c6ff20eb081a933b304289794}{Particle} (\hyperlink{classgtfs_1_1Vehicle}{Vehicle} $\ast$v, \hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&rng)
+\hyperlink{classgtfs_1_1Particle_ad7f42e77c6c7f3042c977fd5a42ff82f}{Particle} (\hyperlink{classgtfs_1_1Vehicle}{Vehicle} $\ast$v)
 \item 
 \hyperlink{classgtfs_1_1Particle_ac386e64b43b1e317063f9a6666d604ce}{Particle} (const \hyperlink{classgtfs_1_1Particle}{Particle} \&p)
 \item 
@@ -26,7 +26,27 @@ unsigned long \hyperlink{classgtfs_1_1Particle_a3131eb93ac902a4cccf42061e1a7296b
 \item 
 unsigned long \hyperlink{classgtfs_1_1Particle_a9372dbbfe702b9931b9eb1ee217afcba}{get\+\_\+parent\+\_\+id} () const
 \item 
-void \hyperlink{classgtfs_1_1Particle_a768469c09fdebd8e190c91a653b25b76}{transition} (void)
+const double \& \hyperlink{classgtfs_1_1Particle_a0ec3ee5a83e778069946242a6d7731b6}{get\+\_\+distance} () const
+\item 
+const double \& \hyperlink{classgtfs_1_1Particle_a3b59c859c3445b97c6da6c0b9081b1e4}{get\+\_\+velocity} () const
+\item 
+int \hyperlink{classgtfs_1_1Particle_a322a6111d18ae304c0b22f000461076a}{get\+\_\+stop\+\_\+index} () const
+\item 
+const uint64\+\_\+t \& \hyperlink{classgtfs_1_1Particle_a783d1a0a614dc2c3f18cf269f69ede3d}{get\+\_\+arrival\+\_\+time} () const
+\item 
+int \hyperlink{classgtfs_1_1Particle_aaea44cde86b5b026c94800c6d837f174}{get\+\_\+dwell\+\_\+time} () const
+\item 
+int \hyperlink{classgtfs_1_1Particle_aad21b0ddaacd73940d4e987426b1fed0}{get\+\_\+segment\+\_\+index} () const
+\item 
+int \hyperlink{classgtfs_1_1Particle_a63bd83f650af8855f014e6e5f86a123a}{get\+\_\+queue\+\_\+time} () const
+\item 
+const uint64\+\_\+t \& \hyperlink{classgtfs_1_1Particle_ac4c8fd3566b0178c95daf6a0cba0040e}{get\+\_\+begin\+\_\+time} () const
+\item 
+const double \& \hyperlink{classgtfs_1_1Particle_a2e1a6de0b7d0fd6938ef3f7f9e5d4b99}{get\+\_\+likelihood} () const
+\item 
+void \hyperlink{classgtfs_1_1Particle_a4b1e356f32d4557d06c9ed59467a5b27}{initialize} (\hyperlink{classsampling_1_1uniform}{sampling\+::uniform} \&unif, \hyperlink{classsampling_1_1uniform}{sampling\+::uniform} \&speed, \hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&rng)
+\item 
+void \hyperlink{classgtfs_1_1Particle_a18aeb1ccbc395210f80c18f9d0a0095c}{transition} (\hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&rng)
 \item 
 void \hyperlink{classgtfs_1_1Particle_a88627efbe0eb2e289315ae82627d3a39}{calculate\+\_\+likelihood} (void)
 \end{DoxyCompactItemize}
@@ -43,15 +63,22 @@ void \hyperlink{classgtfs_1_1Particle_a88627efbe0eb2e289315ae82627d3a39}{calcula
 A single \char`\"{}point estimate\char`\"{} of the unknown state of the transit vehicle, including its velocity. 
 
 \subsection{Constructor \& Destructor Documentation}
-\mbox{\Hypertarget{classgtfs_1_1Particle_ae59d459c6ff20eb081a933b304289794}\label{classgtfs_1_1Particle_ae59d459c6ff20eb081a933b304289794}} 
+\mbox{\Hypertarget{classgtfs_1_1Particle_ad7f42e77c6c7f3042c977fd5a42ff82f}\label{classgtfs_1_1Particle_ad7f42e77c6c7f3042c977fd5a42ff82f}} 
 \index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!Particle@{Particle}}
 \index{Particle@{Particle}!gtfs\+::\+Particle@{gtfs\+::\+Particle}}
 \subsubsection{\texorpdfstring{Particle()}{Particle()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily gtfs\+::\+Particle\+::\+Particle (\begin{DoxyParamCaption}\item[{\hyperlink{classgtfs_1_1Vehicle}{Vehicle} $\ast$}]{v,  }\item[{\hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&}]{rng }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily gtfs\+::\+Particle\+::\+Particle (\begin{DoxyParamCaption}\item[{\hyperlink{classgtfs_1_1Vehicle}{Vehicle} $\ast$}]{v }\end{DoxyParamCaption})}
 
 \hyperlink{classgtfs_1_1Particle}{Particle} constructor.
 
-The ID is automatically selected from the parent vehicle. Values are computed based on the approximate location of the bus, allowing for noise. R\+NG required otherwise the particles would all be identical! \mbox{\Hypertarget{classgtfs_1_1Particle_ac386e64b43b1e317063f9a6666d604ce}\label{classgtfs_1_1Particle_ac386e64b43b1e317063f9a6666d604ce}} 
+The ID is automatically selected from the parent vehicle. Values are computed based on the approximate location of the bus, allowing for noise. R\+NG required otherwise the particles would all be identical!
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & the vehicle object pointer to which the particle belongs \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classgtfs_1_1Particle_ac386e64b43b1e317063f9a6666d604ce}\label{classgtfs_1_1Particle_ac386e64b43b1e317063f9a6666d604ce}} 
 \index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!Particle@{Particle}}
 \index{Particle@{Particle}!gtfs\+::\+Particle@{gtfs\+::\+Particle}}
 \subsubsection{\texorpdfstring{Particle()}{Particle()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
@@ -81,7 +108,43 @@ Destructor for a particle.
 \subsubsection{\texorpdfstring{calculate\+\_\+likelihood()}{calculate\_likelihood()}}
 {\footnotesize\ttfamily void gtfs\+::\+Particle\+::calculate\+\_\+likelihood (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
 
-Compute the likelihood of the particle given the bus\textquotesingle{}s reported location and stop updates. \mbox{\Hypertarget{classgtfs_1_1Particle_a3131eb93ac902a4cccf42061e1a7296b}\label{classgtfs_1_1Particle_a3131eb93ac902a4cccf42061e1a7296b}} 
+Compute the likelihood of the particle given the bus\textquotesingle{}s reported location and stop updates. \mbox{\Hypertarget{classgtfs_1_1Particle_a783d1a0a614dc2c3f18cf269f69ede3d}\label{classgtfs_1_1Particle_a783d1a0a614dc2c3f18cf269f69ede3d}} 
+\index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!get\+\_\+arrival\+\_\+time@{get\+\_\+arrival\+\_\+time}}
+\index{get\+\_\+arrival\+\_\+time@{get\+\_\+arrival\+\_\+time}!gtfs\+::\+Particle@{gtfs\+::\+Particle}}
+\subsubsection{\texorpdfstring{get\+\_\+arrival\+\_\+time()}{get\_arrival\_time()}}
+{\footnotesize\ttfamily const uint64\+\_\+t\& gtfs\+::\+Particle\+::get\+\_\+arrival\+\_\+time (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the particle\textquotesingle{}s arrival time at stop {\ttfamily stop\+\_\+index} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classgtfs_1_1Particle_ac4c8fd3566b0178c95daf6a0cba0040e}\label{classgtfs_1_1Particle_ac4c8fd3566b0178c95daf6a0cba0040e}} 
+\index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!get\+\_\+begin\+\_\+time@{get\+\_\+begin\+\_\+time}}
+\index{get\+\_\+begin\+\_\+time@{get\+\_\+begin\+\_\+time}!gtfs\+::\+Particle@{gtfs\+::\+Particle}}
+\subsubsection{\texorpdfstring{get\+\_\+begin\+\_\+time()}{get\_begin\_time()}}
+{\footnotesize\ttfamily const uint64\+\_\+t\& gtfs\+::\+Particle\+::get\+\_\+begin\+\_\+time (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the particle\textquotesingle{}s begin time at segment {\ttfamily segment\+\_\+index} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classgtfs_1_1Particle_a0ec3ee5a83e778069946242a6d7731b6}\label{classgtfs_1_1Particle_a0ec3ee5a83e778069946242a6d7731b6}} 
+\index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!get\+\_\+distance@{get\+\_\+distance}}
+\index{get\+\_\+distance@{get\+\_\+distance}!gtfs\+::\+Particle@{gtfs\+::\+Particle}}
+\subsubsection{\texorpdfstring{get\+\_\+distance()}{get\_distance()}}
+{\footnotesize\ttfamily const double\& gtfs\+::\+Particle\+::get\+\_\+distance (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the particle\textquotesingle{}s distance into trip 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classgtfs_1_1Particle_aaea44cde86b5b026c94800c6d837f174}\label{classgtfs_1_1Particle_aaea44cde86b5b026c94800c6d837f174}} 
+\index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!get\+\_\+dwell\+\_\+time@{get\+\_\+dwell\+\_\+time}}
+\index{get\+\_\+dwell\+\_\+time@{get\+\_\+dwell\+\_\+time}!gtfs\+::\+Particle@{gtfs\+::\+Particle}}
+\subsubsection{\texorpdfstring{get\+\_\+dwell\+\_\+time()}{get\_dwell\_time()}}
+{\footnotesize\ttfamily int gtfs\+::\+Particle\+::get\+\_\+dwell\+\_\+time (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the particle\textquotesingle{}s dwell time at stop {\ttfamily stop\+\_\+index} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classgtfs_1_1Particle_a3131eb93ac902a4cccf42061e1a7296b}\label{classgtfs_1_1Particle_a3131eb93ac902a4cccf42061e1a7296b}} 
 \index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!get\+\_\+id@{get\+\_\+id}}
 \index{get\+\_\+id@{get\+\_\+id}!gtfs\+::\+Particle@{gtfs\+::\+Particle}}
 \subsubsection{\texorpdfstring{get\+\_\+id()}{get\_id()}}
@@ -89,6 +152,15 @@ Compute the likelihood of the particle given the bus\textquotesingle{}s reported
 
 \begin{DoxyReturn}{Returns}
 the particle\textquotesingle{}s ID 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classgtfs_1_1Particle_a2e1a6de0b7d0fd6938ef3f7f9e5d4b99}\label{classgtfs_1_1Particle_a2e1a6de0b7d0fd6938ef3f7f9e5d4b99}} 
+\index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!get\+\_\+likelihood@{get\+\_\+likelihood}}
+\index{get\+\_\+likelihood@{get\+\_\+likelihood}!gtfs\+::\+Particle@{gtfs\+::\+Particle}}
+\subsubsection{\texorpdfstring{get\+\_\+likelihood()}{get\_likelihood()}}
+{\footnotesize\ttfamily const double\& gtfs\+::\+Particle\+::get\+\_\+likelihood (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the particle\textquotesingle{}s likelihood 
 \end{DoxyReturn}
 \mbox{\Hypertarget{classgtfs_1_1Particle_a9372dbbfe702b9931b9eb1ee217afcba}\label{classgtfs_1_1Particle_a9372dbbfe702b9931b9eb1ee217afcba}} 
 \index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!get\+\_\+parent\+\_\+id@{get\+\_\+parent\+\_\+id}}
@@ -99,13 +171,71 @@ the particle\textquotesingle{}s ID
 \begin{DoxyReturn}{Returns}
 the parent particle\textquotesingle{}s ID 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classgtfs_1_1Particle_a768469c09fdebd8e190c91a653b25b76}\label{classgtfs_1_1Particle_a768469c09fdebd8e190c91a653b25b76}} 
+\mbox{\Hypertarget{classgtfs_1_1Particle_a63bd83f650af8855f014e6e5f86a123a}\label{classgtfs_1_1Particle_a63bd83f650af8855f014e6e5f86a123a}} 
+\index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!get\+\_\+queue\+\_\+time@{get\+\_\+queue\+\_\+time}}
+\index{get\+\_\+queue\+\_\+time@{get\+\_\+queue\+\_\+time}!gtfs\+::\+Particle@{gtfs\+::\+Particle}}
+\subsubsection{\texorpdfstring{get\+\_\+queue\+\_\+time()}{get\_queue\_time()}}
+{\footnotesize\ttfamily int gtfs\+::\+Particle\+::get\+\_\+queue\+\_\+time (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the particle\textquotesingle{}s queue time at segment {\ttfamily segment\+\_\+index} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classgtfs_1_1Particle_aad21b0ddaacd73940d4e987426b1fed0}\label{classgtfs_1_1Particle_aad21b0ddaacd73940d4e987426b1fed0}} 
+\index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!get\+\_\+segment\+\_\+index@{get\+\_\+segment\+\_\+index}}
+\index{get\+\_\+segment\+\_\+index@{get\+\_\+segment\+\_\+index}!gtfs\+::\+Particle@{gtfs\+::\+Particle}}
+\subsubsection{\texorpdfstring{get\+\_\+segment\+\_\+index()}{get\_segment\_index()}}
+{\footnotesize\ttfamily int gtfs\+::\+Particle\+::get\+\_\+segment\+\_\+index (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the particle\textquotesingle{}s segment index 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classgtfs_1_1Particle_a322a6111d18ae304c0b22f000461076a}\label{classgtfs_1_1Particle_a322a6111d18ae304c0b22f000461076a}} 
+\index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!get\+\_\+stop\+\_\+index@{get\+\_\+stop\+\_\+index}}
+\index{get\+\_\+stop\+\_\+index@{get\+\_\+stop\+\_\+index}!gtfs\+::\+Particle@{gtfs\+::\+Particle}}
+\subsubsection{\texorpdfstring{get\+\_\+stop\+\_\+index()}{get\_stop\_index()}}
+{\footnotesize\ttfamily int gtfs\+::\+Particle\+::get\+\_\+stop\+\_\+index (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the particle\textquotesingle{}s stop index 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classgtfs_1_1Particle_a3b59c859c3445b97c6da6c0b9081b1e4}\label{classgtfs_1_1Particle_a3b59c859c3445b97c6da6c0b9081b1e4}} 
+\index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!get\+\_\+velocity@{get\+\_\+velocity}}
+\index{get\+\_\+velocity@{get\+\_\+velocity}!gtfs\+::\+Particle@{gtfs\+::\+Particle}}
+\subsubsection{\texorpdfstring{get\+\_\+velocity()}{get\_velocity()}}
+{\footnotesize\ttfamily const double\& gtfs\+::\+Particle\+::get\+\_\+velocity (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the particle\textquotesingle{}s velocity 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classgtfs_1_1Particle_a4b1e356f32d4557d06c9ed59467a5b27}\label{classgtfs_1_1Particle_a4b1e356f32d4557d06c9ed59467a5b27}} 
+\index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!initialize@{initialize}}
+\index{initialize@{initialize}!gtfs\+::\+Particle@{gtfs\+::\+Particle}}
+\subsubsection{\texorpdfstring{initialize()}{initialize()}}
+{\footnotesize\ttfamily void gtfs\+::\+Particle\+::initialize (\begin{DoxyParamCaption}\item[{\hyperlink{classsampling_1_1uniform}{sampling\+::uniform} \&}]{dist,  }\item[{\hyperlink{classsampling_1_1uniform}{sampling\+::uniform} \&}]{speed,  }\item[{\hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&}]{rng }\end{DoxyParamCaption})}
+
+Initialize particle with distance etc. 
+\begin{DoxyParams}{Parameters}
+{\em dist} & a uniform number generator for the particle\textquotesingle{}s distance into trip \\
+\hline
+{\em speed} & a uniform number generator for the particle\textquotesingle{}s velocity \\
+\hline
+{\em rng} & a random number generator \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classgtfs_1_1Particle_a18aeb1ccbc395210f80c18f9d0a0095c}\label{classgtfs_1_1Particle_a18aeb1ccbc395210f80c18f9d0a0095c}} 
 \index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!transition@{transition}}
 \index{transition@{transition}!gtfs\+::\+Particle@{gtfs\+::\+Particle}}
 \subsubsection{\texorpdfstring{transition()}{transition()}}
-{\footnotesize\ttfamily void gtfs\+::\+Particle\+::transition (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily void gtfs\+::\+Particle\+::transition (\begin{DoxyParamCaption}\item[{\hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&}]{rng }\end{DoxyParamCaption})}
 
-Move the particle according to speed, shape/segments/stops, and {\ttfamily delta}. 
+Move the particle according to speed, shape/segments/stops, and {\ttfamily delta}.
+
+
+\begin{DoxyParams}{Parameters}
+{\em rng} & a random number generator \\
+\hline
+\end{DoxyParams}
+
 
 \subsection{Member Data Documentation}
 \mbox{\Hypertarget{classgtfs_1_1Particle_a81c313d505ecb592d79463f167dfb76c}\label{classgtfs_1_1Particle_a81c313d505ecb592d79463f167dfb76c}} 

@@ -36,10 +36,18 @@ namespace sampling {
 
 	// DISTRIBUTIONS
 
+	/**
+	 * Return a single U[0,1] random number
+	 * @return  a random number between 0 and 1
+	 */
 	double RNG::runif (void) {
 		return uniform (gen);
 	};
 
+	/**
+	 * Return a single N(0,1) random number
+	 * @return  a single standard-normal random number
+	 */
 	double RNG::rnorm (void) {
 		return normal (gen);
 	};

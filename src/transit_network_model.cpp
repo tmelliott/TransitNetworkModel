@@ -202,6 +202,8 @@ int main (int argc, char* argv[]) {
  * @param feed_file reference to feed
  * @param N         the number of particle to initialze new vehicles with
  * @param rng       reference to a random number generator
+ * @param gtfs      A GTFS object containing the static data
+ * @return          true if the feed is loaded correctly, false if it is not
  */
 bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> > &vs,
 				std::string &feed_file, int N, sampling::RNG &rng,

@@ -86,14 +86,9 @@ Collaboration diagram for gtfs::Trip:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a3014ee32fdb5abd550ad20088c91aae6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Trip.html#a3014ee32fdb5abd550ad20088c91aae6">Trip</a> (std::string &amp;id, std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Route.html">Route</a> &gt; route)</td></tr>
 <tr class="separator:a3014ee32fdb5abd550ad20088c91aae6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adb48f29b83c759f5a9242b6cf42c2ff6"><td class="memItemLeft" align="right" valign="top"><a id="adb48f29b83c759f5a9242b6cf42c2ff6"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Trip</b> (const <a class="el" href="classgtfs_1_1Trip.html">Trip</a> &amp;t)</td></tr>
-<tr class="separator:adb48f29b83c759f5a9242b6cf42c2ff6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac4c80cbf34f7c715104cc1c33b082f58"><td class="memItemLeft" align="right" valign="top"><a id="ac4c80cbf34f7c715104cc1c33b082f58"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>get_id</b> (void) const</td></tr>
+<tr class="memitem:ac4c80cbf34f7c715104cc1c33b082f58"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Trip.html#ac4c80cbf34f7c715104cc1c33b082f58">get_id</a> (void) const</td></tr>
 <tr class="separator:ac4c80cbf34f7c715104cc1c33b082f58"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2b6cc135946d7e7db7bb35951987e35c"><td class="memItemLeft" align="right" valign="top"><a id="a2b6cc135946d7e7db7bb35951987e35c"></a>
-std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Route.html">Route</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>get_route</b> (void)</td></tr>
+<tr class="memitem:a2b6cc135946d7e7db7bb35951987e35c"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Route.html">Route</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Trip.html#a2b6cc135946d7e7db7bb35951987e35c">get_route</a> (void)</td></tr>
 <tr class="separator:a2b6cc135946d7e7db7bb35951987e35c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -126,6 +121,61 @@ std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Route.html">Route</a> &gt;&
       </table>
 </div><div class="memdoc">
 <p>Constructor for a trip object, taking an ID and a route pointer. </p><dl class="section return"><dt>Returns</dt><dd>[description] </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="ac4c80cbf34f7c715104cc1c33b082f58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4c80cbf34f7c715104cc1c33b082f58">&#9670;&nbsp;</a></span>get_id()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string gtfs::Trip::get_id </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>the trip's ID </dd></dl>
+
+</div>
+</div>
+<a id="a2b6cc135946d7e7db7bb35951987e35c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b6cc135946d7e7db7bb35951987e35c">&#9670;&nbsp;</a></span>get_route()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="classgtfs_1_1Route.html">Route</a>&gt; gtfs::Trip::get_route </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>a pointer to the trip's route </dd></dl>
 
 </div>
 </div>

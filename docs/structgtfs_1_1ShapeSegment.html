@@ -75,8 +75,7 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:af1bdb1504d16a49ab6ac8ea34da59c5f"><td class="memItemLeft" align="right" valign="top"><a id="af1bdb1504d16a49ab6ac8ea34da59c5f"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>ShapeSegment</b> (std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Segment.html">Segment</a> &gt; <a class="el" href="structgtfs_1_1ShapeSegment.html#a3253b76a15e2645f894a75be55006e09">segment</a>, double distance)</td></tr>
+<tr class="memitem:af1bdb1504d16a49ab6ac8ea34da59c5f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structgtfs_1_1ShapeSegment.html#af1bdb1504d16a49ab6ac8ea34da59c5f">ShapeSegment</a> (std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Segment.html">Segment</a> &gt; <a class="el" href="structgtfs_1_1ShapeSegment.html#a3253b76a15e2645f894a75be55006e09">segment</a>, double distance)</td></tr>
 <tr class="separator:af1bdb1504d16a49ab6ac8ea34da59c5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
@@ -89,7 +88,53 @@ Public Attributes</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A struct corresponding legs of a shape with segments.</p>
 <p>The vector order == leg (0-based sequence). </p>
-</div><h2 class="groupheader">Member Data Documentation</h2>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="af1bdb1504d16a49ab6ac8ea34da59c5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1bdb1504d16a49ab6ac8ea34da59c5f">&#9670;&nbsp;</a></span>ShapeSegment()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">gtfs::ShapeSegment::ShapeSegment </td>
+          <td>(</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Segment.html">Segment</a> &gt;&#160;</td>
+          <td class="paramname"><em>segment</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>distance</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Default constructor for a <a class="el" href="classgtfs_1_1Shape.html">Shape</a> <a class="el" href="classgtfs_1_1Segment.html">Segment</a>.</p>
+<p>This is simply a relationship between a <a class="el" href="classgtfs_1_1GTFS.html">GTFS</a> SHAPE and it's segment information. That is, it's a 'pivot table'.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">segment</td><td>the segment ID </td></tr>
+    <tr><td class="paramname">distance</td><td>how far into the overall shape this segment starts at </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
 <a id="a3253b76a15e2645f894a75be55006e09"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3253b76a15e2645f894a75be55006e09">&#9670;&nbsp;</a></span>segment</h2>
 

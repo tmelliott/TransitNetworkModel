@@ -29,7 +29,11 @@
 
 namespace po = boost::program_options;
 
-
+/**
+ * A system() command that takes a std::string instead of a char.
+ * @param  s The command to run.
+ * @return   The return value from the system command.
+ */
 int system (std::string const& s) { return system (s.c_str ()); }
 void convert_shapes (sqlite3* db);
 void import_intersections (sqlite3* db, std::vector<std::string> files);
@@ -110,6 +114,12 @@ int main (int argc, char* argv[]) {
 }
 
 
+/**
+ * Converts shapes from their raw GTFS format to our segmented format.
+ *
+ * For now, each shape is simply converted into a single segment.
+ * @param db the database to work with
+ */
 void convert_shapes (sqlite3* db) {
 	sqlite3_stmt* stmt;
 	sqlite3_stmt* stmt_get_shape;
@@ -277,7 +287,15 @@ void convert_shapes (sqlite3* db) {
 
 
 
-
+/**
+ * Import insersections from a JSON file into the database.
+ *
+ * Additionally, clusters of "points" belonging to the same intersection
+ * are combined into a single object.
+ *
+ * @param db    the database to use
+ * @param files the files to load intersections from
+ */
 void import_intersections (sqlite3* db, std::vector<std::string> files) {
 	using json = nlohmann::json;
 

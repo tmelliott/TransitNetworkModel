@@ -19,14 +19,11 @@ Include dependency graph for load\+\_\+gtfs.\+cpp\+:\nopagebreak
 \subsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\Hypertarget{load__gtfs_8cpp_acc289d9bfee4c154322662aef55c5438}\label{load__gtfs_8cpp_acc289d9bfee4c154322662aef55c5438}} 
-int {\bfseries system} (std\+::string const \&s)
+int \hyperlink{load__gtfs_8cpp_acc289d9bfee4c154322662aef55c5438}{system} (std\+::string const \&s)
 \item 
-\mbox{\Hypertarget{load__gtfs_8cpp_a4f311128b9bf5549011dc5d2a288a0b0}\label{load__gtfs_8cpp_a4f311128b9bf5549011dc5d2a288a0b0}} 
-void {\bfseries convert\+\_\+shapes} (sqlite3 $\ast$db)
+void \hyperlink{load__gtfs_8cpp_a4f311128b9bf5549011dc5d2a288a0b0}{convert\+\_\+shapes} (sqlite3 $\ast$db)
 \item 
-\mbox{\Hypertarget{load__gtfs_8cpp_a54ef9ab4a1985152c9cf7ec290fbea2d}\label{load__gtfs_8cpp_a54ef9ab4a1985152c9cf7ec290fbea2d}} 
-void {\bfseries import\+\_\+intersections} (sqlite3 $\ast$db, std\+::vector$<$ std\+::string $>$ files)
+void \hyperlink{load__gtfs_8cpp_a54ef9ab4a1985152c9cf7ec290fbea2d}{import\+\_\+intersections} (sqlite3 $\ast$db, std\+::vector$<$ std\+::string $>$ files)
 \item 
 int \hyperlink{load__gtfs_8cpp_a0ddf1224851353fc92bfbff6f499fa97}{main} (int argc, char $\ast$argv\mbox{[}$\,$\mbox{]})
 \end{DoxyCompactItemize}
@@ -48,6 +45,36 @@ Tom Elliott \href{mailto:tom.elliott@auckland.ac.nz}{\tt tom.\+elliott@auckland.
 
 
 \subsection{Function Documentation}
+\mbox{\Hypertarget{load__gtfs_8cpp_a4f311128b9bf5549011dc5d2a288a0b0}\label{load__gtfs_8cpp_a4f311128b9bf5549011dc5d2a288a0b0}} 
+\index{load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}!convert\+\_\+shapes@{convert\+\_\+shapes}}
+\index{convert\+\_\+shapes@{convert\+\_\+shapes}!load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}}
+\subsubsection{\texorpdfstring{convert\+\_\+shapes()}{convert\_shapes()}}
+{\footnotesize\ttfamily void convert\+\_\+shapes (\begin{DoxyParamCaption}\item[{sqlite3 $\ast$}]{db }\end{DoxyParamCaption})}
+
+Converts shapes from their raw G\+T\+FS format to our segmented format.
+
+For now, each shape is simply converted into a single segment. 
+\begin{DoxyParams}{Parameters}
+{\em db} & the database to work with \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{load__gtfs_8cpp_a54ef9ab4a1985152c9cf7ec290fbea2d}\label{load__gtfs_8cpp_a54ef9ab4a1985152c9cf7ec290fbea2d}} 
+\index{load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}!import\+\_\+intersections@{import\+\_\+intersections}}
+\index{import\+\_\+intersections@{import\+\_\+intersections}!load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}}
+\subsubsection{\texorpdfstring{import\+\_\+intersections()}{import\_intersections()}}
+{\footnotesize\ttfamily void import\+\_\+intersections (\begin{DoxyParamCaption}\item[{sqlite3 $\ast$}]{db,  }\item[{std\+::vector$<$ std\+::string $>$}]{files }\end{DoxyParamCaption})}
+
+Import insersections from a J\+S\+ON file into the database.
+
+Additionally, clusters of \char`\"{}points\char`\"{} belonging to the same intersection are combined into a single object.
+
+
+\begin{DoxyParams}{Parameters}
+{\em db} & the database to use \\
+\hline
+{\em files} & the files to load intersections from \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{load__gtfs_8cpp_a0ddf1224851353fc92bfbff6f499fa97}\label{load__gtfs_8cpp_a0ddf1224851353fc92bfbff6f499fa97}} 
 \index{load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}!main@{main}}
 \index{main@{main}!load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}}
@@ -66,4 +93,17 @@ Loads G\+T\+FS file into database and segments as necessary.
 \begin{DoxyReturn}{Returns}
 0 if everything went OK; 1 if it didn\textquotesingle{}t 
 \end{DoxyReturn}
-database connection to use 
+database connection to use \mbox{\Hypertarget{load__gtfs_8cpp_acc289d9bfee4c154322662aef55c5438}\label{load__gtfs_8cpp_acc289d9bfee4c154322662aef55c5438}} 
+\index{load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}!system@{system}}
+\index{system@{system}!load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}}
+\subsubsection{\texorpdfstring{system()}{system()}}
+{\footnotesize\ttfamily int system (\begin{DoxyParamCaption}\item[{std\+::string const \&}]{s }\end{DoxyParamCaption})}
+
+A \hyperlink{load__gtfs_8cpp_acc289d9bfee4c154322662aef55c5438}{system()} command that takes a std\+::string instead of a char. 
+\begin{DoxyParams}{Parameters}
+{\em s} & The command to run. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The return value from the system command. 
+\end{DoxyReturn}

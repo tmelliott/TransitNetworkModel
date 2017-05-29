@@ -27,14 +27,9 @@ Collaboration diagram for gtfs\+:\+:Trip\+:\nopagebreak
 \item 
 \hyperlink{classgtfs_1_1Trip_a3014ee32fdb5abd550ad20088c91aae6}{Trip} (std\+::string \&id, std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Route}{Route} $>$ route)
 \item 
-\mbox{\Hypertarget{classgtfs_1_1Trip_adb48f29b83c759f5a9242b6cf42c2ff6}\label{classgtfs_1_1Trip_adb48f29b83c759f5a9242b6cf42c2ff6}} 
-{\bfseries Trip} (const \hyperlink{classgtfs_1_1Trip}{Trip} \&t)
+std\+::string \hyperlink{classgtfs_1_1Trip_ac4c80cbf34f7c715104cc1c33b082f58}{get\+\_\+id} (void) const
 \item 
-\mbox{\Hypertarget{classgtfs_1_1Trip_ac4c80cbf34f7c715104cc1c33b082f58}\label{classgtfs_1_1Trip_ac4c80cbf34f7c715104cc1c33b082f58}} 
-std\+::string {\bfseries get\+\_\+id} (void) const
-\item 
-\mbox{\Hypertarget{classgtfs_1_1Trip_a2b6cc135946d7e7db7bb35951987e35c}\label{classgtfs_1_1Trip_a2b6cc135946d7e7db7bb35951987e35c}} 
-std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Route}{Route} $>$ {\bfseries get\+\_\+route} (void)
+std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Route}{Route} $>$ \hyperlink{classgtfs_1_1Trip_a2b6cc135946d7e7db7bb35951987e35c}{get\+\_\+route} (void)
 \end{DoxyCompactItemize}
 
 
@@ -52,6 +47,27 @@ A trip is an instance of a route that occurs at a specific time of day. It has a
 
 Constructor for a trip object, taking an ID and a route pointer. \begin{DoxyReturn}{Returns}
 \mbox{[}description\mbox{]} 
+\end{DoxyReturn}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classgtfs_1_1Trip_ac4c80cbf34f7c715104cc1c33b082f58}\label{classgtfs_1_1Trip_ac4c80cbf34f7c715104cc1c33b082f58}} 
+\index{gtfs\+::\+Trip@{gtfs\+::\+Trip}!get\+\_\+id@{get\+\_\+id}}
+\index{get\+\_\+id@{get\+\_\+id}!gtfs\+::\+Trip@{gtfs\+::\+Trip}}
+\subsubsection{\texorpdfstring{get\+\_\+id()}{get\_id()}}
+{\footnotesize\ttfamily std\+::string gtfs\+::\+Trip\+::get\+\_\+id (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the trip\textquotesingle{}s ID 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classgtfs_1_1Trip_a2b6cc135946d7e7db7bb35951987e35c}\label{classgtfs_1_1Trip_a2b6cc135946d7e7db7bb35951987e35c}} 
+\index{gtfs\+::\+Trip@{gtfs\+::\+Trip}!get\+\_\+route@{get\+\_\+route}}
+\index{get\+\_\+route@{get\+\_\+route}!gtfs\+::\+Trip@{gtfs\+::\+Trip}}
+\subsubsection{\texorpdfstring{get\+\_\+route()}{get\_route()}}
+{\footnotesize\ttfamily std\+::shared\+\_\+ptr$<$\hyperlink{classgtfs_1_1Route}{Route}$>$ gtfs\+::\+Trip\+::get\+\_\+route (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+a pointer to the trip\textquotesingle{}s route 
 \end{DoxyReturn}
 
 
