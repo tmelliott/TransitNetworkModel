@@ -1,4 +1,5 @@
 #!/bin/bash
 
-scp tom@130.216.51.230:/mnt/storage/vehicle_locations.pb ./vehicle_locations.pb
-scp tom@130.216.51.230:/mnt/storage/trip_updates.pb ./trip_updates.pb
+DIR=/home/tell029/Documents/uni/TransitNetworkModel/build
+scp tom@130.216.51.230:/mnt/storage/vehicle_locations.pb $DIR/vehicle_locations.pb
+scp tom@130.216.51.230:/mnt/storage/trip_updates.pb $DIR/trip_updates.pb

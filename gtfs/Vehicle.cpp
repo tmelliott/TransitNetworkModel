@@ -69,6 +69,7 @@ namespace gtfs {
 
 	void Vehicle::update ( sampling::RNG& rng ) {
 	    if (trip->get_route ()->get_short_name () != "274") return;
+		if (delta <= 0) return;
 
 		if (newtrip) {
 			std::cout << " * Initializing particles: ";
@@ -97,16 +98,15 @@ namespace gtfs {
 			for (auto& p: particles) p.initialize (udist, uspeed, rng);
 		} else {
 			std::cout << " * Updating particles:\n";
-			return;
-			// for (auto& p: particles) p.transition ();
+			for (auto& p: particles) p.transition (rng);
 		}
 
 		// Resample them!
-		std::cout << " * Resampling \n";
+		std::cout << "   - Resampling \n";
 		resample (rng);
-		for (auto& p: particles)
-			std::cout << "  -> " << p << " -> "
-				<< p.get_likelihood () << "\n";
+		// for (auto& p: particles)
+		// 	std::cout << "  -> " << p << " -> "
+		// 		<< p.get_likelihood () << "\n";
 
 		// std::cout << "Vehicle " << id << " has the current data:";
 		// if (trip == nullptr) {

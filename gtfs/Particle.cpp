@@ -1,6 +1,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <math.h>
 
 #include "gtfs.h"
 
@@ -86,17 +87,34 @@ namespace gtfs {
 		distance = dist.rand (rng);
 		velocity = speed.rand (rng);
 
-		std::cout << "   - " << *this << " -> ";
+		std::clog << "   - " << *this << " -> ";
 		calculate_likelihood ();
-		std::cout << log_likelihood <<  "\n";
+		std::clog << log_likelihood <<  "\n";
 	}
 
 	/**
 	 * Move the particle according to speed,
 	 * shape/segments/stops, and `delta`.
+	 *
+	 * @param rng a random number generator
 	 */
-	void Particle::transition (void) {
+	void Particle::transition (sampling::RNG& rng) {
 		if (vehicle->get_delta () == 0) return;
+
+		std::clog << "   - " << *this << " -> ";
+
+		double sigv (2);
+		double vel = 0.0;
+		while (vel <= 0 || velocity >= 30) vel = rng.rnorm () * sigv + velocity;
+		velocity = vel;
+
+		distance = MIN(vehicle->get_trip ()->get_route ()
+							->get_shape ()->get_segments ().back ().segment->get_length (),
+					   distance + velocity * vehicle->get_delta ());
+		std::clog << *this << " -> ";
+
+		calculate_likelihood ();
+		std::clog << log_likelihood <<  "\n";
 	};
 
 	/**

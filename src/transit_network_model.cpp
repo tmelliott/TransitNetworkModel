@@ -26,6 +26,9 @@
 #include <time.h>
 #include <sqlite3.h>
 
+#include <chrono>
+#include <ctime>
+
 #include <boost/program_options.hpp>
 
 #include "gtfs-realtime.pb.h"
@@ -114,33 +117,67 @@ int main (int argc, char* argv[]) {
 	sampling::RNG rng;
 	bool forever = true;
 
-	// Initialize vehicles wiht _1
-	std::vector<std::string> fs {"vehicle_locations.pbz", "trip_updates.pbz"};
-	for (auto file: fs) {
-		if ( ! load_feed (vehicles, file, N, rng, gtfs) ) {
-			std::cerr << "Unable to read file.\n";
-			return -1;
-		}
-	}
+	std::clock_t clockstart;
+	std::clock_t clockend;
 
-	std::cout << "\n";
-	for (auto& v: vehicles) v.second->update (rng);
-	std::cout << "\n";
+	// Initialize vehicles
+	// auto wallstart = std::chrono::high_resolution_clock::now();
+	// auto wallend = std::chrono::high_resolution_clock::now();
+	// std::vector<std::string> fs {"vehicle_locations.pbz", "trip_updates.pbz"};
+	// for (auto file: fs) {
+	// 	if ( ! load_feed (vehicles, file, N, rng, gtfs) ) {
+	// 		std::cerr << "Unable to read file.\n";
+	// 		return -1;
+	// 	}
+	// }
+	//
+	// clockend =  std::clock();
+	// wallend = std::chrono::high_resolution_clock::now();
+	// std::cout << std::fixed << std::setprecision(3)
+	// 	<< "=== TIME: " << (clockend - clockstart) / (double)(CLOCKS_PER_SEC / 1000) << " ms / "
+	// 	<< std::chrono::duration<double, std::milli>(wallend - wallstart).count() << " ms\n";
+	// std::cout.flush();
+	//
+	//
+	// wallstart = std::chrono::high_resolution_clock::now();
+	// wallend = std::chrono::high_resolution_clock::now();
+	// std::cout << "\n";
+	// for (auto& v: vehicles) v.second->update (rng);
+	// std::cout << "\n";
+	//
+	// clockend =  std::clock();
+	// wallend = std::chrono::high_resolution_clock::now();
+	// std::cout << std::fixed << std::setprecision(3)
+	// 	<< "=== TIME: " << (clockend - clockstart) / (double)(CLOCKS_PER_SEC / 1000) << " ms / "
+	// 	<< std::chrono::duration<double, std::milli>(wallend - wallstart).count() << " ms\n";
+	// std::cout.flush();
 
 	while (forever) {
 		forever = false;
 		{
 			// Load GTFS feed -> vehicles
+            auto wallstart = std::chrono::high_resolution_clock::now();
+            auto wallend = std::chrono::high_resolution_clock::now();
+
 			for (auto file: files) {
 				if ( ! load_feed (vehicles, file, N, rng, gtfs) ) {
 					std::cerr << "Unable to read file.\n";
-					return -1;
+					continue;
 				}
 			}
 
 			std::cout << "\n";
 			// -> triggers particle transition -> resample
 			for (auto& v: vehicles) v.second->update (rng);
+			std::cout << "\n";
+
+            clockend =  std::clock();
+            wallend = std::chrono::high_resolution_clock::now();
+            std::cout << std::fixed << std::setprecision(3)
+                << "=== TIME: " << (clockend - clockstart) / (double)(CLOCKS_PER_SEC / 1000) << " ms / "
+                << std::chrono::duration<double, std::milli>(wallend - wallstart).count() << " ms\n";
+            std::cout.flush();
+
 		}
 
 		{

@@ -187,7 +187,7 @@ namespace gtfs {
 
 		// Methods
 		void initialize (sampling::uniform& unif, sampling::uniform& speed, sampling::RNG& rng);
-		void transition (void);
+		void transition (sampling::RNG& rng);
 		void calculate_likelihood (void);
 	};
 
@@ -261,9 +261,9 @@ namespace gtfs {
 		// Construtors etc.
 		Trip (std::string& id, std::shared_ptr<Route> route);
 
-		Trip (const Trip &t) {
-			std::cout << "Copying trip ...\n";
-		};
+		// Trip (const Trip &t) {
+		// 	std::cout << "Copying trip ...\n";
+		// };
 
 		// --- GETTERS
 		std::string get_id (void) const { return id; };
