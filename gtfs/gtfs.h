@@ -163,7 +163,7 @@ namespace gtfs {
 		int segment_index;        /*!< segment index (0-based, {0, ..., L-1}) */
 		int queue_time;           /*!< cumulative time spent queuing at intersction `segment_index` */
 		uint64_t begin_time;      /*!< time at which bus started along segment `segment_index` */
-
+		
 		double log_likelihood;    /*!< the likelihood of the particle, given the data */
 
 	public:
@@ -212,14 +212,14 @@ namespace gtfs {
 	 * @return          an ostream instance
 	 */
 	inline std::ostream& operator<< (std::ostream& os, const Particle& p) {
-		char buff [45];
+		char buff [200];
 		sprintf(buff, "[%*.0f, %*.1f, %*d, %*" PRIu64 ", %*d]",
 				8, p.get_distance (),  4, p.get_velocity (),  2, p.get_stop_index (),
 				13, p.get_arrival_time (), 4, p.get_dwell_time ());
 
 		return os << buff;
 	};
-	
+
 	gps::Coord get_coords (double distance, std::shared_ptr<Shape> shape);
 
 

@@ -85,7 +85,7 @@ namespace gtfs {
 	 * @param rng A random number generator
 	 */
 	void Vehicle::update ( sampling::RNG& rng ) {
-	    if (trip->get_route ()->get_short_name () != "274") return;
+	    // if (trip->get_route ()->get_short_name () != "274") return;
 		if (delta <= 0) return;
 
 		if (newtrip) {
@@ -114,32 +114,33 @@ namespace gtfs {
 			sampling::uniform uspeed (0, 30);
 			for (auto& p: particles) p.initialize (udist, uspeed, rng);
 		} else {
-			std::cout << " * Updating particles:\n";
+			std::cout << " * Updating particles: " << delta << "s\n";
+
+			double dbar = 0;
+			double vbar = 0;
+			for (auto& p: particles) {
+				dbar += p.get_distance ();
+				vbar += p.get_velocity ();
+			}
+			printf("   - Distance = %*.0fm, Velocity = %*.1fm/s.\n",
+				   5, dbar / particles.size (), 5, vbar / particles.size ());
+
 			for (auto& p: particles) p.transition (rng);
 		}
 
 		// Resample them!
 		std::cout << "   - Resampling \n";
 		resample (rng);
-		// for (auto& p: particles)
-		// 	std::cout << "  -> " << p << " -> "
-		// 		<< p.get_likelihood () << "\n";
 
-		// std::cout << "Vehicle " << id << " has the current data:";
-		// if (trip == nullptr) {
-		// 	std::cout << "\n   * Trip ID: null";
-		// } else {
-		// 	std::cout << "\n   * Trip ID: " << trip->get_id ();
-		// 	std::cout << ", Route #" << trip->get_route ()->get_short_name ();
-		// 	std::cout << ", Shape ID: " << trip->get_route ()->get_shape ()->get_id ();
-		// }
-		// std::cout << "\n   * Stop Sequence: " << stop_sequence
-		// 	<< "\n   * Arrival Time: " << arrival_time
-		// 	<< "\n   * Departure Time: " << departure_time
-		// 	<< "\n   * Position: " << position
-		// 	<< "\n   * Timestamp: " << timestamp
-		// 	<< " (" << delta << " seconds since last update)"
-		// 	<< "\n\n";
+		// Estimate parameters
+		double dbar = 0;
+		double vbar = 0;
+		for (auto& p: particles) {
+			dbar += p.get_distance ();
+			vbar += p.get_velocity ();
+		}
+		printf("   - Distance = %*.0fm, Velocity = %*.1fm/s.\n",
+			   5, dbar / particles.size (), 5, vbar / particles.size ());
 	}
 
 	/**
@@ -171,6 +172,8 @@ namespace gtfs {
 		if (vp.has_timestamp () && timestamp != vp.timestamp ()) {
 			if (timestamp > 0) {
 				delta = vp.timestamp () - timestamp;
+			} else {
+				delta = 0;
 			}
 			timestamp = vp.timestamp ();
 		}

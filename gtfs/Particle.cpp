@@ -20,6 +20,15 @@ namespace gtfs {
 		id = v->allocate_id ();
 		std::clog << " + Created particle for vehicle " << v->get_id ()
 			<< " with id = " << id << "\n";
+		distance = 0;
+		velocity = 0;
+		stop_index = 0;
+		arrival_time = 0;
+		dwell_time = 0;
+		segment_index = 0;
+		queue_time = 0;
+		begin_time = 0;
+		log_likelihood = -INFINITY;
 	};
 
 	/**

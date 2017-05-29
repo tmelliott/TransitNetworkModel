@@ -26,8 +26,10 @@
 #include <time.h>
 #include <sqlite3.h>
 
+#include <stdio.h>
 #include <chrono>
 #include <ctime>
+#include <thread>
 
 #include <boost/program_options.hpp>
 
@@ -153,22 +155,30 @@ int main (int argc, char* argv[]) {
 	// std::cout.flush();
 
 	while (forever) {
-		forever = false;
+		// forever = false;
 		{
 			// Load GTFS feed -> vehicles
             auto wallstart = std::chrono::high_resolution_clock::now();
             auto wallend = std::chrono::high_resolution_clock::now();
 
 			for (auto file: files) {
-				if ( ! load_feed (vehicles, file, N, rng, gtfs) ) {
-					std::cerr << "Unable to read file.\n";
-					continue;
+				try {
+					if ( ! load_feed (vehicles, file, N, rng, gtfs) ) {
+						std::cerr << "Unable to read file.\n";
+						continue;
+					}
+					std::remove (file.c_str ());
+				} catch (...) {
+					std::cerr << "Error occured loading file.\n";
 				}
 			}
 
 			std::cout << "\n";
 			// -> triggers particle transition -> resample
-			for (auto& v: vehicles) v.second->update (rng);
+			for (auto& v: vehicles) {
+				std::cout << "- Route " << v.second->get_trip ()->get_route ()->get_short_name () << "\n";
+				v.second->update (rng);
+			}
 			std::cout << "\n";
 
             clockend =  std::clock();
@@ -189,6 +199,8 @@ int main (int argc, char* argv[]) {
 			// Update ETA predictions
 
 		}
+
+		std::this_thread::sleep_for (std::chrono::milliseconds (10 * 1000));
 	}
 
 	return 0;
