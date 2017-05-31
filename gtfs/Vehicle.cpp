@@ -142,7 +142,7 @@ namespace gtfs {
 		// No particles near? Oh ...
 		std::vector<double> llh (particles.size ());
 		for (auto& p: particles) llh.push_back (p.get_likelihood ());
-		if (*std::max_element (llh.begin (), llh.end ()) < - log(particles.size ())) {
+		if (*std::max_element (llh.begin (), llh.end ()) < log(0.05)) {
 			initialized = false;
 			return;
 		}

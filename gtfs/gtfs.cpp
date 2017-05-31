@@ -30,9 +30,9 @@ namespace gtfs {
 		sqlite3_stmt* stmt_n;
 		int Nseg = 0;
 		std::string qwhere;
-		// qwhere = " WHERE segment_id IN (SELECT segment_id FROM shapes WHERE shape_id LIKE '%_v" + v + "')";
-		qwhere = " WHERE segment_id IN (SELECT segment_id FROM shapes WHERE shape_id IN ("
-			"SELECT shape_id FROM routes WHERE shape_id LIKE '%_v" + v + "' AND route_short_name IN ('274','224','227','258') ) )";
+		qwhere = " WHERE segment_id IN (SELECT segment_id FROM shapes WHERE shape_id LIKE '%_v" + v + "')";
+		// qwhere = " WHERE segment_id IN (SELECT segment_id FROM shapes WHERE shape_id IN ("
+		// 	"SELECT shape_id FROM routes WHERE shape_id LIKE '%_v" + v + "' AND route_short_name IN ('274','224','227','258') ) )";
 		if (sqlite3_prepare_v2 (db, ("SELECT count(segment_id) FROM segments" + qwhere).c_str (),
 								-1, &stmt_n, 0) == SQLITE_OK &&
 			sqlite3_step (stmt_n) == SQLITE_ROW) {

@@ -133,6 +133,7 @@ namespace gtfs {
 		/** @return the time the observation was last taken */
 		const uint64_t& get_timestamp () const { return timestamp; };
 		int get_delta () const;
+		bool is_initialized () const { return initialized; };
 
 
 		// Methods

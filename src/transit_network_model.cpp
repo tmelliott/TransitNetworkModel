@@ -43,6 +43,8 @@ namespace po = boost::program_options;
 bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> > &vs,
 				std::string &feed_file, int N, sampling::RNG &rng,
 				gtfs::GTFS &gtfs);
+void time_start (std::clock_t& clock, std::chrono::high_resolution_clock::time_point& wall);
+void time_end (std::clock_t& clock, std::chrono::high_resolution_clock::time_point& wall);
 
 
 /**
@@ -101,69 +103,67 @@ int main (int argc, char* argv[]) {
 		version = "";
 	}
 
-	// sqlite3* db;
-	// if (sqlite3_open (dbname.c_str (), &db)) {
-	// 	fprintf(stderr, " * Can't open db connection: %s\n", sqlite3_errmsg (db));
-	// } else {
-	// 	sqlite3_exec (db, "DELETE FROM particles", NULL, NULL, NULL);
-	// 	sqlite3_close (db);
-	// }
+	std::clock_t clockstart;
+	std::chrono::high_resolution_clock::time_point wallstart;
 
 	// Load the global GTFS database object:
+	time_start (clockstart, wallstart);
 	gtfs::GTFS gtfs (dbname, version);
-	std::cout << " * Database loaded into memory\n\n";
+	std::cout << " * Database loaded into memory\n";
+	time_end (clockstart, wallstart);
 
-	/**
-	 * An unordered map of vehicles.
-	 *
-	 * vehicles["VEHICLE_ID"] -> object for vehicle with ID VEHICLE_ID
-	 */
+	// An ordered map of vehicles that can be accessed using ["vehicle_id"]
 	std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> > vehicles;
 	sampling::RNG rng;
 	bool forever = true;
 
-	std::clock_t clockstart;
-	std::clock_t clockend;
+	// std::clock_t clockend;
 
 	while (forever) {
 		// forever = false;
 		{
 			// Load GTFS feed -> vehicles
-            auto wallstart = std::chrono::high_resolution_clock::now();
-            auto wallend = std::chrono::high_resolution_clock::now();
+            // auto wallstart = std::chrono::high_resolution_clock::now();
+            // auto wallend = std::chrono::high_resolution_clock::now();
 
+			time_start (clockstart, wallstart);
 			for (auto file: files) {
 				try {
 					if ( ! load_feed (vehicles, file, N, rng, gtfs) ) {
 						std::cerr << "Unable to read file.\n";
 						continue;
 					}
-					std::remove (file.c_str ());
+
+					if (forever) std::remove (file.c_str ());
 				} catch (...) {
 					std::cerr << "Error occured loading file.\n";
 				}
 			}
+			time_end (clockstart, wallstart);
 
 			std::cout << "\n";
 			// -> triggers particle transition -> resample
 			std::vector<std::string> USEDtrips {"274", "224", "277", "258"};
+			time_start (clockstart, wallstart);
 			for (auto& v: vehicles) {
-				if (std::find (USEDtrips.begin (), USEDtrips.end (),
-							   v.second->get_trip ()->get_route ()->get_short_name ()) == USEDtrips.end ()) {
-				    continue;
-			    }
+				// if (std::find (USEDtrips.begin (), USEDtrips.end (),
+				// 			   v.second->get_trip ()->get_route ()->get_short_name ()) == USEDtrips.end ()) {
+				//     continue;
+			    // }
 				std::cout << "- Route " << v.second->get_trip ()->get_route ()->get_short_name () << "\n";
 				v.second->update (rng);
 			}
 			std::cout << "\n";
+			time_end (clockstart, wallstart);
 
-            clockend =  std::clock();
-            wallend = std::chrono::high_resolution_clock::now();
-            std::cout << std::fixed << std::setprecision(3)
-                << "=== TIME: " << (clockend - clockstart) / (double)(CLOCKS_PER_SEC / 1000) << " ms / "
-                << std::chrono::duration<double, std::milli>(wallend - wallstart).count() << " ms\n";
-            std::cout.flush();
+            // clockend =  std::clock();
+            // wallend = std::chrono::high_resolution_clock::now();
+            // std::cout << std::fixed << std::setprecision(3)
+            //     << "=== TIME: " << (clockend - clockstart) / (double)(CLOCKS_PER_SEC / 1000) << " ms / "
+            //     << std::chrono::duration<double, std::milli>(wallend - wallstart).count() << " ms\n";
+            // std::cout.flush();
 
+			time_start (clockstart, wallstart);
 			std::cout << "\n * Writing particles to db ...";
 			std::cout.flush ();
 			sqlite3* db;
@@ -180,6 +180,7 @@ int main (int argc, char* argv[]) {
 				} else {
 					// prepared OK
 					for (auto& v: vehicles) {
+						if (! v.second->is_initialized ()) continue;
 						std::string tid = v.second->get_trip ()->get_id ();//.c_str ();
 						// std::cout << tid.c_str () << "\n";
 						for (auto& p: v.second->get_particles ()) {
@@ -209,6 +210,7 @@ int main (int argc, char* argv[]) {
 				}
 				sqlite3_close (db);
 			}
+			time_end (clockstart, wallstart);
 		}
 
 		{
@@ -277,3 +279,21 @@ bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> >
 
 	return true;
 }
+
+
+void time_start (std::clock_t& clock, std::chrono::high_resolution_clock::time_point& wall) {
+	clock = std::clock ();
+	wall  = std::chrono::high_resolution_clock::now ();
+	std::cout << "\n\n >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Timer started\n";
+	std::cout.flush ();
+};
+void time_end (std::clock_t& clock, std::chrono::high_resolution_clock::time_point& wall) {
+	auto clockend = std::clock ();
+	auto wallend  = std::chrono::high_resolution_clock::now ();
+
+	auto clock_dur = (clockend - clock) / (double)(CLOCKS_PER_SEC / 1000);
+	auto wall_dur  = std::chrono::duration<double, std::milli> (wallend - wall).count ();
+	printf ("\n <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< CPU: %*.3f ms        Wall: %*.3f ms\n\n",
+			9, clock_dur, 9, wall_dur);
+	std::cout.flush ();
+};
