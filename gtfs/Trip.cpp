@@ -12,9 +12,6 @@ namespace gtfs {
 		std::shared_ptr<Route> route
 	) : id (id), route (route) {
 		std::clog << " + Created trip " << id << "\n";
-		// Also going to point route to the trip
-		// route->add_trip (shared_from_this ());
 	};
-
 
 }; // end namespace gtfs

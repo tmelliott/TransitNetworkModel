@@ -59,9 +59,10 @@ namespace gtfs {
 		std::string database_; /*!< the database file loaded into memory. */
 
 		std::unordered_map<std::string, std::shared_ptr<Trip> > trips; /*!< A map of trip pointers */
-		std::unordered_map<std::string, std::shared_ptr<Route> > routes; /*!< A map of route objects */
-		std::unordered_map<std::string, std::shared_ptr<Shape> > shapes; /*!< A map of shape objects */
-		std::unordered_map<unsigned long, std::shared_ptr<Segment> > segments; /*!< A map of segment objects */
+		std::unordered_map<std::string, std::shared_ptr<Route> > routes; /*!< A map of route pointers */
+		std::unordered_map<std::string, std::shared_ptr<Shape> > shapes; /*!< A map of shape pointers */
+		std::unordered_map<unsigned long, std::shared_ptr<Segment> > segments; /*!< A map of segment pointers */
+		std::unordered_map<std::string, std::shared_ptr<Stop> > stops;  /*!< A map of stop pointers */
 
 	public:
 		GTFS (std::string& dbname, std::string& v);
@@ -71,6 +72,7 @@ namespace gtfs {
 		std::shared_ptr<Route> get_route (std::string& r) const;
 		std::shared_ptr<Shape> get_shape (std::string& s) const;
 		std::shared_ptr<Segment> get_segment (unsigned long s) const;
+		std::shared_ptr<Stop> get_stop (std::string& s) const;
 
 		// Get all objects ...
 		/** @return an unordered map of Route objects */
@@ -81,6 +83,8 @@ namespace gtfs {
 		std::unordered_map<std::string, std::shared_ptr<Shape> > get_shapes (void) { return shapes; };
 		/** @return an unordered map of Segment objects */
 		std::unordered_map<unsigned long, std::shared_ptr<Segment> > get_segments (void) { return segments; };
+		/** @return an unordered map of Stop objects */
+		std::unordered_map<std::string, std::shared_ptr<Stop> > get_stops (void) { return stops; };
 
 	};
 
@@ -250,6 +254,7 @@ namespace gtfs {
 		std::string route_short_name;  /*!< short name of the route, e.g., 090, NEX */
 		std::string route_long_name;   /*!< long name of the route, e.g., Westgate to Britomart */
 		std::shared_ptr<Shape> shape;  /*!< pointer to the route's shape */
+		std::vector<RouteStop> stops;  /*!< vector of route stops + distance into shape */
 
 	public:
 		// --- Constructor, destructor
@@ -269,18 +274,25 @@ namespace gtfs {
 		const std::string& get_short_name (void) const { return route_short_name; };
 		/** @return the route's long name */
 		const std::string& get_long_name (void) const { return route_long_name; };
+		/** @return the route's shape */
 		std::shared_ptr<Shape> get_shape () const;
+		/** @return the route's stops (incl. distance into trip) */
+		std::vector<RouteStop> get_stops () const { return stops; };
 
 		// --- SETTERS
 		void add_trip (std::shared_ptr<Trip> trip);
+		void add_stops (std::vector<RouteStop>& s) { stops = s; };
 	};
 
 	/**
 	 * A struct representing a route:stop combination.
 	 */
 	struct RouteStop {
-		Stop* stop;                  /*!< a pointer to the relevant stop */
+		std::shared_ptr<Stop> stop;  /*!< a pointer to the relevant stop */
 		double shape_dist_traveled;  /*!< how far along the route this stop is */
+
+		RouteStop (std::shared_ptr<Stop> stop) : stop (stop), shape_dist_traveled (0) {};
+		RouteStop (std::shared_ptr<Stop> stop, double d) : stop (stop), shape_dist_traveled (d) {};
 	};
 
 	/**
@@ -291,8 +303,9 @@ namespace gtfs {
 	 */
 	class Trip : public std::enable_shared_from_this<Trip> {
 	private:
-		std::string id;              /*!< the ID of the trip, as per GTFS */
-		std::shared_ptr<Route> route;                /*!< a pointer back to the route */
+		std::string id;                    /*!< the ID of the trip, as per GTFS */
+		std::shared_ptr<Route> route;      /*!< a pointer back to the route */
+		std::vector<StopTime> stoptimes;   /*!< a vector of stop times for the trip */
 
 	public:
 		// Construtors etc.
@@ -307,9 +320,12 @@ namespace gtfs {
 		std::string get_id (void) const { return id; };
 		/** @return a pointer to the trip's route */
 		std::shared_ptr<Route> get_route (void) { return route; };
+		const std::vector<StopTime>& get_stoptimes (void) const { return stoptimes; };
 
 		// --- METHODS
-
+		void add_stoptimes (std::vector<StopTime>& st) {
+			stoptimes = st;
+		}
 	};
 
 	/**
@@ -481,27 +497,35 @@ namespace gtfs {
 		uint64_t timestamp;     /*!< updated at timestamp */
 
 	public:
-		// --- GETTERS
+		Stop (std::string& id,
+			  gps::Coord& pos);
 
+		// --- GETTERS
+		const std::string& get_id (void) const { return id; };
+		const gps::Coord& get_pos (void) const { return pos; };
 
 		// --- METHODS
-		// void update (void);
+
 	};
 
 
 	/**
-	 * An object of the class represents an instance of a trip arriving at a stop.
-	 *
-	 * NOTE: this may be converted to a struct:
-	 * 		 {string stop_id, uint64_t arrival_time, uint64_t departure_time, bool layover}.
+	 * A struct representing an instance of a trip arriving at a stop.
 	 */
 	struct StopTime {
-		Stop* stop;          /*!< pointer to the stop */
+		std::shared_ptr<Stop> stop;          /*!< pointer to the stop */
 		boost::posix_time::time_duration arrival_time;   /*!< the scheduled arrival time */
 		boost::posix_time::time_duration departure_time; /*!< the scheduled departure time */
 		bool layover;        /*!< if true, the stop is a layover and we assume
 	   				              the bus doesn't leave until the
 								  scheduled departure time */
+
+		StopTime (std::shared_ptr<Stop> stop,
+				  std::string& arrival,
+				  std::string& departure) : stop (stop) {
+			arrival_time = boost::posix_time::duration_from_string (arrival);
+			departure_time = boost::posix_time::duration_from_string (departure);
+		};
 	};
 
 

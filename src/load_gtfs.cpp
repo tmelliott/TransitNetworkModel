@@ -192,7 +192,8 @@ void convert_shapes (sqlite3* db) {
 	int n = 0;
 	while (sqlite3_step (stmt) == SQLITE_ROW) {
 		if (nshapes > 0) {
-			printf("     + Shape %*d of %d (%*d%%) \r", 4, n, nshapes, 3, (int)(100 * (++n) / nshapes));
+			n++;
+			printf("     + Shape %*d of %d (%*d%%) \r", 4, n, nshapes, 3, (int)(100 * (n) / nshapes));
 			std::cout.flush();
 		}
 	    std::string shape_id = (char*)sqlite3_column_text (stmt, 0);
@@ -215,7 +216,7 @@ void convert_shapes (sqlite3* db) {
 		sqlite3_reset (stmt_get_shape);
 
 		double length = 0.0;
-		for (int i=1; i<path.size(); i++) {
+		for (unsigned int i=1; i<path.size(); i++) {
 			length += path[i-1].distanceTo (path[i]);
 		}
 
@@ -260,7 +261,7 @@ void convert_shapes (sqlite3* db) {
 		// INSERT INTO segment_pt VALUES (?,?,?,?,?) - [segment_id, seg_pt_seq, lat, lng, dist]
 		double dist = 0.0;
 		sqlite3_exec (db, "BEGIN", NULL, NULL, NULL);
-		for (int i=0; i<path.size (); i++) {
+		for (unsigned int i=0; i<path.size (); i++) {
 			if (i > 0) dist += path[i-1].distanceTo (path[i]);
 			if (sqlite3_bind_int64 (stmt_shapept_ins, 1, segment_id) != SQLITE_OK ||
 				sqlite3_bind_int (stmt_shapept_ins, 2, i+1) != SQLITE_OK ||
@@ -385,14 +386,14 @@ void import_intersections (sqlite3* db, std::vector<std::string> files) {
 			if (dmat[i][j]) xi.push_back (j);
 		}
 		std::vector<int> xj;
-		for (int j=0; j<xi.size (); j++) {
+		for (unsigned int j=0; j<xi.size (); j++) {
 			for (int k=0; k<N; k++) {
 				if (dmat[k][xi[j]] && std::find (xj.begin(), xj.end (), k) == xj.end ())
 					xj.push_back (k);
 			}
 		}
 		if (xj.size () > 0) {
-			for (int j=0; j<xj.size (); j++) for (int k=0; k<N; k++) dmat[xj[j]][k] = false;
+			for (unsigned int j=0; j<xj.size (); j++) for (int k=0; k<N; k++) dmat[xj[j]][k] = false;
 			y.emplace_back (xj);
 		}
 	}
@@ -401,16 +402,16 @@ void import_intersections (sqlite3* db, std::vector<std::string> files) {
 	// Compute means and unify intersection clusters
 	std::cout << "   + Create new intersections in the middle of clusters ... ";
 	std::cout.flush ();
-	for (int i=0; i<y.size (); i++) {
+	for (unsigned int i=0; i<y.size (); i++) {
 		auto newint = gps::Coord(0, 0);
-		for (int j=0; j<y[i].size (); j++) {
+		for (unsigned int j=0; j<y[i].size (); j++) {
 			newint.lat += ints[wkeep[y[i][j]]].lat;
 			newint.lng += ints[wkeep[y[i][j]]].lng;
 		}
 		newint.lat = newint.lat / y[i].size ();
 		newint.lng = newint.lng / y[i].size ();
 		ints[wkeep[y[i][1]]] = newint;
-		for (int j=1; j<y[i].size (); j++) {
+		for (unsigned int j=1; j<y[i].size (); j++) {
 			ints[wkeep[y[i][j]]] = gps::Coord(1.0/0.0, 1.0/0.0);
 		}
 	}
@@ -460,6 +461,28 @@ void calculate_stop_distances (std::string& dbname) {
 		<< "(" << gtfs.get_routes ().size () << ")";
 	for (auto& r: gtfs.get_routes ()) {
 		std::shared_ptr<gtfs::Route> route = std::get<1> (r);
-		auto shape = route.get_shape ();
+		auto shape = route->get_shape ();
+		if (!shape) continue; // no shape associated with this route
+
+		// std::cout << "Trips: ";
+		// for (auto& t: route->get_trips ()) {
+		// 	std::cout << t->get_id () << "\n";
+		// 	int i=1;
+		// 	for (auto& st: t->get_stoptimes ()) {
+		// 		std::cout << i << ": "
+		// 			<< st.arrival_time << " - " << st.departure_time
+		// 			<< "\n";
+		// 		i++;
+		// 	}
+		// }
+		std::cout << "\nStop IDs: ";
+		for (auto& s: route->get_stops ()) {
+			std::cout << s.stop->get_id () << ", ";
+		}
 	}
+
+	// for (auto& s: gtfs.get_stops ()) {
+	// 	std::shared_ptr<gtfs::Stop> stop = std::get<1> (s);
+	// 	std::cout << "Stop " << stop->get_id () << ": " << stop->get_pos () << "\n";
+	// };
 };

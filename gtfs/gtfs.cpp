@@ -26,6 +26,23 @@ namespace gtfs {
 
 		std::string qry;
 
+		// Stops
+		sqlite3_stmt* stmt_stops;
+		qry = "SELECT stop_id, lat, lng FROM stops";
+		if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &stmt_stops, 0) != SQLITE_OK) {
+			std::cerr << " * Can't prepare query " << qry << "\n";
+			throw std::runtime_error ("Cannot prepare query.");
+		};
+		std::clog << " * [prepared] " << qry << "\n";
+		while (sqlite3_step (stmt_stops) == SQLITE_ROW) {
+			std::string stop_id = (char*)sqlite3_column_text (stmt_stops, 0);
+			gps::Coord pos (sqlite3_column_double (stmt_stops, 1),
+							sqlite3_column_double (stmt_stops, 2));
+			std::shared_ptr<gtfs::Stop> stop (new gtfs::Stop(stop_id, pos));
+			stops.emplace (stop_id, stop);
+		}
+		sqlite3_finalize (stmt_stops);
+
 		// N segments:
 		sqlite3_stmt* stmt_n;
 		int Nseg = 0;
@@ -137,24 +154,85 @@ namespace gtfs {
 		}
 		sqlite3_finalize (stmt_routes);
 
+
+		// n TRIPS
+		int Ntrip = 0;
+		// qwhere = " WHERE segment_id IN (SELECT segment_id FROM shapes WHERE shape_id LIKE '%_v" + v + "')";
+		qwhere = " WHERE route_id IN (SELECT route_id FROM routes WHERE route_id LIKE '%_v"
+			+ v + "' AND route_short_name IN ('274'))";//",'277','224','222','258','NEX') )";
+		if (sqlite3_prepare_v2 (db, ("SELECT count(trip_id) FROM trips" + qwhere).c_str (),
+								-1, &stmt_n, 0) == SQLITE_OK &&
+			sqlite3_step (stmt_n) == SQLITE_ROW) {
+			Ntrip = sqlite3_column_int (stmt_n, 0);
+		}
+		sqlite3_finalize (stmt_n);
+
 		// Load all gtfs `trips`
 		sqlite3_stmt* stmt_trips;
-		qry = "SELECT trip_id, route_id FROM trips";
-		if (version_ != "") qry += " WHERE trip_id LIKE '%_v" + version_ + "'";
+		sqlite3_stmt* stmt_stoptimes;
+		qry = "SELECT trip_id, route_id FROM trips" + qwhere;
+
 		if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &stmt_trips, 0) != SQLITE_OK) {
 			std::cerr << " * Can't prepare query " << qry << "\n";
 			throw std::runtime_error ("Cannot prepare query.");
 		}
-		std::clog << " * [prepared] " << qry << "\n";
+		std::cout << " * [prepared] " << qry << "\n";
+		std::string qry_st ("SELECT stop_id, arrival_time, departure_time FROM stop_times WHERE trip_id=$1 ORDER BY stop_sequence");
+		if (sqlite3_prepare_v2 (db, qry_st.c_str (), -1, &stmt_stoptimes, 0) != SQLITE_OK) {
+			std::cerr << " * Can't prepare query " << qry_st << "\n";
+			throw std::runtime_error ("Cannot prepare query.");
+		}
+		std::clog << " * [prepared] " << qry_st << "\n";
+
+		int ti=0;
+		std::cout << "\n   - " << Ntrip << " trips to load ...\n";
 		while (sqlite3_step (stmt_trips) == SQLITE_ROW) {
+			ti++;
+			printf(" * Loading trips: %*d%%\r", 3, 100 * (ti) / Ntrip);
+			std::cout.flush ();
+
 			// Load that trip into memory: [id, (route)]
 			std::string trip_id = (char*)sqlite3_column_text (stmt_trips, 0);
 			std::string route_id = (char*)sqlite3_column_text (stmt_trips, 1);
 			auto route = get_route (route_id);
+			if (!route) continue;
 			std::shared_ptr<gtfs::Trip> trip (new gtfs::Trip(trip_id, route));
 			route->add_trip (trip);
+
+			// Load trip stop times
+			if (sqlite3_bind_text (stmt_stoptimes, 1, trip_id.c_str (), -1, SQLITE_STATIC) == SQLITE_OK) {
+				std::vector<StopTime> stoptimes;
+				while (sqlite3_step (stmt_stoptimes) == SQLITE_ROW) {
+					// Take stop_time append to vector
+					std::string stop_id = (char*)sqlite3_column_text (stmt_stoptimes, 0);
+					auto stop = get_stop (stop_id);
+					if (!stop) break; // missing any stops, don't include any
+					std::string arr = (char*)sqlite3_column_text (stmt_stoptimes, 1);
+					std::string dep = (char*)sqlite3_column_text (stmt_stoptimes, 2);
+					stoptimes.emplace_back (stop, arr, dep);
+				}
+				sqlite3_reset (stmt_stoptimes);
+
+				trip->add_stoptimes (stoptimes);
+
+				// If route doesn't have stops already, add them now:
+				if (route->get_stops ().size () == 0) {
+					std::vector<RouteStop> stops;
+					stops.reserve (trip->get_stoptimes ().size ());
+					for (auto& st: trip->get_stoptimes ()) {
+						stops.emplace_back (st.stop);
+					}
+					route->add_stops (stops);
+				}
+			} else {
+				std::cerr << "\n     x Error binding trip ID to stoptimes query ";
+				continue;
+			}
+
+			// And save the trip away
 			trips.emplace (trip_id, trip);
 		}
+		sqlite3_finalize (stmt_stoptimes);
 		sqlite3_finalize (stmt_trips);
 		std::clog << "\n";
 
@@ -209,6 +287,20 @@ namespace gtfs {
 	std::shared_ptr<Segment> GTFS::get_segment (unsigned long s) const {
 		auto si = segments.find (s);
 		if (si == segments.end ()) {
+			return nullptr;
+		} else {
+			return si->second;
+		}
+	}
+
+	/**
+	 * Load a Stop object.
+	 * @param  s the ID of the stop we want
+	 * @return a Stop object, or null pointer if it wasn't found
+	 */
+	std::shared_ptr<Stop> GTFS::get_stop (std::string& s) const {
+		auto si = stops.find (s);
+		if (si == stops.end ()) {
 			return nullptr;
 		} else {
 			return si->second;
