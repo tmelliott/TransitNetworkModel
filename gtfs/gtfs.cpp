@@ -45,7 +45,7 @@ namespace gtfs {
 		qry = "SELECT segment_id, start_id, end_id, length FROM segments" + qwhere;
 
 		if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &stmt_segs, 0) != SQLITE_OK) {
-			std::cerr << " * Can't prepare query " << qry << "\n";
+			std::cerr << " * Can't prepare query " << qry << ": " << sqlite3_errmsg (db) << "\n";
 			throw std::runtime_error ("Cannot prepare query.");
 		}
 		std::clog << " * [prepared] " << qry << "\n";

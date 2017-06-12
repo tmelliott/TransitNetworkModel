@@ -24,6 +24,7 @@
 #include <sqlite3.h>
 
 #include "gps.h"
+#include "gtfs.h"
 
 #include "json.hpp"
 
@@ -37,6 +38,7 @@ namespace po = boost::program_options;
 int system (std::string const& s) { return system (s.c_str ()); }
 void convert_shapes (sqlite3* db);
 void import_intersections (sqlite3* db, std::vector<std::string> files);
+void calculate_stop_distances (std::string& dbname);
 
 /**
  * Loads GTFS file into database and segments as necessary.
@@ -71,44 +73,51 @@ int main (int argc, char* argv[]) {
 
 	// STEP ONE:
 	// connect to the SQLite database:
-	std::cout << "Loading GTFS data into database `" << dbname << "`\n";
-	sqlite3 *db;
-	char *zErrMsg = 0;
-	int rc;
+	// std::cout << "Loading GTFS data into database `" << dbname << "`\n";
+	// sqlite3 *db;
+	// char *zErrMsg = 0;
+	// int rc;
+	//
+	// rc = sqlite3_open ((dir + "/" + dbname).c_str(), &db);
+	// if (rc) {
+	// 	fprintf(stderr, " * Can't open database: %s\n", sqlite3_errmsg(db));
+    //   	return(0);
+	// } else {
+    // 	fprintf(stderr, " * Opened database successfully\n");
+	// }
+	//
+	// // STEP TWO:
+	// // convert shapes -> segments
+	// std::cout << " * Converting shapes to segments ... ";
+	// convert_shapes (db); // -- temporary dont let it run (though it should die since shapes_tmp not present)
+	// std::cout << "\n   ... done.\n";
+	//
+	// // STEP THREE:
+	// // importing intersections.json and segmenting segments:
+	// std::cout << " * Importing intersections ... ";
+	// std::vector<std::string> files {dir + "/data/intersections_trafficlights.json",
+	// 								dir + "/data/intersections_roundabouts.json"};
+	// import_intersections (db, files);
+	// std::cout << "done.\n";
+	//
+	// // Get all segments, and split into more segments
+	// for (int i=0;i<1000;i++) {
+	// 	printf(" * Segmenting shapes ... %*d%%\r", 3, (i+1)/1000 * 100);
+	// 	std::cout.flush ();
+	//
+	//
+	// }
+	//
+	// sqlite3_close (db);
+	//
+	// std::cout << " * Segmenting shapes ... done.\n";
 
-	rc = sqlite3_open ((dir + "/" + dbname).c_str(), &db);
-	if (rc) {
-		fprintf(stderr, " * Can't open database: %s\n", sqlite3_errmsg(db));
-      	return(0);
-	} else {
-    	fprintf(stderr, " * Opened database successfully\n");
-	}
 
-	// STEP TWO:
-	// convert shapes -> segments
-	std::cout << " * Converting shapes to segments ... ";
-	convert_shapes (db); // -- temporary dont let it run (though it should die since shapes_tmp not present)
+	// STEP FOUR: stop distance into shape for stop_times
+	std::cout << " * Calculating distance into trip of stops ... \n";
+	std::string dbn = dir + "/" + dbname;
+	calculate_stop_distances (dbn);
 	std::cout << "\n   ... done.\n";
-
-	// STEP THREE:
-	// importing intersections.json and segmenting segments:
-	std::cout << " * Importing intersections ... ";
-	std::vector<std::string> files {dir + "/data/intersections_trafficlights.json",
-									dir + "/data/intersections_roundabouts.json"};
-	import_intersections (db, files);
-	std::cout << "done.\n";
-
-	// Get all segments, and split into more segments
-	for (int i=0;i<1000;i++) {
-		printf(" * Segmenting shapes ... %*d%%\r", 3, (i+1)/1000 * 100);
-		std::cout.flush ();
-
-
-	}
-
-	std::cout << " * Segmenting shapes ... done.\n";
-
-
 
 	return 0;
 }
@@ -439,3 +448,18 @@ void import_intersections (sqlite3* db, std::vector<std::string> files) {
 	std::cout << "done.\n"
 		<< "   -> Inserted " << Nfinal << " intersections.\n";
 }
+
+
+void calculate_stop_distances (std::string& dbname) {
+	std::string v = "54.27";
+	gtfs::GTFS gtfs (dbname, v);
+	std::cout << " * GTFS database loaded     ";
+
+	// For each route
+	std::cout << "\n * Computing stop distances into trip for all routes "
+		<< "(" << gtfs.get_routes ().size () << ")";
+	for (auto& r: gtfs.get_routes ()) {
+		std::shared_ptr<gtfs::Route> route = std::get<1> (r);
+		auto shape = route.get_shape ();
+	}
+};
