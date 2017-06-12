@@ -450,7 +450,10 @@ void import_intersections (sqlite3* db, std::vector<std::string> files) {
 		<< "   -> Inserted " << Nfinal << " intersections.\n";
 }
 
-
+/**
+ * Compute the shape distance traveled for each stop along a route.
+ * @param dbname The database to connect to
+ */
 void calculate_stop_distances (std::string& dbname) {
 	std::string v = "54.27";
 	gtfs::GTFS gtfs (dbname, v);

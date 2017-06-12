@@ -4,19 +4,17 @@
 
 {\ttfamily \#include $<$gtfs.\+h$>$}
 
-
-
-Collaboration diagram for gtfs\+:\+:Route\+Stop\+:\nopagebreak
-\begin{figure}[H]
-\begin{center}
-\leavevmode
-\includegraphics[width=166pt]{structgtfs_1_1RouteStop__coll__graph}
-\end{center}
-\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{structgtfs_1_1RouteStop_a6ec05e2393ac8980e5c8a71d74c6d70d}{Route\+Stop} (std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Stop}{Stop} $>$ \hyperlink{structgtfs_1_1RouteStop_af70ced2604121bbeb159da66bbd00c64}{stop})
+\item 
+\hyperlink{structgtfs_1_1RouteStop_a5f3dba72665e9731bad7a844bee4a949}{Route\+Stop} (std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Stop}{Stop} $>$ \hyperlink{structgtfs_1_1RouteStop_af70ced2604121bbeb159da66bbd00c64}{stop}, double d)
+\end{DoxyCompactItemize}
 \subsection*{Public Attributes}
 \begin{DoxyCompactItemize}
 \item 
-\hyperlink{classgtfs_1_1Stop}{Stop} $\ast$ \hyperlink{structgtfs_1_1RouteStop_ae14c110356572344748f08c07fea1b0c}{stop}
+std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Stop}{Stop} $>$ \hyperlink{structgtfs_1_1RouteStop_af70ced2604121bbeb159da66bbd00c64}{stop}
 \item 
 double \hyperlink{structgtfs_1_1RouteStop_ab738c008a00eab17953ab124a86ca207}{shape\+\_\+dist\+\_\+traveled}
 \end{DoxyCompactItemize}
@@ -25,6 +23,21 @@ double \hyperlink{structgtfs_1_1RouteStop_ab738c008a00eab17953ab124a86ca207}{sha
 \subsection{Detailed Description}
 A struct representing a route\+:stop combination. 
 
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{structgtfs_1_1RouteStop_a6ec05e2393ac8980e5c8a71d74c6d70d}\label{structgtfs_1_1RouteStop_a6ec05e2393ac8980e5c8a71d74c6d70d}} 
+\index{gtfs\+::\+Route\+Stop@{gtfs\+::\+Route\+Stop}!Route\+Stop@{Route\+Stop}}
+\index{Route\+Stop@{Route\+Stop}!gtfs\+::\+Route\+Stop@{gtfs\+::\+Route\+Stop}}
+\subsubsection{\texorpdfstring{Route\+Stop()}{RouteStop()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily gtfs\+::\+Route\+Stop\+::\+Route\+Stop (\begin{DoxyParamCaption}\item[{std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Stop}{Stop} $>$}]{stop }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Constructor for a \hyperlink{structgtfs_1_1RouteStop}{Route\+Stop} struct, without a distance (set to 0). \mbox{\Hypertarget{structgtfs_1_1RouteStop_a5f3dba72665e9731bad7a844bee4a949}\label{structgtfs_1_1RouteStop_a5f3dba72665e9731bad7a844bee4a949}} 
+\index{gtfs\+::\+Route\+Stop@{gtfs\+::\+Route\+Stop}!Route\+Stop@{Route\+Stop}}
+\index{Route\+Stop@{Route\+Stop}!gtfs\+::\+Route\+Stop@{gtfs\+::\+Route\+Stop}}
+\subsubsection{\texorpdfstring{Route\+Stop()}{RouteStop()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily gtfs\+::\+Route\+Stop\+::\+Route\+Stop (\begin{DoxyParamCaption}\item[{std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Stop}{Stop} $>$}]{stop,  }\item[{double}]{d }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Constructor for a \hyperlink{structgtfs_1_1RouteStop}{Route\+Stop} struct. 
+
 \subsection{Member Data Documentation}
 \mbox{\Hypertarget{structgtfs_1_1RouteStop_ab738c008a00eab17953ab124a86ca207}\label{structgtfs_1_1RouteStop_ab738c008a00eab17953ab124a86ca207}} 
 \index{gtfs\+::\+Route\+Stop@{gtfs\+::\+Route\+Stop}!shape\+\_\+dist\+\_\+traveled@{shape\+\_\+dist\+\_\+traveled}}
@@ -32,11 +45,11 @@ A struct representing a route\+:stop combination.
 \subsubsection{\texorpdfstring{shape\+\_\+dist\+\_\+traveled}{shape\_dist\_traveled}}
 {\footnotesize\ttfamily double gtfs\+::\+Route\+Stop\+::shape\+\_\+dist\+\_\+traveled}
 
-how far along the route this stop is \mbox{\Hypertarget{structgtfs_1_1RouteStop_ae14c110356572344748f08c07fea1b0c}\label{structgtfs_1_1RouteStop_ae14c110356572344748f08c07fea1b0c}} 
+how far along the route this stop is \mbox{\Hypertarget{structgtfs_1_1RouteStop_af70ced2604121bbeb159da66bbd00c64}\label{structgtfs_1_1RouteStop_af70ced2604121bbeb159da66bbd00c64}} 
 \index{gtfs\+::\+Route\+Stop@{gtfs\+::\+Route\+Stop}!stop@{stop}}
 \index{stop@{stop}!gtfs\+::\+Route\+Stop@{gtfs\+::\+Route\+Stop}}
 \subsubsection{\texorpdfstring{stop}{stop}}
-{\footnotesize\ttfamily \hyperlink{classgtfs_1_1Stop}{Stop}$\ast$ gtfs\+::\+Route\+Stop\+::stop}
+{\footnotesize\ttfamily std\+::shared\+\_\+ptr$<$\hyperlink{classgtfs_1_1Stop}{Stop}$>$ gtfs\+::\+Route\+Stop\+::stop}
 
 a pointer to the relevant stop 
 

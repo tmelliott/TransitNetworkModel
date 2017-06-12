@@ -53,4 +53,6 @@ namespace gtfs {
 	void Route::add_trip (std::shared_ptr<Trip> trip) {
 		trips.push_back (trip);
 	};
+
+	
 };

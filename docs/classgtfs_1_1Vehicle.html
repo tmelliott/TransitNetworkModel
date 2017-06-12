@@ -91,8 +91,12 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a616c83927f0d2d513d33277a9ebd3537"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a108b44eeddcd90ebae8f6391f157c503"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classgps_1_1Coord.html">gps::Coord</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Vehicle.html#a108b44eeddcd90ebae8f6391f157c503">get_position</a> () const</td></tr>
 <tr class="separator:a108b44eeddcd90ebae8f6391f157c503"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af064609446d9cde5b1a11e9a072eac4b"><td class="memItemLeft" align="right" valign="top">const uint64_t &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Vehicle.html#af064609446d9cde5b1a11e9a072eac4b">get_timestamp</a> () const</td></tr>
+<tr class="separator:af064609446d9cde5b1a11e9a072eac4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a23c0a191559e4066423d5f3cbfb70b46"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Vehicle.html#a23c0a191559e4066423d5f3cbfb70b46">get_delta</a> () const</td></tr>
 <tr class="separator:a23c0a191559e4066423d5f3cbfb70b46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab956418d159120dd8b301d13d6fe6ec8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Vehicle.html#ab956418d159120dd8b301d13d6fe6ec8">is_initialized</a> () const</td></tr>
+<tr class="separator:ab956418d159120dd8b301d13d6fe6ec8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4baee648ab1db5b69aa2ffef7203c2bf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Vehicle.html#a4baee648ab1db5b69aa2ffef7203c2bf">update</a> (<a class="el" href="classsampling_1_1RNG.html">sampling::RNG</a> &amp;rng)</td></tr>
 <tr class="separator:a4baee648ab1db5b69aa2ffef7203c2bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:add9266d843398c88d3fcc22239f586a9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Vehicle.html#add9266d843398c88d3fcc22239f586a9">update</a> (const transit_realtime::VehiclePosition &amp;vp, <a class="el" href="classgtfs_1_1GTFS.html">GTFS</a> &amp;gtfs)</td></tr>
@@ -103,6 +107,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aa9087e973a9821f384ec47f51bdcedc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8367fc70a64b7e596422f880dbff1193"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Vehicle.html#a8367fc70a64b7e596422f880dbff1193">resample</a> (<a class="el" href="classsampling_1_1RNG.html">sampling::RNG</a> &amp;rng)</td></tr>
 <tr class="separator:a8367fc70a64b7e596422f880dbff1193"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63474849e632ce31730b120debe50792"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Vehicle.html#a63474849e632ce31730b120debe50792">reset</a> (void)</td></tr>
+<tr class="separator:a63474849e632ce31730b120debe50792"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -296,6 +302,32 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="af064609446d9cde5b1a11e9a072eac4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af064609446d9cde5b1a11e9a072eac4b">&#9670;&nbsp;</a></span>get_timestamp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint64_t&amp; gtfs::Vehicle::get_timestamp </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>the time the observation was last taken </dd></dl>
+
+</div>
+</div>
 <a id="a616c83927f0d2d513d33277a9ebd3537"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a616c83927f0d2d513d33277a9ebd3537">&#9670;&nbsp;</a></span>get_trip()</h2>
 
@@ -311,6 +343,32 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>a pointer to the vehicle's trip object </dd></dl>
+
+</div>
+</div>
+<a id="ab956418d159120dd8b301d13d6fe6ec8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab956418d159120dd8b301d13d6fe6ec8">&#9670;&nbsp;</a></span>is_initialized()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool gtfs::Vehicle::is_initialized </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>logical, if FALSE it means the vehicle needs to be initialized </dd></dl>
 
 </div>
 </div>
@@ -331,6 +389,25 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Perform weighted resampling with replacement.</p>
 <p>Use the computed particle weights to resample, with replacement, the particles associated with the vehicle. </p>
+
+</div>
+</div>
+<a id="a63474849e632ce31730b120debe50792"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63474849e632ce31730b120debe50792">&#9670;&nbsp;</a></span>reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void gtfs::Vehicle::reset </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Reset vehicle's particles to zero-state. </p>
 
 </div>
 </div>

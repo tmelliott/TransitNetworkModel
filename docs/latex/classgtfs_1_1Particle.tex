@@ -30,6 +30,8 @@ const double \& \hyperlink{classgtfs_1_1Particle_a0ec3ee5a83e778069946242a6d7731
 \item 
 const double \& \hyperlink{classgtfs_1_1Particle_a3b59c859c3445b97c6da6c0b9081b1e4}{get\+\_\+velocity} () const
 \item 
+bool \hyperlink{classgtfs_1_1Particle_aade709387b5d7f0c0764ede8cfd88f0e}{is\+\_\+finished} () const
+\item 
 int \hyperlink{classgtfs_1_1Particle_a322a6111d18ae304c0b22f000461076a}{get\+\_\+stop\+\_\+index} () const
 \item 
 const uint64\+\_\+t \& \hyperlink{classgtfs_1_1Particle_a783d1a0a614dc2c3f18cf269f69ede3d}{get\+\_\+arrival\+\_\+time} () const
@@ -42,11 +44,19 @@ int \hyperlink{classgtfs_1_1Particle_a63bd83f650af8855f014e6e5f86a123a}{get\+\_\
 \item 
 const uint64\+\_\+t \& \hyperlink{classgtfs_1_1Particle_ac4c8fd3566b0178c95daf6a0cba0040e}{get\+\_\+begin\+\_\+time} () const
 \item 
+int \hyperlink{classgtfs_1_1Particle_ae2029ee7ae66a92a8a2f08e4290daa73}{get\+\_\+delta\+\_\+t} () const
+\item 
 const double \& \hyperlink{classgtfs_1_1Particle_a2e1a6de0b7d0fd6938ef3f7f9e5d4b99}{get\+\_\+likelihood} () const
 \item 
 void \hyperlink{classgtfs_1_1Particle_a4b1e356f32d4557d06c9ed59467a5b27}{initialize} (\hyperlink{classsampling_1_1uniform}{sampling\+::uniform} \&unif, \hyperlink{classsampling_1_1uniform}{sampling\+::uniform} \&speed, \hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&rng)
 \item 
 void \hyperlink{classgtfs_1_1Particle_a18aeb1ccbc395210f80c18f9d0a0095c}{transition} (\hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&rng)
+\item 
+void \hyperlink{classgtfs_1_1Particle_a5e964d5aa4698335de3c75938e55f5cd}{transition\+\_\+phase1} (\hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&rng)
+\item 
+void \hyperlink{classgtfs_1_1Particle_ad9374830814c89b2d5c0af705bda8849}{transition\+\_\+phase2} (\hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&rng)
+\item 
+void \hyperlink{classgtfs_1_1Particle_a68043b2380d8f530d648dd99e5a85101}{transition\+\_\+phase3} (\hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&rng)
 \item 
 void \hyperlink{classgtfs_1_1Particle_a88627efbe0eb2e289315ae82627d3a39}{calculate\+\_\+likelihood} (void)
 \end{DoxyCompactItemize}
@@ -125,6 +135,15 @@ the particle\textquotesingle{}s arrival time at stop {\ttfamily stop\+\_\+index}
 
 \begin{DoxyReturn}{Returns}
 the particle\textquotesingle{}s begin time at segment {\ttfamily segment\+\_\+index} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classgtfs_1_1Particle_ae2029ee7ae66a92a8a2f08e4290daa73}\label{classgtfs_1_1Particle_ae2029ee7ae66a92a8a2f08e4290daa73}} 
+\index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!get\+\_\+delta\+\_\+t@{get\+\_\+delta\+\_\+t}}
+\index{get\+\_\+delta\+\_\+t@{get\+\_\+delta\+\_\+t}!gtfs\+::\+Particle@{gtfs\+::\+Particle}}
+\subsubsection{\texorpdfstring{get\+\_\+delta\+\_\+t()}{get\_delta\_t()}}
+{\footnotesize\ttfamily int gtfs\+::\+Particle\+::get\+\_\+delta\+\_\+t (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the particle\textquotesingle{}s remaining travel time 
 \end{DoxyReturn}
 \mbox{\Hypertarget{classgtfs_1_1Particle_a0ec3ee5a83e778069946242a6d7731b6}\label{classgtfs_1_1Particle_a0ec3ee5a83e778069946242a6d7731b6}} 
 \index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!get\+\_\+distance@{get\+\_\+distance}}
@@ -222,6 +241,15 @@ Initialize particle with distance etc.
 {\em rng} & a random number generator \\
 \hline
 \end{DoxyParams}
+\mbox{\Hypertarget{classgtfs_1_1Particle_aade709387b5d7f0c0764ede8cfd88f0e}\label{classgtfs_1_1Particle_aade709387b5d7f0c0764ede8cfd88f0e}} 
+\index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!is\+\_\+finished@{is\+\_\+finished}}
+\index{is\+\_\+finished@{is\+\_\+finished}!gtfs\+::\+Particle@{gtfs\+::\+Particle}}
+\subsubsection{\texorpdfstring{is\+\_\+finished()}{is\_finished()}}
+{\footnotesize\ttfamily bool gtfs\+::\+Particle\+::is\+\_\+finished (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+true if the particle is at end of route; false otherwise 
+\end{DoxyReturn}
 \mbox{\Hypertarget{classgtfs_1_1Particle_a18aeb1ccbc395210f80c18f9d0a0095c}\label{classgtfs_1_1Particle_a18aeb1ccbc395210f80c18f9d0a0095c}} 
 \index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!transition@{transition}}
 \index{transition@{transition}!gtfs\+::\+Particle@{gtfs\+::\+Particle}}
@@ -233,6 +261,47 @@ Move the particle according to speed, shape/segments/stops, and {\ttfamily delta
 
 \begin{DoxyParams}{Parameters}
 {\em rng} & a random number generator \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classgtfs_1_1Particle_a5e964d5aa4698335de3c75938e55f5cd}\label{classgtfs_1_1Particle_a5e964d5aa4698335de3c75938e55f5cd}} 
+\index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!transition\+\_\+phase1@{transition\+\_\+phase1}}
+\index{transition\+\_\+phase1@{transition\+\_\+phase1}!gtfs\+::\+Particle@{gtfs\+::\+Particle}}
+\subsubsection{\texorpdfstring{transition\+\_\+phase1()}{transition\_phase1()}}
+{\footnotesize\ttfamily void gtfs\+::\+Particle\+::transition\+\_\+phase1 (\begin{DoxyParamCaption}\item[{\hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&}]{rng }\end{DoxyParamCaption})}
+
+Phase 1 of the particle\textquotesingle{}s transition, involving determining initial wait conditions.
+
+If the bus is at a stop, ensure it waits long enough. Similarly for intersections, queue longer if needed. Otherwise, there\textquotesingle{}s no wait time.
+
+
+\begin{DoxyParams}{Parameters}
+{\em rng} & reference to the random number generator \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classgtfs_1_1Particle_ad9374830814c89b2d5c0af705bda8849}\label{classgtfs_1_1Particle_ad9374830814c89b2d5c0af705bda8849}} 
+\index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!transition\+\_\+phase2@{transition\+\_\+phase2}}
+\index{transition\+\_\+phase2@{transition\+\_\+phase2}!gtfs\+::\+Particle@{gtfs\+::\+Particle}}
+\subsubsection{\texorpdfstring{transition\+\_\+phase2()}{transition\_phase2()}}
+{\footnotesize\ttfamily void gtfs\+::\+Particle\+::transition\+\_\+phase2 (\begin{DoxyParamCaption}\item[{\hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&}]{rng }\end{DoxyParamCaption})}
+
+Phase 2 of the particle\textquotesingle{}s transition, involving adding random system noise.
+
+
+\begin{DoxyParams}{Parameters}
+{\em rng} & reference to the random number generator \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classgtfs_1_1Particle_a68043b2380d8f530d648dd99e5a85101}\label{classgtfs_1_1Particle_a68043b2380d8f530d648dd99e5a85101}} 
+\index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!transition\+\_\+phase3@{transition\+\_\+phase3}}
+\index{transition\+\_\+phase3@{transition\+\_\+phase3}!gtfs\+::\+Particle@{gtfs\+::\+Particle}}
+\subsubsection{\texorpdfstring{transition\+\_\+phase3()}{transition\_phase3()}}
+{\footnotesize\ttfamily void gtfs\+::\+Particle\+::transition\+\_\+phase3 (\begin{DoxyParamCaption}\item[{\hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&}]{rng }\end{DoxyParamCaption})}
+
+Phase 3 of the particle\textquotesingle{}s transition, involving movement until time\textquotesingle{}s up.
+
+
+\begin{DoxyParams}{Parameters}
+{\em rng} & \mbox{[}description\mbox{]} \\
 \hline
 \end{DoxyParams}
 

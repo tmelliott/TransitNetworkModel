@@ -84,6 +84,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a59d1a7209999120b2446298f9fac4564"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb9b3152a524f393c4414611dbeeba48"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Segment.html">Segment</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1GTFS.html#afb9b3152a524f393c4414611dbeeba48">get_segment</a> (unsigned long s) const</td></tr>
 <tr class="separator:afb9b3152a524f393c4414611dbeeba48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34304835b203901a972d40cc4f1d060a"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Stop.html">Stop</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1GTFS.html#a34304835b203901a972d40cc4f1d060a">get_stop</a> (std::string &amp;s) const</td></tr>
+<tr class="separator:a34304835b203901a972d40cc4f1d060a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aef6a88c15cdf8bf788e41c81a14ecc76"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Route.html">Route</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1GTFS.html#aef6a88c15cdf8bf788e41c81a14ecc76">get_routes</a> (void)</td></tr>
 <tr class="separator:aef6a88c15cdf8bf788e41c81a14ecc76"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad526fc627fe1ce81b8a669f6187be0c0"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Trip.html">Trip</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1GTFS.html#ad526fc627fe1ce81b8a669f6187be0c0">get_trips</a> (void)</td></tr>
@@ -92,6 +94,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a91ada6a3f02e3ee9b6a723a6c6fc50af"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae124db38217498c5e1090447ccf11953"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; unsigned long, std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Segment.html">Segment</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1GTFS.html#ae124db38217498c5e1090447ccf11953">get_segments</a> (void)</td></tr>
 <tr class="separator:ae124db38217498c5e1090447ccf11953"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33a81248120e12d5a5d52a92821b827e"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Stop.html">Stop</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1GTFS.html#a33a81248120e12d5a5d52a92821b827e">get_stops</a> (void)</td></tr>
+<tr class="separator:a33a81248120e12d5a5d52a92821b827e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="classgtfs_1_1GTFS.html">GTFS</a> Schedule Information class</p>
@@ -288,6 +292,58 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>an unordered map of <a class="el" href="classgtfs_1_1Shape.html">Shape</a> objects </dd></dl>
+
+</div>
+</div>
+<a id="a34304835b203901a972d40cc4f1d060a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34304835b203901a972d40cc4f1d060a">&#9670;&nbsp;</a></span>get_stop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Stop.html">Stop</a> &gt; gtfs::GTFS::get_stop </td>
+          <td>(</td>
+          <td class="paramtype">std::string &amp;&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Load a <a class="el" href="classgtfs_1_1Stop.html">Stop</a> object. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">s</td><td>the ID of the stop we want </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>a <a class="el" href="classgtfs_1_1Stop.html">Stop</a> object, or null pointer if it wasn't found </dd></dl>
+
+</div>
+</div>
+<a id="a33a81248120e12d5a5d52a92821b827e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33a81248120e12d5a5d52a92821b827e">&#9670;&nbsp;</a></span>get_stops()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;std::string, std::shared_ptr&lt;<a class="el" href="classgtfs_1_1Stop.html">Stop</a>&gt; &gt; gtfs::GTFS::get_stops </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>an unordered map of <a class="el" href="classgtfs_1_1Stop.html">Stop</a> objects </dd></dl>
 
 </div>
 </div>

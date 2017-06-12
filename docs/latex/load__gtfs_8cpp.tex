@@ -8,6 +8,7 @@
 {\ttfamily \#include $<$boost/program\+\_\+options.\+hpp$>$}\newline
 {\ttfamily \#include $<$sqlite3.\+h$>$}\newline
 {\ttfamily \#include \char`\"{}gps.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}gtfs.\+h\char`\"{}}\newline
 {\ttfamily \#include \char`\"{}json.\+hpp\char`\"{}}\newline
 Include dependency graph for load\+\_\+gtfs.\+cpp\+:\nopagebreak
 \begin{figure}[H]
@@ -24,6 +25,8 @@ int \hyperlink{load__gtfs_8cpp_acc289d9bfee4c154322662aef55c5438}{system} (std\+
 void \hyperlink{load__gtfs_8cpp_a4f311128b9bf5549011dc5d2a288a0b0}{convert\+\_\+shapes} (sqlite3 $\ast$db)
 \item 
 void \hyperlink{load__gtfs_8cpp_a54ef9ab4a1985152c9cf7ec290fbea2d}{import\+\_\+intersections} (sqlite3 $\ast$db, std\+::vector$<$ std\+::string $>$ files)
+\item 
+void \hyperlink{load__gtfs_8cpp_afc0ec9cd72ffe92b7aacb7c58aeea6b3}{calculate\+\_\+stop\+\_\+distances} (std\+::string \&dbname)
 \item 
 int \hyperlink{load__gtfs_8cpp_a0ddf1224851353fc92bfbff6f499fa97}{main} (int argc, char $\ast$argv\mbox{[}$\,$\mbox{]})
 \end{DoxyCompactItemize}
@@ -45,6 +48,17 @@ Tom Elliott \href{mailto:tom.elliott@auckland.ac.nz}{\tt tom.\+elliott@auckland.
 
 
 \subsection{Function Documentation}
+\mbox{\Hypertarget{load__gtfs_8cpp_afc0ec9cd72ffe92b7aacb7c58aeea6b3}\label{load__gtfs_8cpp_afc0ec9cd72ffe92b7aacb7c58aeea6b3}} 
+\index{load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}!calculate\+\_\+stop\+\_\+distances@{calculate\+\_\+stop\+\_\+distances}}
+\index{calculate\+\_\+stop\+\_\+distances@{calculate\+\_\+stop\+\_\+distances}!load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}}
+\subsubsection{\texorpdfstring{calculate\+\_\+stop\+\_\+distances()}{calculate\_stop\_distances()}}
+{\footnotesize\ttfamily void calculate\+\_\+stop\+\_\+distances (\begin{DoxyParamCaption}\item[{std\+::string \&}]{dbname }\end{DoxyParamCaption})}
+
+Compute the shape distance traveled for each stop along a route. 
+\begin{DoxyParams}{Parameters}
+{\em dbname} & The database to connect to \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{load__gtfs_8cpp_a4f311128b9bf5549011dc5d2a288a0b0}\label{load__gtfs_8cpp_a4f311128b9bf5549011dc5d2a288a0b0}} 
 \index{load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}!convert\+\_\+shapes@{convert\+\_\+shapes}}
 \index{convert\+\_\+shapes@{convert\+\_\+shapes}!load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}}

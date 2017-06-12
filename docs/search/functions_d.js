@@ -7,5 +7,7 @@ var searchData=
   ['shape',['Shape',['../classgtfs_1_1Shape.html#ace6a58f57452ab0d2830b518a0ed2bde',1,'gtfs::Shape']]],
   ['shapept',['ShapePt',['../structgtfs_1_1ShapePt.html#a34e7da183770e2ab8360e286596ff18a',1,'gtfs::ShapePt']]],
   ['shapesegment',['ShapeSegment',['../structgtfs_1_1ShapeSegment.html#af1bdb1504d16a49ab6ac8ea34da59c5f',1,'gtfs::ShapeSegment']]],
+  ['stop',['Stop',['../classgtfs_1_1Stop.html#ac2654c54aaf615ad670c1f9c0c2fe729',1,'gtfs::Stop']]],
+  ['stoptime',['StopTime',['../structgtfs_1_1StopTime.html#adb27c1b3ad66cdc37e4a78338ad2b1a5',1,'gtfs::StopTime']]],
   ['system',['system',['../load__gtfs_8cpp.html#acc289d9bfee4c154322662aef55c5438',1,'load_gtfs.cpp']]]
 ];

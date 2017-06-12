@@ -10,7 +10,7 @@ var searchData=
   ['shape_5fdist_5ftraveled',['shape_dist_traveled',['../structgtfs_1_1RouteStop.html#ab738c008a00eab17953ab124a86ca207',1,'gtfs::RouteStop::shape_dist_traveled()'],['../structgtfs_1_1ShapeSegment.html#a64afdd03235b9bc256fc18652c6f9c47',1,'gtfs::ShapeSegment::shape_dist_traveled()']]],
   ['shapept',['ShapePt',['../structgtfs_1_1ShapePt.html',1,'gtfs::ShapePt'],['../structgtfs_1_1ShapePt.html#a34e7da183770e2ab8360e286596ff18a',1,'gtfs::ShapePt::ShapePt()']]],
   ['shapesegment',['ShapeSegment',['../structgtfs_1_1ShapeSegment.html',1,'gtfs::ShapeSegment'],['../structgtfs_1_1ShapeSegment.html#af1bdb1504d16a49ab6ac8ea34da59c5f',1,'gtfs::ShapeSegment::ShapeSegment()']]],
-  ['stop',['Stop',['../classgtfs_1_1Stop.html',1,'gtfs::Stop'],['../structgtfs_1_1RouteStop.html#ae14c110356572344748f08c07fea1b0c',1,'gtfs::RouteStop::stop()'],['../structgtfs_1_1StopTime.html#a258bc40f919b9d804797d7d75f0c0eca',1,'gtfs::StopTime::stop()']]],
-  ['stoptime',['StopTime',['../structgtfs_1_1StopTime.html',1,'gtfs']]],
+  ['stop',['Stop',['../classgtfs_1_1Stop.html',1,'gtfs::Stop'],['../classgtfs_1_1Stop.html#ac2654c54aaf615ad670c1f9c0c2fe729',1,'gtfs::Stop::Stop()'],['../structgtfs_1_1RouteStop.html#af70ced2604121bbeb159da66bbd00c64',1,'gtfs::RouteStop::stop()'],['../structgtfs_1_1StopTime.html#a586702c54a1ad350d486c6639558b4ca',1,'gtfs::StopTime::stop()']]],
+  ['stoptime',['StopTime',['../structgtfs_1_1StopTime.html',1,'gtfs::StopTime'],['../structgtfs_1_1StopTime.html#adb27c1b3ad66cdc37e4a78338ad2b1a5',1,'gtfs::StopTime::StopTime()']]],
   ['system',['system',['../load__gtfs_8cpp.html#acc289d9bfee4c154322662aef55c5438',1,'load_gtfs.cpp']]]
 ];

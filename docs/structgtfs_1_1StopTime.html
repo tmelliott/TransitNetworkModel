@@ -63,6 +63,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="structgtfs_1_1StopTime-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -71,19 +72,16 @@ $(function() {
 <div class="contents">
 
 <p><code>#include &lt;<a class="el" href="gtfs_8h_source.html">gtfs.h</a>&gt;</code></p>
-<div class="dynheader">
-Collaboration diagram for gtfs::StopTime:</div>
-<div class="dyncontent">
-<div class="center"><img src="structgtfs_1_1StopTime__coll__graph.png" border="0" usemap="#gtfs_1_1StopTime_coll__map" alt="Collaboration graph"/></div>
-<map name="gtfs_1_1StopTime_coll__map" id="gtfs_1_1StopTime_coll__map">
-<area shape="rect" id="node2" href="classgtfs_1_1Stop.html" title="gtfs::Stop" alt="" coords="20,5,99,32"/>
-</map>
-<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:adb27c1b3ad66cdc37e4a78338ad2b1a5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structgtfs_1_1StopTime.html#adb27c1b3ad66cdc37e4a78338ad2b1a5">StopTime</a> (std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Stop.html">Stop</a> &gt; <a class="el" href="structgtfs_1_1StopTime.html#a586702c54a1ad350d486c6639558b4ca">stop</a>, std::string &amp;arrival, std::string &amp;departure)</td></tr>
+<tr class="separator:adb27c1b3ad66cdc37e4a78338ad2b1a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a258bc40f919b9d804797d7d75f0c0eca"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classgtfs_1_1Stop.html">Stop</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structgtfs_1_1StopTime.html#a258bc40f919b9d804797d7d75f0c0eca">stop</a></td></tr>
-<tr class="separator:a258bc40f919b9d804797d7d75f0c0eca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a586702c54a1ad350d486c6639558b4ca"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Stop.html">Stop</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structgtfs_1_1StopTime.html#a586702c54a1ad350d486c6639558b4ca">stop</a></td></tr>
+<tr class="separator:a586702c54a1ad350d486c6639558b4ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a994ec898edd96675200f759acd76a57c"><td class="memItemLeft" align="right" valign="top">boost::posix_time::time_duration&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structgtfs_1_1StopTime.html#a994ec898edd96675200f759acd76a57c">arrival_time</a></td></tr>
 <tr class="separator:a994ec898edd96675200f759acd76a57c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad11c398eca36ff99f0934883141de3c9"><td class="memItemLeft" align="right" valign="top">boost::posix_time::time_duration&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structgtfs_1_1StopTime.html#ad11c398eca36ff99f0934883141de3c9">departure_time</a></td></tr>
@@ -92,9 +90,52 @@ Public Attributes</h2></td></tr>
 <tr class="separator:af8cc780329a837a49a5d6af60b74b9bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>An object of the class represents an instance of a trip arriving at a stop.</p>
-<p>NOTE: this may be converted to a struct: {string stop_id, uint64_t arrival_time, uint64_t departure_time, bool layover}. </p>
-</div><h2 class="groupheader">Member Data Documentation</h2>
+<div class="textblock"><p>A struct representing an instance of a trip arriving at a stop. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="adb27c1b3ad66cdc37e4a78338ad2b1a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb27c1b3ad66cdc37e4a78338ad2b1a5">&#9670;&nbsp;</a></span>StopTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">gtfs::StopTime::StopTime </td>
+          <td>(</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Stop.html">Stop</a> &gt;&#160;</td>
+          <td class="paramname"><em>stop</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string &amp;&#160;</td>
+          <td class="paramname"><em>arrival</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string &amp;&#160;</td>
+          <td class="paramname"><em>departure</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Constructor for a <a class="el" href="structgtfs_1_1StopTime.html">StopTime</a> struct </p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
 <a id="a994ec898edd96675200f759acd76a57c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a994ec898edd96675200f759acd76a57c">&#9670;&nbsp;</a></span>arrival_time</h2>
 
@@ -140,14 +181,14 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a258bc40f919b9d804797d7d75f0c0eca"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a258bc40f919b9d804797d7d75f0c0eca">&#9670;&nbsp;</a></span>stop</h2>
+<a id="a586702c54a1ad350d486c6639558b4ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a586702c54a1ad350d486c6639558b4ca">&#9670;&nbsp;</a></span>stop</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classgtfs_1_1Stop.html">Stop</a>* gtfs::StopTime::stop</td>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="classgtfs_1_1Stop.html">Stop</a>&gt; gtfs::StopTime::stop</td>
         </tr>
       </table>
 </div><div class="memdoc">

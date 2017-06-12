@@ -292,13 +292,23 @@ bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> >
 	return true;
 }
 
-
+/**
+ * Start timer.
+ * @param clock a CPU clock
+ * @param wall  a wall clock
+ */
 void time_start (std::clock_t& clock, std::chrono::high_resolution_clock::time_point& wall) {
 	clock = std::clock ();
 	wall  = std::chrono::high_resolution_clock::now ();
 	std::cout << "\n\n >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Timer started\n";
 	std::cout.flush ();
 };
+
+/**
+ * End a timer and print the results.
+ * @param clock a CPU clock
+ * @param wall  a wall clock
+ */
 void time_end (std::clock_t& clock, std::chrono::high_resolution_clock::time_point& wall) {
 	auto clockend = std::clock ();
 	auto wallend  = std::chrono::high_resolution_clock::now ();

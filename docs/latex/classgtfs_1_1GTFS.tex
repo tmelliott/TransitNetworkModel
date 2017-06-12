@@ -17,6 +17,8 @@ std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Shape}{Shape} $>$ \hyperlink{c
 \item 
 std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Segment}{Segment} $>$ \hyperlink{classgtfs_1_1GTFS_afb9b3152a524f393c4414611dbeeba48}{get\+\_\+segment} (unsigned long s) const
 \item 
+std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Stop}{Stop} $>$ \hyperlink{classgtfs_1_1GTFS_a34304835b203901a972d40cc4f1d060a}{get\+\_\+stop} (std\+::string \&s) const
+\item 
 std\+::unordered\+\_\+map$<$ std\+::string, std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Route}{Route} $>$ $>$ \hyperlink{classgtfs_1_1GTFS_aef6a88c15cdf8bf788e41c81a14ecc76}{get\+\_\+routes} (void)
 \item 
 std\+::unordered\+\_\+map$<$ std\+::string, std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Trip}{Trip} $>$ $>$ \hyperlink{classgtfs_1_1GTFS_ad526fc627fe1ce81b8a669f6187be0c0}{get\+\_\+trips} (void)
@@ -24,6 +26,8 @@ std\+::unordered\+\_\+map$<$ std\+::string, std\+::shared\+\_\+ptr$<$ \hyperlink
 std\+::unordered\+\_\+map$<$ std\+::string, std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Shape}{Shape} $>$ $>$ \hyperlink{classgtfs_1_1GTFS_a91ada6a3f02e3ee9b6a723a6c6fc50af}{get\+\_\+shapes} (void)
 \item 
 std\+::unordered\+\_\+map$<$ unsigned long, std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Segment}{Segment} $>$ $>$ \hyperlink{classgtfs_1_1GTFS_ae124db38217498c5e1090447ccf11953}{get\+\_\+segments} (void)
+\item 
+std\+::unordered\+\_\+map$<$ std\+::string, std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Stop}{Stop} $>$ $>$ \hyperlink{classgtfs_1_1GTFS_a33a81248120e12d5a5d52a92821b827e}{get\+\_\+stops} (void)
 \end{DoxyCompactItemize}
 
 
@@ -128,6 +132,29 @@ a \hyperlink{classgtfs_1_1Shape}{Shape} object, or null pointer if it wasn\textq
 
 \begin{DoxyReturn}{Returns}
 an unordered map of \hyperlink{classgtfs_1_1Shape}{Shape} objects 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classgtfs_1_1GTFS_a34304835b203901a972d40cc4f1d060a}\label{classgtfs_1_1GTFS_a34304835b203901a972d40cc4f1d060a}} 
+\index{gtfs\+::\+G\+T\+FS@{gtfs\+::\+G\+T\+FS}!get\+\_\+stop@{get\+\_\+stop}}
+\index{get\+\_\+stop@{get\+\_\+stop}!gtfs\+::\+G\+T\+FS@{gtfs\+::\+G\+T\+FS}}
+\subsubsection{\texorpdfstring{get\+\_\+stop()}{get\_stop()}}
+{\footnotesize\ttfamily std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Stop}{Stop} $>$ gtfs\+::\+G\+T\+F\+S\+::get\+\_\+stop (\begin{DoxyParamCaption}\item[{std\+::string \&}]{s }\end{DoxyParamCaption}) const}
+
+Load a \hyperlink{classgtfs_1_1Stop}{Stop} object. 
+\begin{DoxyParams}{Parameters}
+{\em s} & the ID of the stop we want \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a \hyperlink{classgtfs_1_1Stop}{Stop} object, or null pointer if it wasn\textquotesingle{}t found 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classgtfs_1_1GTFS_a33a81248120e12d5a5d52a92821b827e}\label{classgtfs_1_1GTFS_a33a81248120e12d5a5d52a92821b827e}} 
+\index{gtfs\+::\+G\+T\+FS@{gtfs\+::\+G\+T\+FS}!get\+\_\+stops@{get\+\_\+stops}}
+\index{get\+\_\+stops@{get\+\_\+stops}!gtfs\+::\+G\+T\+FS@{gtfs\+::\+G\+T\+FS}}
+\subsubsection{\texorpdfstring{get\+\_\+stops()}{get\_stops()}}
+{\footnotesize\ttfamily std\+::unordered\+\_\+map$<$std\+::string, std\+::shared\+\_\+ptr$<$\hyperlink{classgtfs_1_1Stop}{Stop}$>$ $>$ gtfs\+::\+G\+T\+F\+S\+::get\+\_\+stops (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+an unordered map of \hyperlink{classgtfs_1_1Stop}{Stop} objects 
 \end{DoxyReturn}
 \mbox{\Hypertarget{classgtfs_1_1GTFS_aec86fae3dee1e13f541798266fb2317e}\label{classgtfs_1_1GTFS_aec86fae3dee1e13f541798266fb2317e}} 
 \index{gtfs\+::\+G\+T\+FS@{gtfs\+::\+G\+T\+FS}!get\+\_\+trip@{get\+\_\+trip}}

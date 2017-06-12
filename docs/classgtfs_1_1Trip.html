@@ -90,6 +90,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ac4c80cbf34f7c715104cc1c33b082f58"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b6cc135946d7e7db7bb35951987e35c"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Route.html">Route</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Trip.html#a2b6cc135946d7e7db7bb35951987e35c">get_route</a> (void)</td></tr>
 <tr class="separator:a2b6cc135946d7e7db7bb35951987e35c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b9d68b9d1c6942b839cd8599ed6a339"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="structgtfs_1_1StopTime.html">StopTime</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Trip.html#a6b9d68b9d1c6942b839cd8599ed6a339">get_stoptimes</a> (void) const</td></tr>
+<tr class="separator:a6b9d68b9d1c6942b839cd8599ed6a339"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a756ff7d8e17f4eaa520f6314b5bb07"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Trip.html#a2a756ff7d8e17f4eaa520f6314b5bb07">add_stoptimes</a> (std::vector&lt; <a class="el" href="structgtfs_1_1StopTime.html">StopTime</a> &gt; &amp;st)</td></tr>
+<tr class="separator:a2a756ff7d8e17f4eaa520f6314b5bb07"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>An object of this class represents a unique TRIP in the <a class="el" href="classgtfs_1_1GTFS.html">GTFS</a> schedule.</p>
@@ -125,6 +129,38 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a2a756ff7d8e17f4eaa520f6314b5bb07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a756ff7d8e17f4eaa520f6314b5bb07">&#9670;&nbsp;</a></span>add_stoptimes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void gtfs::Trip::add_stoptimes </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structgtfs_1_1StopTime.html">StopTime</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>st</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Add <a class="el" href="classgtfs_1_1Stop.html">Stop</a> Times to a trip </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">st</td><td>vector of <a class="el" href="structgtfs_1_1StopTime.html">StopTime</a> structs </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="ac4c80cbf34f7c715104cc1c33b082f58"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac4c80cbf34f7c715104cc1c33b082f58">&#9670;&nbsp;</a></span>get_id()</h2>
 
@@ -176,6 +212,33 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>a pointer to the trip's route </dd></dl>
+
+</div>
+</div>
+<a id="a6b9d68b9d1c6942b839cd8599ed6a339"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b9d68b9d1c6942b839cd8599ed6a339">&#9670;&nbsp;</a></span>get_stoptimes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt;<a class="el" href="structgtfs_1_1StopTime.html">StopTime</a>&gt;&amp; gtfs::Trip::get_stoptimes </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>vector of <a class="el" href="structgtfs_1_1StopTime.html">StopTime</a> structs for the trip </dd></dl>
 
 </div>
 </div>

@@ -30,6 +30,10 @@ Collaboration diagram for gtfs\+:\+:Trip\+:\nopagebreak
 std\+::string \hyperlink{classgtfs_1_1Trip_ac4c80cbf34f7c715104cc1c33b082f58}{get\+\_\+id} (void) const
 \item 
 std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Route}{Route} $>$ \hyperlink{classgtfs_1_1Trip_a2b6cc135946d7e7db7bb35951987e35c}{get\+\_\+route} (void)
+\item 
+const std\+::vector$<$ \hyperlink{structgtfs_1_1StopTime}{Stop\+Time} $>$ \& \hyperlink{classgtfs_1_1Trip_a6b9d68b9d1c6942b839cd8599ed6a339}{get\+\_\+stoptimes} (void) const
+\item 
+void \hyperlink{classgtfs_1_1Trip_a2a756ff7d8e17f4eaa520f6314b5bb07}{add\+\_\+stoptimes} (std\+::vector$<$ \hyperlink{structgtfs_1_1StopTime}{Stop\+Time} $>$ \&st)
 \end{DoxyCompactItemize}
 
 
@@ -51,6 +55,17 @@ Constructor for a trip object, taking an ID and a route pointer. \begin{DoxyRetu
 
 
 \subsection{Member Function Documentation}
+\mbox{\Hypertarget{classgtfs_1_1Trip_a2a756ff7d8e17f4eaa520f6314b5bb07}\label{classgtfs_1_1Trip_a2a756ff7d8e17f4eaa520f6314b5bb07}} 
+\index{gtfs\+::\+Trip@{gtfs\+::\+Trip}!add\+\_\+stoptimes@{add\+\_\+stoptimes}}
+\index{add\+\_\+stoptimes@{add\+\_\+stoptimes}!gtfs\+::\+Trip@{gtfs\+::\+Trip}}
+\subsubsection{\texorpdfstring{add\+\_\+stoptimes()}{add\_stoptimes()}}
+{\footnotesize\ttfamily void gtfs\+::\+Trip\+::add\+\_\+stoptimes (\begin{DoxyParamCaption}\item[{std\+::vector$<$ \hyperlink{structgtfs_1_1StopTime}{Stop\+Time} $>$ \&}]{st }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Add \hyperlink{classgtfs_1_1Stop}{Stop} Times to a trip 
+\begin{DoxyParams}{Parameters}
+{\em st} & vector of \hyperlink{structgtfs_1_1StopTime}{Stop\+Time} structs \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{classgtfs_1_1Trip_ac4c80cbf34f7c715104cc1c33b082f58}\label{classgtfs_1_1Trip_ac4c80cbf34f7c715104cc1c33b082f58}} 
 \index{gtfs\+::\+Trip@{gtfs\+::\+Trip}!get\+\_\+id@{get\+\_\+id}}
 \index{get\+\_\+id@{get\+\_\+id}!gtfs\+::\+Trip@{gtfs\+::\+Trip}}
@@ -68,6 +83,15 @@ the trip\textquotesingle{}s ID
 
 \begin{DoxyReturn}{Returns}
 a pointer to the trip\textquotesingle{}s route 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classgtfs_1_1Trip_a6b9d68b9d1c6942b839cd8599ed6a339}\label{classgtfs_1_1Trip_a6b9d68b9d1c6942b839cd8599ed6a339}} 
+\index{gtfs\+::\+Trip@{gtfs\+::\+Trip}!get\+\_\+stoptimes@{get\+\_\+stoptimes}}
+\index{get\+\_\+stoptimes@{get\+\_\+stoptimes}!gtfs\+::\+Trip@{gtfs\+::\+Trip}}
+\subsubsection{\texorpdfstring{get\+\_\+stoptimes()}{get\_stoptimes()}}
+{\footnotesize\ttfamily const std\+::vector$<$\hyperlink{structgtfs_1_1StopTime}{Stop\+Time}$>$\& gtfs\+::\+Trip\+::get\+\_\+stoptimes (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+vector of \hyperlink{structgtfs_1_1StopTime}{Stop\+Time} structs for the trip 
 \end{DoxyReturn}
 
 

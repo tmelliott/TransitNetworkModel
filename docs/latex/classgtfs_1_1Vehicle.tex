@@ -23,7 +23,11 @@ const std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Trip}{Trip} $>$ \& \hype
 \item 
 const \hyperlink{classgps_1_1Coord}{gps\+::\+Coord} \& \hyperlink{classgtfs_1_1Vehicle_a108b44eeddcd90ebae8f6391f157c503}{get\+\_\+position} () const
 \item 
+const uint64\+\_\+t \& \hyperlink{classgtfs_1_1Vehicle_af064609446d9cde5b1a11e9a072eac4b}{get\+\_\+timestamp} () const
+\item 
 int \hyperlink{classgtfs_1_1Vehicle_a23c0a191559e4066423d5f3cbfb70b46}{get\+\_\+delta} () const
+\item 
+bool \hyperlink{classgtfs_1_1Vehicle_ab956418d159120dd8b301d13d6fe6ec8}{is\+\_\+initialized} () const
 \item 
 void \hyperlink{classgtfs_1_1Vehicle_a4baee648ab1db5b69aa2ffef7203c2bf}{update} (\hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&rng)
 \item 
@@ -34,6 +38,8 @@ void \hyperlink{classgtfs_1_1Vehicle_ae9944f06fb0bde02f2d7c21f2dc33787}{update} 
 unsigned long \hyperlink{classgtfs_1_1Vehicle_aa9087e973a9821f384ec47f51bdcedc7}{allocate\+\_\+id} ()
 \item 
 void \hyperlink{classgtfs_1_1Vehicle_a8367fc70a64b7e596422f880dbff1193}{resample} (\hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&rng)
+\item 
+void \hyperlink{classgtfs_1_1Vehicle_a63474849e632ce31730b120debe50792}{reset} (void)
 \end{DoxyCompactItemize}
 \subsection*{Public Attributes}
 \begin{DoxyCompactItemize}
@@ -135,7 +141,16 @@ vector of particle references (so they can be mofidied ...)
 \subsubsection{\texorpdfstring{get\+\_\+position()}{get\_position()}}
 {\footnotesize\ttfamily const \hyperlink{classgps_1_1Coord}{gps\+::\+Coord}\& gtfs\+::\+Vehicle\+::get\+\_\+position (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
-Return the vehicle\textquotesingle{}s position \mbox{\Hypertarget{classgtfs_1_1Vehicle_a616c83927f0d2d513d33277a9ebd3537}\label{classgtfs_1_1Vehicle_a616c83927f0d2d513d33277a9ebd3537}} 
+Return the vehicle\textquotesingle{}s position \mbox{\Hypertarget{classgtfs_1_1Vehicle_af064609446d9cde5b1a11e9a072eac4b}\label{classgtfs_1_1Vehicle_af064609446d9cde5b1a11e9a072eac4b}} 
+\index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}!get\+\_\+timestamp@{get\+\_\+timestamp}}
+\index{get\+\_\+timestamp@{get\+\_\+timestamp}!gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}}
+\subsubsection{\texorpdfstring{get\+\_\+timestamp()}{get\_timestamp()}}
+{\footnotesize\ttfamily const uint64\+\_\+t\& gtfs\+::\+Vehicle\+::get\+\_\+timestamp (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the time the observation was last taken 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classgtfs_1_1Vehicle_a616c83927f0d2d513d33277a9ebd3537}\label{classgtfs_1_1Vehicle_a616c83927f0d2d513d33277a9ebd3537}} 
 \index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}!get\+\_\+trip@{get\+\_\+trip}}
 \index{get\+\_\+trip@{get\+\_\+trip}!gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}}
 \subsubsection{\texorpdfstring{get\+\_\+trip()}{get\_trip()}}
@@ -143,6 +158,15 @@ Return the vehicle\textquotesingle{}s position \mbox{\Hypertarget{classgtfs_1_1V
 
 \begin{DoxyReturn}{Returns}
 a pointer to the vehicle\textquotesingle{}s trip object 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classgtfs_1_1Vehicle_ab956418d159120dd8b301d13d6fe6ec8}\label{classgtfs_1_1Vehicle_ab956418d159120dd8b301d13d6fe6ec8}} 
+\index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}!is\+\_\+initialized@{is\+\_\+initialized}}
+\index{is\+\_\+initialized@{is\+\_\+initialized}!gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}}
+\subsubsection{\texorpdfstring{is\+\_\+initialized()}{is\_initialized()}}
+{\footnotesize\ttfamily bool gtfs\+::\+Vehicle\+::is\+\_\+initialized (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+logical, if F\+A\+L\+SE it means the vehicle needs to be initialized 
 \end{DoxyReturn}
 \mbox{\Hypertarget{classgtfs_1_1Vehicle_a8367fc70a64b7e596422f880dbff1193}\label{classgtfs_1_1Vehicle_a8367fc70a64b7e596422f880dbff1193}} 
 \index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}!resample@{resample}}
@@ -152,7 +176,13 @@ a pointer to the vehicle\textquotesingle{}s trip object
 
 Perform weighted resampling with replacement.
 
-Use the computed particle weights to resample, with replacement, the particles associated with the vehicle. \mbox{\Hypertarget{classgtfs_1_1Vehicle_a47ceaf4bb31c01dd4b26a12f1b7b7089}\label{classgtfs_1_1Vehicle_a47ceaf4bb31c01dd4b26a12f1b7b7089}} 
+Use the computed particle weights to resample, with replacement, the particles associated with the vehicle. \mbox{\Hypertarget{classgtfs_1_1Vehicle_a63474849e632ce31730b120debe50792}\label{classgtfs_1_1Vehicle_a63474849e632ce31730b120debe50792}} 
+\index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}!reset@{reset}}
+\index{reset@{reset}!gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}}
+\subsubsection{\texorpdfstring{reset()}{reset()}}
+{\footnotesize\ttfamily void gtfs\+::\+Vehicle\+::reset (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+Reset vehicle\textquotesingle{}s particles to zero-\/state. \mbox{\Hypertarget{classgtfs_1_1Vehicle_a47ceaf4bb31c01dd4b26a12f1b7b7089}\label{classgtfs_1_1Vehicle_a47ceaf4bb31c01dd4b26a12f1b7b7089}} 
 \index{gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}!set\+\_\+trip@{set\+\_\+trip}}
 \index{set\+\_\+trip@{set\+\_\+trip}!gtfs\+::\+Vehicle@{gtfs\+::\+Vehicle}}
 \subsubsection{\texorpdfstring{set\+\_\+trip()}{set\_trip()}}

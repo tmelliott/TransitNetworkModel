@@ -63,6 +63,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classgtfs_1_1Stop-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">gtfs::Stop Class Reference</div>  </div>
@@ -70,11 +71,107 @@ $(function() {
 <div class="contents">
 
 <p><code>#include &lt;<a class="el" href="gtfs_8h_source.html">gtfs.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:ac2654c54aaf615ad670c1f9c0c2fe729"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Stop.html#ac2654c54aaf615ad670c1f9c0c2fe729">Stop</a> (std::string &amp;id, <a class="el" href="classgps_1_1Coord.html">gps::Coord</a> &amp;pos)</td></tr>
+<tr class="separator:ac2654c54aaf615ad670c1f9c0c2fe729"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95f4a615a6e06eed430a14d783557a29"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Stop.html#a95f4a615a6e06eed430a14d783557a29">get_id</a> (void) const</td></tr>
+<tr class="separator:a95f4a615a6e06eed430a14d783557a29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdd72b43e30c15819f16807b5c6a45d3"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classgps_1_1Coord.html">gps::Coord</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Stop.html#acdd72b43e30c15819f16807b5c6a45d3">get_pos</a> (void) const</td></tr>
+<tr class="separator:acdd72b43e30c15819f16807b5c6a45d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>An object of this class represents a physical stop.</p>
 <p>Stops have a position on a map, as well as dwell time parameters which can be implemented in the model at a later date to help differentiate busy and remote stops. </p>
-</div><hr/>The documentation for this class was generated from the following file:<ul>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="ac2654c54aaf615ad670c1f9c0c2fe729"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2654c54aaf615ad670c1f9c0c2fe729">&#9670;&nbsp;</a></span>Stop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">gtfs::Stop::Stop </td>
+          <td>(</td>
+          <td class="paramtype">std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classgps_1_1Coord.html">gps::Coord</a> &amp;&#160;</td>
+          <td class="paramname"><em>pos</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Constructor for a stop object. </p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a95f4a615a6e06eed430a14d783557a29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95f4a615a6e06eed430a14d783557a29">&#9670;&nbsp;</a></span>get_id()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string&amp; gtfs::Stop::get_id </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>the stop's ID </dd></dl>
+
+</div>
+</div>
+<a id="acdd72b43e30c15819f16807b5c6a45d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdd72b43e30c15819f16807b5c6a45d3">&#9670;&nbsp;</a></span>get_pos()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classgps_1_1Coord.html">gps::Coord</a>&amp; gtfs::Stop::get_pos </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>the stop's GPS position </dd></dl>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
 <li>gtfs/<a class="el" href="gtfs_8h_source.html">gtfs.h</a></li>
+<li>gtfs/Stop.cpp</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

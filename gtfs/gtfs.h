@@ -137,6 +137,7 @@ namespace gtfs {
 		/** @return the time the observation was last taken */
 		const uint64_t& get_timestamp () const { return timestamp; };
 		int get_delta () const;
+		/** @return logical, if FALSE it means the vehicle needs to be initialized */
 		bool is_initialized () const { return initialized; };
 
 
@@ -281,6 +282,11 @@ namespace gtfs {
 
 		// --- SETTERS
 		void add_trip (std::shared_ptr<Trip> trip);
+
+		/**
+		 * Add stops to a route.
+		 * @param s a vector of RouteStop structs.
+		 */
 		void add_stops (std::vector<RouteStop>& s) { stops = s; };
 	};
 
@@ -291,7 +297,14 @@ namespace gtfs {
 		std::shared_ptr<Stop> stop;  /*!< a pointer to the relevant stop */
 		double shape_dist_traveled;  /*!< how far along the route this stop is */
 
+		/**
+		 * Constructor for a RouteStop struct, without a distance (set to 0).
+		 */
 		RouteStop (std::shared_ptr<Stop> stop) : stop (stop), shape_dist_traveled (0) {};
+
+		/**
+		* Constructor for a RouteStop struct.
+		*/
 		RouteStop (std::shared_ptr<Stop> stop, double d) : stop (stop), shape_dist_traveled (d) {};
 	};
 
@@ -320,9 +333,14 @@ namespace gtfs {
 		std::string get_id (void) const { return id; };
 		/** @return a pointer to the trip's route */
 		std::shared_ptr<Route> get_route (void) { return route; };
+		/** @return vector of StopTime structs for the trip */
 		const std::vector<StopTime>& get_stoptimes (void) const { return stoptimes; };
 
 		// --- METHODS
+		/**
+		 * Add Stop Times to a trip
+		 * @param st vector of StopTime structs
+		 */
 		void add_stoptimes (std::vector<StopTime>& st) {
 			stoptimes = st;
 		}
@@ -501,7 +519,9 @@ namespace gtfs {
 			  gps::Coord& pos);
 
 		// --- GETTERS
+		/** @return the stop's ID */
 		const std::string& get_id (void) const { return id; };
+		/** @return the stop's GPS position */
 		const gps::Coord& get_pos (void) const { return pos; };
 
 		// --- METHODS
@@ -520,6 +540,7 @@ namespace gtfs {
 	   				              the bus doesn't leave until the
 								  scheduled departure time */
 
+		/** Constructor for a StopTime struct */
 		StopTime (std::shared_ptr<Stop> stop,
 				  std::string& arrival,
 				  std::string& departure) : stop (stop) {
