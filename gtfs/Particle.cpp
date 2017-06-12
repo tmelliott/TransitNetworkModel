@@ -117,20 +117,20 @@ namespace gtfs {
 
 		std::clog << "   - " << *this << " -> ";
 
-		double sigv (2);
-		double vel = 0.0;
-		while (vel <= 0 || vel >= 30) vel = rng.rnorm () * sigv + velocity;
-		velocity = vel;
+		// --- Three phases
+		// PHASE ONE: initial wait time
+		transition_phase1 (rng);
 
-		double dmax = vehicle->get_trip ()->get_route ()
-			->get_shape ()->get_segments ().back ().segment->get_length ();
-		distance = distance + velocity * vehicle->get_delta ();
-		if (distance >= dmax) {
-			distance = dmax;
-			finished = true;
-		}
+		// PHASE TWO: system noise
+		transition_phase2 (rng);
+
+		// PHASE THREE: transition forward
+		transition_phase3 (rng);
+
+
 		std::clog << *this << " -> ";
 
+		// Done with transition; compute likelihood and finish.
 		calculate_likelihood ();
 		std::clog << log_likelihood <<  "\n";
 	};
@@ -146,11 +146,61 @@ namespace gtfs {
 		std::vector<double> z (x.projectFlat(vehicle->get_position ()));
 
 		double llhood = 0.0;
-		double sigy   = 5;
+		double sigy   = 10;
 		llhood -= log (2 * M_PI * sigy);
 		llhood -= (pow(z[0], 2) + pow(z[1], 2)) / (2 * pow(sigy, 2));
 
 		log_likelihood = llhood;
+	};
+
+	/**
+	 * Phase 1 of the particle's transition, involving determining initial
+	 * wait conditions.
+	 *
+	 * If the bus is at a stop, ensure it waits long enough.
+	 * Similarly for intersections, queue longer if needed.
+	 * Otherwise, there's no wait time.
+	 *
+	 * @param rng reference to the random number generator
+	 */
+	void Particle::transition_phase1 (sampling::RNG& rng) {
+
+	};
+
+	/**
+	 * Phase 2 of the particle's transition, involving adding random
+	 * system noise.
+	 *
+	 * @param rng reference to the random number generator
+	 */
+	void Particle::transition_phase2 (sampling::RNG& rng) {
+		double sigv (5);
+		double vel = 0.0;
+		while (vel <= 0 || vel >= 30) vel = rng.rnorm () * sigv + velocity;
+		velocity = vel;
+	};
+
+	/**
+	 * Phase 3 of the particle's transition, involving movement
+	 * until time's up.
+	 *
+	 * @param rng [description]
+	 */
+	void Particle::transition_phase3 (sampling::RNG& rng) {
+		double dmax;
+		if (vehicle->get_trip () && vehicle->get_trip ()->get_route () &&
+			vehicle->get_trip ()->get_route ()->get_shape () &&
+			vehicle->get_trip ()->get_route ()->get_shape ()->get_segments ().back ().segment) {
+			dmax = vehicle->get_trip ()->get_route ()
+				->get_shape ()->get_segments ().back ().segment->get_length ();
+		} else {
+			dmax = 0;
+		}
+		distance = distance + velocity * vehicle->get_delta ();
+		if (distance >= dmax) {
+			distance = dmax;
+			finished = true;
+		}
 	};
 
 }; // end namespace gtfs

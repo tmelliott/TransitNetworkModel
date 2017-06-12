@@ -90,6 +90,7 @@ namespace gtfs {
 			<< " - ts=" << timestamp
 			<< " (" << delta << " seconds since last observation)";
 		if (newtrip) std::cout << " - newtrip";
+		if (!initialized) std::cout << " - initialization required";
 		std::cout << "\n";
 
 		if (newtrip || !initialized) {
@@ -140,17 +141,23 @@ namespace gtfs {
 		}
 
 		// No particles near? Oh ...
-		std::vector<double> llh (particles.size ());
-		for (auto& p: particles) llh.push_back (p.get_likelihood ());
-		if (*std::max_element (llh.begin (), llh.end ()) < log(0.05)) {
-			initialized = false;
+		std::vector<double> lh;
+		lh.reserve (particles.size ());
+		for (auto& p: particles) lh.push_back (p.get_likelihood ());
+		if (*std::max_element (lh.begin (), lh.end ()) < -10) {
+			std::cout << "   - Reset vehicle (not close particles) "
+				<< " - max likelihood = exp(" << *std::max_element (lh.begin (), lh.end ())
+				<< ")\n";
+			reset ();
+
 			return;
 		}
 
 
 		// Resample them!
-		std::cout << "   - Resampling \n";
+		std::cout << "   - Resampling ";
 		resample (rng);
+		std::cout << "\n";
 
 		// Estimate parameters
 		double dbar = 0;
@@ -190,7 +197,7 @@ namespace gtfs {
 								  vp.position ().longitude ());
 		}
 		if (vp.has_timestamp () && timestamp != vp.timestamp ()) {
-			if (timestamp > 0) {
+			if (timestamp > 0 && timestamp < vp.timestamp ()) {
 				delta = vp.timestamp () - timestamp;
 			} else {
 				delta = 0;
@@ -267,8 +274,9 @@ namespace gtfs {
 		std::vector<double> lh;
 		lh.reserve (particles.size ());
 		for (auto& p: particles) lh.push_back (exp(p.get_likelihood ()));
-		std::cout << "Max likelihood: " << *std::max_element (lh.begin (), lh.end ()) << "\n";
-		if (*std::max_element (lh.begin (), lh.end ()) < 1.0 / particles.size ()) return;
+		std::cout << " > Max likelihood: " << *std::max_element (lh.begin (), lh.end ());
+		if (*std::max_element (lh.begin (), lh.end ()) < exp(-10)) return;
+
 		sampling::sample smp (lh);
 		std::vector<int> pkeep (smp.get (rng));
 
@@ -277,10 +285,27 @@ namespace gtfs {
 
 		// Copy new particles, incrementing their IDs (copy constructor does this)
 		particles.reserve(n_particles);
+		// std::cout << "\nKeep: ";
 		for (auto& i: pkeep) {
+			// std::cout << i << ", ";
 			particles.push_back(old_particles[i]);
 		}
+		std::cout << "\n";
 
+	};
+
+	/**
+	 * Reset vehicle's particles to zero-state.
+	 */
+	void Vehicle::reset () {
+		delta = 0;
+		timestamp = 0;
+		initialized = false;
+		particles.clear ();
+		particles.reserve(n_particles);
+		for (unsigned int i=0; i<n_particles; i++) {
+			particles.emplace_back(this);
+		}
 	};
 
 }; // end namespace gtfs

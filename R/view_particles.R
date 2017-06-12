@@ -2,14 +2,14 @@ library(RSQLite)
 
 con = dbConnect(SQLite(), "../gtfs.db")
 
-routes = dbGetQuery(con, "SELECT routes.route_id, routes.route_short_name as number, MAX(shapes.shape_dist_traveled + segments.length) AS len FROM routes, shapes, segments WHERE routes.shape_id=shapes.shape_id AND shapes.segment_id=segments.segment_id AND route_id LIKE '%v54.17' GROUP BY shapes.shape_id")
+routes = dbGetQuery(con, "SELECT routes.route_id, routes.route_short_name as number, MAX(shapes.shape_dist_traveled + segments.length) AS len FROM routes, shapes, segments WHERE routes.shape_id=shapes.shape_id AND shapes.segment_id=segments.segment_id AND route_id LIKE '%v54.27' GROUP BY shapes.shape_id")
 lens <- data.frame(len = routes[, "len"], num = routes[, "number"])
 rownames(lens) <- routes$route_id
 
 while (TRUE) {
     t0 = as.numeric(Sys.time()) - 5 * 60 ## last 5 mins
     try({
-        particles = dbGetQuery(con, sprintf("SELECT vehicle_id, (particles.trip_id) as trip_id, route_id, (distance) as distance, log_likelihood FROM particles, trips WHERE particles.trip_id=trips.trip_id AND timestamp > %s", t0))
+        particles = dbGetQuery(con, sprintf("SELECT vehicle_id, (particles.trip_id) as trip_id, route_id, (distance) as distance, log_likelihood, initialized FROM particles, trips WHERE particles.trip_id=trips.trip_id AND timestamp > %s", t0))
         #AND route_id IN (SELECT route_id FROM routes WHERE route_short_name IN ('274', '224', '277', '258'))")
     })
     particles$vehicle <- as.factor(particles$vehicle_id)
@@ -19,8 +19,10 @@ while (TRUE) {
         par(mar = c(5.1, 2.1, 1.1, 2.1))
         lh = exp(log_likelihood)
         wt = lh / sum(lh)
-        plot(progress, as.numeric(route), xlim = c(0, 100), pch = 19, cex = 2 * wt,
-             yaxs = "i", yaxt = "n", ylab = "", xaxs = "i", xlab = "Progress (%)")
+        plot(progress, as.numeric(route), xlim = c(0, 100), pch = 19, cex = 1,
+             col = ifelse(initialized==1, "#00990040", "#cccccc40"),
+             yaxt = "n", ylab = "", xaxs = "i", xlab = "Progress (%)")
+        points(progress, as.numeric(route), cex = 3 * wt, col = "#990000", pch = 19)
         axis(2, at = 1:length(levels(route)), lens[levels(route), "num"], las = 2, cex.axis = 0.4)
         axis(4, at = 1:length(levels(route)), lens[levels(route), "num"], las = 2, cex.axis = 0.4)
         abline(h = 1:length(levels(route)), lty = 3, col = "#cccccc")

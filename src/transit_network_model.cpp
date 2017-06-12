@@ -143,13 +143,13 @@ int main (int argc, char* argv[]) {
 
 			std::cout << "\n";
 			// -> triggers particle transition -> resample
-			std::vector<std::string> USEDtrips {"274", "224", "277", "258"};
+			std::vector<std::string> USEDtrips {"274", "277", "224", "222", "258", "NEX"};
 			time_start (clockstart, wallstart);
 			for (auto& v: vehicles) {
-				// if (std::find (USEDtrips.begin (), USEDtrips.end (),
-				// 			   v.second->get_trip ()->get_route ()->get_short_name ()) == USEDtrips.end ()) {
-				//     continue;
-			    // }
+				if (std::find (USEDtrips.begin (), USEDtrips.end (),
+							   v.second->get_trip ()->get_route ()->get_short_name ()) == USEDtrips.end ()) {
+				    continue;
+			    }
 				std::cout << "- Route " << v.second->get_trip ()->get_route ()->get_short_name () << "\n";
 				v.second->update (rng);
 			}
@@ -167,21 +167,32 @@ int main (int argc, char* argv[]) {
 			std::cout << "\n * Writing particles to db ...";
 			std::cout.flush ();
 			sqlite3* db;
+			sqlite3_stmt* stmt_del;
 			sqlite3_stmt* stmt_ins;
 			if (sqlite3_open (dbname.c_str (), &db)) {
 				fprintf(stderr, " * Can't open db connection: %s\n", sqlite3_errmsg (db));
 			} else {
-				sqlite3_exec (db, "DELETE FROM particles", NULL, NULL, NULL);
 				sqlite3_exec (db, "BEGIN IMMEDIATE", NULL, NULL, NULL);
+				sqlite3_exec (db, "DELETE FROM particles", NULL, NULL, NULL);
 
-				if (sqlite3_prepare_v2 (db, "INSERT INTO particles VALUES ($1,$2,$3,$4,$5,$6,$7,$8)",
+				// if (sqlite3_prepare_v2 (db, "DELETE FROM particles WHERE vehicle_id = $1",
+				// 						-1, &stmt_del, 0) != SQLITE_OK) {
+				// 	std::cerr << "\n  x Unable to prepare DELETE query ";
+				// }
+				if (sqlite3_prepare_v2 (db, "INSERT INTO particles VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)",
 					 	   					   -1, &stmt_ins, 0) != SQLITE_OK) {
 					std::cerr << "\n  x Unable to prepare INSERT query ";
 				} else {
 					// prepared OK
 					for (auto& v: vehicles) {
-						if (! v.second->is_initialized ()) continue;
+						// if (! v.second->is_initialized ()) continue;
 						std::string tid = v.second->get_trip ()->get_id ();//.c_str ();
+						// if (sqlite3_bind_text (stmt_del, 1, v.second->get_id ().c_str (),
+						// 					   -1, SQLITE_STATIC) != SQLITE_OK ||
+						//     sqlite3_step (stmt_del) != SQLITE_DONE) {
+						// 	std::cerr << "\n  x Unable to delete particles ";
+						// }
+						// sqlite3_reset (stmt_del);
 						// std::cout << tid.c_str () << "\n";
 						for (auto& p: v.second->get_particles ()) {
 							sqlite3_bind_int (stmt_ins, 1, p.get_id ());
@@ -192,6 +203,7 @@ int main (int argc, char* argv[]) {
 							sqlite3_bind_int64 (stmt_ins, 6, v.second->get_timestamp ());
 							sqlite3_bind_double (stmt_ins, 7, p.get_likelihood ());
 							sqlite3_bind_int (stmt_ins, 8, p.get_parent_id ());
+							sqlite3_bind_int (stmt_ins, 9, v.second->is_initialized ());
 
 							if (sqlite3_step (stmt_ins) != SQLITE_DONE) {
 								std::cerr << " x Error inserting value: " << sqlite3_errmsg (db);

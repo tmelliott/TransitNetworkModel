@@ -142,6 +142,7 @@ namespace gtfs {
 		void update (const transit_realtime::TripUpdate &tu, GTFS &gtfs);
 		unsigned long allocate_id ();
 		void resample (sampling::RNG &rng);
+		void reset (void);
 	};
 
 
@@ -169,6 +170,7 @@ namespace gtfs {
 		int queue_time;           /*!< cumulative time spent queuing at intersction `segment_index` */
 		uint64_t begin_time;      /*!< time at which bus started along segment `segment_index` */
 
+		int delta_t;              /*!< time this particular particle has left to travel */
 		double log_likelihood;    /*!< the likelihood of the particle, given the data */
 
 	public:
@@ -203,12 +205,17 @@ namespace gtfs {
 		/** @return the particle's begin time at segment `segment_index` */
 		const uint64_t& get_begin_time () const { return begin_time; };
 
+		/** @return the particle's remaining travel time */
+		int get_delta_t () const { return delta_t; };
 		/** @return the particle's likelihood */
 		const double& get_likelihood () const { return log_likelihood; };
 
 		// Methods
 		void initialize (sampling::uniform& unif, sampling::uniform& speed, sampling::RNG& rng);
 		void transition (sampling::RNG& rng);
+		void transition_phase1 (sampling::RNG& rng);
+		void transition_phase2 (sampling::RNG& rng);
+		void transition_phase3 (sampling::RNG& rng);
 		void calculate_likelihood (void);
 	};
 

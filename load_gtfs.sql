@@ -69,7 +69,8 @@ CREATE TABLE stop_times (
 	trip_id TEXT,
 	stop_sequence INT,
 	arrival_time TIME,
-	departure_time TIME
+	departure_time TIME,
+	shape_dist_traveled REAL
 );
 INSERT INTO stop_times
 	SELECT stop_id, trip_id, CAST(stop_sequence AS INT) AS stop_sequence, arrival_time, departure_time
@@ -86,5 +87,6 @@ CREATE TABLE particles (
 	velocity       REAL,
 	timestamp      TIMESTAMP,
 	log_likelihood REAL,
-	parent_id      BIGINT
+	parent_id      BIGINT,
+	initialized    BOOLEAN
 );
