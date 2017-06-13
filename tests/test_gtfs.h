@@ -23,5 +23,10 @@ public:
 	void testResample (void) {
 		gtfs::Vehicle& vr = v;
 		// do resample
+		vr.resample (rng);
+		TS_ASSERT_EQUALS (vr.get_particles ().size (), 1);
+		vr.n_particles = 10;
+		vr.resample (rng);
+		TS_ASSERT_EQUALS (vr.get_particles ().size (), 10);
 	};
 };

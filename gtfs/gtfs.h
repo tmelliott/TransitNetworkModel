@@ -55,8 +55,8 @@ namespace gtfs {
 	 */
 	class GTFS {
 	private:
-	    std::string version_;  /*!< when initialized, the version is set. */
 		std::string database_; /*!< the database file loaded into memory. */
+		std::string version_;  /*!< when initialized, the version is set. */
 
 		std::unordered_map<std::string, std::shared_ptr<Trip> > trips; /*!< A map of trip pointers */
 		std::unordered_map<std::string, std::shared_ptr<Route> > routes; /*!< A map of route pointers */
@@ -277,8 +277,9 @@ namespace gtfs {
 		const std::string& get_long_name (void) const { return route_long_name; };
 		/** @return the route's shape */
 		std::shared_ptr<Shape> get_shape () const;
-		/** @return the route's stops (incl. distance into trip) */
-		std::vector<RouteStop> get_stops () const { return stops; };
+		/** @return the route's stops so that they're modifiable (incl. distance into trip) */
+		std::vector<RouteStop>& get_stops () { return stops; };
+
 
 		// --- SETTERS
 		void add_trip (std::shared_ptr<Trip> trip);

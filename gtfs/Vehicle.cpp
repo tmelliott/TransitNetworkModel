@@ -20,7 +20,7 @@ namespace gtfs {
 	 *           the vehicle with
 	 */
 	Vehicle::Vehicle (std::string id, unsigned int n) :
-	id (id), n_particles (n), next_id (1), initialized (false) {
+	id (id), initialized (false), n_particles (n), next_id (1) {
 		std::clog << " ++ Created vehicle " << id << std::endl;
 
 		particles.reserve(n_particles);
@@ -275,19 +275,17 @@ namespace gtfs {
 		lh.reserve (particles.size ());
 		for (auto& p: particles) lh.push_back (exp(p.get_likelihood ()));
 		std::cout << " > Max likelihood: " << *std::max_element (lh.begin (), lh.end ());
-		if (*std::max_element (lh.begin (), lh.end ()) < exp(-10)) return;
+		// if (*std::max_element (lh.begin (), lh.end ()) < exp(-10)) return;
 
 		sampling::sample smp (lh);
-		std::vector<int> pkeep (smp.get (rng));
+		std::vector<int> pkeep (smp.get (n_particles, rng));
 
 		// Move old particles into temporary holding vector
 		std::vector<gtfs::Particle> old_particles = std::move(particles);
 
 		// Copy new particles, incrementing their IDs (copy constructor does this)
 		particles.reserve(n_particles);
-		// std::cout << "\nKeep: ";
 		for (auto& i: pkeep) {
-			// std::cout << i << ", ";
 			particles.push_back(old_particles[i]);
 		}
 		std::cout << "\n";

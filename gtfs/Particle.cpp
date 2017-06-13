@@ -16,20 +16,23 @@ namespace gtfs {
 	*
 	* @param v the vehicle object pointer to which the particle belongs
 	*/
-	Particle::Particle (Vehicle* v) : vehicle (v), parent_id (0) {
-		id = v->allocate_id ();
+	Particle::Particle (Vehicle* v) :
+		id (v->allocate_id ()),
+		parent_id (0),
+		distance (0),
+		velocity (0),
+		finished (false),
+		stop_index (0),
+		arrival_time (0),
+		dwell_time (0),
+		segment_index (0),
+		queue_time (0),
+		begin_time (0),
+		log_likelihood (-INFINITY),
+		vehicle (v) {
+
 		std::clog << " + Created particle for vehicle " << v->get_id ()
 			<< " with id = " << id << "\n";
-		distance = 0;
-		velocity = 0;
-		finished = false;
-		stop_index = 0;
-		arrival_time = 0;
-		dwell_time = 0;
-		segment_index = 0;
-		queue_time = 0;
-		begin_time = 0;
-		log_likelihood = -INFINITY;
 	};
 
 	/**

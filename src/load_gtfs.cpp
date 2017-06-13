@@ -459,32 +459,108 @@ void calculate_stop_distances (std::string& dbname) {
 	gtfs::GTFS gtfs (dbname, v);
 	std::cout << " * GTFS database loaded     ";
 
+
+	sqlite3* db;
+	if (sqlite3_open (dbname.c_str (), &db)) {
+		fprintf(stderr, " * Can't open database: %s\n", sqlite3_errmsg(db));
+		return;
+	}
+	std::cout << " \n* Connected to database ";
+
+	sqlite3_stmt* stmt_upd;
+	if (sqlite3_prepare_v2 (db, "UPDATE stop_times SET shape_dist_traveled=$1 WHERE trip_id IN (SELECT trip_id FROM trips WHERE route_id=$2) AND stop_id=$3",
+		  					-1, &stmt_upd, 0) != SQLITE_OK) {
+		std::cerr << " x Unable to prepare UPDATE query :(";
+		return;
+	}
+
+	auto Nr = gtfs.get_routes ().size ();
+	unsigned int Ni = 0;
+	std::cout << "\n* Computing stop distances into trip "
+	<< "(" << Nr << " routes)\n";
 	// For each route
-	std::cout << "\n * Computing stop distances into trip for all routes "
-		<< "(" << gtfs.get_routes ().size () << ")";
 	for (auto& r: gtfs.get_routes ()) {
+		Ni++;
+		printf("  %*d%%\r", 3, (int)(100 * Ni / Nr));
+		std::cout.flush ();
 		std::shared_ptr<gtfs::Route> route = std::get<1> (r);
 		auto shape = route->get_shape ();
 		if (!shape) continue; // no shape associated with this route
 
-		// std::cout << "Trips: ";
-		// for (auto& t: route->get_trips ()) {
-		// 	std::cout << t->get_id () << "\n";
-		// 	int i=1;
-		// 	for (auto& st: t->get_stoptimes ()) {
-		// 		std::cout << i << ": "
-		// 			<< st.arrival_time << " - " << st.departure_time
-		// 			<< "\n";
-		// 		i++;
-		// 	}
-		// }
-		if (route->get_stops ().size () > 0) {
-			std::cout << "We need to add distances.";
-			for (auto& s: route->get_stops ()) {
-				std::cout << s.stop->get_id () << " [" << s.shape_dist_traveled << "m], ";
+		auto stops = route->get_stops ();
+		if (stops.size () == 0) continue; // No stops - skip!
+
+		auto segments = shape->get_segments ();
+		if (segments.size () == 0) continue;
+
+		// Travel along the route until the next stop is between STOP and STOP+1
+		unsigned int si = 0;
+		for (auto& s: segments) {
+			auto seg = s.segment;
+			if (!seg) break;
+			auto path = seg->get_path (); // sequence of ShapePt structs
+			if (path.size () == 0) break;
+			double dmin (s.shape_dist_traveled);
+
+			// Check the first point in the segment (likely only for first stop)
+			if (stops[si].stop->get_pos ().distanceTo (path[0].pt) < 1) {
+				stops[si].shape_dist_traveled = dmin + path[0].seg_dist_traveled;
+				// printf(" - Stop %*d [%*s]: %*d m\n",
+				// 	   3, si+1,
+				// 	   6, stops[si].stop->get_id ().c_str (),
+				// 	   6, (int)stops[si].shape_dist_traveled);
+				si ++;
+				if (si == stops.size ()) break;
+			}
+			// step through path
+			for (unsigned int i=1; i<path.size (); i++) {
+				// ---Consider stop is AT the point if distance < 1m (rounding error!)
+				// FIRST check stop I
+				if (stops[si].stop->get_pos ().distanceTo (path[i].pt) < 1) {
+					stops[si].shape_dist_traveled = dmin + path[i].seg_dist_traveled;
+					// printf(" - Stop %*d [%*s]: %*d m\n",
+					// 	   3, si+1,
+					// 	   6, stops[si].stop->get_id ().c_str (),
+					// 	   6, (int)stops[si].shape_dist_traveled);
+					si ++;
+					if (si == stops.size ()) break;
+
+					continue; // it wont be BEHIND this point!
+				}
+
+				/** THEN, see if stop lies between stop i-1 and stop i
+				 * actually, since AT joins route shapes to the stop,
+				 * we don't need to do this bit
+				 */
 			}
 		}
+
+		if (si != stops.size ()) break; // unable to get distance for all stops
+
+		// Now save the distances into the database for each trip
+		sqlite3_exec (db, "BEGIN", NULL, NULL, NULL);
+		for (auto& s: stops) {
+			if (sqlite3_bind_double (stmt_upd, 1, s.shape_dist_traveled) != SQLITE_OK ||
+				sqlite3_bind_text (stmt_upd, 2, route->get_id ().c_str (), -1, SQLITE_STATIC) != SQLITE_OK ||
+				sqlite3_bind_text (stmt_upd, 3, s.stop->get_id ().c_str (), -1, SQLITE_STATIC) != SQLITE_OK) {
+				std::cerr << "\n x Unable to bind parameters.";
+				return;
+			}
+			if (sqlite3_step (stmt_upd) != SQLITE_DONE) {
+				std::cerr << "\n x Unable to execute query: " << sqlite3_errmsg (db);
+				return;
+			}
+			sqlite3_reset (stmt_upd);
+
+			// std::cout << "(" << s.shape_dist_traveled << ","
+			// 	<< route->get_id () << "," << s.stop->get_id () << "), ";
+			// std::cout.flush ();
+		}
+		sqlite3_exec (db, "COMMIT", NULL, NULL, NULL);
+
 	}
+	sqlite3_finalize (stmt_upd);
+	sqlite3_close (db);
 
 	// for (auto& s: gtfs.get_stops ()) {
 	// 	std::shared_ptr<gtfs::Stop> stop = std::get<1> (s);
