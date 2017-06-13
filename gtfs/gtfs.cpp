@@ -177,7 +177,7 @@ namespace gtfs {
 			throw std::runtime_error ("Cannot prepare query.");
 		}
 		std::cout << " * [prepared] " << qry << "\n";
-		std::string qry_st ("SELECT stop_id, arrival_time, departure_time FROM stop_times WHERE trip_id=$1 ORDER BY stop_sequence");
+		std::string qry_st ("SELECT stop_id, arrival_time, departure_time, shape_dist_traveled FROM stop_times WHERE trip_id=$1 ORDER BY stop_sequence");
 		if (sqlite3_prepare_v2 (db, qry_st.c_str (), -1, &stmt_stoptimes, 0) != SQLITE_OK) {
 			std::cerr << " * Can't prepare query " << qry_st << "\n";
 			throw std::runtime_error ("Cannot prepare query.");
@@ -202,6 +202,7 @@ namespace gtfs {
 			// Load trip stop times
 			if (sqlite3_bind_text (stmt_stoptimes, 1, trip_id.c_str (), -1, SQLITE_STATIC) == SQLITE_OK) {
 				std::vector<StopTime> stoptimes;
+				std::vector<double> distances;
 				while (sqlite3_step (stmt_stoptimes) == SQLITE_ROW) {
 					// Take stop_time append to vector
 					std::string stop_id = (char*)sqlite3_column_text (stmt_stoptimes, 0);
@@ -210,6 +211,7 @@ namespace gtfs {
 					std::string arr = (char*)sqlite3_column_text (stmt_stoptimes, 1);
 					std::string dep = (char*)sqlite3_column_text (stmt_stoptimes, 2);
 					stoptimes.emplace_back (stop, arr, dep);
+					distances.emplace_back (sqlite3_column_double (stmt_stoptimes, 3));
 				}
 				sqlite3_reset (stmt_stoptimes);
 
@@ -219,8 +221,14 @@ namespace gtfs {
 				if (route->get_stops ().size () == 0) {
 					std::vector<RouteStop> stops;
 					stops.reserve (trip->get_stoptimes ().size ());
+					int si = 0;
 					for (auto& st: trip->get_stoptimes ()) {
-						stops.emplace_back (st.stop);
+						if (distances.size () == stops.size ()) {
+							stops.emplace_back (st.stop, distances[si]);
+							si++;
+						} else {
+							stops.emplace_back (st.stop, 0);
+						}
 					}
 					route->add_stops (stops);
 				}

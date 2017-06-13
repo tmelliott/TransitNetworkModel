@@ -478,9 +478,11 @@ void calculate_stop_distances (std::string& dbname) {
 		// 		i++;
 		// 	}
 		// }
-		std::cout << "\nStop IDs: ";
-		for (auto& s: route->get_stops ()) {
-			std::cout << s.stop->get_id () << ", ";
+		if (route->get_stops ().size () > 0) {
+			std::cout << "We need to add distances.";
+			for (auto& s: route->get_stops ()) {
+				std::cout << s.stop->get_id () << " [" << s.shape_dist_traveled << "m], ";
+			}
 		}
 	}
 
