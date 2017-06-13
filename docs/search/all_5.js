@@ -28,7 +28,7 @@ var searchData=
   ['get_5fshort_5fname',['get_short_name',['../classgtfs_1_1Route.html#a2a0fcdf687d5e326b20c5043c9db874f',1,'gtfs::Route']]],
   ['get_5fstop',['get_stop',['../classgtfs_1_1GTFS.html#a34304835b203901a972d40cc4f1d060a',1,'gtfs::GTFS']]],
   ['get_5fstop_5findex',['get_stop_index',['../classgtfs_1_1Particle.html#a322a6111d18ae304c0b22f000461076a',1,'gtfs::Particle']]],
-  ['get_5fstops',['get_stops',['../classgtfs_1_1GTFS.html#a33a81248120e12d5a5d52a92821b827e',1,'gtfs::GTFS::get_stops()'],['../classgtfs_1_1Route.html#a6992a39502af9d8bcc8bb6bb12d93b1f',1,'gtfs::Route::get_stops()']]],
+  ['get_5fstops',['get_stops',['../classgtfs_1_1GTFS.html#a33a81248120e12d5a5d52a92821b827e',1,'gtfs::GTFS::get_stops()'],['../classgtfs_1_1Route.html#aa34e7c477efcde44cc03138cb9a0b8c8',1,'gtfs::Route::get_stops()']]],
   ['get_5fstoptimes',['get_stoptimes',['../classgtfs_1_1Trip.html#a6b9d68b9d1c6942b839cd8599ed6a339',1,'gtfs::Trip']]],
   ['get_5ftimestamp',['get_timestamp',['../classgtfs_1_1Vehicle.html#af064609446d9cde5b1a11e9a072eac4b',1,'gtfs::Vehicle']]],
   ['get_5ftrip',['get_trip',['../classgtfs_1_1GTFS.html#aec86fae3dee1e13f541798266fb2317e',1,'gtfs::GTFS::get_trip()'],['../classgtfs_1_1Vehicle.html#a616c83927f0d2d513d33277a9ebd3537',1,'gtfs::Vehicle::get_trip()']]],

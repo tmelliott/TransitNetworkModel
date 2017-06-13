@@ -88,8 +88,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aa943d312f934a91c3a56aec19d51cc90"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4d3d7b29be342ae806041801327762a8"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Shape.html">Shape</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Route.html#a4d3d7b29be342ae806041801327762a8">get_shape</a> () const</td></tr>
 <tr class="separator:a4d3d7b29be342ae806041801327762a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6992a39502af9d8bcc8bb6bb12d93b1f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structgtfs_1_1RouteStop.html">RouteStop</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Route.html#a6992a39502af9d8bcc8bb6bb12d93b1f">get_stops</a> () const</td></tr>
-<tr class="separator:a6992a39502af9d8bcc8bb6bb12d93b1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa34e7c477efcde44cc03138cb9a0b8c8"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structgtfs_1_1RouteStop.html">RouteStop</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Route.html#aa34e7c477efcde44cc03138cb9a0b8c8">get_stops</a> ()</td></tr>
+<tr class="separator:aa34e7c477efcde44cc03138cb9a0b8c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa8a666e5a8f197835764874c983e6601"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Route.html#aa8a666e5a8f197835764874c983e6601">add_trip</a> (std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Trip.html">Trip</a> &gt; trip)</td></tr>
 <tr class="separator:aa8a666e5a8f197835764874c983e6601"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8beb0325039a69e1d34e9dcc431e047e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Route.html#a8beb0325039a69e1d34e9dcc431e047e">add_stops</a> (std::vector&lt; <a class="el" href="structgtfs_1_1RouteStop.html">RouteStop</a> &gt; &amp;s)</td></tr>
@@ -348,8 +348,8 @@ a shape pointer </dd></dl>
 
 </div>
 </div>
-<a id="a6992a39502af9d8bcc8bb6bb12d93b1f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6992a39502af9d8bcc8bb6bb12d93b1f">&#9670;&nbsp;</a></span>get_stops()</h2>
+<a id="aa34e7c477efcde44cc03138cb9a0b8c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa34e7c477efcde44cc03138cb9a0b8c8">&#9670;&nbsp;</a></span>get_stops()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -358,10 +358,10 @@ a shape pointer </dd></dl>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt;<a class="el" href="structgtfs_1_1RouteStop.html">RouteStop</a>&gt; gtfs::Route::get_stops </td>
+          <td class="memname">std::vector&lt;<a class="el" href="structgtfs_1_1RouteStop.html">RouteStop</a>&gt;&amp; gtfs::Route::get_stops </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td> const</td>
+          <td></td>
         </tr>
       </table>
   </td>
@@ -370,7 +370,7 @@ a shape pointer </dd></dl>
   </tr>
 </table>
 </div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>the route's stops (incl. distance into trip) </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>the route's stops so that they're modifiable (incl. distance into trip) </dd></dl>
 
 </div>
 </div>
