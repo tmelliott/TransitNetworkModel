@@ -1,6 +1,6 @@
 library(RSQLite)
 
-con = dbConnect(SQLite(), "../gtfs.db")
+con = dbConnect(SQLite(), "gtfs.db")
 
 routes = dbGetQuery(con, "SELECT routes.route_id, routes.route_short_name as number, MAX(shapes.shape_dist_traveled + segments.length) AS len FROM routes, shapes, segments WHERE routes.shape_id=shapes.shape_id AND shapes.segment_id=segments.segment_id AND route_id LIKE '%v54.27' GROUP BY shapes.shape_id")
 stops = dbGetQuery(con, "SELECT MIN(routes.route_id) AS route_id, MIN(stop_times.stop_sequence) AS stop_sequence, MIN(stop_times.shape_dist_traveled) AS distance FROM routes, trips, stop_times WHERE routes.route_id=trips.route_id AND trips.trip_id=stop_times.trip_id AND routes.route_id LIKE '%54.27' GROUP BY routes.route_id, stop_times.stop_sequence ORDER BY routes.route_id, stop_times.stop_sequence")
@@ -16,6 +16,7 @@ while (TRUE) {
     })
     particles$vehicle <- as.factor(particles$vehicle_id)
     particles$progress <- particles$distance / lens[particles$route_id, "len"] * 100
+    jpeg(sprintf("~/Dropbox/PhD/routeprogress/routeprogress_%s.jpg", as.numeric(Sys.time())), width = 900, height = 700)
     with(particles[particles$progress > 1 & particles$progress < 99, ], {
         route = as.factor(as.character(route_id))
         par(mar = c(5.1, 2.1, 1.1, 2.1))
@@ -31,5 +32,6 @@ while (TRUE) {
         axis(2, at = 1:length(levels(route)), lens[levels(route), "num"], las = 2, cex.axis = 0.4)
         axis(4, at = 1:length(levels(route)), lens[levels(route), "num"], las = 2, cex.axis = 0.4)
     })
+    dev.off()
     Sys.sleep(10)
 }
