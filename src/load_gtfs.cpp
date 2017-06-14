@@ -73,44 +73,44 @@ int main (int argc, char* argv[]) {
 
 	// STEP ONE:
 	// connect to the SQLite database:
-	// std::cout << "Loading GTFS data into database `" << dbname << "`\n";
-	// sqlite3 *db;
-	// char *zErrMsg = 0;
-	// int rc;
-	//
-	// rc = sqlite3_open ((dir + "/" + dbname).c_str(), &db);
-	// if (rc) {
-	// 	fprintf(stderr, " * Can't open database: %s\n", sqlite3_errmsg(db));
-    //   	return(0);
-	// } else {
-    // 	fprintf(stderr, " * Opened database successfully\n");
-	// }
-	//
-	// // STEP TWO:
-	// // convert shapes -> segments
-	// std::cout << " * Converting shapes to segments ... ";
-	// convert_shapes (db); // -- temporary dont let it run (though it should die since shapes_tmp not present)
-	// std::cout << "\n   ... done.\n";
-	//
-	// // STEP THREE:
-	// // importing intersections.json and segmenting segments:
-	// std::cout << " * Importing intersections ... ";
-	// std::vector<std::string> files {dir + "/data/intersections_trafficlights.json",
-	// 								dir + "/data/intersections_roundabouts.json"};
-	// import_intersections (db, files);
-	// std::cout << "done.\n";
-	//
+	std::cout << "Loading GTFS data into database `" << dbname << "`\n";
+	sqlite3 *db;
+	char *zErrMsg = 0;
+	int rc;
+
+	rc = sqlite3_open ((dir + "/" + dbname).c_str(), &db);
+	if (rc) {
+		fprintf(stderr, " * Can't open database: %s\n", sqlite3_errmsg(db));
+      	return(0);
+	} else {
+    	fprintf(stderr, " * Opened database successfully\n");
+	}
+
+	// STEP TWO:
+	// convert shapes -> segments
+	std::cout << " * Converting shapes to segments ... ";
+	convert_shapes (db); // -- temporary dont let it run (though it should die since shapes_tmp not present)
+	std::cout << "\n   ... done.\n";
+
+	// STEP THREE:
+	// importing intersections.json and segmenting segments:
+	std::cout << " * Importing intersections ... ";
+	std::vector<std::string> files {dir + "/data/intersections_trafficlights.json",
+									dir + "/data/intersections_roundabouts.json"};
+	import_intersections (db, files);
+	std::cout << "done.\n";
+
 	// // Get all segments, and split into more segments
-	// for (int i=0;i<1000;i++) {
-	// 	printf(" * Segmenting shapes ... %*d%%\r", 3, (i+1)/1000 * 100);
-	// 	std::cout.flush ();
-	//
-	//
-	// }
-	//
-	// sqlite3_close (db);
-	//
-	// std::cout << " * Segmenting shapes ... done.\n";
+	for (int i=0;i<1000;i++) {
+		printf(" * Segmenting shapes ... %*d%%\r", 3, (i+1)/1000 * 100);
+		std::cout.flush ();
+
+
+	}
+
+	sqlite3_close (db);
+
+	std::cout << " * Segmenting shapes ... done.\n";
 
 
 	// STEP FOUR: stop distance into shape for stop_times

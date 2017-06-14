@@ -143,7 +143,7 @@ int main (int argc, char* argv[]) {
 
 			std::cout << "\n";
 			// -> triggers particle transition -> resample
-			std::vector<std::string> USEDtrips {"274", "277", "224", "222", "258", "NEX"};
+			std::vector<std::string> USEDtrips {"274", "277", "224", "222", "258", "NEX", "129"};
 			time_start (clockstart, wallstart);
 			for (auto& v: vehicles) {
 				if (!v.second->get_trip ()) continue;

@@ -126,15 +126,15 @@ namespace gtfs {
 		} else if (delta > 0 ){
 			std::cout << " * Updating particles: " << delta << "s\n";
 
-			if (trip && trip->get_route ()) {
-				auto route = trip->get_route ();
-				if (route->get_stops ().size () > 0) {
-					for (auto stop: route->get_stops ()) {
-						std::cout << "Stop " << stop.stop->get_id ()
-							<< " - " << stop.shape_dist_traveled << "m into trip\n";
-					}
-				}
-			}
+			// if (trip && trip->get_route ()) {
+			// 	auto route = trip->get_route ();
+			// 	if (route->get_stops ().size () > 0) {
+			// 		for (auto stop: route->get_stops ()) {
+			// 			std::cout << "Stop " << stop.stop->get_id ()
+			// 				<< " - " << stop.shape_dist_traveled << "m into trip\n";
+			// 		}
+			// 	}
+			// }
 
 			double dbar = 0;
 			double vbar = 0;

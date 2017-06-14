@@ -72,7 +72,7 @@ CREATE TABLE stop_times (
 	departure_time TIME,
 	shape_dist_traveled REAL
 );
-INSERT INTO stop_times
+INSERT INTO stop_times (stop_id, trip_id, stop_sequence, arrival_time, departure_time)
 	SELECT stop_id, trip_id, CAST(stop_sequence AS INT) AS stop_sequence, arrival_time, departure_time
 	  FROM stop_times_tmp;
 DROP TABLE stop_times_tmp;

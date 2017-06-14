@@ -49,7 +49,7 @@ namespace gtfs {
 		std::string qwhere;
 		// qwhere = " WHERE segment_id IN (SELECT segment_id FROM shapes WHERE shape_id LIKE '%_v" + v + "')";
 		qwhere = " WHERE segment_id IN (SELECT segment_id FROM shapes WHERE shape_id IN ("
-			"SELECT shape_id FROM routes WHERE shape_id LIKE '%_v" + v + "' AND route_short_name IN ('274')))";//,'277','224','222','258','NEX','129') ) )";
+			"SELECT shape_id FROM routes WHERE shape_id LIKE '%_v" + v + "' AND route_short_name IN ('274','277','224','222','258','NEX','129') ) )";
 		if (sqlite3_prepare_v2 (db, ("SELECT count(segment_id) FROM segments" + qwhere).c_str (),
 								-1, &stmt_n, 0) == SQLITE_OK &&
 			sqlite3_step (stmt_n) == SQLITE_ROW) {
@@ -159,7 +159,7 @@ namespace gtfs {
 		int Ntrip = 0;
 		// qwhere = " WHERE segment_id IN (SELECT segment_id FROM shapes WHERE shape_id LIKE '%_v" + v + "')";
 		qwhere = " WHERE route_id IN (SELECT route_id FROM routes WHERE route_id LIKE '%_v"
-			+ v + "' AND route_short_name IN ('274'))";//,'277','224','222','258','NEX','129') )";
+			+ v + "' AND route_short_name IN ('274','277','224','222','258','NEX','129') )";
 		if (sqlite3_prepare_v2 (db, ("SELECT count(trip_id) FROM trips" + qwhere).c_str (),
 								-1, &stmt_n, 0) == SQLITE_OK &&
 			sqlite3_step (stmt_n) == SQLITE_ROW) {
