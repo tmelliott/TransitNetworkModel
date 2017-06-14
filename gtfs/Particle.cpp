@@ -104,6 +104,20 @@ namespace gtfs {
 		distance = dist.rand (rng);
 		velocity = speed.rand (rng);
 
+		// which stop are we at?
+		auto trip = vehicle->get_trip ();
+		if (!trip) return;
+		auto route = trip->get_route ();
+		if (!route) return;
+		auto stops = route->get_stops ();
+		if (stops.size () == 0) return;
+
+		for (unsigned int i=0; i<stops.size (); i++) {
+			// once distance smaller than stop's, we're done
+			if (distance < stops[i].shape_dist_traveled) break;
+			stop_index = i+1;
+		}
+
 		std::clog << "   - " << *this << " -> ";
 		calculate_likelihood ();
 		std::clog << log_likelihood <<  "\n";
@@ -117,6 +131,7 @@ namespace gtfs {
 	 */
 	void Particle::transition (sampling::RNG& rng) {
 		if (vehicle->get_delta () == 0 || finished) return;
+		delta_t = vehicle->get_delta ();
 
 		std::clog << "   - " << *this << " -> ";
 
@@ -167,7 +182,8 @@ namespace gtfs {
 	 * @param rng reference to the random number generator
 	 */
 	void Particle::transition_phase1 (sampling::RNG& rng) {
-
+		// for now we'll just stay where we are with some probability
+		if (rng.runif () < 0.3) delta_t = 0;
 	};
 
 	/**
@@ -190,19 +206,57 @@ namespace gtfs {
 	 * @param rng [description]
 	 */
 	void Particle::transition_phase3 (sampling::RNG& rng) {
-		double dmax;
-		if (vehicle->get_trip () && vehicle->get_trip ()->get_route () &&
-			vehicle->get_trip ()->get_route ()->get_shape () &&
-			vehicle->get_trip ()->get_route ()->get_shape ()->get_segments ().back ().segment) {
-			dmax = vehicle->get_trip ()->get_route ()
-				->get_shape ()->get_segments ().back ().segment->get_length ();
-		} else {
-			dmax = 0;
-		}
-		distance = distance + velocity * vehicle->get_delta ();
-		if (distance >= dmax) {
-			distance = dmax;
+		// double dmax;
+		auto trip = vehicle->get_trip ();
+		if (!trip) return;
+		auto route = trip->get_route ();
+		if (!route) return;
+		auto shape = route->get_shape ();
+		if (!shape) return;
+		if (shape->get_segments ().size () == 0) return;
+		auto stops = route->get_stops ();
+
+		if (!shape->get_segments ().back ().segment) {
+		// 	dmax = shape->get_segments ().back ().segment->get_length ();
+		// } else {
 			finished = true;
+			return;
+		}
+
+		int M (stops.size ());
+		int L (shape->get_segments ().size());
+
+		while (delta_t > 0 && !finished) {
+			/**
+			 * # NOTES
+			 * STOPS are use 1-based indexing to match the GTFS feed
+			 * Therefore, the FIRST stop is stop_index = 1, which is stops[0].
+			 * Therefore, the ith stop is stop_index = i, which is stops[i-1].
+			 * To make things more complicated, the (i+1)th stop is stop+index = i+1,
+			 * 								which is stops[i]!!!
+			 */
+			if (true) { // Next up: STOP!
+				double eta = (1 / velocity) * (stops[stop_index].shape_dist_traveled - distance);
+				// std::clog << "\n Next stop: " << stops[stop_index].shape_dist_traveled
+				// 	<< "m into trip; ETA: " << eta << "\n";
+				if (eta <= delta_t) {
+					delta_t = delta_t - eta;
+					stop_index++;
+					arrival_time = vehicle->get_timestamp () - delta_t;
+					dwell_time = 0;
+					distance = stops[stop_index-1].shape_dist_traveled;
+					if (stop_index == M) {
+						finished = true;
+						break;
+					}
+
+				} else {
+					distance += velocity * delta_t;
+					delta_t = 0;
+				}
+			} else {    // Next up: INTERSECTION!
+
+			}
 		}
 	};
 

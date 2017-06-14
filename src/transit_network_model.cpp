@@ -146,6 +146,8 @@ int main (int argc, char* argv[]) {
 			std::vector<std::string> USEDtrips {"274", "277", "224", "222", "258", "NEX"};
 			time_start (clockstart, wallstart);
 			for (auto& v: vehicles) {
+				if (!v.second->get_trip ()) continue;
+				if (!v.second->get_trip ()->get_route ()) continue;
 				if (std::find (USEDtrips.begin (), USEDtrips.end (),
 							   v.second->get_trip ()->get_route ()->get_short_name ()) == USEDtrips.end ()) {
 				    continue;
@@ -155,13 +157,6 @@ int main (int argc, char* argv[]) {
 			}
 			std::cout << "\n";
 			time_end (clockstart, wallstart);
-
-            // clockend =  std::clock();
-            // wallend = std::chrono::high_resolution_clock::now();
-            // std::cout << std::fixed << std::setprecision(3)
-            //     << "=== TIME: " << (clockend - clockstart) / (double)(CLOCKS_PER_SEC / 1000) << " ms / "
-            //     << std::chrono::duration<double, std::milli>(wallend - wallstart).count() << " ms\n";
-            // std::cout.flush();
 
 			time_start (clockstart, wallstart);
 			std::cout << "\n * Writing particles to db ...";
@@ -186,6 +181,7 @@ int main (int argc, char* argv[]) {
 					// prepared OK
 					for (auto& v: vehicles) {
 						// if (! v.second->is_initialized ()) continue;
+						if (!v.second->get_trip ()) continue;
 						std::string tid = v.second->get_trip ()->get_id ();//.c_str ();
 						// if (sqlite3_bind_text (stmt_del, 1, v.second->get_id ().c_str (),
 						// 					   -1, SQLITE_STATIC) != SQLITE_OK ||
