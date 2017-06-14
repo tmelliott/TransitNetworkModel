@@ -237,8 +237,6 @@ namespace gtfs {
 			 */
 			if (true) { // Next up: STOP!
 				double eta = (1 / velocity) * (stops[stop_index].shape_dist_traveled - distance);
-				// std::clog << "\n Next stop: " << stops[stop_index].shape_dist_traveled
-				// 	<< "m into trip; ETA: " << eta << "\n";
 				if (eta <= delta_t) {
 					delta_t = delta_t - eta;
 					stop_index++;
@@ -249,7 +247,11 @@ namespace gtfs {
 						finished = true;
 						break;
 					}
-
+					double pi (0.5);
+					double gamma (6.0);
+					sampling::exponential exptau (1.0 / 10.0);
+					if (rng.runif () < pi) dwell_time = (int) gamma + exptau.rand (rng);
+					delta_t -= dwell_time;
 				} else {
 					distance += velocity * delta_t;
 					delta_t = 0;
