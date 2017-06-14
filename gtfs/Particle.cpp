@@ -195,7 +195,7 @@ namespace gtfs {
 	void Particle::transition_phase2 (sampling::RNG& rng) {
 		double sigv (5);
 		double vel = 0.0;
-		while (vel <= 0 || vel >= 30) vel = rng.rnorm () * sigv + velocity;
+		while (vel <= 2 || vel >= 30) vel = rng.rnorm () * sigv + velocity;
 		velocity = vel;
 	};
 
@@ -217,8 +217,6 @@ namespace gtfs {
 		auto stops = route->get_stops ();
 
 		if (!shape->get_segments ().back ().segment) {
-		// 	dmax = shape->get_segments ().back ().segment->get_length ();
-		// } else {
 			finished = true;
 			return;
 		}
@@ -258,6 +256,37 @@ namespace gtfs {
 				}
 			} else {    // Next up: INTERSECTION!
 
+			}
+		}
+	};
+
+	/**
+	 * Calculate the expected time until arrival (ETA) for each future stop
+	 * along the route.
+	 */
+	void Particle::calculate_etas (void) {
+		if (etas.size () > 0) {
+			std::cerr << "Particle already has ETAs; something went wrong!\n";
+			return;
+		}
+
+		if (!vehicle->get_trip () || !vehicle->get_trip ()->get_route () ||
+			vehicle->get_trip ()->get_route ()->get_stops ().size () == 0) {
+			std::cerr << "Particle's vehicle doesn't has trip/route/stops. Cannot predict!\n";
+			return;
+		}
+		// Seems OK - lets go!
+		auto stops = vehicle->get_trip ()->get_route ()->get_stops ();
+		if (stops.back ().shape_dist_traveled == 0) return;
+
+		etas.reserve (stops.size ());
+		for (unsigned int i=0; i<stops.size (); i++) {
+			// STOP INDEX is 1-based; stop 0-index of CURRENT is stop_index-1.
+			if (i < stop_index) {
+				etas.emplace_back (0);
+			} else {
+				etas.emplace_back (vehicle->get_timestamp () +
+					(1 / velocity) * (stops[i].shape_dist_traveled - distance));
 			}
 		}
 	};

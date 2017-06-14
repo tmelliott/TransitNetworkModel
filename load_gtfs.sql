@@ -88,5 +88,6 @@ CREATE TABLE particles (
 	timestamp      TIMESTAMP,
 	log_likelihood REAL,
 	parent_id      BIGINT,
-	initialized    BOOLEAN
+	initialized    BOOLEAN,
+	etas           TEXT
 );

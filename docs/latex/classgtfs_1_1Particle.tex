@@ -48,6 +48,10 @@ int \hyperlink{classgtfs_1_1Particle_ae2029ee7ae66a92a8a2f08e4290daa73}{get\+\_\
 \item 
 const double \& \hyperlink{classgtfs_1_1Particle_a2e1a6de0b7d0fd6938ef3f7f9e5d4b99}{get\+\_\+likelihood} () const
 \item 
+const std\+::vector$<$ uint64\+\_\+t $>$ \& \hyperlink{classgtfs_1_1Particle_ad1271a051a4040edc4ec47a188d75ad0}{get\+\_\+etas} (void) const
+\item 
+const uint64\+\_\+t \& \hyperlink{classgtfs_1_1Particle_aded5954299e6184a664973036f8ba804}{get\+\_\+eta} (int i) const
+\item 
 void \hyperlink{classgtfs_1_1Particle_a4b1e356f32d4557d06c9ed59467a5b27}{initialize} (\hyperlink{classsampling_1_1uniform}{sampling\+::uniform} \&unif, \hyperlink{classsampling_1_1uniform}{sampling\+::uniform} \&speed, \hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&rng)
 \item 
 void \hyperlink{classgtfs_1_1Particle_a18aeb1ccbc395210f80c18f9d0a0095c}{transition} (\hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&rng)
@@ -59,6 +63,8 @@ void \hyperlink{classgtfs_1_1Particle_ad9374830814c89b2d5c0af705bda8849}{transit
 void \hyperlink{classgtfs_1_1Particle_a68043b2380d8f530d648dd99e5a85101}{transition\+\_\+phase3} (\hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&rng)
 \item 
 void \hyperlink{classgtfs_1_1Particle_a88627efbe0eb2e289315ae82627d3a39}{calculate\+\_\+likelihood} (void)
+\item 
+void \hyperlink{classgtfs_1_1Particle_aa71d322362f6eb431f70f78cdc8887a8}{calculate\+\_\+etas} (void)
 \end{DoxyCompactItemize}
 \subsection*{Public Attributes}
 \begin{DoxyCompactItemize}
@@ -112,7 +118,13 @@ Makes an almost exact copy of the referenced particle, but gives it a unique ID 
 Destructor for a particle. 
 
 \subsection{Member Function Documentation}
-\mbox{\Hypertarget{classgtfs_1_1Particle_a88627efbe0eb2e289315ae82627d3a39}\label{classgtfs_1_1Particle_a88627efbe0eb2e289315ae82627d3a39}} 
+\mbox{\Hypertarget{classgtfs_1_1Particle_aa71d322362f6eb431f70f78cdc8887a8}\label{classgtfs_1_1Particle_aa71d322362f6eb431f70f78cdc8887a8}} 
+\index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!calculate\+\_\+etas@{calculate\+\_\+etas}}
+\index{calculate\+\_\+etas@{calculate\+\_\+etas}!gtfs\+::\+Particle@{gtfs\+::\+Particle}}
+\subsubsection{\texorpdfstring{calculate\+\_\+etas()}{calculate\_etas()}}
+{\footnotesize\ttfamily void gtfs\+::\+Particle\+::calculate\+\_\+etas (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+Calculate the expected time until arrival (E\+TA) for each future stop along the route. \mbox{\Hypertarget{classgtfs_1_1Particle_a88627efbe0eb2e289315ae82627d3a39}\label{classgtfs_1_1Particle_a88627efbe0eb2e289315ae82627d3a39}} 
 \index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!calculate\+\_\+likelihood@{calculate\+\_\+likelihood}}
 \index{calculate\+\_\+likelihood@{calculate\+\_\+likelihood}!gtfs\+::\+Particle@{gtfs\+::\+Particle}}
 \subsubsection{\texorpdfstring{calculate\+\_\+likelihood()}{calculate\_likelihood()}}
@@ -162,6 +174,24 @@ the particle\textquotesingle{}s distance into trip
 
 \begin{DoxyReturn}{Returns}
 the particle\textquotesingle{}s dwell time at stop {\ttfamily stop\+\_\+index} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classgtfs_1_1Particle_aded5954299e6184a664973036f8ba804}\label{classgtfs_1_1Particle_aded5954299e6184a664973036f8ba804}} 
+\index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!get\+\_\+eta@{get\+\_\+eta}}
+\index{get\+\_\+eta@{get\+\_\+eta}!gtfs\+::\+Particle@{gtfs\+::\+Particle}}
+\subsubsection{\texorpdfstring{get\+\_\+eta()}{get\_eta()}}
+{\footnotesize\ttfamily const uint64\+\_\+t\& gtfs\+::\+Particle\+::get\+\_\+eta (\begin{DoxyParamCaption}\item[{int}]{i }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+E\+TA for stop {\ttfamily i} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classgtfs_1_1Particle_ad1271a051a4040edc4ec47a188d75ad0}\label{classgtfs_1_1Particle_ad1271a051a4040edc4ec47a188d75ad0}} 
+\index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!get\+\_\+etas@{get\+\_\+etas}}
+\index{get\+\_\+etas@{get\+\_\+etas}!gtfs\+::\+Particle@{gtfs\+::\+Particle}}
+\subsubsection{\texorpdfstring{get\+\_\+etas()}{get\_etas()}}
+{\footnotesize\ttfamily const std\+::vector$<$uint64\+\_\+t$>$\& gtfs\+::\+Particle\+::get\+\_\+etas (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+E\+T\+As for all future stops 
 \end{DoxyReturn}
 \mbox{\Hypertarget{classgtfs_1_1Particle_a3131eb93ac902a4cccf42061e1a7296b}\label{classgtfs_1_1Particle_a3131eb93ac902a4cccf42061e1a7296b}} 
 \index{gtfs\+::\+Particle@{gtfs\+::\+Particle}!get\+\_\+id@{get\+\_\+id}}
@@ -304,7 +334,9 @@ Phase 3 of the particle\textquotesingle{}s transition, involving movement until 
 {\em rng} & \mbox{[}description\mbox{]} \\
 \hline
 \end{DoxyParams}
+\subsection*{N\+O\+T\+ES}
 
+S\+T\+O\+PS are use 1-\/based indexing to match the \hyperlink{classgtfs_1_1GTFS}{G\+T\+FS} feed Therefore, the F\+I\+R\+ST stop is stop\+\_\+index = 1, which is stops\mbox{[}0\mbox{]}. Therefore, the ith stop is stop\+\_\+index = i, which is stops\mbox{[}i-\/1\mbox{]}. To make things more complicated, the (i+1)th stop is stop+index = i+1, which is stops\mbox{[}i\mbox{]}!!!
 
 \subsection{Member Data Documentation}
 \mbox{\Hypertarget{classgtfs_1_1Particle_a81c313d505ecb592d79463f167dfb76c}\label{classgtfs_1_1Particle_a81c313d505ecb592d79463f167dfb76c}} 

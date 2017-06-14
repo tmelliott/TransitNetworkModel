@@ -8,6 +8,8 @@ var searchData=
   ['get_5fdelta_5ft',['get_delta_t',['../classgtfs_1_1Particle.html#ae2029ee7ae66a92a8a2f08e4290daa73',1,'gtfs::Particle']]],
   ['get_5fdistance',['get_distance',['../classgtfs_1_1Particle.html#a0ec3ee5a83e778069946242a6d7731b6',1,'gtfs::Particle']]],
   ['get_5fdwell_5ftime',['get_dwell_time',['../classgtfs_1_1Particle.html#aaea44cde86b5b026c94800c6d837f174',1,'gtfs::Particle']]],
+  ['get_5feta',['get_eta',['../classgtfs_1_1Particle.html#aded5954299e6184a664973036f8ba804',1,'gtfs::Particle']]],
+  ['get_5fetas',['get_etas',['../classgtfs_1_1Particle.html#ad1271a051a4040edc4ec47a188d75ad0',1,'gtfs::Particle']]],
   ['get_5fid',['get_id',['../classgtfs_1_1Vehicle.html#a6b388986c9ed4af1eb86f13a3d2de8e0',1,'gtfs::Vehicle::get_id()'],['../classgtfs_1_1Particle.html#a3131eb93ac902a4cccf42061e1a7296b',1,'gtfs::Particle::get_id()'],['../classgtfs_1_1Route.html#a2d1ee4193b52ab7b8c7eb3160850cf71',1,'gtfs::Route::get_id()'],['../classgtfs_1_1Trip.html#ac4c80cbf34f7c715104cc1c33b082f58',1,'gtfs::Trip::get_id()'],['../classgtfs_1_1Shape.html#ad8f8c0c5c19d4a8e840be1ed9a89de9e',1,'gtfs::Shape::get_id()'],['../classgtfs_1_1Segment.html#a5c324888b7535df4623d8f32d907fca3',1,'gtfs::Segment::get_id()'],['../classgtfs_1_1Stop.html#a95f4a615a6e06eed430a14d783557a29',1,'gtfs::Stop::get_id()']]],
   ['get_5flength',['get_length',['../classgtfs_1_1Segment.html#a4f42ea597e18e54c9ec506697eb333a9',1,'gtfs::Segment']]],
   ['get_5flikelihood',['get_likelihood',['../classgtfs_1_1Particle.html#a2e1a6de0b7d0fd6938ef3f7f9e5d4b99',1,'gtfs::Particle']]],

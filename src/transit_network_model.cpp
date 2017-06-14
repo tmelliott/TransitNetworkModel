@@ -32,6 +32,8 @@
 #include <thread>
 
 #include <boost/program_options.hpp>
+#include <boost/algorithm/string/join.hpp>
+#include <boost/range/adaptor/transformed.hpp>
 
 #include "gtfs-realtime.pb.h"
 #include "sampling.h"
@@ -157,7 +159,23 @@ int main (int argc, char* argv[]) {
 			}
 			std::cout << "\n";
 			time_end (clockstart, wallstart);
+		}
 
+		{
+			// Update road segments -> Kalman filter
+
+		}
+
+		{
+			// Update ETA predictions
+			for (auto& v: vehicles) {
+				if (!v.second->get_trip ()) continue;
+				for (auto& p: v.second->get_particles ()) p.calculate_etas ();
+			}
+		}
+
+		{
+			// Write results to file
 			time_start (clockstart, wallstart);
 			std::cout << "\n * Writing particles to db ...";
 			std::cout.flush ();
@@ -174,7 +192,7 @@ int main (int argc, char* argv[]) {
 				// 						-1, &stmt_del, 0) != SQLITE_OK) {
 				// 	std::cerr << "\n  x Unable to prepare DELETE query ";
 				// }
-				if (sqlite3_prepare_v2 (db, "INSERT INTO particles VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)",
+				if (sqlite3_prepare_v2 (db, "INSERT INTO particles VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
 					 	   					   -1, &stmt_ins, 0) != SQLITE_OK) {
 					std::cerr << "\n  x Unable to prepare INSERT query ";
 				} else {
@@ -192,14 +210,23 @@ int main (int argc, char* argv[]) {
 						// std::cout << tid.c_str () << "\n";
 						for (auto& p: v.second->get_particles ()) {
 							sqlite3_bind_int (stmt_ins, 1, p.get_id ());
-							sqlite3_bind_text (stmt_ins, 2, v.second->get_id ().c_str (), -1, SQLITE_STATIC);
-							sqlite3_bind_text (stmt_ins, 3, tid.c_str (), -1, SQLITE_STATIC);
+							sqlite3_bind_text (stmt_ins, 2, v.second->get_id ().c_str (), -1, SQLITE_TRANSIENT);
+							sqlite3_bind_text (stmt_ins, 3, tid.c_str (), -1, SQLITE_TRANSIENT);
 							sqlite3_bind_double (stmt_ins, 4, p.get_distance ());
 							sqlite3_bind_double (stmt_ins, 5, p.get_velocity ());
 							sqlite3_bind_int64 (stmt_ins, 6, v.second->get_timestamp ());
 							sqlite3_bind_double (stmt_ins, 7, p.get_likelihood ());
 							sqlite3_bind_int (stmt_ins, 8, p.get_parent_id ());
 							sqlite3_bind_int (stmt_ins, 9, v.second->is_initialized ());
+							// Write the ETAs
+							auto etas = p.get_etas ();
+							std::string etastr = "";
+							if (etas.size () > 0) {
+								etastr = boost::algorithm::join (etas |
+									boost::adaptors::transformed (static_cast<std::string(*)(uint64_t)>(std::to_string) ), ",");
+								// std::cout << etastr << "|  ";
+							}
+							sqlite3_bind_text (stmt_ins, 10, etastr.c_str (), -1, SQLITE_TRANSIENT);
 
 							if (sqlite3_step (stmt_ins) != SQLITE_DONE) {
 								std::cerr << " x Error inserting value: " << sqlite3_errmsg (db);
@@ -219,16 +246,6 @@ int main (int argc, char* argv[]) {
 				sqlite3_close (db);
 			}
 			time_end (clockstart, wallstart);
-		}
-
-		{
-			// Update road segments -> Kalman filter
-
-		}
-
-		{
-			// Update ETA predictions
-
 		}
 
 		if (forever) std::this_thread::sleep_for (std::chrono::milliseconds (10 * 1000));

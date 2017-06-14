@@ -119,22 +119,12 @@ namespace gtfs {
 				init_range[1] = init_range[1] + 100;
 			}
 			sampling::uniform udist (init_range[0], init_range[1]);
-			sampling::uniform uspeed (0, 30);
+			sampling::uniform uspeed (2, 30);
 			for (auto& p: particles) p.initialize (udist, uspeed, rng);
 
 			initialized = true;
-		} else if (delta > 0 ){
+		} else if (delta > 0 ) {
 			std::cout << " * Updating particles: " << delta << "s\n";
-
-			// if (trip && trip->get_route ()) {
-			// 	auto route = trip->get_route ();
-			// 	if (route->get_stops ().size () > 0) {
-			// 		for (auto stop: route->get_stops ()) {
-			// 			std::cout << "Stop " << stop.stop->get_id ()
-			// 				<< " - " << stop.shape_dist_traveled << "m into trip\n";
-			// 		}
-			// 	}
-			// }
 
 			double dbar = 0;
 			double vbar = 0;
@@ -162,7 +152,6 @@ namespace gtfs {
 
 			return;
 		}
-
 
 		// Resample them!
 		std::cout << "   - Resampling ";

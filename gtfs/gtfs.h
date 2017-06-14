@@ -178,6 +178,8 @@ namespace gtfs {
 		int delta_t;              /*!< time this particular particle has left to travel */
 		double log_likelihood;    /*!< the likelihood of the particle, given the data */
 
+		std::vector<uint64_t> etas; /*!< ETA at all future stops. Previous stops are simply 0. */
+
 	public:
 		Vehicle* vehicle;  /*!< pointer to the vehicle that owns this particle */
 
@@ -215,6 +217,11 @@ namespace gtfs {
 		/** @return the particle's likelihood */
 		const double& get_likelihood () const { return log_likelihood; };
 
+		/** @return ETAs for all future stops */
+		const std::vector<uint64_t>& get_etas (void) const { return etas; };
+		/** @return ETA for stop `i` */
+		const uint64_t& get_eta (int i) const { return etas[i]; };
+
 		// Methods
 		void initialize (sampling::uniform& unif, sampling::uniform& speed, sampling::RNG& rng);
 		void transition (sampling::RNG& rng);
@@ -222,6 +229,8 @@ namespace gtfs {
 		void transition_phase2 (sampling::RNG& rng);
 		void transition_phase3 (sampling::RNG& rng);
 		void calculate_likelihood (void);
+
+		void calculate_etas (void);
 	};
 
 	/**
