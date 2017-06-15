@@ -4,6 +4,7 @@ var searchData=
   ['sampling',['sampling',['../namespacesampling.html',1,'']]],
   ['seg_5fdist_5ftraveled',['seg_dist_traveled',['../structgtfs_1_1ShapePt.html#ad3fe477575279af15fe33e0ce36eaad2',1,'gtfs::ShapePt']]],
   ['segment',['Segment',['../classgtfs_1_1Segment.html',1,'gtfs::Segment'],['../classgtfs_1_1Segment.html#ac1457d5864e30d591eede10e92f6fd85',1,'gtfs::Segment::Segment()'],['../structgtfs_1_1ShapeSegment.html#a3253b76a15e2645f894a75be55006e09',1,'gtfs::ShapeSegment::segment()']]],
+  ['segment_5fshapes',['segment_shapes',['../load__gtfs_8cpp.html#a4c73441dc3489abcadf91f57dd472673',1,'load_gtfs.cpp']]],
   ['set_5fseed',['set_seed',['../classsampling_1_1RNG.html#ad739124235d7d9bbe31f86d37f2fb9e5',1,'sampling::RNG']]],
   ['set_5ftrip',['set_trip',['../classgtfs_1_1Vehicle.html#a47ceaf4bb31c01dd4b26a12f1b7b7089',1,'gtfs::Vehicle']]],
   ['shape',['Shape',['../classgtfs_1_1Shape.html',1,'gtfs::Shape'],['../classgtfs_1_1Shape.html#ace6a58f57452ab0d2830b518a0ed2bde',1,'gtfs::Shape::Shape()']]],

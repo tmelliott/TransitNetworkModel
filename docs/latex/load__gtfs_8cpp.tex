@@ -26,6 +26,8 @@ void \hyperlink{load__gtfs_8cpp_a4f311128b9bf5549011dc5d2a288a0b0}{convert\+\_\+
 \item 
 void \hyperlink{load__gtfs_8cpp_a54ef9ab4a1985152c9cf7ec290fbea2d}{import\+\_\+intersections} (sqlite3 $\ast$db, std\+::vector$<$ std\+::string $>$ files)
 \item 
+void \hyperlink{load__gtfs_8cpp_a4c73441dc3489abcadf91f57dd472673}{segment\+\_\+shapes} (sqlite3 $\ast$db)
+\item 
 void \hyperlink{load__gtfs_8cpp_afc0ec9cd72ffe92b7aacb7c58aeea6b3}{calculate\+\_\+stop\+\_\+distances} (std\+::string \&dbname)
 \item 
 int \hyperlink{load__gtfs_8cpp_a0ddf1224851353fc92bfbff6f499fa97}{main} (int argc, char $\ast$argv\mbox{[}$\,$\mbox{]})
@@ -59,7 +61,7 @@ Compute the shape distance traveled for each stop along a route.
 {\em dbname} & The database to connect to \\
 \hline
 \end{DoxyParams}
-T\+H\+EN, see if stop lies between stop i-\/1 and stop i actually, since AT joins route shapes to the stop, we don\textquotesingle{}t need to do this bit\mbox{\Hypertarget{load__gtfs_8cpp_a4f311128b9bf5549011dc5d2a288a0b0}\label{load__gtfs_8cpp_a4f311128b9bf5549011dc5d2a288a0b0}} 
+\mbox{\Hypertarget{load__gtfs_8cpp_a4f311128b9bf5549011dc5d2a288a0b0}\label{load__gtfs_8cpp_a4f311128b9bf5549011dc5d2a288a0b0}} 
 \index{load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}!convert\+\_\+shapes@{convert\+\_\+shapes}}
 \index{convert\+\_\+shapes@{convert\+\_\+shapes}!load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}}
 \subsubsection{\texorpdfstring{convert\+\_\+shapes()}{convert\_shapes()}}
@@ -107,7 +109,44 @@ Loads G\+T\+FS file into database and segments as necessary.
 \begin{DoxyReturn}{Returns}
 0 if everything went OK; 1 if it didn\textquotesingle{}t 
 \end{DoxyReturn}
-database connection to use \mbox{\Hypertarget{load__gtfs_8cpp_acc289d9bfee4c154322662aef55c5438}\label{load__gtfs_8cpp_acc289d9bfee4c154322662aef55c5438}} 
+database connection to use \mbox{\Hypertarget{load__gtfs_8cpp_a4c73441dc3489abcadf91f57dd472673}\label{load__gtfs_8cpp_a4c73441dc3489abcadf91f57dd472673}} 
+\index{load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}!segment\+\_\+shapes@{segment\+\_\+shapes}}
+\index{segment\+\_\+shapes@{segment\+\_\+shapes}!load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}}
+\subsubsection{\texorpdfstring{segment\+\_\+shapes()}{segment\_shapes()}}
+{\footnotesize\ttfamily void segment\+\_\+shapes (\begin{DoxyParamCaption}\item[{sqlite3 $\ast$}]{db }\end{DoxyParamCaption})}
+
+Segment shapes.
+
+One check to make\+: length before segmentation == length after segmentation!
+
+For each segment
+\begin{DoxyItemize}
+\item find intersections on the segment
+\item split at intersections
+\begin{DoxyItemize}
+\item S\+P\+L\+IT = from nearest point on path to A to nearest point on path to B, I\+N\+C\+L\+U\+S\+I\+VE
+\end{DoxyItemize}
+\item for each S\+P\+L\+IT, look for existing segment between A and B
+\begin{DoxyItemize}
+\item IF exists, use that,
+\item E\+L\+SE create new segment
+\end{DoxyItemize}
+\item compare length of original with new\+:
+\begin{DoxyItemize}
+\item IF equal, then replace all rows of S\+H\+A\+P\+ES with new segments
+\begin{DoxyItemize}
+\item and delete the original segment
+\end{DoxyItemize}
+\item E\+L\+SE report an error creating the segment
+\end{DoxyItemize}
+\end{DoxyItemize}
+
+
+\begin{DoxyParams}{Parameters}
+{\em db} & a database connection \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{load__gtfs_8cpp_acc289d9bfee4c154322662aef55c5438}\label{load__gtfs_8cpp_acc289d9bfee4c154322662aef55c5438}} 
 \index{load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}!system@{system}}
 \index{system@{system}!load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}}
 \subsubsection{\texorpdfstring{system()}{system()}}

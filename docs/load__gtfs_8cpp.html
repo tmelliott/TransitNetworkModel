@@ -97,6 +97,8 @@ Functions</h2></td></tr>
 <tr class="separator:a4f311128b9bf5549011dc5d2a288a0b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a54ef9ab4a1985152c9cf7ec290fbea2d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="load__gtfs_8cpp.html#a54ef9ab4a1985152c9cf7ec290fbea2d">import_intersections</a> (sqlite3 *db, std::vector&lt; std::string &gt; files)</td></tr>
 <tr class="separator:a54ef9ab4a1985152c9cf7ec290fbea2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c73441dc3489abcadf91f57dd472673"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="load__gtfs_8cpp.html#a4c73441dc3489abcadf91f57dd472673">segment_shapes</a> (sqlite3 *db)</td></tr>
+<tr class="separator:a4c73441dc3489abcadf91f57dd472673"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afc0ec9cd72ffe92b7aacb7c58aeea6b3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="load__gtfs_8cpp.html#afc0ec9cd72ffe92b7aacb7c58aeea6b3">calculate_stop_distances</a> (std::string &amp;dbname)</td></tr>
 <tr class="separator:afc0ec9cd72ffe92b7aacb7c58aeea6b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ddf1224851353fc92bfbff6f499fa97"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="load__gtfs_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97">main</a> (int argc, char *argv[])</td></tr>
@@ -130,7 +132,6 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<p>THEN, see if stop lies between stop i-1 and stop i actually, since AT joins route shapes to the stop, we don't need to do this bit</p>
 
 </div>
 </div>
@@ -231,6 +232,52 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 if everything went OK; 1 if it didn't </dd></dl>
 <p>database connection to use </p>
+
+</div>
+</div>
+<a id="a4c73441dc3489abcadf91f57dd472673"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c73441dc3489abcadf91f57dd472673">&#9670;&nbsp;</a></span>segment_shapes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void segment_shapes </td>
+          <td>(</td>
+          <td class="paramtype">sqlite3 *&#160;</td>
+          <td class="paramname"><em>db</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Segment shapes.</p>
+<p>One check to make: length before segmentation == length after segmentation!</p>
+<p>For each segment</p><ul>
+<li>find intersections on the segment</li>
+<li>split at intersections<ul>
+<li>SPLIT = from nearest point on path to A to nearest point on path to B, INCLUSIVE</li>
+</ul>
+</li>
+<li>for each SPLIT, look for existing segment between A and B<ul>
+<li>IF exists, use that,</li>
+<li>ELSE create new segment</li>
+</ul>
+</li>
+<li>compare length of original with new:<ul>
+<li>IF equal, then replace all rows of SHAPES with new segments<ul>
+<li>and delete the original segment</li>
+</ul>
+</li>
+<li>ELSE report an error creating the segment</li>
+</ul>
+</li>
+</ul>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">db</td><td>a database connection </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

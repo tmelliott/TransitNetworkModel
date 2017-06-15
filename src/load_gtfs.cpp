@@ -38,6 +38,7 @@ namespace po = boost::program_options;
 int system (std::string const& s) { return system (s.c_str ()); }
 void convert_shapes (sqlite3* db);
 void import_intersections (sqlite3* db, std::vector<std::string> files);
+void segment_shapes (sqlite3* db);
 void calculate_stop_distances (std::string& dbname);
 
 /**
@@ -105,7 +106,7 @@ int main (int argc, char* argv[]) {
 		printf(" * Segmenting shapes ... %*d%%\r", 3, (i+1)/1000 * 100);
 		std::cout.flush ();
 
-
+		segment_shapes (db);
 	}
 
 	sqlite3_close (db);
@@ -451,6 +452,29 @@ void import_intersections (sqlite3* db, std::vector<std::string> files) {
 }
 
 /**
+ * Segment shapes.
+ *
+ * One check to make: length before segmentation == length after segmentation!
+ *
+ * For each segment
+ * - find intersections on the segment
+ * - split at intersections
+ *   - SPLIT = from nearest point on path to A to nearest point on path to B, INCLUSIVE
+ * - for each SPLIT, look for existing segment between A and B
+ *   - IF exists, use that,
+ *   - ELSE create new segment
+ * - compare length of original with new:
+ *   - IF equal, then replace all rows of SHAPES with new segments
+ *     - and delete the original segment
+ *   - ELSE report an error creating the segment
+ *
+ * @param db a database connection
+ */
+void segment_shapes (sqlite3* db) {
+	
+};
+
+/**
  * Compute the shape distance traveled for each stop along a route.
  * @param dbname The database to connect to
  */
@@ -528,10 +552,9 @@ void calculate_stop_distances (std::string& dbname) {
 					continue; // it wont be BEHIND this point!
 				}
 
-				/** THEN, see if stop lies between stop i-1 and stop i
-				 * actually, since AT joins route shapes to the stop,
-				 * we don't need to do this bit
-				 */
+				// THEN, see if stop lies between stop i-1 and stop i
+				// actually, since AT joins route shapes to the stop,
+				// we don't need to do this bit
 			}
 		}
 
