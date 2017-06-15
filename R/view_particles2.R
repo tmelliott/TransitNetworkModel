@@ -44,14 +44,25 @@ while (TRUE) {
         sapply(levels(vehicle), function(v) {
             ETAs <- do.call(rbind, strsplit(etas[vehicle == v], ","))
             mode(ETAs) <- "integer"
-            tr <- apply(ETAs, 2, quantile, probs = c(0.025, 0.975))
+            tr <- apply(ETAs, 2, quantile, probs = c(0.05, 0.95))
             xx <- stops[stops$route_id %in% unique(route_id[vehicle == v]), "progress"]
-            etaMin <- ifelse(tr[1, ] == 0, "",
-                             format(as.POSIXct(tr[1, ], origin = "1970-01-01"), "%H:%M"))
-            etaMax <- ifelse(tr[2, ] == 0, "",
-                             format(as.POSIXct(tr[2, ], origin = "1970-01-01"), "%H:%M"))
-            text(xx, which(levels(vehicle) == v), etaMin, cex = 0.6, pos = 1, offset = 0.5)
-            text(xx, which(levels(vehicle) == v), etaMax, cex = 0.6, pos = 3, offset = 0.5)
+            eta <- tr - as.numeric(Sys.time())
+            ##etaMin <- ifelse(tr[1, ] < as.numeric(Sys.time()), "",
+            ##                 ifelse (tr[1, ] < as.numeric(Sys.time()) + 60, "-",
+            ##                         format(as.POSIXct(tr[1, ], origin = "1970-01-01"), "%H:%M")))
+            ##etaMax <- ifelse(tr[2, ] == 0, "",
+            ##                 ifelse(tr[2, ] < as.numeric(Sys.time()) + 60, "DUE",
+            ##                        format(as.POSIXct(tr[2, ], origin = "1970-01-01"), "%H:%M")))
+            ## text(xx, which(levels(vehicle) == v), etaMin, cex = 0.6, pos = 1, offset = 0.5)
+            ## text(xx, which(levels(vehicle) == v), etaMax, cex = 0.6, pos = 3, offset = 0.5)
+            eta[1, ] <- eta[1, ] / 60
+            eta[2, ] <- eta[2, ] / 60
+            etaMins <- ifelse(eta[2, ] <= 0, "",
+                       ifelse(eta[2, ] < 1, "DUE",
+                       ifelse(eta[1, ] < 1, sprintf("<%dmin", ceiling(eta[2, ])),
+                              sprintf("%d-%dmin", floor(eta[1, ]), ceiling(eta[2, ])))))
+            text(xx, which(levels(vehicle) == v), etaMins, cex = 0.6, offset = 0.5,
+                 pos = ifelse(seq_along(eta) %% 2 == 0, 1, 3))
         })
     })
     ##dev.off()

@@ -182,8 +182,23 @@ namespace gtfs {
 	 * @param rng reference to the random number generator
 	 */
 	void Particle::transition_phase1 (sampling::RNG& rng) {
-		// for now we'll just stay where we are with some probability
-		if (rng.runif () < 0.3) delta_t = 0;
+
+		if (arrival_time > 0 &&
+			arrival_time + dwell_time >= vehicle->get_timestamp ()) {
+		// {^-----------------------^} == departure_time
+			// --- Particle is stopped at the bus stop
+			double gamma (6.0);
+			sampling::exponential exptau (1.0 / 10.0);
+
+			// min dwell time is 3 seconds
+			if (dwell_time < gamma) dwell_time = gamma;
+			dwell_time += exptau.rand (rng);
+			delta_t = vehicle->get_timestamp () - (arrival_time + dwell_time);
+		} else {
+			// deal with segments later ...
+			// for now we'll just stay where we are with some probability
+			if (rng.runif () < 0.3) delta_t = 0;
+		}
 	};
 
 	/**

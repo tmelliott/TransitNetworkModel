@@ -36,6 +36,16 @@ namespace gtfs {
 	class Stop;
 	struct StopTime;
 
+	// Some parameters
+
+	// class params {
+	// 	double pi;
+	// 	double gamma;
+	// 	double tau;
+	//
+	// };
+
+
 	/**
 	 * GTFS Schedule Information class
 	 *
