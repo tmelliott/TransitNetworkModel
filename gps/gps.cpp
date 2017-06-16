@@ -108,6 +108,20 @@ namespace gps {
   	};
 
 	/**
+	 * Compute the along-track distance to the nearest point on a line to
+	 * the given point.
+	 *
+	 * @param  p1 start of line
+	 * @param  p2 end of line
+	 * @return    how far along the line is the nearest point to this
+	 */
+	double Coord::alongTrackDistance(gps::Coord p1, gps::Coord p2) const {
+		double d13 = p1.distanceTo(*this) / R;
+		double dxt = crossTrackDistanceTo (p1, p2) / R;
+		return asin (cos (d13) / cos (dxt)) * R;
+	};
+
+	/**
 	 * Apply the Equirectangular projection to a point using
 	 * a supplied point as the origin.
 	 *
@@ -124,6 +138,41 @@ namespace gps {
 
 	    return std::vector<double> {R * x, R * y};
   	};
+
+	/**
+	 * Find the nearest point on a given path.
+	 *
+	 * @param  path the path to use
+	 * @return      a nearest point object, with the point and distance to it
+	 */
+	nearPt Coord::nearestPoint (std::vector<gps::Coord>& path) {
+		double d = INFINITY;
+		gps::Coord pt (lat, lng);
+		for (unsigned int i=1; i<path.size (); i++) {
+			if (path[i-1] == path[i]) continue;
+			double dat = alongTrackDistance(path[i-1], path[i]);
+			double di;
+			if (dat <= 0.0) {
+				di = distanceTo (path[i-1]);
+			} else if (dat >= path[i-1].distanceTo (path[i])) {
+				di = distanceTo (path[i]);
+			} else {
+				di = fabs(crossTrackDistanceTo (path[i-1], path[i]));
+			}
+			if (di < d) {
+				d = di;
+				if (dat <= 0.0) {
+					pt = path[i-1];
+				} else if (dat >= path[i-1].distanceTo (path[i])) {
+					pt = path[i];
+				} else {
+					pt = path[i-1].destinationPoint(dat, path[i-1].bearingTo (path[i]));
+				}
+			}
+		}
+
+		return nearPt (pt, d);
+	};
 
 	/**
 	 * Comparison operator for two coordinates.

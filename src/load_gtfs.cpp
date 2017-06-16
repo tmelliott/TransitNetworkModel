@@ -76,49 +76,40 @@ int main (int argc, char* argv[]) {
 	// connect to the SQLite database:
 	std::cout << "Loading GTFS data into database `" << dbname << "`\n";
 	sqlite3 *db;
-	char *zErrMsg = 0;
-	int rc;
 
-	rc = sqlite3_open ((dir + "/" + dbname).c_str(), &db);
-	if (rc) {
+	if (sqlite3_open ((dir + "/" + dbname).c_str(), &db)) {
 		fprintf(stderr, " * Can't open database: %s\n", sqlite3_errmsg(db));
       	return(0);
 	} else {
     	fprintf(stderr, " * Opened database successfully\n");
 	}
 
-	// STEP TWO:
-	// convert shapes -> segments
-	std::cout << " * Converting shapes to segments ... ";
-	convert_shapes (db); // -- temporary dont let it run (though it should die since shapes_tmp not present)
-	std::cout << "\n   ... done.\n";
+	// // STEP TWO:
+	// // convert shapes -> segments
+	// std::cout << " * Converting shapes to segments ... ";
+	// convert_shapes (db); // -- temporary dont let it run (though it should die since shapes_tmp not present)
+	// std::cout << "\n   ... done.\n";
+	//
+	// // STEP THREE:
+	// // importing intersections.json and segmenting segments:
+	// std::cout << " * Importing intersections ... ";
+	// std::vector<std::string> files {dir + "/data/intersections_trafficlights.json",
+	// 								dir + "/data/intersections_roundabouts.json"};
+	// import_intersections (db, files);
+	// std::cout << "done.\n";
 
-	// STEP THREE:
-	// importing intersections.json and segmenting segments:
-	std::cout << " * Importing intersections ... ";
-	std::vector<std::string> files {dir + "/data/intersections_trafficlights.json",
-									dir + "/data/intersections_roundabouts.json"};
-	import_intersections (db, files);
-	std::cout << "done.\n";
+	// STEP FOUR: get all segments, and split into more segments
+	segment_shapes (db);
 
-	// // Get all segments, and split into more segments
-	for (int i=0;i<1000;i++) {
-		printf(" * Segmenting shapes ... %*d%%\r", 3, (i+1)/1000 * 100);
-		std::cout.flush ();
-
-		segment_shapes (db);
-	}
-
+	// That's enough of the database connection ...
 	sqlite3_close (db);
 
-	std::cout << " * Segmenting shapes ... done.\n";
 
-
-	// STEP FOUR: stop distance into shape for stop_times
-	std::cout << " * Calculating distance into trip of stops ... \n";
-	std::string dbn = dir + "/" + dbname;
-	calculate_stop_distances (dbn);
-	std::cout << "\n   ... done.\n";
+	// // STEP FIVE: stop distance into shape for stop_times
+	// std::cout << " * Calculating distance into trip of stops ... \n";
+	// std::string dbn = dir + "/" + dbname;
+	// calculate_stop_distances (dbn);
+	// std::cout << "\n   ... done.\n";
 
 	return 0;
 }
@@ -451,6 +442,7 @@ void import_intersections (sqlite3* db, std::vector<std::string> files) {
 		<< "   -> Inserted " << Nfinal << " intersections.\n";
 }
 
+
 /**
  * Segment shapes.
  *
@@ -471,7 +463,173 @@ void import_intersections (sqlite3* db, std::vector<std::string> files) {
  * @param db a database connection
  */
 void segment_shapes (sqlite3* db) {
-	
+	sqlite3_stmt* stmt_segs;
+	if (sqlite3_prepare_v2 (db, "SELECT segment_id, length FROM segments LIMIT 10",
+							-1, &stmt_segs, 0) != SQLITE_OK) {
+		std::cerr << "\n x Unable to prepare SELECT segments";
+		return;
+	}
+	std::clog << "\n + Prepared SELECT segments";
+
+	sqlite3_stmt* stmt_ints;
+	if (sqlite3_prepare_v2 (db, "SELECT intersection_id, lat, lng FROM intersections",
+							-1, &stmt_ints, 0) != SQLITE_OK) {
+		std::cerr << "\n x Unable to prepare SELECT intersections";
+		return;
+	}
+	std::clog << "\n + Prepared SELECT intersections ... ";
+
+	struct Int {
+		int id;
+		gps::Coord pos;
+		Int (int id, gps::Coord pos) : id (id), pos (pos) {};
+	};
+	std::vector<Int> intersections;
+	while (sqlite3_step (stmt_ints) == SQLITE_ROW) {
+		intersections.emplace_back (sqlite3_column_int (stmt_ints, 0),
+									gps::Coord (sqlite3_column_double (stmt_ints, 1),
+												sqlite3_column_double (stmt_ints, 2)));
+	}
+	std::clog << "loaded " << intersections.size () << " intersections";
+
+	sqlite3_stmt* stmt_shape;
+	if (sqlite3_prepare_v2 (db, "SELECT lat, lng FROM segment_pt WHERE segment_id=$1 ORDER BY seg_pt_sequence",
+							-1, &stmt_shape, 0) != SQLITE_OK) {
+		std::cerr << "\n x Unable to prepare SELECT segment shape points";
+		return;
+	}
+	std::clog << "\n + Prepared SELECT segment shape points";
+
+
+	// for progress bar, we need # of rows
+	sqlite3_stmt* stmt_n;
+	int Nseg = 0;
+	if (sqlite3_prepare_v2 (db, "SELECT COUNT(segment_id) FROM segments", -1, &stmt_n, 0) == SQLITE_OK &&
+		sqlite3_step (stmt_n) == SQLITE_ROW) {
+		Nseg = sqlite3_column_int (stmt_n, 0);
+	}
+	sqlite3_finalize (stmt_n);
+
+	// Step through each segment and ... segment it further!
+	std::cout << "\n * Splitting segments ";
+	int Ni = 1;
+	while (sqlite3_step (stmt_segs) == SQLITE_ROW) {
+		if (Nseg > 0) {
+			printf("\r * Splitting segments %*d%%", 3, (int) (100 * Ni / Nseg));
+			std::cout.flush ();
+			Ni++;
+		}
+
+		int segment_id = sqlite3_column_int (stmt_segs, 0);
+
+		// Get the shape points
+		if (sqlite3_bind_int (stmt_shape, 1, segment_id) != SQLITE_OK) {
+			std::cerr << "\r x Unable to bind query for segment " << segment_id << "\n";
+			continue;
+		}
+		std::vector<gps::Coord> shapepts;
+		double latmin = 0, latmax = 0, lngmin = 0, lngmax = 0;
+		while (sqlite3_step (stmt_shape) == SQLITE_ROW) {
+			shapepts.emplace_back (sqlite3_column_double (stmt_shape, 0),
+								   sqlite3_column_double (stmt_shape, 1));
+			gps::Coord& s = shapepts.back ();
+			if (latmin == 0 || s.lat < latmin) latmin = s.lat;
+			if (latmax == 0 || s.lat > latmax) latmax = s.lat;
+			if (lngmin == 0 || s.lng < lngmin) lngmin = s.lng;
+			if (lngmax == 0 || s.lng > lngmax) lngmax = s.lng;
+		}
+		sqlite3_reset (stmt_shape);
+
+		// Find nearby intersections
+		// - if in box, find distance to nearest point on route
+		std::cout << "\n   - Bounding box: ["
+			<< latmin << ", " << lngmin << ", "
+			<< latmax << ", " << latmax
+			<< "] ID = " << segment_id << "\n";
+		std::vector<Int> ikeep;
+		for (auto& ipt: intersections) {
+			if (ipt.pos.lat < latmin || ipt.pos.lat > latmax ||
+				ipt.pos.lng < lngmin || ipt.pos.lng > lngmax) continue;
+
+			auto np = ipt.pos.nearestPoint (shapepts);
+			// keep for investigational purposes ... (plots? etc...)
+			// printf("%.6f,%.6f,%.6f,%.6f,%.2f,%d\n", ipt.pos.lat, ipt.pos.lng,
+			// 	   np.pt.lat, np.pt.lng, np.d, (int) np.d < 40);
+
+			// Keep the intersections that are close
+			if (np.d < 40) ikeep.emplace_back (ipt.id, ipt.pos);
+		}
+		if (ikeep.size () == 0) continue;
+
+		// Now we simply travel along the route, splitting it whenever
+		// come to an intersection.
+		std::cout << "\n: Intersections (in order): ";
+		std::vector<int> x1, x2; // shape index, intersection index  (< 40m)
+		for (unsigned int i=1; i<shapepts.size (); i++) {
+			auto& p1 = shapepts[i-1], p2 = shapepts[i];
+			std::vector<gps::Coord> pseg {p1, p2};
+			for (auto& ipt: ikeep) {
+				auto np = ipt.pos.nearestPoint (pseg);
+				if (np.d < 40) {
+					x1.push_back (i-1);
+					x2.push_back (ipt.id);
+				}
+			}
+		}
+		x1.push_back (0); // add a zero so we don't need a special end condition
+		x2.push_back (0);
+		if (x1.size () != x2.size ()) {
+			std::cerr << "Something very, very terrible went wrong: "
+				<< x1.size () << " + " << x2.size ();
+			return;
+		}
+		std::cout << "\n";
+		std::vector<gps::Coord> path;
+		struct Split {
+			int id;
+			gps::Coord at;
+			Split (int id, gps::Coord at) : id (id), at (at) {};
+		};
+		std::vector<Split> splitpoints;
+		for (unsigned int i=0; i<x1.size ()-1; i++) {
+			// so long as shape index is less than 10 smaller than next index,
+			// and segment index is the same as the next one, keep going
+			if (x1[i] + 10 > x1[i+1] && x2[i] == x2[i+1]) {
+				path.push_back (shapepts[x1[i]]);
+				// std::cout << ".";
+			} else {
+				// Otherwise, save this intersection
+				path.push_back (shapepts[x1[i]]);
+				path.push_back (shapepts[x1[i]+1]);
+				gps::nearPt np;
+				for (auto& ipt: ikeep) {
+					// step through intersections until we find the one we're after
+					if (ipt.id == x2[i]) {
+						// then find the nearest point to it on the shape:
+						np = ipt.pos.nearestPoint (shapepts);
+						if (np.d < 40) splitpoints.emplace_back (ipt.id, np.pt);
+						break;
+					}
+				}
+				path.clear ();
+			}
+		}
+		for (auto& sp: splitpoints) std::cout << "  - " << sp.id << ": " << sp.at << "\n";
+
+		// Now just stream along the path looking for split points, and split!
+		int si = 0;
+		for (unsigned int i=1; i<shapepts.size (); i++) {
+			auto& p1 = shapepts[i-1], p2 = shapepts[i];
+			if (p1.distanceTo (splitpoints[si].at) +
+				splitpoints[si].at.distanceTo (p2) <= p1.distanceTo (p2) + 1) { // allow for a little error
+				// finalise segment
+			}
+		}
+	}  // END while (step)
+	std::cout << " - done!\n";
+
+	sqlite3_finalize (stmt_shape);
+	sqlite3_finalize (stmt_segs);
 };
 
 /**

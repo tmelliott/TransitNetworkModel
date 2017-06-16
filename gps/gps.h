@@ -16,6 +16,8 @@ namespace gps {
 	 */
   	const double R = 6371000.0;
 
+	struct nearPt;
+
 	/**
 	 * Coordinate class represents lat/lng points on the Earth.
 	 */
@@ -31,7 +33,9 @@ namespace gps {
 		double bearingTo(gps::Coord destination) const;
 		gps::Coord destinationPoint(double distance, double bearing) const;
 		double crossTrackDistanceTo(gps::Coord p1, gps::Coord p2) const;
+		double alongTrackDistance(gps::Coord p1, gps::Coord p2) const;
 		std::vector<double> projectFlat(gps::Coord origin) const;
+		nearPt nearestPoint (std::vector<gps::Coord>& path);
 
 		bool operator==(const Coord &p) const;
 		bool operator!=(const Coord &p) const;
@@ -49,6 +53,17 @@ namespace gps {
   	inline std::ostream& operator<< (std::ostream& os, const Coord& p) {
     	return os << "(" << p.lat << ", " << p.lng << ")";
   	};
+
+	/**
+	 * A nearest-point structure.
+	 */
+	struct nearPt {
+		gps::Coord pt; /*!< the nearest point */
+		double d; /*!< distance to that point */
+		/** default constructor */
+		nearPt (gps::Coord p, double d) : pt (p), d (d) {};
+		nearPt () {};
+	};
 
 }; // end namespace gps
 
