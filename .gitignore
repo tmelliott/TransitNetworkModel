@@ -4,5 +4,5 @@ data/*.txt
 *.o
 gtfs.zip
 *.db
-
+*-journal
 protobuf/*.pb.*
