@@ -493,8 +493,7 @@ void segment_shapes (sqlite3* db) {
 	std::clog << "loaded " << intersections.size () << " intersections";
 
 	sqlite3_stmt* stmt_shape;
-	if (sqlite3_prepare_v2 (db, "SELECT lat, lng FROM segment_pt WHERE segment_id=$1 ORDER BY seg_pt_sequence",
-							-1, &stmt_shape, 0) != SQLITE_OK) {
+	if (sqlite3_prepare_v2 (db, "SELECT lat, lng, seg_dist_traveled FROM segment_pt WHERE segment_id=$1 ORDER BY seg_pt_sequence", -1, &stmt_shape, 0) != SQLITE_OK) {
 		std::cerr << "\n x Unable to prepare SELECT segment shape points";
 		return;
 	}
@@ -545,16 +544,13 @@ void segment_shapes (sqlite3* db) {
 		std::cout << "\n   - Bounding box: ["
 			<< latmin << ", " << lngmin << ", "
 			<< latmax << ", " << latmax
-			<< "] ID = " << segment_id << "\n";
+			<< "] ID = " << segment_id;
 		std::vector<Int> ikeep;
 		for (auto& ipt: intersections) {
 			if (ipt.pos.lat < latmin || ipt.pos.lat > latmax ||
 				ipt.pos.lng < lngmin || ipt.pos.lng > lngmax) continue;
 
 			auto np = ipt.pos.nearestPoint (shapepts);
-			// keep for investigational purposes ... (plots? etc...)
-			// printf("%.6f,%.6f,%.6f,%.6f,%.2f,%d\n", ipt.pos.lat, ipt.pos.lng,
-			// 	   np.pt.lat, np.pt.lng, np.d, (int) np.d < 40);
 
 			// Keep the intersections that are close
 			if (np.d < 40) ikeep.emplace_back (ipt.id, ipt.pos);
@@ -563,7 +559,6 @@ void segment_shapes (sqlite3* db) {
 
 		// Now we simply travel along the route, splitting it whenever
 		// come to an intersection.
-		std::cout << "\n: Intersections (in order): ";
 		std::vector<int> x1, x2; // shape index, intersection index  (< 40m)
 		for (unsigned int i=1; i<shapepts.size (); i++) {
 			auto& p1 = shapepts[i-1], p2 = shapepts[i];
@@ -583,7 +578,6 @@ void segment_shapes (sqlite3* db) {
 				<< x1.size () << " + " << x2.size ();
 			return;
 		}
-		std::cout << "\n";
 		std::vector<gps::Coord> path;
 		struct Split {
 			int id;
@@ -614,17 +608,32 @@ void segment_shapes (sqlite3* db) {
 				path.clear ();
 			}
 		}
-		for (auto& sp: splitpoints) std::cout << "  - " << sp.id << ": " << sp.at << "\n";
+		// for (auto& sp: splitpoints) std::cout << "  - " << sp.id << ": " << sp.at << "\n";
 
 		// Now just stream along the path looking for split points, and split!
-		int si = 0;
+		unsigned int si = 1;
+		std::cout << " \n * locating " << splitpoints.size () << " splits.";
 		for (unsigned int i=1; i<shapepts.size (); i++) {
 			auto& p1 = shapepts[i-1], p2 = shapepts[i];
-			if (p1.distanceTo (splitpoints[si].at) +
-				splitpoints[si].at.distanceTo (p2) <= p1.distanceTo (p2) + 1) { // allow for a little error
+			if (p1.distanceTo (splitpoints[si-1].at) +
+				splitpoints[si-1].at.distanceTo (p2) <= p1.distanceTo (p2) + 1) {
 				// finalise segment
+				int startid, endid;
+				if (si > 1) startid = splitpoints[si-2].id;
+				if (si <= splitpoints.size ()) endid = splitpoints[si-1].id;
+
+				std::cout << "\n + Sement " << si << ": from ";
+				if (si > 1) std::cout << startid;
+				else std::cout << "start";
+				std::cout << " to ";
+				if (si <= splitpoints.size ()) std::cout << endid;
+				else std::cout << "end";
+				si++;
 			}
 		}
+		std::cout << "\n + Segment from " << splitpoints.back ().id
+			<< " to end";
+		std::cout << "\n\n";
 	}  // END while (step)
 	std::cout << " - done!\n";
 

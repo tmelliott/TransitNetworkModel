@@ -457,6 +457,7 @@ namespace gtfs {
 				 std::shared_ptr<Intersection> end,
 				 std::vector<ShapePt>& path,
 				 double length) : id (id), start_at (start), end_at (end), path (path), length (length) {};
+
 		// --- GETTERS
 		/** @return the segment's ID */
 		const unsigned long& get_id (void) const { return id; };
