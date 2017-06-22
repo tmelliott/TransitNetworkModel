@@ -509,6 +509,34 @@ void segment_shapes (sqlite3* db) {
 	}
 	sqlite3_finalize (stmt_n);
 
+	/**
+	 * A split object, used only to find intersections at which
+	 * to split the route.
+	 */
+	struct Split {
+		int id;
+		gps::Coord at;
+		Split (int id, gps::Coord at) : id (id), at (at) {};
+	};
+
+	// statements to SELECT segment, and insert SEGMENT and SEGMENT_POINTS
+	sqlite3_stmt* stmt_segget;
+	sqlite3_stmt* stmt_segins;
+	sqlite3_stmt* stmt_ptins;
+	if (sqlite3_prepare_v2 (db, "SELECT segment_id FROM segments WHERE start_id=$1 AND end_id=$2",
+							-1, &stmt_segget, 0) != SQLITE_OK) {
+		std::cerr << "\n x Unable to prepare SELECT segment_id query";
+		return;
+	}
+	if (sqlite3_prepare_v2 (db, "INSERT INTO segments (segment_id,start_id,end_id,length) VALUES ($1,$2,$3,$4)", -1, &stmt_segins, 0) != SQLITE_OK) {
+		std::cerr << "\n x Unable to prepare INSERT segments";
+		return;
+	}
+	if (sqlite3_prepare_v2 (db, "INSERT INTO segment_pt (segment_id,seg_pt_sequence,lat,lng,seg_dist_traveled) VALUES ($1,$2,$3,$4,$5)", -1, &stmt_ptins, 0) != SQLITE_OK) {
+		std::cerr << "\n x Unable to prepare INSERT segment_pt";
+		return;
+	}
+
 	// Step through each segment and ... segment it further!
 	std::cout << "\n * Splitting segments ";
 	int Ni = 1;
@@ -562,13 +590,20 @@ void segment_shapes (sqlite3* db) {
 		std::vector<int> x1, x2; // shape index, intersection index  (< 40m)
 		for (unsigned int i=1; i<shapepts.size (); i++) {
 			auto& p1 = shapepts[i-1], p2 = shapepts[i];
+			if (p1 == p2) continue;
 			std::vector<gps::Coord> pseg {p1, p2};
+			double closest = 100;
+			int cid = -1;
 			for (auto& ipt: ikeep) {
 				auto np = ipt.pos.nearestPoint (pseg);
-				if (np.d < 40) {
-					x1.push_back (i-1);
-					x2.push_back (ipt.id);
+				if (np.d < 40 && np.d < closest) {
+					closest = np.d;
+					cid = ipt.id;
 				}
+			}
+			if (cid >= 0 && closest < 40) {
+				x1.push_back (i-1);
+				x2.push_back (cid);
 			}
 		}
 		x1.push_back (0); // add a zero so we don't need a special end condition
@@ -578,19 +613,17 @@ void segment_shapes (sqlite3* db) {
 				<< x1.size () << " + " << x2.size ();
 			return;
 		}
+
+		// for (unsigned int i=0; i<x1.size (); i++)
+		// 	std::cout << "\n + " << x2[i] << " - " << x1[i];
+
 		std::vector<gps::Coord> path;
-		struct Split {
-			int id;
-			gps::Coord at;
-			Split (int id, gps::Coord at) : id (id), at (at) {};
-		};
 		std::vector<Split> splitpoints;
 		for (unsigned int i=0; i<x1.size ()-1; i++) {
 			// so long as shape index is less than 10 smaller than next index,
 			// and segment index is the same as the next one, keep going
 			if (x1[i] + 10 > x1[i+1] && x2[i] == x2[i+1]) {
 				path.push_back (shapepts[x1[i]]);
-				// std::cout << ".";
 			} else {
 				// Otherwise, save this intersection
 				path.push_back (shapepts[x1[i]]);
@@ -600,7 +633,7 @@ void segment_shapes (sqlite3* db) {
 					// step through intersections until we find the one we're after
 					if (ipt.id == x2[i]) {
 						// then find the nearest point to it on the shape:
-						np = ipt.pos.nearestPoint (shapepts);
+						np = ipt.pos.nearestPoint (path);
 						if (np.d < 40) splitpoints.emplace_back (ipt.id, np.pt);
 						break;
 					}
@@ -608,35 +641,68 @@ void segment_shapes (sqlite3* db) {
 				path.clear ();
 			}
 		}
-		// for (auto& sp: splitpoints) std::cout << "  - " << sp.id << ": " << sp.at << "\n";
+		// KEEP FOR DEBUGGING AND GRAPHS: R/test.R
+		// std::cout << "\nIntersection IDs: ";
+		// for (auto& sp: splitpoints)
+		// 	printf("\n%d,%.6f,%.6f", sp.id, sp.at.lat, sp.at.lng);
 
 		// Now just stream along the path looking for split points, and split!
-		unsigned int si = 1;
-		std::cout << " \n * locating " << splitpoints.size () << " splits.";
-		for (unsigned int i=1; i<shapepts.size (); i++) {
-			auto& p1 = shapepts[i-1], p2 = shapepts[i];
-			if (p1.distanceTo (splitpoints[si-1].at) +
-				splitpoints[si-1].at.distanceTo (p2) <= p1.distanceTo (p2) + 1) {
-				// finalise segment
-				int startid, endid;
-				if (si > 1) startid = splitpoints[si-2].id;
-				if (si <= splitpoints.size ()) endid = splitpoints[si-1].id;
 
-				std::cout << "\n + Sement " << si << ": from ";
-				if (si > 1) std::cout << startid;
-				else std::cout << "start";
-				std::cout << " to ";
-				if (si <= splitpoints.size ()) std::cout << endid;
-				else std::cout << "end";
-				si++;
+		std::cout << "\n * locating " << splitpoints.size () << " splits";
+		std::cout.flush ();
+		std::vector<int> segment_ids;
+		segment_ids.reserve (splitpoints.size () + 1);
+		path.clear (); // we can reuse it!
+		unsigned int i = 1; // shape index counter
+		unsigned int si = segment_ids.size ();
+		while (segment_ids.size () < splitpoints.size () + 1 && i < shapepts.size ()) {
+			auto& p1 = shapepts[i-1], p2 = shapepts[i];
+
+			if (p1.distanceTo (splitpoints[si].at) +
+				splitpoints[si].at.distanceTo (p2) <= p1.distanceTo (p2) + 1 ||
+				si == splitpoints.size ()) {
+				// finalise segment
+				int startid = 0, endid = 0;
+				if (si > 0) startid = splitpoints[si-1].id;
+				if (si < splitpoints.size ()) endid = splitpoints[si].id;
+
+				// Find or Create new segment
+				if (sqlite3_bind_int (stmt_segget, 1, startid) == SQLITE_OK &&
+					sqlite3_bind_int (stmt_segget, 2, endid) == SQLITE_OK &&
+					sqlite3_step (stmt_segget) == SQLITE_ROW) {
+					segment_ids.push_back (sqlite3_column_int (stmt_segget, 0));
+				} else {
+					// necessary to create a new segment!
+					segment_ids.push_back (0);
+				}
+				sqlite3_reset (stmt_segget);
+
+				std::clog << "\n   + Sement " << si + 1 << ": from ";
+				if (si > 0) std::clog << startid;
+				else std::clog << "start";
+				std::clog << " to ";
+				if (si < splitpoints.size ()) std::clog << endid;
+				else std::clog << "end";
+
+				si = segment_ids.size ();
+				if (si == splitpoints.size () + 1) break;
 			}
+			i++;
 		}
-		std::cout << "\n + Segment from " << splitpoints.back ().id
-			<< " to end";
+
+		if (segment_ids.size () == splitpoints.size () + 1) {
+			std::cout << "\n * created " << segment_ids.size () << " segments";
+		} else {
+			std::cerr << "\n x created the wrong number of segments (" << segment_ids.size () << ")";
+		}
+
 		std::cout << "\n\n";
 	}  // END while (step)
 	std::cout << " - done!\n";
 
+	sqlite3_finalize (stmt_segget);
+	sqlite3_finalize (stmt_segins);
+	sqlite3_finalize (stmt_ptins);
 	sqlite3_finalize (stmt_shape);
 	sqlite3_finalize (stmt_segs);
 };
