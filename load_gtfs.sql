@@ -37,7 +37,9 @@ CREATE TABLE segments (
 	segment_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	start_id INT,
 	end_id INT,
-	length REAL
+	length REAL,
+	start_stop_id TEXT,
+	end_stop_id TEXT
 );
 CREATE TABLE segment_pt (
 	segment_id INT,

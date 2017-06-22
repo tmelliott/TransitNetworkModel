@@ -13,7 +13,7 @@ f <- textConnection("id,lat,lng
 529,-36.967170,174.924960
 1062,-36.950090,174.966100
 1101,-36.945430,174.963920
-1376,-36.889830,175.012790
+1376,-36.890010,175.012410
 1378,-36.889120,175.009950
 1374,-36.887570,175.003250
 1375,-36.881010,175.005550
@@ -24,10 +24,12 @@ f <- textConnection("id,lat,lng
 ")
 
 x = read.csv(f)
-shp = dbGetQuery(con, "SELECT * FROM segment_pt WHERE segment_id=10")
+shp = dbGetQuery(con, "SELECT * FROM segment_pt WHERE segment_id=9")
 ints = dbGetQuery(con, sprintf("SELECT * FROM intersections WHERE intersection_id IN (%s)", paste(x$id, collapse=",")))
 with(shp, plot(lng, lat, type="l",asp=1.2,col = "#009900", lwd=2))
 with(ints, points(lng, lat, pch = 1, cex = 1, col = "#999999"))
 
-with(x, points(lng, lat, col = "#990000", pch = 1:4))
-with(ints, text(lng, lat, intersection_id))
+with(x, points(lng, lat, col = "#990000", pch = 19, cex = 0.3))
+
+with(x, points(lng, lat, col = "#990000", pch = 1:9))
+#with(ints, text(lng, lat, intersection_id))
