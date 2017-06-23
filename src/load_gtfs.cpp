@@ -464,7 +464,7 @@ void import_intersections (sqlite3* db, std::vector<std::string> files) {
  */
 void segment_shapes (sqlite3* db) {
 	sqlite3_stmt* stmt_segs;
-	if (sqlite3_prepare_v2 (db, "SELECT segment_id FROM segments LIMIT 10",
+	if (sqlite3_prepare_v2 (db, "SELECT segment_id FROM segments",
 							-1, &stmt_segs, 0) != SQLITE_OK) {
 		std::cerr << "\n x Unable to prepare SELECT segments";
 		return;
