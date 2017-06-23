@@ -464,7 +464,7 @@ void import_intersections (sqlite3* db, std::vector<std::string> files) {
  */
 void segment_shapes (sqlite3* db) {
 	sqlite3_stmt* stmt_segs;
-	if (sqlite3_prepare_v2 (db, "SELECT segment_id, length FROM segments",
+	if (sqlite3_prepare_v2 (db, "SELECT segment_id FROM segments LIMIT 10",
 							-1, &stmt_segs, 0) != SQLITE_OK) {
 		std::cerr << "\n x Unable to prepare SELECT segments";
 		return;
@@ -500,14 +500,17 @@ void segment_shapes (sqlite3* db) {
 	std::clog << "\n + Prepared SELECT segment shape points";
 
 
-	// for progress bar, we need # of rows
-	sqlite3_stmt* stmt_n;
-	int Nseg = 0;
-	if (sqlite3_prepare_v2 (db, "SELECT COUNT(segment_id) FROM segments", -1, &stmt_n, 0) == SQLITE_OK &&
-		sqlite3_step (stmt_n) == SQLITE_ROW) {
-		Nseg = sqlite3_column_int (stmt_n, 0);
-	}
-	sqlite3_finalize (stmt_n);
+	// // for progress bar, we need # of rows
+	// sqlite3_stmt* stmt_n;
+	// int Nseg = 0;
+	// if (sqlite3_prepare_v2 (db, "SELECT COUNT(segment_id) FROM segments", -1, &stmt_n, 0) == SQLITE_OK &&
+	// 	sqlite3_step (stmt_n) == SQLITE_ROW) {
+	// 	Nseg = sqlite3_column_int (stmt_n, 0);
+	// }
+	// sqlite3_finalize (stmt_n);
+	std::vector<int> segmentIDs;
+	while (sqlite3_step (stmt_segs) == SQLITE_ROW)
+		segmentIDs.push_back (sqlite3_column_int (stmt_segs, 0));
 
 	/**
 	 * A split object, used only to find intersections at which
@@ -524,6 +527,10 @@ void segment_shapes (sqlite3* db) {
 	sqlite3_stmt* stmt_segins;
 	sqlite3_stmt* stmt_segID;
 	sqlite3_stmt* stmt_ptins;
+	sqlite3_stmt* stmt_shapegetid;
+	sqlite3_stmt* stmt_shapeget;
+	sqlite3_stmt* stmt_shapedel;
+	sqlite3_stmt* stmt_shapeins;
 	if (sqlite3_prepare_v2 (db, "SELECT segment_id FROM segments WHERE start_id=$1 AND end_id=$2",
 							-1, &stmt_segget, 0) != SQLITE_OK) {
 		std::cerr << "\n x Unable to prepare SELECT segment_id query";
@@ -543,18 +550,35 @@ void segment_shapes (sqlite3* db) {
 		std::cerr << "\n x Unable to prepare INSERT segment_pt";
 		return;
 	}
+	if (sqlite3_prepare_v2 (db, "SELECT DISTINCT shape_id FROM shapes WHERE segment_id=$1",
+							-1, &stmt_shapegetid, 0) != SQLITE_OK) {
+		std::cerr << "\n x Unable to prepare SELECT shape_id query";
+		return;
+	}
+	if (sqlite3_prepare_v2 (db, "SELECT shapes.segment_id, segments.length FROM shapes, segments WHERE shapes.shape_id=$1 AND shapes.segment_id=segments.segment_id ORDER BY leg",
+							-1, &stmt_shapeget, 0) != SQLITE_OK) {
+		std::cerr << "\n x Unable to prepare SELECT shape_id query";
+		return;
+	}
+	if (sqlite3_prepare_v2 (db, "DELETE FROM shapes WHERE shape_id=$1",
+							-1, &stmt_shapedel, 0) != SQLITE_OK) {
+		std::cerr << "\n x Unable to prepare DELETE FROM shapes query";
+		return;
+	}
+	if (sqlite3_prepare_v2 (db, "INSERT INTO shapes (shape_id,leg,segment_id,shape_dist_traveled) VALUES ($1,$2,$3,$4)", -1, &stmt_shapeins, 0) != SQLITE_OK) {
+		std::cerr << "\n x Unable to prepare INSERT query";
+		return;
+	}
+
 
 	// Step through each segment and ... segment it further!
 	std::cout << "\n * Splitting segments ";
-	int Ni = 1;
-	while (sqlite3_step (stmt_segs) == SQLITE_ROW) {
-		if (Nseg > 0) {
-			printf("\r * Splitting segments %*d%%", 3, (int) (100 * Ni / Nseg));
-			std::cout.flush ();
-			Ni++;
-		}
+	for (unsigned int segi=0; segi<segmentIDs.size (); segi++) {
+		printf("\r * Splitting segments %*d%%",
+			   3, (int) (100 * (segi+1) / segmentIDs.size ()));
+		std::cout.flush ();
 
-		int segment_id = sqlite3_column_int (stmt_segs, 0);
+		int segment_id = segmentIDs[segi];
 
 		// Get the shape points
 		if (sqlite3_bind_int (stmt_shape, 1, segment_id) != SQLITE_OK) {
@@ -657,7 +681,9 @@ void segment_shapes (sqlite3* db) {
 
 		std::clog << "\n * locating " << splitpoints.size () << " splits";
 		std::vector<int> segment_ids;
+		std::vector<double> segment_lengths;
 		segment_ids.reserve (splitpoints.size () + 1);
+		segment_lengths.reserve (splitpoints.size () + 1);
 		path.clear (); // we can reuse it!
 		unsigned int i = 1; // shape index counter
 		unsigned int si = segment_ids.size ();
@@ -764,6 +790,7 @@ void segment_shapes (sqlite3* db) {
 						sqlite3_reset (stmt_ptins);
 						if (j + 1 < path.size ()) pathdist += path[j].distanceTo (path[j+1]);
 					}
+					segment_lengths.push_back (pathdist);
 					sqlite3_exec (db, "COMMIT", NULL, NULL, NULL);
 				}
 				sqlite3_reset (stmt_segget);
@@ -786,8 +813,118 @@ void segment_shapes (sqlite3* db) {
 		}
 
 		if (segment_ids.size () == splitpoints.size () + 1) {
-			std::clog << "\n * created " << segment_ids.size () << " segments: \n  > ";
-			for (auto sid: segment_ids) std::clog << sid << ", ";
+			printf("\n + Segment %d -> %d : ", segment_id, (int)segment_ids.size ());
+			for (unsigned int k=0; k<segment_ids.size (); k++)
+				std::cout << segment_ids[k] << " (" << segment_lengths[k] << "m), ";
+			std::cout << "\n\n";
+			// Convert all rows in SHAPES where segment_id = segment_id
+
+			// - START transaction
+			sqlite3_exec (db, "BEGIN", NULL, NULL, NULL);
+
+			// - get all SHAPES that include segment_id
+			if (sqlite3_bind_int (stmt_shapegetid, 1, segment_id) != SQLITE_OK) {
+				std::cerr << "\n x Unable to bind segment ID to query";
+				return;
+			}
+			while (sqlite3_step (stmt_shapegetid) == SQLITE_ROW) {
+				auto shapeid = (char*)sqlite3_column_text (stmt_shapegetid, 0);
+				// - for each SHAPE, select shape_id, segment_id
+				if (sqlite3_bind_text (stmt_shapeget, 1, shapeid, -1, SQLITE_STATIC) != SQLITE_OK) {
+					std::cerr << "\n x Unable to bind shape id to query";
+					return;
+				}
+				std::vector<int> shapesegs;
+				std::vector<double> shapelens;
+				while (sqlite3_step (stmt_shapeget) == SQLITE_ROW) {
+					shapesegs.push_back (sqlite3_column_int (stmt_shapeget, 0));
+					shapelens.push_back (sqlite3_column_double (stmt_shapeget, 1));
+				}
+				sqlite3_reset (stmt_shapeget);
+
+				// - DELETE FROM shapes
+				if (sqlite3_bind_text (stmt_shapedel, 1, shapeid, -1, SQLITE_STATIC) != SQLITE_OK) {
+					std::cerr << "\n x Unable to bind shape id to delete query";
+					return;
+				}
+				if (sqlite3_step (stmt_shapedel) != SQLITE_DONE) {
+					std::cerr << "\n x Unable to run DELETE query";
+					return;
+				}
+				sqlite3_reset (stmt_shapedel);
+
+				// - INSERT INTO, replacing segment_id with segment_ids (and recreate leg/distances)
+				int legi = 1;
+				double shapedist = 0.0;
+				for (unsigned int j=0; j<shapesegs.size (); j++) {
+					if (shapesegs[j] == segment_id) {
+						// CREATE MULTIPLE SEGMENTS
+						// printf ("\n   + Row [%s, %d, %d, 0] -> ", shapeid, j+1, shapesegs[j]);
+						for (unsigned int k=0; k<segment_ids.size (); k++) {
+							int sid = segment_ids[k];
+							// printf ("\n       [%s, %d, %d, %.1fm], ", shapeid, legi, sid, shapedist);
+							if (sqlite3_bind_text (stmt_shapeins, 1, shapeid, -1, SQLITE_STATIC) != SQLITE_OK) {
+								std::cerr << "\n x Error binding shape id to insert query";
+								return;
+							}
+							if (sqlite3_bind_int (stmt_shapeins, 2, legi) != SQLITE_OK) {
+								std::cerr << "\n x Error binding leg to insert query";
+								return;
+							}
+							if (sqlite3_bind_int (stmt_shapeins, 3, sid) != SQLITE_OK) {
+								std::cerr << "\n x Error binding segment_id to query";
+								return;
+							}
+							if (sqlite3_bind_double (stmt_shapeins, 4, shapedist) != SQLITE_OK) {
+								std::cerr << "\n x Error binding distance to query";
+								return;
+							}
+							if (sqlite3_step (stmt_shapeins) != SQLITE_DONE) {
+								std::cerr << "\n x Error running INSERT query";
+								return;
+							}
+
+							sqlite3_reset (stmt_shapeins);
+							legi++;
+							shapedist += segment_lengths[k];
+						}
+					} else {
+						// JUST RECREATE THE OLD ONE (updated)
+						// printf ("\n   o Segment %d, leg %d -> %d",
+								// shapesegs[j], j+1, legi);
+						if (sqlite3_bind_text (stmt_shapeins, 1, shapeid, -1, SQLITE_STATIC) != SQLITE_OK) {
+							std::cerr << "\n x Error binding shape id to insert query";
+							return;
+						}
+						if (sqlite3_bind_int (stmt_shapeins, 2, legi) != SQLITE_OK) {
+							std::cerr << "\n x Error binding leg to insert query";
+							return;
+						}
+						if (sqlite3_bind_int (stmt_shapeins, 3, shapesegs[j]) != SQLITE_OK) {
+							std::cerr << "\n x Error binding segment_id to query";
+							return;
+						}
+						if (sqlite3_bind_double (stmt_shapeins, 4, shapedist) != SQLITE_OK) {
+							std::cerr << "\n x Error binding distance to query";
+							return;
+						}
+						if (sqlite3_step (stmt_shapeins) != SQLITE_OK) {
+							std::cerr << "\n x Error running INSERT query";
+							return;
+						}
+
+						sqlite3_reset (stmt_shapeins);
+						legi++;
+						shapedist += shapelens[j];
+					}
+				}
+			}
+			std::cout << "\n";
+			sqlite3_reset (stmt_shapegetid);
+
+
+			// - COMMIT transation
+			sqlite3_exec (db, "COMMIT", NULL, NULL, NULL);
 		} else {
 			std::cerr << "\n x created the wrong number of segments (" << segment_ids.size () << ")";
 		}
