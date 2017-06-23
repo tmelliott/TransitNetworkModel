@@ -813,10 +813,10 @@ void segment_shapes (sqlite3* db) {
 		}
 
 		if (segment_ids.size () == splitpoints.size () + 1) {
-			printf("\n + Segment %d -> %d : ", segment_id, (int)segment_ids.size ());
-			for (unsigned int k=0; k<segment_ids.size (); k++)
-				std::cout << segment_ids[k] << " (" << segment_lengths[k] << "m), ";
-			std::cout << "\n\n";
+			// printf("\n + Segment %d -> %d : ", segment_id, (int)segment_ids.size ());
+			// for (unsigned int k=0; k<segment_ids.size (); k++)
+			// 	std::cout << segment_ids[k] << " (" << segment_lengths[k] << "m), ";
+			// std::cout << "\n\n";
 			// Convert all rows in SHAPES where segment_id = segment_id
 
 			// - START transaction
@@ -919,7 +919,6 @@ void segment_shapes (sqlite3* db) {
 					}
 				}
 			}
-			std::cout << "\n";
 			sqlite3_reset (stmt_shapegetid);
 
 
