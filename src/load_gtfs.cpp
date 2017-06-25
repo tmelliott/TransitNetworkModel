@@ -84,19 +84,19 @@ int main (int argc, char* argv[]) {
     	fprintf(stderr, " * Opened database successfully\n");
 	}
 
-	// // STEP TWO:
-	// // convert shapes -> segments
-	// std::cout << " * Converting shapes to segments ... ";
-	// convert_shapes (db); // -- temporary dont let it run (though it should die since shapes_tmp not present)
-	// std::cout << "\n   ... done.\n";
-	//
-	// // STEP THREE:
-	// // importing intersections.json and segmenting segments:
-	// std::cout << " * Importing intersections ... ";
-	// std::vector<std::string> files {dir + "/data/intersections_trafficlights.json",
-	// 								dir + "/data/intersections_roundabouts.json"};
-	// import_intersections (db, files);
-	// std::cout << "done.\n";
+	// STEP TWO:
+	// convert shapes -> segments
+	std::cout << " * Converting shapes to segments ... ";
+	convert_shapes (db); // -- temporary dont let it run (though it should die since shapes_tmp not present)
+	std::cout << "\n   ... done.\n";
+
+	// STEP THREE:
+	// importing intersections.json and segmenting segments:
+	std::cout << " * Importing intersections ... ";
+	std::vector<std::string> files {dir + "/data/intersections_trafficlights.json",
+									dir + "/data/intersections_roundabouts.json"};
+	import_intersections (db, files);
+	std::cout << "done.\n";
 
 	// STEP FOUR: get all segments, and split into more segments
 	segment_shapes (db);
@@ -105,11 +105,11 @@ int main (int argc, char* argv[]) {
 	sqlite3_close (db);
 
 
-	// // STEP FIVE: stop distance into shape for stop_times
-	// std::cout << " * Calculating distance into trip of stops ... \n";
-	// std::string dbn = dir + "/" + dbname;
-	// calculate_stop_distances (dbn);
-	// std::cout << "\n   ... done.\n";
+	// STEP FIVE: stop distance into shape for stop_times
+	std::cout << " * Calculating distance into trip of stops ... \n";
+	std::string dbn = dir + "/" + dbname;
+	calculate_stop_distances (dbn);
+	std::cout << "\n   ... done.\n";
 
 	return 0;
 }
@@ -931,6 +931,10 @@ void segment_shapes (sqlite3* db) {
 	}  // END while (step)
 	std::cout << " - done!\n";
 
+	sqlite3_finalize (stmt_shapegetid);
+	sqlite3_finalize (stmt_shapeget);
+	sqlite3_finalize (stmt_shapedel);
+	sqlite3_finalize (stmt_shapeins);
 	sqlite3_finalize (stmt_segget);
 	sqlite3_finalize (stmt_segins);
 	sqlite3_finalize (stmt_segID);
