@@ -85,18 +85,18 @@ int main (int argc, char* argv[]) {
 	}
 
 	// STEP TWO:
-	// convert shapes -> segments
-	std::cout << " * Converting shapes to segments ... ";
-	convert_shapes (db); // -- temporary dont let it run (though it should die since shapes_tmp not present)
-	std::cout << "\n   ... done.\n";
-
-	// STEP THREE:
-	// importing intersections.json and segmenting segments:
-	std::cout << " * Importing intersections ... ";
-	std::vector<std::string> files {dir + "/data/intersections_trafficlights.json",
-									dir + "/data/intersections_roundabouts.json"};
-	import_intersections (db, files);
-	std::cout << "done.\n";
+	// // convert shapes -> segments
+	// std::cout << " * Converting shapes to segments ... ";
+	// convert_shapes (db); // -- temporary dont let it run (though it should die since shapes_tmp not present)
+	// std::cout << "\n   ... done.\n";
+	//
+	// // STEP THREE:
+	// // importing intersections.json and segmenting segments:
+	// std::cout << " * Importing intersections ... ";
+	// std::vector<std::string> files {dir + "/data/intersections_trafficlights.json",
+	// 								dir + "/data/intersections_roundabouts.json"};
+	// import_intersections (db, files);
+	// std::cout << "done.\n";
 
 	// STEP FOUR: get all segments, and split into more segments
 	segment_shapes (db);
@@ -431,6 +431,7 @@ void import_intersections (sqlite3* db, std::vector<std::string> files) {
 		}
 		if (sqlite3_step (stmt) != SQLITE_DONE) {
 			std::cerr << "   Error running insert query.\n";
+			sqlite3_errmsg (db);
 		}
 		sqlite3_reset (stmt);
 		Nfinal++;
@@ -724,37 +725,44 @@ void segment_shapes (sqlite3* db) {
 					if (startid > 0) {
 						if (sqlite3_bind_int (stmt_segins, 1, startid) != SQLITE_OK) {
 							std::cerr << "\n x Error binding values (startid)";
+							sqlite3_errmsg (db);
 							return;
 						}
 					} else {
 						if (sqlite3_bind_null (stmt_segins, 1) != SQLITE_OK) {
 							std::cerr << "\n x Error binding values (startnull)";
+							sqlite3_errmsg (db);
 							return;
 						}
 					}
 					if (endid > 0) {
 						if (sqlite3_bind_int (stmt_segins, 2, endid) != SQLITE_OK) {
 							std::cerr << "\n x Error binding values (endid)";
+							sqlite3_errmsg (db);
 							return;
 						}
 					} else {
 						if (sqlite3_bind_null (stmt_segins, 2) != SQLITE_OK) {
 							std::cerr << "\n x Error binding values (endnull)";
+							sqlite3_errmsg (db);
 							return;
 						}
 					}
 					if (sqlite3_bind_double (stmt_segins, 3, pathlen) != SQLITE_OK) {
 						std::cerr << "\n x Error binding values (length)";
+						sqlite3_errmsg (db);
 						return;
 					}
 					if (sqlite3_step (stmt_segins) != SQLITE_DONE) {
-						std::cerr << "\n x Error running INSERT new segment query";
+						std::cerr << "\n x Error running INSERT new segment query: ";
+						sqlite3_errmsg (db);
 						return;
 					}
 					sqlite3_reset (stmt_segins);
 
 					if (sqlite3_step (stmt_segID) != SQLITE_ROW) {
 						std::cerr << "\n x Error fetching inserted ID";
+						sqlite3_errmsg (db);
 						return;
 					}
 					// - get ID of new segment
@@ -859,28 +867,32 @@ void segment_shapes (sqlite3* db) {
 				for (unsigned int j=0; j<shapesegs.size (); j++) {
 					if (shapesegs[j] == segment_id) {
 						// CREATE MULTIPLE SEGMENTS
-						// printf ("\n   + Row [%s, %d, %d, 0] -> ", shapeid, j+1, shapesegs[j]);
+						printf ("\n   + Row [%s, %d, %d, 0] -> ", shapeid, j+1, shapesegs[j]);
 						for (unsigned int k=0; k<segment_ids.size (); k++) {
 							int sid = segment_ids[k];
-							// printf ("\n       [%s, %d, %d, %.1fm], ", shapeid, legi, sid, shapedist);
+							printf ("\n       [%s, %d, %d, %.1fm], ", shapeid, legi, sid, shapedist);
 							if (sqlite3_bind_text (stmt_shapeins, 1, shapeid, -1, SQLITE_STATIC) != SQLITE_OK) {
-								std::cerr << "\n x Error binding shape id to insert query";
+								std::cerr << "\n x Error binding shape id to insert query" <<
+									sqlite3_errmsg (db);
 								return;
 							}
 							if (sqlite3_bind_int (stmt_shapeins, 2, legi) != SQLITE_OK) {
-								std::cerr << "\n x Error binding leg to insert query";
+								std::cerr << "\n x Error binding leg to insert query" <<
+									sqlite3_errmsg (db);
 								return;
 							}
 							if (sqlite3_bind_int (stmt_shapeins, 3, sid) != SQLITE_OK) {
-								std::cerr << "\n x Error binding segment_id to query";
+								std::cerr << "\n x Error binding segment_id to query" <<
+									sqlite3_errmsg (db);
 								return;
 							}
 							if (sqlite3_bind_double (stmt_shapeins, 4, shapedist) != SQLITE_OK) {
-								std::cerr << "\n x Error binding distance to query";
-								return;
+								std::cerr << "\n x Error binding distance to query" <<
+									sqlite3_errmsg (db);
 							}
 							if (sqlite3_step (stmt_shapeins) != SQLITE_DONE) {
-								std::cerr << "\n x Error running INSERT query";
+								std::cerr << "\n x Error running INSERT query: " <<
+									sqlite3_errmsg (db);
 								return;
 							}
 
@@ -890,26 +902,31 @@ void segment_shapes (sqlite3* db) {
 						}
 					} else {
 						// JUST RECREATE THE OLD ONE (updated)
-						// printf ("\n   o Segment %d, leg %d -> %d",
-								// shapesegs[j], j+1, legi);
+						printf ("\n   o Segment %d, leg %d -> %d",
+								shapesegs[j], j+1, legi);
 						if (sqlite3_bind_text (stmt_shapeins, 1, shapeid, -1, SQLITE_STATIC) != SQLITE_OK) {
-							std::cerr << "\n x Error binding shape id to insert query";
+							std::cerr << "\n x Error binding shape id to insert query" <<
+								sqlite3_errmsg (db);
 							return;
 						}
 						if (sqlite3_bind_int (stmt_shapeins, 2, legi) != SQLITE_OK) {
-							std::cerr << "\n x Error binding leg to insert query";
+							std::cerr << "\n x Error binding leg to insert query" <<
+								sqlite3_errmsg (db);
 							return;
 						}
 						if (sqlite3_bind_int (stmt_shapeins, 3, shapesegs[j]) != SQLITE_OK) {
-							std::cerr << "\n x Error binding segment_id to query";
+							std::cerr << "\n x Error binding segment_id to query" <<
+								sqlite3_errmsg (db);
 							return;
 						}
 						if (sqlite3_bind_double (stmt_shapeins, 4, shapedist) != SQLITE_OK) {
-							std::cerr << "\n x Error binding distance to query";
+							std::cerr << "\n x Error binding distance to query" <<
+								sqlite3_errmsg (db);
 							return;
 						}
 						if (sqlite3_step (stmt_shapeins) != SQLITE_OK) {
-							std::cerr << "\n x Error running INSERT query";
+							std::cerr << "\n x Error running INSERT query" <<
+								sqlite3_errmsg (db);
 							return;
 						}
 
@@ -986,11 +1003,17 @@ void calculate_stop_distances (std::string& dbname) {
 		auto segments = shape->get_segments ();
 		if (segments.size () == 0) continue;
 
+		std::cout << "\n   - looking at route " << route->get_id ()
+			<< ", with " << stops.size () << " stops\n";
+
 		// Travel along the route until the next stop is between STOP and STOP+1
 		unsigned int si = 0;
+		std::cout << "   - looking through " << segments.size () << " segments ...";
 		for (auto& s: segments) {
 			auto seg = s.segment;
 			if (!seg) break;
+			std::cout << "\n     - segment " << s.segment->get_id ()
+				<< ": " << s.shape_dist_traveled << " m";
 			auto path = seg->get_path (); // sequence of ShapePt structs
 			if (path.size () == 0) break;
 			double dmin (s.shape_dist_traveled);
@@ -998,10 +1021,10 @@ void calculate_stop_distances (std::string& dbname) {
 			// Check the first point in the segment (likely only for first stop)
 			if (stops[si].stop->get_pos ().distanceTo (path[0].pt) < 1) {
 				stops[si].shape_dist_traveled = dmin + path[0].seg_dist_traveled;
-				// printf(" - Stop %*d [%*s]: %*d m\n",
-				// 	   3, si+1,
-				// 	   6, stops[si].stop->get_id ().c_str (),
-				// 	   6, (int)stops[si].shape_dist_traveled);
+				printf("\n - Stop %*d [%*s]: %*d m\n",
+					   3, si+1,
+					   6, stops[si].stop->get_id ().c_str (),
+					   6, (int)stops[si].shape_dist_traveled);
 				si ++;
 				if (si == stops.size ()) break;
 			}
@@ -1011,10 +1034,10 @@ void calculate_stop_distances (std::string& dbname) {
 				// FIRST check stop I
 				if (stops[si].stop->get_pos ().distanceTo (path[i].pt) < 1) {
 					stops[si].shape_dist_traveled = dmin + path[i].seg_dist_traveled;
-					// printf(" - Stop %*d [%*s]: %*d m\n",
-					// 	   3, si+1,
-					// 	   6, stops[si].stop->get_id ().c_str (),
-					// 	   6, (int)stops[si].shape_dist_traveled);
+					printf("\n - Stop %*d [%*s]: %*d m\n",
+						   3, si+1,
+						   6, stops[si].stop->get_id ().c_str (),
+						   6, (int)stops[si].shape_dist_traveled);
 					si ++;
 					if (si == stops.size ()) break;
 
@@ -1044,9 +1067,9 @@ void calculate_stop_distances (std::string& dbname) {
 			}
 			sqlite3_reset (stmt_upd);
 
-			// std::cout << "(" << s.shape_dist_traveled << ","
-			// 	<< route->get_id () << "," << s.stop->get_id () << "), ";
-			// std::cout.flush ();
+			std::cout << "(" << s.shape_dist_traveled << ","
+				<< route->get_id () << "," << s.stop->get_id () << "), ";
+			std::cout.flush ();
 		}
 		sqlite3_exec (db, "COMMIT", NULL, NULL, NULL);
 
