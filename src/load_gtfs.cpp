@@ -84,7 +84,7 @@ int main (int argc, char* argv[]) {
     	fprintf(stderr, " * Opened database successfully\n");
 	}
 
-	// STEP TWO:
+	// // STEP TWO:
 	// // convert shapes -> segments
 	// std::cout << " * Converting shapes to segments ... ";
 	// convert_shapes (db); // -- temporary dont let it run (though it should die since shapes_tmp not present)
@@ -105,11 +105,11 @@ int main (int argc, char* argv[]) {
 	sqlite3_close (db);
 
 
-	// STEP FIVE: stop distance into shape for stop_times
-	std::cout << " * Calculating distance into trip of stops ... \n";
-	std::string dbn = dir + "/" + dbname;
-	calculate_stop_distances (dbn);
-	std::cout << "\n   ... done.\n";
+	// // STEP FIVE: stop distance into shape for stop_times
+	// std::cout << " * Calculating distance into trip of stops ... \n";
+	// std::string dbn = dir + "/" + dbname;
+	// calculate_stop_distances (dbn);
+	// std::cout << "\n   ... done.\n";
 
 	return 0;
 }
@@ -465,7 +465,7 @@ void import_intersections (sqlite3* db, std::vector<std::string> files) {
  */
 void segment_shapes (sqlite3* db) {
 	sqlite3_stmt* stmt_segs;
-	if (sqlite3_prepare_v2 (db, "SELECT segment_id FROM segments",
+	if (sqlite3_prepare_v2 (db, "SELECT segment_id FROM segments WHERE segment_id=12",
 							-1, &stmt_segs, 0) != SQLITE_OK) {
 		std::cerr << "\n x Unable to prepare SELECT segments";
 		return;
@@ -500,15 +500,6 @@ void segment_shapes (sqlite3* db) {
 	}
 	std::clog << "\n + Prepared SELECT segment shape points";
 
-
-	// // for progress bar, we need # of rows
-	// sqlite3_stmt* stmt_n;
-	// int Nseg = 0;
-	// if (sqlite3_prepare_v2 (db, "SELECT COUNT(segment_id) FROM segments", -1, &stmt_n, 0) == SQLITE_OK &&
-	// 	sqlite3_step (stmt_n) == SQLITE_ROW) {
-	// 	Nseg = sqlite3_column_int (stmt_n, 0);
-	// }
-	// sqlite3_finalize (stmt_n);
 	std::vector<int> segmentIDs;
 	while (sqlite3_step (stmt_segs) == SQLITE_ROW)
 		segmentIDs.push_back (sqlite3_column_int (stmt_segs, 0));
@@ -674,9 +665,9 @@ void segment_shapes (sqlite3* db) {
 			}
 		}
 		// KEEP FOR DEBUGGING AND GRAPHS: R/test.R
-		// std::cout << "\nIntersection IDs: ";
-		// for (auto& sp: splitpoints)
-		// 	printf("\n%d,%.6f,%.6f", sp.id, sp.at.lat, sp.at.lng);
+		std::cout << "\nIntersection IDs: ";
+		for (auto& sp: splitpoints)
+			printf("\n%d,%.6f,%.6f", sp.id, sp.at.lat, sp.at.lng);
 
 		// Now just stream along the path looking for split points, and split!
 
