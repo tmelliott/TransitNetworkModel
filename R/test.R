@@ -45,7 +45,7 @@ drawStuff <- function(segment = 17, int=FALSE) {
     
 }
 
-drawStuff(20)
+drawStuff(43)
 
 shp = dbGetQuery(con, "SELECT * FROM segment_pt WHERE segment_id=9")
 ints = dbGetQuery(con, sprintf("SELECT * FROM intersections WHERE intersection_id IN (%s)", paste(x$id, collapse=",")))

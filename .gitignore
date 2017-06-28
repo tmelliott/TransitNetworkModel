@@ -6,3 +6,4 @@ gtfs.zip
 *.db
 *-journal
 protobuf/*.pb.*
+.Rhistory

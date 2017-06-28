@@ -98,19 +98,20 @@ int main (int argc, char* argv[]) {
 	// import_intersections (db, files);
 	// std::cout << "done.\n";
 
-	system ("cp ../gtfs-backup_2.db ../gtfs.db");
-	// STEP FOUR: get all segments, and split into more segments
-	segment_shapes (db);
+	// // system ("cp ../gtfs-backup_2.db ../gtfs.db");
+	// // STEP FOUR: get all segments, and split into more segments
+	// segment_shapes (db);
+	//
+	// // That's enough of the database connection ...
+	// sqlite3_close (db);
 
-	// That's enough of the database connection ...
-	sqlite3_close (db);
 
-
-	// // STEP FIVE: stop distance into shape for stop_times
-	// std::cout << " * Calculating distance into trip of stops ... \n";
-	// std::string dbn = dir + "/" + dbname;
-	// calculate_stop_distances (dbn);
-	// std::cout << "\n   ... done.\n";
+	system ("cp ../gtfs-backup_3.db ../gtfs.db && rm -rf tmp/*");
+	// STEP FIVE: stop distance into shape for stop_times
+	std::cout << " * Calculating distance into trip of stops ... \n";
+	std::string dbn = dir + "/" + dbname;
+	calculate_stop_distances (dbn);
+	std::cout << "\n   ... done.\n";
 
 	return 0;
 }
@@ -466,7 +467,7 @@ void import_intersections (sqlite3* db, std::vector<std::string> files) {
  */
 void segment_shapes (sqlite3* db) {
 	sqlite3_stmt* stmt_segs;
-	if (sqlite3_prepare_v2 (db, "SELECT segment_id FROM segments LIMIT 20",
+	if (sqlite3_prepare_v2 (db, "SELECT segment_id FROM segments",
 							-1, &stmt_segs, 0) != SQLITE_OK) {
 		std::cerr << "\n x Unable to prepare SELECT segments";
 		return;
@@ -1017,18 +1018,33 @@ void calculate_stop_distances (std::string& dbname) {
 		Ni++;
 		printf("  %*d%%\r", 3, (int)(100 * Ni / Nr));
 		std::cout.flush ();
+
 		std::shared_ptr<gtfs::Route> route = std::get<1> (r);
+		std::cout << "\n   - looking at route " << route->get_id ();
 		auto shape = route->get_shape ();
-		if (!shape) continue; // no shape associated with this route
+		if (!shape) {
+			std::cout << " - no shape";
+			continue; // no shape associated with this route
+		}
 
 		auto stops = route->get_stops ();
-		if (stops.size () == 0) continue; // No stops - skip!
+		if (stops.size () == 0) {
+			std::cout << " - no stops";
+			continue; // No stops - skip!
+		}
 
 		auto segments = shape->get_segments ();
-		if (segments.size () == 0) continue;
+		if (segments.size () == 0) {
+			std::cout << " - no segments";
+			continue;
+		}
 
-		std::cout << "\n   - looking at route " << route->get_id ()
-			<< ", with " << stops.size () << " stops\n";
+		std::cout << ", with " << stops.size () << " stops\n";
+
+		std::ofstream f1;
+		f1.open (("tmp/" + route->get_id () + ".csv").c_str ());
+		f1 << std::setprecision(10) << "lat,lng\n";
+		for (auto& st: stops) f1 << st.stop->get_pos ().lat << "," << st.stop->get_pos ().lng << "\n";
 
 		// Travel along the route until the next stop is between STOP and STOP+1
 		unsigned int si = 0;
@@ -1071,6 +1087,19 @@ void calculate_stop_distances (std::string& dbname) {
 				// THEN, see if stop lies between stop i-1 and stop i
 				// actually, since AT joins route shapes to the stop,
 				// we don't need to do this bit
+				if (path[i-1].pt.distanceTo (stops[si].stop->get_pos ()) +
+					stops[si].stop->get_pos ().distanceTo (path[i].pt) <
+					path[i-1].pt.distanceTo (path[i].pt) + 1) {
+						
+					stops[si].shape_dist_traveled = dmin + path[i-1].seg_dist_traveled +
+						stops[si].stop->get_pos ().alongTrackDistance (path[i-1].pt, path[i].pt);
+					printf("\n - Stop %*d [%*s]: %*d m\n",
+						   3, si+1,
+						   6, stops[si].stop->get_id ().c_str (),
+						   6, (int)stops[si].shape_dist_traveled);
+					si ++;
+					if (si == stops.size ()) break;
+				}
 			}
 		}
 
