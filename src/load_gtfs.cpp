@@ -84,29 +84,29 @@ int main (int argc, char* argv[]) {
     	fprintf(stderr, " * Opened database successfully\n");
 	}
 
-	// // STEP TWO:
-	// // convert shapes -> segments
-	// std::cout << " * Converting shapes to segments ... ";
-	// convert_shapes (db); // -- temporary dont let it run (though it should die since shapes_tmp not present)
-	// std::cout << "\n   ... done.\n";
-	//
-	// // STEP THREE:
-	// // importing intersections.json and segmenting segments:
-	// std::cout << " * Importing intersections ... ";
-	// std::vector<std::string> files {dir + "/data/intersections_trafficlights.json",
-	// 								dir + "/data/intersections_roundabouts.json"};
-	// import_intersections (db, files);
-	// std::cout << "done.\n";
+	// STEP TWO:
+	// convert shapes -> segments
+	std::cout << " * Converting shapes to segments ... ";
+	convert_shapes (db); // -- temporary dont let it run (though it should die since shapes_tmp not present)
+	std::cout << "\n   ... done.\n";
 
-	// // system ("cp ../gtfs-backup_2.db ../gtfs.db");
-	// // STEP FOUR: get all segments, and split into more segments
-	// segment_shapes (db);
-	//
-	// // That's enough of the database connection ...
-	// sqlite3_close (db);
+	// STEP THREE:
+	// importing intersections.json and segmenting segments:
+	std::cout << " * Importing intersections ... ";
+	std::vector<std::string> files {dir + "/data/intersections_trafficlights.json",
+									dir + "/data/intersections_roundabouts.json"};
+	import_intersections (db, files);
+	std::cout << "done.\n";
+
+	// system ("cp ../gtfs-backup_2.db ../gtfs.db");
+	// STEP FOUR: get all segments, and split into more segments
+	segment_shapes (db);
+
+	// That's enough of the database connection ...
+	sqlite3_close (db);
 
 
-	system ("cp ../gtfs-backup_3.db ../gtfs.db && rm -rf tmp/*");
+	// system ("cp ../gtfs-backup_3.db ../gtfs.db && rm -rf tmp/*");
 	// STEP FIVE: stop distance into shape for stop_times
 	std::cout << " * Calculating distance into trip of stops ... \n";
 	std::string dbn = dir + "/" + dbname;
@@ -1070,6 +1070,7 @@ void calculate_stop_distances (std::string& dbname) {
 			}
 			// step through path
 			for (unsigned int i=1; i<path.size (); i++) {
+				if (path[i-1].pt == path[i].pt) continue;
 				// ---Consider stop is AT the point if distance < 1m (rounding error!)
 				// FIRST check stop I
 				if (stops[si].stop->get_pos ().distanceTo (path[i].pt) < 1) {
@@ -1079,34 +1080,31 @@ void calculate_stop_distances (std::string& dbname) {
 						   6, stops[si].stop->get_id ().c_str (),
 						   6, (int)stops[si].shape_dist_traveled);
 					si ++;
-					if (si == stops.size ()) break;
-
-					continue; // it wont be BEHIND this point!
-				}
-
-				// THEN, see if stop lies between stop i-1 and stop i
-				// actually, since AT joins route shapes to the stop,
-				// we don't need to do this bit
-				if (path[i-1].pt.distanceTo (stops[si].stop->get_pos ()) +
-					stops[si].stop->get_pos ().distanceTo (path[i].pt) <
-					path[i-1].pt.distanceTo (path[i].pt) + 1) {
-						
+				} else if (stops[si].stop->get_pos ().alongTrackDistance (path[i-1].pt, path[i].pt) <
+							path[i-1].pt.distanceTo (path[i].pt) &&
+						   stops[si].stop->get_pos ().alongTrackDistance (path[i].pt, path[i-1].pt) <
+							path[i].pt.distanceTo (path[i-1].pt)) {
 					stops[si].shape_dist_traveled = dmin + path[i-1].seg_dist_traveled +
 						stops[si].stop->get_pos ().alongTrackDistance (path[i-1].pt, path[i].pt);
-					printf("\n - Stop %*d [%*s]: %*d m\n",
+					printf("\n - Stop %*d [%*s]?: %*d m\n",
 						   3, si+1,
 						   6, stops[si].stop->get_id ().c_str (),
 						   6, (int)stops[si].shape_dist_traveled);
 					si ++;
-					if (si == stops.size ()) break;
 				}
+				if (si == stops.size ()) break;
 			}
+			if (si == stops.size ()) break;
 		}
 
-		if (si != stops.size ()) break; // unable to get distance for all stops
+		if (si != stops.size ()) {
+			std::cout << "\n x didn't find all stops ...";
+			break; // unable to get distance for all stops
+		}
 
 		// Now save the distances into the database for each trip
 		sqlite3_exec (db, "BEGIN", NULL, NULL, NULL);
+		std::cout << "\n +++ Storing in DB ...\n";
 		for (auto& s: stops) {
 			if (sqlite3_bind_double (stmt_upd, 1, s.shape_dist_traveled) != SQLITE_OK ||
 				sqlite3_bind_text (stmt_upd, 2, route->get_id ().c_str (), -1, SQLITE_STATIC) != SQLITE_OK ||
@@ -1125,6 +1123,7 @@ void calculate_stop_distances (std::string& dbname) {
 			std::cout.flush ();
 		}
 		sqlite3_exec (db, "COMMIT", NULL, NULL, NULL);
+		std::cout << " ... done!!!\n\n";
 
 	}
 	sqlite3_finalize (stmt_upd);

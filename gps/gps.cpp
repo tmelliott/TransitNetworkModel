@@ -118,7 +118,7 @@ namespace gps {
 	double Coord::alongTrackDistance(gps::Coord p1, gps::Coord p2) const {
 		double d13 = p1.distanceTo(*this) / R;
 		double dxt = crossTrackDistanceTo (p1, p2) / R;
-		return asin (cos (d13) / cos (dxt)) * R;
+		return acos (cos (d13) / cos (dxt)) * R;
 	};
 
 	/**
