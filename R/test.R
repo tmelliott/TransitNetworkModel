@@ -1,29 +1,52 @@
+library(ggmap)
 library(RSQLite)
 con = dbConnect(SQLite(), "../gtfs.db")
-f <- textConnection("id,lat,lng
-1074,-36.932940,174.912570
-588,-36.931670,174.911010
-469,-36.928920,174.912380
-190,-36.929070,174.914120
-182,-36.929540,174.915910
-184,-36.935100,174.914790
-183,-36.936750,174.914330
-470,-36.942910,174.912600
-635,-36.961170,174.925720
-529,-36.967170,174.924960
-1062,-36.950090,174.966100
-1101,-36.945430,174.963920
-1376,-36.890010,175.012410
-1378,-36.889120,175.009950
-1374,-36.887570,175.003250
-1375,-36.881010,175.005550
-1374,-36.887570,175.003250
-1378,-36.889120,175.009950
-1376,-36.889830,175.012790
-1382,-36.880860,175.042110
-")
 
-x = read.csv(f)
+
+drawStuff <- function(segment = 17, int=FALSE) {
+    dir = file.path ("..", "build", "tmp", paste0("segment_", segment))
+    f1 = read.csv (file.path (dir, "original.csv"))
+    f2 = read.csv (file.path (dir, "intersections.csv"))
+    f3 = read.csv (file.path (dir, "split_points.csv"))
+    f4 = read.csv (file.path (dir, "segment_shape.csv"))
+    
+    xr = extendrange(f1$lng)
+    yr = extendrange(f1$lat)
+    bbox = c(xr[1], yr[1], xr[2], yr[2])
+    ##akl = get_map(colMeans(f1[, c("lng", "lat")]), zoom = 14, source = "google", maptype = "roadmap")
+    akl = get_stamenmap(bbox = bbox, zoom = 14,  maptype = "toner-lite")
+
+    if (int) {
+        for (i in 1:length(unique(f4$segment_id))) {
+            id = unique(f4$segment_id)[i]
+            zi = f4[f4$segment_id==id, ]
+            dev.hold()
+            print(ggmap(akl) +
+                  geom_path(aes(x = lng, y = lat), data = f1, color = "black", lwd = 3) +
+                                        # geom_point(aes(x = lng, y = lat), data = f2, color = "red", pch = 19) +
+                  geom_path(aes(x = lng, y = lat), color = "blue",
+                                        #colour = as.numeric(as.factor(segment_id)) %% 2 == 1),
+                            data = zi, show.legend = FALSE, lwd = 2) +
+                  geom_point(aes(x = lng, y = lat), data = f3, color = "magenta", pch = 4, lwd = 2, cex = 2))
+            dev.flush()
+            grid::grid.locator ()
+        }
+    }
+    
+    dev.hold()
+    print(ggmap(akl) +
+        geom_path(aes(x = lng, y = lat), data = f1, color = "black", lwd = 3) +
+        geom_point(aes(x = lng, y = lat), data = f2, color = "red", pch = 19) +
+        geom_path(aes(x = lng, y = lat, group = segment_id,
+                      colour = as.numeric(as.factor(segment_id)) %% 2 == 1),
+                  data = f4, show.legend = FALSE, lwd = 2) +
+        geom_point(aes(x = lng, y = lat), data = f3, color = "magenta", pch = 4, lwd = 2, cex = 2))
+    dev.flush()
+    
+}
+
+drawStuff(20)
+
 shp = dbGetQuery(con, "SELECT * FROM segment_pt WHERE segment_id=9")
 ints = dbGetQuery(con, sprintf("SELECT * FROM intersections WHERE intersection_id IN (%s)", paste(x$id, collapse=",")))
 with(shp, plot(lng, lat, type="l",asp=1.2,col = "#009900", lwd=2))
