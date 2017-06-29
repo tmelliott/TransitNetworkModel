@@ -186,7 +186,7 @@ namespace gtfs {
 		if (arrival_time > 0 &&
 			arrival_time + dwell_time >= vehicle->get_timestamp ()) {
 		// {^-----------------------^} == departure_time
-		
+
 			// --- Particle is stopped at the bus stop
 			double gamma (6.0);
 			sampling::exponential exptau (1.0 / 10.0);

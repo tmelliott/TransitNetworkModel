@@ -84,29 +84,29 @@ int main (int argc, char* argv[]) {
     	fprintf(stderr, " * Opened database successfully\n");
 	}
 
-	// STEP TWO:
-	// convert shapes -> segments
-	std::cout << " * Converting shapes to segments ... ";
-	convert_shapes (db); // -- temporary dont let it run (though it should die since shapes_tmp not present)
-	std::cout << "\n   ... done.\n";
+	// // STEP TWO:
+	// // convert shapes -> segments
+	// std::cout << " * Converting shapes to segments ... ";
+	// convert_shapes (db); // -- temporary dont let it run (though it should die since shapes_tmp not present)
+	// std::cout << "\n   ... done.\n";
+	//
+	// // STEP THREE:
+	// // importing intersections.json and segmenting segments:
+	// std::cout << " * Importing intersections ... ";
+	// std::vector<std::string> files {dir + "/data/intersections_trafficlights.json",
+	// 								dir + "/data/intersections_roundabouts.json"};
+	// import_intersections (db, files);
+	// std::cout << "done.\n";
+	//
+	// // system ("cp ../gtfs-backup_2.db ../gtfs.db");
+	// // STEP FOUR: get all segments, and split into more segments
+	// segment_shapes (db);
+	//
+	// // That's enough of the database connection ...
+	// sqlite3_close (db);
 
-	// STEP THREE:
-	// importing intersections.json and segmenting segments:
-	std::cout << " * Importing intersections ... ";
-	std::vector<std::string> files {dir + "/data/intersections_trafficlights.json",
-									dir + "/data/intersections_roundabouts.json"};
-	import_intersections (db, files);
-	std::cout << "done.\n";
 
-	// system ("cp ../gtfs-backup_2.db ../gtfs.db");
-	// STEP FOUR: get all segments, and split into more segments
-	segment_shapes (db);
-
-	// That's enough of the database connection ...
-	sqlite3_close (db);
-
-
-	// system ("cp ../gtfs-backup_3.db ../gtfs.db && rm -rf tmp/*");
+	system ("cp ../gtfs-backup_3.db ../gtfs.db && rm -rf tmp/*");
 	// STEP FIVE: stop distance into shape for stop_times
 	std::cout << " * Calculating distance into trip of stops ... \n";
 	std::string dbn = dir + "/" + dbname;
@@ -1052,15 +1052,15 @@ void calculate_stop_distances (std::string& dbname) {
 		for (auto& s: segments) {
 			auto seg = s.segment;
 			if (!seg) break;
-			std::cout << "\n     - segment " << s.segment->get_id ()
-				<< ": " << s.shape_dist_traveled << " m";
+			// std::cout << "\n     - segment " << s.segment->get_id ()
+				// << ": " << s.shape_dist_traveled << " m";
 			auto path = seg->get_path (); // sequence of ShapePt structs
 			if (path.size () == 0) break;
 			double dmin (s.shape_dist_traveled);
 
 			// Check the first point in the segment (likely only for first stop)
 			if (stops[si].stop->get_pos ().distanceTo (path[0].pt) < 1) {
-				stops[si].shape_dist_traveled = dmin + path[0].seg_dist_traveled;
+				stops[si].shape_dist_traveled = dmin;// + path[0].seg_dist_traveled;
 				printf("\n - Stop %*d [%*s]: %*d m\n",
 					   3, si+1,
 					   6, stops[si].stop->get_id ().c_str (),
@@ -1080,24 +1080,35 @@ void calculate_stop_distances (std::string& dbname) {
 						   6, stops[si].stop->get_id ().c_str (),
 						   6, (int)stops[si].shape_dist_traveled);
 					si ++;
-				} else if (stops[si].stop->get_pos ().alongTrackDistance (path[i-1].pt, path[i].pt) <
-							path[i-1].pt.distanceTo (path[i].pt) &&
+				} else if (stops[si].stop->get_pos ().alongTrackDistance (path[i-1].pt, path[i].pt) +
+							// path[i-1].pt.distanceTo (path[i].pt) &&
 						   stops[si].stop->get_pos ().alongTrackDistance (path[i].pt, path[i-1].pt) <
-							path[i].pt.distanceTo (path[i-1].pt)) {
+						   path[i-1].pt.distanceTo (path[i].pt) + 1 &&
+							// path[i].pt.distanceTo (path[i-1].pt) &&
+						   abs(stops[si].stop->get_pos ().crossTrackDistanceTo (path[i-1].pt, path[i].pt)) < 5) {
+					// std::cout << "\n  => stop: " << stops[si].stop->get_pos ()
+					// 	<< " -> from path: " << path[i-1].pt << "->" << path[i].pt
+					// 	<< "; CTD = " << stops[si].stop->get_pos ().crossTrackDistanceTo (path[i-1].pt, path[i].pt)
+					// 	<< "; ATDs = " << stops[si].stop->get_pos ().alongTrackDistance (path[i-1].pt, path[i].pt)
+					// 	<< " and " << stops[si].stop->get_pos ().alongTrackDistance (path[i].pt, path[i-1].pt) << "!";
 					stops[si].shape_dist_traveled = dmin + path[i-1].seg_dist_traveled +
 						stops[si].stop->get_pos ().alongTrackDistance (path[i-1].pt, path[i].pt);
-					printf("\n - Stop %*d [%*s]?: %*d m\n",
+					printf("\n - Stop %*d [%*s]?: %*d m - based on %dth point in segment shape, which is %.1f + %.1f = %.1fm into trip\n",
 						   3, si+1,
 						   6, stops[si].stop->get_id ().c_str (),
-						   6, (int)stops[si].shape_dist_traveled);
+						   6, (int)stops[si].shape_dist_traveled,
+						   i-1, dmin, path[i-1].seg_dist_traveled, dmin + path[i-1].seg_dist_traveled);
 					si ++;
 				}
-				if (si == stops.size ()) break;
+				if (si+1 == stops.size ()) break;
 			}
-			if (si == stops.size ()) break;
+			if (si+1 == stops.size ()) break;
 		}
+		// Last stop is at end of line
+		stops[si].shape_dist_traveled = segments.back ().shape_dist_traveled +
+			segments.back ().segment->get_length ();
 
-		if (si != stops.size ()) {
+		if (si+1 != stops.size ()) {
 			std::cout << "\n x didn't find all stops ...";
 			break; // unable to get distance for all stops
 		}

@@ -1,5 +1,5 @@
 library(RSQLite)
-if (grep ("/R", getwd())) setwd("..")
+if (grepl ("/R", getwd())) setwd("..")
 con = dbConnect(SQLite(), "gtfs.db")
 
 routes = dbGetQuery(con, "SELECT routes.route_id, routes.route_short_name as number, MAX(shapes.shape_dist_traveled + segments.length) AS len FROM routes, shapes, segments WHERE routes.shape_id=shapes.shape_id AND shapes.segment_id=segments.segment_id AND route_id LIKE '%v54.27' GROUP BY shapes.shape_id")
