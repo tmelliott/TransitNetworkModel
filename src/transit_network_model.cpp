@@ -192,7 +192,7 @@ int main (int argc, char* argv[]) {
 				// 						-1, &stmt_del, 0) != SQLITE_OK) {
 				// 	std::cerr << "\n  x Unable to prepare DELETE query ";
 				// }
-				if (sqlite3_prepare_v2 (db, "INSERT INTO particles VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
+				if (sqlite3_prepare_v2 (db, "INSERT INTO particles VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)",
 					 	   					   -1, &stmt_ins, 0) != SQLITE_OK) {
 					std::cerr << "\n  x Unable to prepare INSERT query ";
 				} else {
@@ -208,6 +208,7 @@ int main (int argc, char* argv[]) {
 						// }
 						// sqlite3_reset (stmt_del);
 						// std::cout << tid.c_str () << "\n";
+						auto shape = v.second->get_trip ()->get_route ()->get_shape ();
 						for (auto& p: v.second->get_particles ()) {
 							sqlite3_bind_int (stmt_ins, 1, p.get_id ());
 							sqlite3_bind_text (stmt_ins, 2, v.second->get_id ().c_str (), -1, SQLITE_TRANSIENT);
@@ -227,6 +228,10 @@ int main (int argc, char* argv[]) {
 								// std::cout << etastr << "|  ";
 							}
 							sqlite3_bind_text (stmt_ins, 10, etastr.c_str (), -1, SQLITE_TRANSIENT);
+
+							auto pos = gtfs::get_coords (p.get_distance (), shape);
+							sqlite3_bind_double (stmt_ins, 11, pos.lat);
+							sqlite3_bind_double (stmt_ins, 12, pos.lng);
 
 							if (sqlite3_step (stmt_ins) != SQLITE_DONE) {
 								std::cerr << " x Error inserting value: " << sqlite3_errmsg (db);

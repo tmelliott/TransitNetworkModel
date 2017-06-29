@@ -91,5 +91,7 @@ CREATE TABLE particles (
 	log_likelihood REAL,
 	parent_id      BIGINT,
 	initialized    BOOLEAN,
-	etas           TEXT
+	etas           TEXT,
+	lat            REAL,
+	lng            REAL
 );

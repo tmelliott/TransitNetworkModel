@@ -1080,12 +1080,12 @@ void calculate_stop_distances (std::string& dbname) {
 						   6, stops[si].stop->get_id ().c_str (),
 						   6, (int)stops[si].shape_dist_traveled);
 					si ++;
-				} else if (stops[si].stop->get_pos ().alongTrackDistance (path[i-1].pt, path[i].pt) +
-							// path[i-1].pt.distanceTo (path[i].pt) &&
+				} else if (stops[si].stop->get_pos ().alongTrackDistance (path[i-1].pt, path[i].pt) <
+							path[i-1].pt.distanceTo (path[i].pt) &&
 						   stops[si].stop->get_pos ().alongTrackDistance (path[i].pt, path[i-1].pt) <
-						   path[i-1].pt.distanceTo (path[i].pt) + 1 &&
-							// path[i].pt.distanceTo (path[i-1].pt) &&
-						   abs(stops[si].stop->get_pos ().crossTrackDistanceTo (path[i-1].pt, path[i].pt)) < 5) {
+						    // path[i-1].pt.distanceTo (path[i].pt) + 1 &&
+							path[i].pt.distanceTo (path[i-1].pt) &&
+						   abs(stops[si].stop->get_pos ().crossTrackDistanceTo (path[i-1].pt, path[i].pt)) < 30) {
 					// std::cout << "\n  => stop: " << stops[si].stop->get_pos ()
 					// 	<< " -> from path: " << path[i-1].pt << "->" << path[i].pt
 					// 	<< "; CTD = " << stops[si].stop->get_pos ().crossTrackDistanceTo (path[i-1].pt, path[i].pt)
