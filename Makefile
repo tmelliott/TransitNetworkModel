@@ -29,7 +29,7 @@ build/protobuf.zip: build
 
 
 data: gtfs.zip
-	unzip $< -d $@
+	unzip -o $< -d $@
 
 gtfs.zip:
 	curl -S https://cdn01.at.govt.nz/data/gtfs.zip -o gtfs.zip
