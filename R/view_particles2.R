@@ -53,6 +53,7 @@ while (TRUE) {
             sapply(levels(vehicle), function(v) {
                 ETAs <- do.call(rbind, strsplit(etas[vehicle == v], ","))
                 mode(ETAs) <- "integer"
+                ETAs[is.na(ETAs)] <- 0
                 tr <- apply(ETAs, 2, quantile, probs = c(0.05, 0.95))
                 xx <- stops[stops$route_id %in% unique(route_id[vehicle == v]), "progress"]
                 eta <- tr - as.numeric(Sys.time())
@@ -71,11 +72,10 @@ while (TRUE) {
         dev.set()
         pl <- ggmap(akl) +
             geom_path(aes(lng, lat, group = segment_id), data = shapes, color = "steelblue", lwd = 2) +
-            geom_point(aes(lng, lat), data = stops, color = "black", size = 2) +
+            geom_point(aes(lng, lat), data = stops, color = "black", size = 0.5) +
             geom_point(aes(lng, lat, colour = vehicle), data = particles, pch = 4)
         dev.flush()
         print(pl)
-        dev.hold()
         dev.set()
     })
     ## dev.off()

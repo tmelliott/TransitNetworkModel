@@ -84,33 +84,37 @@ int main (int argc, char* argv[]) {
     	fprintf(stderr, " * Opened database successfully\n");
 	}
 
-	// // STEP TWO:
-	// // convert shapes -> segments
-	// std::cout << " * Converting shapes to segments ... ";
-	// convert_shapes (db); // -- temporary dont let it run (though it should die since shapes_tmp not present)
-	// std::cout << "\n   ... done.\n";
-	//
-	// // STEP THREE:
-	// // importing intersections.json and segmenting segments:
-	// std::cout << " * Importing intersections ... ";
-	// std::vector<std::string> files {dir + "/data/intersections_trafficlights.json",
-	// 								dir + "/data/intersections_roundabouts.json"};
-	// import_intersections (db, files);
-	// std::cout << "done.\n";
-	//
-	// // system ("cp ../gtfs-backup_2.db ../gtfs.db");
-	// // STEP FOUR: get all segments, and split into more segments
-	// segment_shapes (db);
-	//
-	// // That's enough of the database connection ...
-	// sqlite3_close (db);
+	// STEP TWO:
+	// convert shapes -> segments
+	std::cout << " * Converting shapes to segments ... ";
+	convert_shapes (db); // -- temporary dont let it run (though it should die since shapes_tmp not present)
+	system ("cp ../gtfs.db ../gtf-backup_1.db");
+	std::cout << "\n   ... done.\n";
+
+	// STEP THREE:
+	// importing intersections.json and segmenting segments:
+	std::cout << " * Importing intersections ... ";
+	std::vector<std::string> files {dir + "/data/intersections_trafficlights.json",
+									dir + "/data/intersections_roundabouts.json"};
+	import_intersections (db, files);
+	system ("cp ../gtfs.db ../gtf-backup_2.db");
+	std::cout << "done.\n";
+
+	// system ("cp ../gtfs-backup_2.db ../gtfs.db");
+	// STEP FOUR: get all segments, and split into more segments
+	segment_shapes (db);
+	system ("cp ../gtfs.db ../gtf-backup_3.db");
+
+	// That's enough of the database connection ...
+	sqlite3_close (db);
 
 
-	system ("cp ../gtfs-backup_3.db ../gtfs.db && rm -rf tmp/*");
+	// system ("cp ../gtfs-backup_3.db ../gtfs.db && rm -rf tmp/*");
 	// STEP FIVE: stop distance into shape for stop_times
 	std::cout << " * Calculating distance into trip of stops ... \n";
 	std::string dbn = dir + "/" + dbname;
 	calculate_stop_distances (dbn);
+	system ("cp ../gtfs.db ../gtf-backup_4.db");
 	std::cout << "\n   ... done.\n";
 
 	return 0;
