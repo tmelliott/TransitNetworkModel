@@ -6,10 +6,10 @@
 .import data/stops.txt stops_tmp
 
 CREATE TABLE routes (
-	route_id TEXT,
+	route_id         TEXT,
 	route_short_name TEXT,
-	route_long_name TEXT,
-	shape_id TEXT
+	route_long_name  TEXT,
+	shape_id         TEXT
 );
 INSERT INTO routes
 	SELECT routes_tmp.route_id, route_short_name, route_long_name, MIN(shape_id) as shape_id
@@ -19,47 +19,54 @@ INSERT INTO routes
 DROP TABLE routes_tmp;
 
 CREATE TABLE trips (
-	trip_id TEXT,
+	trip_id  TEXT,
 	route_id TEXT
 );
 INSERT INTO trips
 	SELECT trip_id, route_id FROM trips_tmp;
 DROP TABLE trips_tmp;
 
-/* This will be filled in used C++ program */
 CREATE TABLE shapes (
-	shape_id TEXT,
-	leg INT DEFAULT 0,
-	segment_id BIGINT,
-	shape_dist_traveled REAL
+	shape_id      TEXT,
+	seq           INT,
+	lat           REAL,
+	lng           REAL
+	dist_traveled REAL
 );
+INSERT INTO shapes
+	SELECT shape_id, shape_pt_sequence, shape_pt_lat, shape_pt_lon FROM shapes_tmp;
+DROP TABLE shapes_tmp;
+
+/* The rest filled in via C++ */
 CREATE TABLE segments (
-	segment_id INTEGER PRIMARY KEY AUTOINCREMENT,
-	start_id INT,
-	end_id INT,
-	length REAL,
-	start_stop_id TEXT,
-	end_stop_id TEXT
+	segment_id      INTEGER PRIMARY KEY AUTOINCREMENT,
+	from_id         INT,
+	to_id           INT,
+	start_at        TEXT,
+	end_at          TEXT
+	length          REAL,
+	travel_time     REAL,     /* average travel time along the segment */
+	var_travel_time REAL,     /* variance of  travel time along the segment */
+	timestamp       TIMESTAMP /* time at which segment was last updated */
 );
-CREATE TABLE segment_pt (
-	segment_id INT,
-	seg_pt_sequence INT,
-	lat REAL,
-	lng REAL,
-	seg_dist_traveled REAL
+CREATE TABLE shape_segments (
+	shape_id            TEXT,
+	segment_id          INT,
+	leg                 INT,
+	shape_dist_traveled REAL
 );
 CREATE TABLE intersections (
 	intersection_id INTEGER PRIMARY KEY AUTOINCREMENT,
-	type TEXT,
-	lat REAL,
-	lng REAL
+	type            TEXT,
+	lat             REAL,
+	lng             REAL
 );
 
 
 CREATE TABLE stops (
 	stop_id TEXT,
-	lat REAL,
-	lng REAL
+	lat     REAL,
+	lng     REAL
 );
 INSERT INTO stops
 	SELECT stop_id, CAST(stop_lat AS REAL) AS lat, CAST(stop_lon AS REAL) AS lng
@@ -67,11 +74,11 @@ INSERT INTO stops
 DROP TABLE stops_tmp;
 
 CREATE TABLE stop_times (
-	stop_id TEXT,
-	trip_id TEXT,
-	stop_sequence INT,
-	arrival_time TIME,
-	departure_time TIME,
+	stop_id             TEXT,
+	trip_id             TEXT,
+	stop_sequence       INT,
+	arrival_time        TIME,
+	departure_time      TIME,
 	shape_dist_traveled REAL
 );
 INSERT INTO stop_times (stop_id, trip_id, stop_sequence, arrival_time, departure_time)

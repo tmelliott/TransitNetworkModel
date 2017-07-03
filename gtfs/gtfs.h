@@ -489,26 +489,26 @@ namespace gtfs {
 	 */
 	class Intersection {
 	private:
-		enum IntersectionType {
-			traffic_light,
-			roundabout,
-			uncontrolled
-		};
-
 		unsigned long id;       /*!< ID of the intersection */
 		gps::Coord pos;         /*!< gps location of the intersection */
-		IntersectionType type;  /*!< the type of intersection */
+		std::string type;
 
 		double delay;           /*!< the average delay at that intersection */
 		double delay_var;       /*!< delay variability at that intersection */
 		uint64_t timestamp;     /*!< updated at timestamp */
 
 	public:
-		// --- GETTERS
+		Intersection (unsigned long id,
+					  gps::Coord pos,
+				  	  std::string& type);
 
+		// --- GETTERS
+		unsigned long get_id (void) const { return id; };
+		const gps::Coord& get_pos (void) const { return pos; };
+		const std::string& get_type (void) const { return type; };
 
 		// --- METHODS
-		// void update (void);
+
 	};
 
 	/**

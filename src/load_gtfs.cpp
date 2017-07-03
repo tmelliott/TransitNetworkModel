@@ -36,8 +36,9 @@ namespace po = boost::program_options;
  * @return   The return value from the system command.
  */
 int system (std::string const& s) { return system (s.c_str ()); }
-void convert_shapes (sqlite3* db);
 void import_intersections (sqlite3* db, std::vector<std::string> files);
+void set_distances (sqlite3* db);
+
 void segment_shapes (sqlite3* db);
 void calculate_stop_distances (std::string& dbname);
 
@@ -84,214 +85,39 @@ int main (int argc, char* argv[]) {
     	fprintf(stderr, " * Opened database successfully\n");
 	}
 
-	// STEP TWO:
-	// convert shapes -> segments
-	// std::cout << " * Converting shapes to segments ... ";
-	// convert_shapes (db); // -- temporary dont let it run (though it should die since shapes_tmp not present)
-	// system ("cp ../gtfs.db ../gtf-backup_1.db");
-	// std::cout << "\n   ... done.\n";
-	//
-	// // STEP THREE:
+	// // STEP TWO:
 	// // importing intersections.json and segmenting segments:
 	// std::cout << " * Importing intersections ... ";
+	// system ("cp ../gtfs-backup1.db ../gtfs.db");
 	// std::vector<std::string> files {dir + "/data/intersections_trafficlights.json",
 	// 								dir + "/data/intersections_roundabouts.json"};
 	// import_intersections (db, files);
-	// system ("cp ../gtfs.db ../gtf-backup_2.db");
+	// system ("cp ../gtfs.db ../gtfs-backup2.db");
 	// std::cout << "done.\n";
-	//
-	// // system ("cp ../gtfs-backup_2.db ../gtfs.db");
-	// // STEP FOUR: get all segments, and split into more segments
+
+	// STEP THREE:
+	// Step through SHAPES identifying intersections
+	// and saving in `shape_segments` table
+	system ("cp ../gtfs-backup2.db ../gtfs.db");
+	set_distances (db);
 	// segment_shapes (db);
-	// system ("cp ../gtfs.db ../gtf-backup_3.db");
-	//
+	system ("cp ../gtfs.db ../gtfs-backup3.db");
+
 	// // That's enough of the database connection ...
-	// sqlite3_close (db);
+	sqlite3_close (db);
 
 
-	system ("cp ../gtfs-backup_3.db ../gtfs.db && rm -rf tmp/*");
-	// STEP FIVE: stop distance into shape for stop_times
-	std::cout << " * Calculating distance into trip of stops ... \n";
-	std::string dbn = dir + "/" + dbname;
-	calculate_stop_distances (dbn);
-	system ("cp ../gtfs.db ../gtf-backup_4.db");
+	// system ("cp ../gtfs-backup_3.db ../gtfs.db && rm -rf tmp/*");
+	// // STEP FIVE: stop distance into shape for stop_times
+	// std::cout << " * Calculating distance into trip of stops ... \n";
+	// std::string dbn = dir + "/" + dbname;
+	// calculate_stop_distances (dbn);
+	// system ("cp ../gtfs.db ../gtf-backup_4.db");
+
 	std::cout << "\n   ... done.\n";
 
 	return 0;
 }
-
-
-/**
- * Converts shapes from their raw GTFS format to our segmented format.
- *
- * For now, each shape is simply converted into a single segment.
- * @param db the database to work with
- */
-void convert_shapes (sqlite3* db) {
-	sqlite3_stmt* stmt;
-	sqlite3_stmt* stmt_get_shape;
-	sqlite3_stmt* stmt_seg_ins;
-	sqlite3_stmt* stmt_shape_ins;
-	sqlite3_stmt* stmt_shapept_ins;
-
-	if (sqlite3_prepare_v2 (db, "SELECT DISTINCT shape_id FROM shapes_tmp",
-							-1, &stmt, 0) == SQLITE_OK) {
-		std::cout << "\n   - SELECT query prepared ";
-	} else {
-		std::cerr << "\n   x Unable to prepare query ";
-		return;
-	}
-
-	if (sqlite3_prepare_v2 (db, (char*)("SELECT shape_pt_lat, shape_pt_lon FROM shapes_tmp "
-								 		"WHERE shape_id = ?1 ORDER BY CAST(shape_pt_sequence AS INT)"),
-							-1, &stmt_get_shape, 0) == SQLITE_OK) {
-		std::cout << "\n   - SELECT shape query prepared ";
-	} else {
-		std::cerr << "\n   x Unable to prepare shape query ";
-		return;
-	}
-
-	if (sqlite3_prepare_v2  (db, "INSERT INTO segments (length) VALUES (?1)",
-							 -1, &stmt_seg_ins, 0) == SQLITE_OK) {
-	    std::cout << "\n   - INSERT query prepared ";
-	} else {
-	    std::cerr << "\n   x Unable to prepare INSERT query ";
-		return;
-	}
-
-	if (sqlite3_prepare_v2 (db, "INSERT INTO shapes VALUES (?1, 1, ?2, 0)",
-							-1, &stmt_shape_ins, 0) == SQLITE_OK) {
-		std::cout << "\n   - INSERT shape prepared ";
-	} else {
-		std::cerr << "\n   x Error preparing shape insert query ";
-		return;
-	}
-
-	if (sqlite3_prepare_v2 (db, "INSERT INTO segment_pt VALUES (?1, ?2, ?3, ?4, ?5)",
-							-1, &stmt_shapept_ins, 0) == SQLITE_OK) {
-		std::cout << "\n   - INSERT shape points prepared ";
-	} else {
-		std::cerr << "\n   x Error preparing shape point insert query ";
-		return;
-	}
-
-	// For a progress bar (because we can't not have one!)
-	int nshapes = 0;
-	sqlite3_stmt* stmt_nrow;
-	if (sqlite3_prepare_v2 (db, "SELECT COUNT(DISTINCT shape_id) FROM shapes_tmp",
-							-1, &stmt_nrow, 0) == SQLITE_OK &&
-		sqlite3_step (stmt_nrow) == SQLITE_ROW) {
-		nshapes = sqlite3_column_int (stmt_nrow, 0);
-	}
-	std::cout << "nshapes = " << nshapes;
-	sqlite3_finalize (stmt_nrow);
-
-	std::cout << "\n";
-	int n = 0;
-	while (sqlite3_step (stmt) == SQLITE_ROW) {
-		if (nshapes > 0) {
-			n++;
-			printf("     + Shape %*d of %d (%*d%%) \r", 4, n, nshapes, 3, (int)(100 * (n) / nshapes));
-			std::cout.flush();
-		}
-	    std::string shape_id = (char*)sqlite3_column_text (stmt, 0);
-	    std::clog << "\n   +++ " << shape_id;
-
-	    // LOAD SHAPE - COMPUTE LENGTH
-		const char* sid = shape_id.c_str ();
-		if (sqlite3_bind_text (stmt_get_shape, 1, sid, -1, SQLITE_STATIC) != SQLITE_OK) {
-			std::cerr << "\n     x Error binding shape ID to query ";
-			continue;
-		} else {
-			std::clog << "\n     + Shape ID bound successfully ";
-		}
-
-		std::vector<gps::Coord> path;
-		while (sqlite3_step (stmt_get_shape) == SQLITE_ROW) {
-			path.emplace_back (sqlite3_column_double (stmt_get_shape, 0),
-							   sqlite3_column_double (stmt_get_shape, 1));
-		}
-		sqlite3_reset (stmt_get_shape);
-
-		double length = 0.0;
-		for (unsigned int i=1; i<path.size(); i++) {
-			length += path[i-1].distanceTo (path[i]);
-		}
-
-	    // INSERT INTO segments (length) VALUES (?) - [length]
-	    if (sqlite3_bind_double (stmt_seg_ins, 1, length) != SQLITE_OK) {
-			std::cerr << "\n     x Error binding ID to query ";
-			continue;
-		} else {
-			std::clog << "\n     + ID bound to query ";
-		}
-		auto res = sqlite3_step (stmt_seg_ins);
-		if (res != SQLITE_ROW && res != SQLITE_DONE) {
-			std::cerr << "\n     x Error running INSERT query ";
-			continue;
-		} else {
-			std::clog << "\n     + Segment Inserted ";
-		}
-		sqlite3_reset (stmt_seg_ins);
-
-		// RETURN ID of new segment
-		auto segment_id = sqlite3_last_insert_rowid (db);
-		std::clog << " -> segment_id: " << segment_id;
-
-	    // INSERT INTO shapes (shape_id, leg, segment_id, shape_dist_traveled)
-	    //      VALUES (?, 0, ?, 0) - [shape_id, segment_id]
-	    if (sqlite3_bind_text (stmt_shape_ins, 1, sid, -1, SQLITE_STATIC) != SQLITE_OK ||
-			sqlite3_bind_int64 (stmt_shape_ins, 2, segment_id) != SQLITE_OK) {
-			std::cerr << "   Error binding shape ";
-			continue;
-		} else {
-			std::clog << "   Shape bound OK ";
-		}
-		if (sqlite3_step (stmt_shape_ins) != SQLITE_DONE) {
-			std::cerr << "    Error inserting shape ";
-			continue;
-		} else {
-			std::clog << "    Shape inserted OK";
-		}
-		sqlite3_reset (stmt_shape_ins);
-
-
-		// INSERT INTO segment_pt VALUES (?,?,?,?,?) - [segment_id, seg_pt_seq, lat, lng, dist]
-		double dist = 0.0;
-		sqlite3_exec (db, "BEGIN", NULL, NULL, NULL);
-		for (unsigned int i=0; i<path.size (); i++) {
-			if (i > 0) dist += path[i-1].distanceTo (path[i]);
-			if (sqlite3_bind_int64 (stmt_shapept_ins, 1, segment_id) != SQLITE_OK ||
-				sqlite3_bind_int (stmt_shapept_ins, 2, i+1) != SQLITE_OK ||
-				sqlite3_bind_double (stmt_shapept_ins, 3, path[i].lat) != SQLITE_OK ||
-				sqlite3_bind_double (stmt_shapept_ins, 4, path[i].lng) != SQLITE_OK ||
-				sqlite3_bind_double (stmt_shapept_ins, 5, dist) != SQLITE_OK) {
-				std::cerr << "   Error inserting shape points ";
-				sqlite3_exec (db, "ROLLBACK", NULL, NULL, NULL);
-				continue;
-			}
-			if (sqlite3_step (stmt_shapept_ins) != SQLITE_DONE) {
-				std::cerr << "   Error running query :( ";
-				sqlite3_exec (db, "ROLLBACK", NULL, NULL, NULL);
-				continue;
-			}
-			// OK
-			sqlite3_reset (stmt_shapept_ins);
-		}
-		sqlite3_exec (db, "COMMIT", NULL, NULL, NULL);
-	}
-	std::clog << "\n   ";
-
-	// Close the statements to prevent memory leak
-	sqlite3_finalize (stmt);
-	sqlite3_finalize (stmt_get_shape);
-	sqlite3_finalize (stmt_seg_ins);
-	sqlite3_finalize (stmt_shapept_ins);
-
-
-	// Delete TMP tables
-	sqlite3_exec (db, "DROP TABLE shapes_tmp", NULL, NULL, NULL);
-};
 
 
 
@@ -449,23 +275,103 @@ void import_intersections (sqlite3* db, std::vector<std::string> files) {
 		<< "   -> Inserted " << Nfinal << " intersections.\n";
 }
 
+/**
+ * Set distance in database for segments and stops
+ *
+ * To reduce reads, perform all at once, route by route.
+ * For each route
+ * 	- load associated shape data into a Shape object
+ * 	- find intersections (in path order)
+ * 		- (use code from segment_shape fn)
+ * 	- load stops
+ * 	- travel along path computing distance traveled for each stop
+ * 	  and intersection along the way
+ *
+ * @param db [description]
+ */
+void set_distances (sqlite3* db) {
+	std::string qry; // generic string for whatevery query we're preparing
+
+	// SELECT all intersections and stick 'em in a vector of objects
+	sqlite3_stmt* select_intersections;
+	qry = "SELECT intersection_id, lat, lng, type FROM intersections";
+	if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &select_intersections, 0) != SQLITE_OK) {
+		std::cerr << "\n x Unable to prepare `" << qry << "`";
+		throw "Unable to prepare query - invalid, perhaps?";
+	}
+	std::clog << "\n + Prepared `" << qry << "`";
+
+	// Insert 'em into the vector
+	std::cout << "\n * Loading Intersections ... ";
+	std::vector<gtfs::Intersection> intersections;
+	while (sqlite3_step (select_intersections) == SQLITE_ROW) {
+		std::string type = (char*)sqlite3_column_text (select_intersections, 3);
+		intersections.emplace_back (
+			sqlite3_column_int (select_intersections, 0),
+			gps::Coord (sqlite3_column_double (select_intersections, 1),
+						sqlite3_column_double (select_intersections, 2)),
+			type
+		);
+		// std::clog << "\n   + Intersection "
+		// 	<< intersections.back ().get_id ()
+		// 	<< " " << intersections.back ().get_pos ()
+		// 	<< " - " << intersections.back ().get_type ();
+	}
+	std::cout << intersections.size () << " loaded";
+	std::cout.flush ();
+
+	// SELECT all route IDs and their shape IDs to loop over.
+	sqlite3_stmt* select_routes;
+	qry = "SELECT route_id, shape_id FROM routes LIMIT 10";
+	if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &select_routes, 0) != SQLITE_OK) {
+		std::cerr << "\n x Unable to prepare `" << qry << "`";
+		throw "Unable to prepare query - invalid, perhaps?";
+	}
+	std::clog << "\n + Prepared `" << qry << "`";
+
+	// SELECT shape [shape_id]
+	sqlite3_stmt* select_shape;
+	qry = "SELECT lat, lng FROM shapes WHERE shape_id=$1";
+	if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &select_shape, 0) != SQLITE_OK) {
+		std::cerr << "\n x Unable to prepare `" << qry << "`";
+		throw "Unable to prepare query - invalid, perhaps?";
+	}
+	std::clog << "\n + Prepared `" << qry << "`";
+
+	// SELECT stops (just use FIRST trip_id for each route) [route_id]
+	sqlite3_stmt* select_stops;
+	qry = "SELECT stops.stop_id, lat, lng FROM stops, stop_times "
+		  "WHERE stops.stop_id=stop_times.stop_id "
+		  "AND stop_times.trip_id="
+		  	"(SELECT trip_id FROM trips WHERE route_id=$1 LIMIT 1) "
+		  "ORDER BY stop_sequence";
+	if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &select_stops, 0) != SQLITE_OK) {
+		std::cerr << "\n x Unable to prepare `" << qry << "`";
+		throw "Unable to prepare query - invalid, perhaps?";
+	}
+	std::clog << "\n + Prepared `" << qry << "`";
+
+	// UPDATE stop distances (for ALL trips) [distance, stop_id, route_id]
+	sqlite3_stmt* update_stops;
+	qry = "UPDATE stop_times "
+			"SET shape_dist_traveled=$1 "
+			"WHERE stop_id=$2 AND trip_id IN "
+				"(SELECT trip_id FROM trips WHERE route_id=$3)";
+	if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &update_stops, 0) != SQLITE_OK) {
+		std::cerr << "\n x Unable to prepare `" << qry << "`";
+		throw "Unable to prepare query - invalid, perhaps?";
+	}
+	std::clog << "\n + Prepared `" << qry << "`";
+
+	// INSERT shape_segments
+
+
+	std::clog << "\n - finished.\n";
+};
+
 
 /**
  * Segment shapes.
- *
- * One check to make: length before segmentation == length after segmentation!
- *
- * For each segment
- * - find intersections on the segment
- * - split at intersections
- *   - SPLIT = from nearest point on path to A to nearest point on path to B, INCLUSIVE
- * - for each SPLIT, look for existing segment between A and B
- *   - IF exists, use that,
- *   - ELSE create new segment
- * - compare length of original with new:
- *   - IF equal, then replace all rows of SHAPES with new segments
- *     - and delete the original segment
- *   - ELSE report an error creating the segment
  *
  * @param db a database connection
  */
