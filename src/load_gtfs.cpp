@@ -416,6 +416,8 @@ void set_distances (sqlite3* db) {
 	std::vector<gtfs::ShapePt> path;
 	std::shared_ptr<gtfs::Shape> shape;
 	std::vector<gtfs::Shape> shapes;
+	std::vector<gtfs::RouteStop> rstops;
+	std::map<std::string, gtfs::Stop> stops;
 
 	std::cout << "\n * Loading Shapes ... ";
 	while (sqlite3_step (select_routes) == SQLITE_ROW) {
