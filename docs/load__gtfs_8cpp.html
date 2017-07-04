@@ -93,13 +93,14 @@ Include dependency graph for load_gtfs.cpp:</div>
 Functions</h2></td></tr>
 <tr class="memitem:acc289d9bfee4c154322662aef55c5438"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="load__gtfs_8cpp.html#acc289d9bfee4c154322662aef55c5438">system</a> (std::string const &amp;s)</td></tr>
 <tr class="separator:acc289d9bfee4c154322662aef55c5438"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4f311128b9bf5549011dc5d2a288a0b0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="load__gtfs_8cpp.html#a4f311128b9bf5549011dc5d2a288a0b0">convert_shapes</a> (sqlite3 *db)</td></tr>
-<tr class="separator:a4f311128b9bf5549011dc5d2a288a0b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a54ef9ab4a1985152c9cf7ec290fbea2d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="load__gtfs_8cpp.html#a54ef9ab4a1985152c9cf7ec290fbea2d">import_intersections</a> (sqlite3 *db, std::vector&lt; std::string &gt; files)</td></tr>
 <tr class="separator:a54ef9ab4a1985152c9cf7ec290fbea2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f86801b49d8f0b1649a9edc0e197172"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="load__gtfs_8cpp.html#a2f86801b49d8f0b1649a9edc0e197172">set_distances</a> (sqlite3 *db)</td></tr>
+<tr class="separator:a2f86801b49d8f0b1649a9edc0e197172"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4c73441dc3489abcadf91f57dd472673"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="load__gtfs_8cpp.html#a4c73441dc3489abcadf91f57dd472673">segment_shapes</a> (sqlite3 *db)</td></tr>
 <tr class="separator:a4c73441dc3489abcadf91f57dd472673"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afc0ec9cd72ffe92b7aacb7c58aeea6b3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="load__gtfs_8cpp.html#afc0ec9cd72ffe92b7aacb7c58aeea6b3">calculate_stop_distances</a> (std::string &amp;dbname)</td></tr>
+<tr class="memitem:afc0ec9cd72ffe92b7aacb7c58aeea6b3"><td class="memItemLeft" align="right" valign="top"><a id="afc0ec9cd72ffe92b7aacb7c58aeea6b3"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>calculate_stop_distances</b> (std::string &amp;dbname)</td></tr>
 <tr class="separator:afc0ec9cd72ffe92b7aacb7c58aeea6b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ddf1224851353fc92bfbff6f499fa97"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="load__gtfs_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97">main</a> (int argc, char *argv[])</td></tr>
 <tr class="separator:a0ddf1224851353fc92bfbff6f499fa97"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -111,55 +112,6 @@ Functions</h2></td></tr>
 <dl class="section author"><dt>Author</dt><dd>Tom Elliott <a href="#" onclick="location.href='mai'+'lto:'+'tom'+'.e'+'lli'+'ot'+'t@a'+'uc'+'kla'+'nd'+'.ac'+'.n'+'z'; return false;">tom.e<span style="display: none;">.nosp@m.</span>llio<span style="display: none;">.nosp@m.</span>tt@au<span style="display: none;">.nosp@m.</span>ckla<span style="display: none;">.nosp@m.</span>nd.ac<span style="display: none;">.nosp@m.</span>.nz</a> </dd></dl>
 <dl class="section version"><dt>Version</dt><dd>0.0.1 </dd></dl>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="afc0ec9cd72ffe92b7aacb7c58aeea6b3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afc0ec9cd72ffe92b7aacb7c58aeea6b3">&#9670;&nbsp;</a></span>calculate_stop_distances()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void calculate_stop_distances </td>
-          <td>(</td>
-          <td class="paramtype">std::string &amp;&#160;</td>
-          <td class="paramname"><em>dbname</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Compute the shape distance traveled for each stop along a route. </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">dbname</td><td>The database to connect to </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a4f311128b9bf5549011dc5d2a288a0b0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4f311128b9bf5549011dc5d2a288a0b0">&#9670;&nbsp;</a></span>convert_shapes()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void convert_shapes </td>
-          <td>(</td>
-          <td class="paramtype">sqlite3 *&#160;</td>
-          <td class="paramname"><em>db</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Converts shapes from their raw GTFS format to our segmented format.</p>
-<p>For now, each shape is simply converted into a single segment. </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">db</td><td>the database to work with </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <a id="a54ef9ab4a1985152c9cf7ec290fbea2d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a54ef9ab4a1985152c9cf7ec290fbea2d">&#9670;&nbsp;</a></span>import_intersections()</h2>
 
@@ -251,30 +203,44 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Segment shapes.</p>
-<p>One check to make: length before segmentation == length after segmentation!</p>
-<p>For each segment</p><ul>
-<li>find intersections on the segment</li>
-<li>split at intersections<ul>
-<li>SPLIT = from nearest point on path to A to nearest point on path to B, INCLUSIVE</li>
-</ul>
-</li>
-<li>for each SPLIT, look for existing segment between A and B<ul>
-<li>IF exists, use that,</li>
-<li>ELSE create new segment</li>
-</ul>
-</li>
-<li>compare length of original with new:<ul>
-<li>IF equal, then replace all rows of SHAPES with new segments<ul>
-<li>and delete the original segment</li>
-</ul>
-</li>
-<li>ELSE report an error creating the segment</li>
-</ul>
-</li>
-</ul>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">db</td><td>a database connection </td></tr>
+  </table>
+  </dd>
+</dl>
+<p>A split object, used only to find intersections at which to split the route.</p>
+
+</div>
+</div>
+<a id="a2f86801b49d8f0b1649a9edc0e197172"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f86801b49d8f0b1649a9edc0e197172">&#9670;&nbsp;</a></span>set_distances()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void set_distances </td>
+          <td>(</td>
+          <td class="paramtype">sqlite3 *&#160;</td>
+          <td class="paramname"><em>db</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Set distance in database for segments and stops</p>
+<p>To reduce reads, perform all at once, route by route. For each route</p><ul>
+<li>load associated shape data into a Shape object</li>
+<li>find intersections (in path order)<ul>
+<li>(use code from segment_shape fn)</li>
+</ul>
+</li>
+<li>load stops</li>
+<li>travel along path computing distance traveled for each stop and intersection along the way</li>
+</ul>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">db</td><td>the database to use </td></tr>
   </table>
   </dd>
 </dl>

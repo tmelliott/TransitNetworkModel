@@ -17,13 +17,15 @@ Collaboration diagram for gtfs\+:\+:Shape\+Pt\+:\nopagebreak
 \begin{DoxyCompactItemize}
 \item 
 \hyperlink{structgtfs_1_1ShapePt_a34e7da183770e2ab8360e286596ff18a}{Shape\+Pt} (\hyperlink{classgps_1_1Coord}{gps\+::\+Coord} \hyperlink{structgtfs_1_1ShapePt_ab79eb8263213afd27be9b257fca8515a}{pt}, double distance)
+\item 
+\hyperlink{structgtfs_1_1ShapePt_a44b97d5fba5a7f1d0c7988dbe8748f85}{Shape\+Pt} (\hyperlink{classgps_1_1Coord}{gps\+::\+Coord} \hyperlink{structgtfs_1_1ShapePt_ab79eb8263213afd27be9b257fca8515a}{pt})
 \end{DoxyCompactItemize}
 \subsection*{Public Attributes}
 \begin{DoxyCompactItemize}
 \item 
 \hyperlink{classgps_1_1Coord}{gps\+::\+Coord} \hyperlink{structgtfs_1_1ShapePt_ab79eb8263213afd27be9b257fca8515a}{pt}
 \item 
-double \hyperlink{structgtfs_1_1ShapePt_ad3fe477575279af15fe33e0ce36eaad2}{seg\+\_\+dist\+\_\+traveled}
+double \hyperlink{structgtfs_1_1ShapePt_acb29ef40a33bee6b4000c31731e25073}{dist\+\_\+traveled}
 \end{DoxyCompactItemize}
 
 
@@ -34,7 +36,7 @@ A struct describing a single shape point.
 \mbox{\Hypertarget{structgtfs_1_1ShapePt_a34e7da183770e2ab8360e286596ff18a}\label{structgtfs_1_1ShapePt_a34e7da183770e2ab8360e286596ff18a}} 
 \index{gtfs\+::\+Shape\+Pt@{gtfs\+::\+Shape\+Pt}!Shape\+Pt@{Shape\+Pt}}
 \index{Shape\+Pt@{Shape\+Pt}!gtfs\+::\+Shape\+Pt@{gtfs\+::\+Shape\+Pt}}
-\subsubsection{\texorpdfstring{Shape\+Pt()}{ShapePt()}}
+\subsubsection{\texorpdfstring{Shape\+Pt()}{ShapePt()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
 {\footnotesize\ttfamily gtfs\+::\+Shape\+Pt\+::\+Shape\+Pt (\begin{DoxyParamCaption}\item[{\hyperlink{classgps_1_1Coord}{gps\+::\+Coord}}]{pt,  }\item[{double}]{distance }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 Default constructor for a shape point, which defines a G\+PS location and how far into the shape that point is.
@@ -43,25 +45,36 @@ Default constructor for a shape point, which defines a G\+PS location and how fa
 \begin{DoxyParams}{Parameters}
 {\em pt} & G\+PS position of the point \\
 \hline
-{\em distance} & the distance into the segment of the point \\
+{\em distance} & the point\textquotesingle{}s distance along the path \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{structgtfs_1_1ShapePt_a44b97d5fba5a7f1d0c7988dbe8748f85}\label{structgtfs_1_1ShapePt_a44b97d5fba5a7f1d0c7988dbe8748f85}} 
+\index{gtfs\+::\+Shape\+Pt@{gtfs\+::\+Shape\+Pt}!Shape\+Pt@{Shape\+Pt}}
+\index{Shape\+Pt@{Shape\+Pt}!gtfs\+::\+Shape\+Pt@{gtfs\+::\+Shape\+Pt}}
+\subsubsection{\texorpdfstring{Shape\+Pt()}{ShapePt()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily gtfs\+::\+Shape\+Pt\+::\+Shape\+Pt (\begin{DoxyParamCaption}\item[{\hyperlink{classgps_1_1Coord}{gps\+::\+Coord}}]{pt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Constructor without distance. 
+\begin{DoxyParams}{Parameters}
+{\em pt} & G\+PS position of point. \\
 \hline
 \end{DoxyParams}
 
 
 \subsection{Member Data Documentation}
-\mbox{\Hypertarget{structgtfs_1_1ShapePt_ab79eb8263213afd27be9b257fca8515a}\label{structgtfs_1_1ShapePt_ab79eb8263213afd27be9b257fca8515a}} 
+\mbox{\Hypertarget{structgtfs_1_1ShapePt_acb29ef40a33bee6b4000c31731e25073}\label{structgtfs_1_1ShapePt_acb29ef40a33bee6b4000c31731e25073}} 
+\index{gtfs\+::\+Shape\+Pt@{gtfs\+::\+Shape\+Pt}!dist\+\_\+traveled@{dist\+\_\+traveled}}
+\index{dist\+\_\+traveled@{dist\+\_\+traveled}!gtfs\+::\+Shape\+Pt@{gtfs\+::\+Shape\+Pt}}
+\subsubsection{\texorpdfstring{dist\+\_\+traveled}{dist\_traveled}}
+{\footnotesize\ttfamily double gtfs\+::\+Shape\+Pt\+::dist\+\_\+traveled}
+
+cumulative distance traveled along the shape \mbox{\Hypertarget{structgtfs_1_1ShapePt_ab79eb8263213afd27be9b257fca8515a}\label{structgtfs_1_1ShapePt_ab79eb8263213afd27be9b257fca8515a}} 
 \index{gtfs\+::\+Shape\+Pt@{gtfs\+::\+Shape\+Pt}!pt@{pt}}
 \index{pt@{pt}!gtfs\+::\+Shape\+Pt@{gtfs\+::\+Shape\+Pt}}
 \subsubsection{\texorpdfstring{pt}{pt}}
 {\footnotesize\ttfamily \hyperlink{classgps_1_1Coord}{gps\+::\+Coord} gtfs\+::\+Shape\+Pt\+::pt}
 
-G\+PS coordinate of the point \mbox{\Hypertarget{structgtfs_1_1ShapePt_ad3fe477575279af15fe33e0ce36eaad2}\label{structgtfs_1_1ShapePt_ad3fe477575279af15fe33e0ce36eaad2}} 
-\index{gtfs\+::\+Shape\+Pt@{gtfs\+::\+Shape\+Pt}!seg\+\_\+dist\+\_\+traveled@{seg\+\_\+dist\+\_\+traveled}}
-\index{seg\+\_\+dist\+\_\+traveled@{seg\+\_\+dist\+\_\+traveled}!gtfs\+::\+Shape\+Pt@{gtfs\+::\+Shape\+Pt}}
-\subsubsection{\texorpdfstring{seg\+\_\+dist\+\_\+traveled}{seg\_dist\_traveled}}
-{\footnotesize\ttfamily double gtfs\+::\+Shape\+Pt\+::seg\+\_\+dist\+\_\+traveled}
-
-cumulative distance traveled along the shape 
+G\+PS coordinate of the point 
 
 The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
 \item 

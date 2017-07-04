@@ -85,19 +85,21 @@ Collaboration diagram for gtfs::ShapePt:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a34e7da183770e2ab8360e286596ff18a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structgtfs_1_1ShapePt.html#a34e7da183770e2ab8360e286596ff18a">ShapePt</a> (<a class="el" href="classgps_1_1Coord.html">gps::Coord</a> <a class="el" href="structgtfs_1_1ShapePt.html#ab79eb8263213afd27be9b257fca8515a">pt</a>, double distance)</td></tr>
 <tr class="separator:a34e7da183770e2ab8360e286596ff18a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44b97d5fba5a7f1d0c7988dbe8748f85"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structgtfs_1_1ShapePt.html#a44b97d5fba5a7f1d0c7988dbe8748f85">ShapePt</a> (<a class="el" href="classgps_1_1Coord.html">gps::Coord</a> <a class="el" href="structgtfs_1_1ShapePt.html#ab79eb8263213afd27be9b257fca8515a">pt</a>)</td></tr>
+<tr class="separator:a44b97d5fba5a7f1d0c7988dbe8748f85"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:ab79eb8263213afd27be9b257fca8515a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classgps_1_1Coord.html">gps::Coord</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structgtfs_1_1ShapePt.html#ab79eb8263213afd27be9b257fca8515a">pt</a></td></tr>
 <tr class="separator:ab79eb8263213afd27be9b257fca8515a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad3fe477575279af15fe33e0ce36eaad2"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structgtfs_1_1ShapePt.html#ad3fe477575279af15fe33e0ce36eaad2">seg_dist_traveled</a></td></tr>
-<tr class="separator:ad3fe477575279af15fe33e0ce36eaad2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb29ef40a33bee6b4000c31731e25073"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structgtfs_1_1ShapePt.html#acb29ef40a33bee6b4000c31731e25073">dist_traveled</a></td></tr>
+<tr class="separator:acb29ef40a33bee6b4000c31731e25073"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A struct describing a single shape point. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a34e7da183770e2ab8360e286596ff18a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a34e7da183770e2ab8360e286596ff18a">&#9670;&nbsp;</a></span>ShapePt()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a34e7da183770e2ab8360e286596ff18a">&#9670;&nbsp;</a></span>ShapePt() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -133,7 +135,39 @@ Public Attributes</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">pt</td><td>GPS position of the point </td></tr>
-    <tr><td class="paramname">distance</td><td>the distance into the segment of the point </td></tr>
+    <tr><td class="paramname">distance</td><td>the point's distance along the path </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a44b97d5fba5a7f1d0c7988dbe8748f85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44b97d5fba5a7f1d0c7988dbe8748f85">&#9670;&nbsp;</a></span>ShapePt() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">gtfs::ShapePt::ShapePt </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classgps_1_1Coord.html">gps::Coord</a>&#160;</td>
+          <td class="paramname"><em>pt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Constructor without distance. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pt</td><td>GPS position of point. </td></tr>
   </table>
   </dd>
 </dl>
@@ -141,6 +175,21 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
+<a id="acb29ef40a33bee6b4000c31731e25073"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb29ef40a33bee6b4000c31731e25073">&#9670;&nbsp;</a></span>dist_traveled</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double gtfs::ShapePt::dist_traveled</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>cumulative distance traveled along the shape </p>
+
+</div>
+</div>
 <a id="ab79eb8263213afd27be9b257fca8515a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab79eb8263213afd27be9b257fca8515a">&#9670;&nbsp;</a></span>pt</h2>
 
@@ -153,21 +202,6 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>GPS coordinate of the point </p>
-
-</div>
-</div>
-<a id="ad3fe477575279af15fe33e0ce36eaad2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad3fe477575279af15fe33e0ce36eaad2">&#9670;&nbsp;</a></span>seg_dist_traveled</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">double gtfs::ShapePt::seg_dist_traveled</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>cumulative distance traveled along the shape </p>
 
 </div>
 </div>

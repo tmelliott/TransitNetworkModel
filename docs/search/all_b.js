@@ -1,8 +1,6 @@
 var searchData=
 [
-  ['particle',['Particle',['../classgtfs_1_1Particle.html',1,'gtfs::Particle'],['../classgtfs_1_1Particle.html#ad7f42e77c6c7f3042c977fd5a42ff82f',1,'gtfs::Particle::Particle(Vehicle *v)'],['../classgtfs_1_1Particle.html#ac386e64b43b1e317063f9a6666d604ce',1,'gtfs::Particle::Particle(const Particle &amp;p)']]],
-  ['pdf',['pdf',['../classsampling_1_1uniform.html#a9fcb1597ca643fb1c2184f6febc69b0d',1,'sampling::uniform::pdf()'],['../classsampling_1_1normal.html#ad9da5ab3d50569e418f00ace7ac26fa7',1,'sampling::normal::pdf()'],['../classsampling_1_1exponential.html#aa839d6994b83c79b91993b35bb8173e9',1,'sampling::exponential::pdf()']]],
-  ['pdf_5flog',['pdf_log',['../classsampling_1_1uniform.html#a30fa2f2be90f2f9f2d46069540019fb4',1,'sampling::uniform::pdf_log()'],['../classsampling_1_1normal.html#a9a74b03f4276eb622d3c259fd8a1ea01',1,'sampling::normal::pdf_log()'],['../classsampling_1_1exponential.html#af1a70f21711c1a0da8643c0103b51f37',1,'sampling::exponential::pdf_log()']]],
-  ['projectflat',['projectFlat',['../classgps_1_1Coord.html#a43b8263439170e923db7b21a32b653f8',1,'gps::Coord']]],
-  ['pt',['pt',['../structgtfs_1_1ShapePt.html#ab79eb8263213afd27be9b257fca8515a',1,'gtfs::ShapePt']]]
+  ['operator_21_3d',['operator!=',['../classgps_1_1Coord.html#ad832b140a8a39355874e268834d078cd',1,'gps::Coord']]],
+  ['operator_3c_3c',['operator&lt;&lt;',['../namespacegps.html#a5fb543469635387159ce1b8e24f6f78a',1,'gps::operator&lt;&lt;()'],['../namespacegtfs.html#a3a0b93a57343e447187095cfbbf0af9a',1,'gtfs::operator&lt;&lt;()']]],
+  ['operator_3d_3d',['operator==',['../classgps_1_1Coord.html#a254245e5cdfbac96a1c6e0332f2d65fb',1,'gps::Coord']]]
 ];

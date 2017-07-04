@@ -76,10 +76,18 @@ $(function() {
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ace6a58f57452ab0d2830b518a0ed2bde"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Shape.html#ace6a58f57452ab0d2830b518a0ed2bde">Shape</a> (std::string &amp;id)</td></tr>
 <tr class="separator:ace6a58f57452ab0d2830b518a0ed2bde"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17adce0bcc4f7f7b159a08f8fa8eed56"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Shape.html#a17adce0bcc4f7f7b159a08f8fa8eed56">Shape</a> (std::string &amp;id, std::vector&lt; <a class="el" href="structgtfs_1_1ShapePt.html">ShapePt</a> &gt; &amp;path)</td></tr>
+<tr class="separator:a17adce0bcc4f7f7b159a08f8fa8eed56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7205aeb0d641d27e01df87a8351283e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Shape.html#af7205aeb0d641d27e01df87a8351283e">Shape</a> (std::string &amp;id, std::vector&lt; <a class="el" href="structgtfs_1_1ShapePt.html">ShapePt</a> &gt; &amp;path, std::vector&lt; <a class="el" href="structgtfs_1_1ShapeSegment.html">ShapeSegment</a> &gt; segments)</td></tr>
+<tr class="separator:af7205aeb0d641d27e01df87a8351283e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad8f8c0c5c19d4a8e840be1ed9a89de9e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Shape.html#ad8f8c0c5c19d4a8e840be1ed9a89de9e">get_id</a> (void) const</td></tr>
 <tr class="separator:ad8f8c0c5c19d4a8e840be1ed9a89de9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b9c24a3ec0de99e4e7ac2fe2bb128a0"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="structgtfs_1_1ShapePt.html">ShapePt</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Shape.html#a3b9c24a3ec0de99e4e7ac2fe2bb128a0">get_path</a> (void) const</td></tr>
+<tr class="separator:a3b9c24a3ec0de99e4e7ac2fe2bb128a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab6959c8c957c2548313e4cf76bd2a2dd"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="structgtfs_1_1ShapeSegment.html">ShapeSegment</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Shape.html#ab6959c8c957c2548313e4cf76bd2a2dd">get_segments</a> (void) const</td></tr>
 <tr class="separator:ab6959c8c957c2548313e4cf76bd2a2dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39e7bb353e89f954d36eb7f9ca4820b9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Shape.html#a39e7bb353e89f954d36eb7f9ca4820b9">set_path</a> (std::vector&lt; <a class="el" href="structgtfs_1_1ShapePt.html">ShapePt</a> &gt; &amp;path)</td></tr>
+<tr class="separator:a39e7bb353e89f954d36eb7f9ca4820b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb5bfd99bafb82eb085198218fe13342"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgtfs_1_1Shape.html#afb5bfd99bafb82eb085198218fe13342">add_segment</a> (std::shared_ptr&lt; <a class="el" href="classgtfs_1_1Segment.html">Segment</a> &gt; segment, double distance)</td></tr>
 <tr class="separator:afb5bfd99bafb82eb085198218fe13342"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -88,7 +96,7 @@ Public Member Functions</h2></td></tr>
 <p>The path is made up of one or more segments, and each is associated with an initial distance traveled up until the beginning of that segment. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ace6a58f57452ab0d2830b518a0ed2bde"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ace6a58f57452ab0d2830b518a0ed2bde">&#9670;&nbsp;</a></span>Shape()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ace6a58f57452ab0d2830b518a0ed2bde">&#9670;&nbsp;</a></span>Shape() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -113,6 +121,99 @@ Public Member Functions</h2></td></tr>
 <p>Default constructor for a shape object. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">id</td><td>the ID of the shape </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a17adce0bcc4f7f7b159a08f8fa8eed56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17adce0bcc4f7f7b159a08f8fa8eed56">&#9670;&nbsp;</a></span>Shape() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">gtfs::Shape::Shape </td>
+          <td>(</td>
+          <td class="paramtype">std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structgtfs_1_1ShapePt.html">ShapePt</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Constructor for a shape with a path </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">id</td><td>the ID of the shape </td></tr>
+    <tr><td class="paramname">path</td><td>the path, sequence of cooridinates, for the shape </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="af7205aeb0d641d27e01df87a8351283e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7205aeb0d641d27e01df87a8351283e">&#9670;&nbsp;</a></span>Shape() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">gtfs::Shape::Shape </td>
+          <td>(</td>
+          <td class="paramtype">std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structgtfs_1_1ShapePt.html">ShapePt</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structgtfs_1_1ShapeSegment.html">ShapeSegment</a> &gt;&#160;</td>
+          <td class="paramname"><em>segments</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Constructor for a shape with path and segments. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">id</td><td>the ID of the shape </td></tr>
+    <tr><td class="paramname">path</td><td>the path, sequence of cooridinates, for the shape </td></tr>
+    <tr><td class="paramname">segments</td><td>vector of segments making up the shape </td></tr>
   </table>
   </dd>
 </dl>
@@ -182,6 +283,33 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a3b9c24a3ec0de99e4e7ac2fe2bb128a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b9c24a3ec0de99e4e7ac2fe2bb128a0">&#9670;&nbsp;</a></span>get_path()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt;<a class="el" href="structgtfs_1_1ShapePt.html">ShapePt</a>&gt;&amp; gtfs::Shape::get_path </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>a vector of points making up the shape's path </dd></dl>
+
+</div>
+</div>
 <a id="ab6959c8c957c2548313e4cf76bd2a2dd"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab6959c8c957c2548313e4cf76bd2a2dd">&#9670;&nbsp;</a></span>get_segments()</h2>
 
@@ -206,6 +334,30 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>a vector of shape segments </dd></dl>
+
+</div>
+</div>
+<a id="a39e7bb353e89f954d36eb7f9ca4820b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39e7bb353e89f954d36eb7f9ca4820b9">&#9670;&nbsp;</a></span>set_path()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void gtfs::Shape::set_path </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structgtfs_1_1ShapePt.html">ShapePt</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Set a shape's path </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">path</td><td>vector of coordinates </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

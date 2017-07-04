@@ -4,6 +4,21 @@
 
 {\ttfamily \#include $<$gtfs.\+h$>$}
 
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classgtfs_1_1Intersection_aebd20bc7b35c2efd04790946b0f70018}\label{classgtfs_1_1Intersection_aebd20bc7b35c2efd04790946b0f70018}} 
+{\bfseries Intersection} (unsigned long id, \hyperlink{classgps_1_1Coord}{gps\+::\+Coord} pos, std\+::string \&type)
+\item 
+\mbox{\Hypertarget{classgtfs_1_1Intersection_abd0ff339d61409654a193b17f99e6ebe}\label{classgtfs_1_1Intersection_abd0ff339d61409654a193b17f99e6ebe}} 
+unsigned long {\bfseries get\+\_\+id} (void) const
+\item 
+\mbox{\Hypertarget{classgtfs_1_1Intersection_a64931f9bdb1c3318174f8fbf9bac02e5}\label{classgtfs_1_1Intersection_a64931f9bdb1c3318174f8fbf9bac02e5}} 
+const \hyperlink{classgps_1_1Coord}{gps\+::\+Coord} \& {\bfseries get\+\_\+pos} (void) const
+\item 
+\mbox{\Hypertarget{classgtfs_1_1Intersection_a1a38dd499e5860bc4464366e7b845260}\label{classgtfs_1_1Intersection_a1a38dd499e5860bc4464366e7b845260}} 
+const std\+::string \& {\bfseries get\+\_\+type} (void) const
+\end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
@@ -11,6 +26,7 @@ An object of this class represents an intersection.
 
 Intersections are (for now) either traffic lights or roundabouts, but in future will encompass all physical intersections. Each intersection will eventually get a mean and variance for delay at that intersection to represent the typical delay at that intersection. 
 
-The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
 \item 
-gtfs/gtfs.\+h\end{DoxyCompactItemize}
+gtfs/gtfs.\+h\item 
+gtfs/Intersection.\+cpp\end{DoxyCompactItemize}

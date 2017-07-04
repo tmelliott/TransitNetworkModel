@@ -1,5 +1,11 @@
 var searchData=
 [
-  ['uniform',['uniform',['../classsampling_1_1uniform.html#a414a98d445c6a07bbe78ea677db19f69',1,'sampling::uniform::uniform()'],['../classsampling_1_1uniform.html#a67fa371e5e843209c83d584c33dd8957',1,'sampling::uniform::uniform(double a, double b)']]],
-  ['update',['update',['../classgtfs_1_1Vehicle.html#a4baee648ab1db5b69aa2ffef7203c2bf',1,'gtfs::Vehicle::update(sampling::RNG &amp;rng)'],['../classgtfs_1_1Vehicle.html#add9266d843398c88d3fcc22239f586a9',1,'gtfs::Vehicle::update(const transit_realtime::VehiclePosition &amp;vp, GTFS &amp;gtfs)'],['../classgtfs_1_1Vehicle.html#ae9944f06fb0bde02f2d7c21f2dc33787',1,'gtfs::Vehicle::update(const transit_realtime::TripUpdate &amp;tu, GTFS &amp;gtfs)']]]
+  ['time_5fend',['time_end',['../transit__network__model_8cpp.html#ae8b2c4377d7ea72a33d0edaf8fad14b3',1,'transit_network_model.cpp']]],
+  ['time_5fstart',['time_start',['../transit__network__model_8cpp.html#aed0cc99c4e64e139becfd28b75cd45fa',1,'transit_network_model.cpp']]],
+  ['toint',['toInt',['../classgtfs_1_1Segment.html#a2b289f1a504fcd1912e588525fc46a41',1,'gtfs::Segment']]],
+  ['transition',['transition',['../classgtfs_1_1Particle.html#a18aeb1ccbc395210f80c18f9d0a0095c',1,'gtfs::Particle']]],
+  ['transition_5fphase1',['transition_phase1',['../classgtfs_1_1Particle.html#a5e964d5aa4698335de3c75938e55f5cd',1,'gtfs::Particle']]],
+  ['transition_5fphase2',['transition_phase2',['../classgtfs_1_1Particle.html#ad9374830814c89b2d5c0af705bda8849',1,'gtfs::Particle']]],
+  ['transition_5fphase3',['transition_phase3',['../classgtfs_1_1Particle.html#a68043b2380d8f530d648dd99e5a85101',1,'gtfs::Particle']]],
+  ['trip',['Trip',['../classgtfs_1_1Trip.html#a3014ee32fdb5abd550ad20088c91aae6',1,'gtfs::Trip']]]
 ];

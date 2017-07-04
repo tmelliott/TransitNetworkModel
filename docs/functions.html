@@ -76,6 +76,9 @@ $(function() {
 <li>allocate_id()
 : <a class="el" href="classgtfs_1_1Vehicle.html#aa9087e973a9821f384ec47f51bdcedc7">gtfs::Vehicle</a>
 </li>
+<li>alongTrackDistance()
+: <a class="el" href="classgps_1_1Coord.html#a69ead8580e270f1319d9bbf3da680d45">gps::Coord</a>
+</li>
 <li>arrival_time
 : <a class="el" href="structgtfs_1_1StopTime.html#a994ec898edd96675200f759acd76a57c">gtfs::StopTime</a>
 </li>
@@ -106,11 +109,17 @@ $(function() {
 
 
 <h3><a id="index_d"></a>- d -</h3><ul>
+<li>d
+: <a class="el" href="structgps_1_1nearPt.html#a82eeb1e4d61f5df14e20565b2f6da32e">gps::nearPt</a>
+</li>
 <li>departure_time
 : <a class="el" href="structgtfs_1_1StopTime.html#ad11c398eca36ff99f0934883141de3c9">gtfs::StopTime</a>
 </li>
 <li>destinationPoint()
 : <a class="el" href="classgps_1_1Coord.html#a774fc85267d9cd3d01d151e784f1112c">gps::Coord</a>
+</li>
+<li>dist_traveled
+: <a class="el" href="structgtfs_1_1ShapePt.html#acb29ef40a33bee6b4000c31731e25073">gtfs::ShapePt</a>
 </li>
 <li>distanceTo()
 : <a class="el" href="classgps_1_1Coord.html#a24d3b9899dc262a40728f7e343781ab6">gps::Coord</a>
@@ -121,6 +130,13 @@ $(function() {
 <h3><a id="index_e"></a>- e -</h3><ul>
 <li>exponential()
 : <a class="el" href="classsampling_1_1exponential.html#a796a16d5cabd2f203e11be1aabc7334f">sampling::exponential</a>
+</li>
+</ul>
+
+
+<h3><a id="index_f"></a>- f -</h3><ul>
+<li>fromInt()
+: <a class="el" href="classgtfs_1_1Segment.html#aa6d202be9bccb10ebd3c9274b7ab9e0c">gtfs::Segment</a>
 </li>
 </ul>
 
@@ -147,11 +163,17 @@ $(function() {
 <li>get_dwell_time()
 : <a class="el" href="classgtfs_1_1Particle.html#aaea44cde86b5b026c94800c6d837f174">gtfs::Particle</a>
 </li>
+<li>get_end()
+: <a class="el" href="classgtfs_1_1Segment.html#a13181832822c8780ab7c944d2fea2a66">gtfs::Segment</a>
+</li>
 <li>get_eta()
 : <a class="el" href="classgtfs_1_1Particle.html#aded5954299e6184a664973036f8ba804">gtfs::Particle</a>
 </li>
 <li>get_etas()
 : <a class="el" href="classgtfs_1_1Particle.html#ad1271a051a4040edc4ec47a188d75ad0">gtfs::Particle</a>
+</li>
+<li>get_from()
+: <a class="el" href="classgtfs_1_1Segment.html#ae43fcbd6aab7e468122f0110a2d60968">gtfs::Segment</a>
 </li>
 <li>get_id()
 : <a class="el" href="classgtfs_1_1Particle.html#a3131eb93ac902a4cccf42061e1a7296b">gtfs::Particle</a>
@@ -178,7 +200,7 @@ $(function() {
 : <a class="el" href="classgtfs_1_1Vehicle.html#a7b12b079c68880f00f532ca25858c368">gtfs::Vehicle</a>
 </li>
 <li>get_path()
-: <a class="el" href="classgtfs_1_1Segment.html#a9ba2506020d090ccfcd0623b58101a3b">gtfs::Segment</a>
+: <a class="el" href="classgtfs_1_1Shape.html#a3b9c24a3ec0de99e4e7ac2fe2bb128a0">gtfs::Shape</a>
 </li>
 <li>get_pos()
 : <a class="el" href="classgtfs_1_1Stop.html#acdd72b43e30c15819f16807b5c6a45d3">gtfs::Stop</a>
@@ -216,6 +238,9 @@ $(function() {
 <li>get_short_name()
 : <a class="el" href="classgtfs_1_1Route.html#a2a0fcdf687d5e326b20c5043c9db874f">gtfs::Route</a>
 </li>
+<li>get_start()
+: <a class="el" href="classgtfs_1_1Segment.html#a8f64f5b0859e79e9bdd2c0faa7e50e23">gtfs::Segment</a>
+</li>
 <li>get_stop()
 : <a class="el" href="classgtfs_1_1GTFS.html#a34304835b203901a972d40cc4f1d060a">gtfs::GTFS</a>
 </li>
@@ -232,6 +257,9 @@ $(function() {
 <li>get_timestamp()
 : <a class="el" href="classgtfs_1_1Vehicle.html#af064609446d9cde5b1a11e9a072eac4b">gtfs::Vehicle</a>
 </li>
+<li>get_to()
+: <a class="el" href="classgtfs_1_1Segment.html#aba473075f7a10db66b5b99890c39852f">gtfs::Segment</a>
+</li>
 <li>get_trip()
 : <a class="el" href="classgtfs_1_1GTFS.html#aec86fae3dee1e13f541798266fb2317e">gtfs::GTFS</a>
 , <a class="el" href="classgtfs_1_1Vehicle.html#a616c83927f0d2d513d33277a9ebd3537">gtfs::Vehicle</a>
@@ -239,6 +267,9 @@ $(function() {
 <li>get_trips()
 : <a class="el" href="classgtfs_1_1GTFS.html#ad526fc627fe1ce81b8a669f6187be0c0">gtfs::GTFS</a>
 , <a class="el" href="classgtfs_1_1Route.html#a763ea7a09f20972019198515da6a1c05">gtfs::Route</a>
+</li>
+<li>get_type()
+: <a class="el" href="classgtfs_1_1Segment.html#a366d9b1437e4175c3f43d312fab09530">gtfs::Segment</a>
 </li>
 <li>get_velocity()
 : <a class="el" href="classgtfs_1_1Particle.html#a3b59c859c3445b97c6da6c0b9081b1e4">gtfs::Particle</a>
@@ -279,6 +310,12 @@ $(function() {
 <li>n_particles
 : <a class="el" href="classgtfs_1_1Vehicle.html#aa21babc8423abf92bbdf5e0748444f44">gtfs::Vehicle</a>
 </li>
+<li>nearestPoint()
+: <a class="el" href="classgps_1_1Coord.html#a4b7faf8c9e2b4196bcbb450b5448c36f">gps::Coord</a>
+</li>
+<li>nearPt()
+: <a class="el" href="structgps_1_1nearPt.html#a2a719f92056ca65f9cb7047970e2cf47">gps::nearPt</a>
+</li>
 <li>next_id
 : <a class="el" href="classgtfs_1_1Vehicle.html#aab535dd9953f9650e2adc351965779b1">gtfs::Vehicle</a>
 </li>
@@ -316,7 +353,8 @@ $(function() {
 : <a class="el" href="classgps_1_1Coord.html#a43b8263439170e923db7b21a32b653f8">gps::Coord</a>
 </li>
 <li>pt
-: <a class="el" href="structgtfs_1_1ShapePt.html#ab79eb8263213afd27be9b257fca8515a">gtfs::ShapePt</a>
+: <a class="el" href="structgps_1_1nearPt.html#ab6d2b7e5d5e67891cd83bf2d5ae3ecb9">gps::nearPt</a>
+, <a class="el" href="structgtfs_1_1ShapePt.html#ab79eb8263213afd27be9b257fca8515a">gtfs::ShapePt</a>
 </li>
 </ul>
 
@@ -355,14 +393,14 @@ $(function() {
 <li>sample()
 : <a class="el" href="classsampling_1_1sample.html#a7c217cc7c5f9461835062a0362bec4d1">sampling::sample</a>
 </li>
-<li>seg_dist_traveled
-: <a class="el" href="structgtfs_1_1ShapePt.html#ad3fe477575279af15fe33e0ce36eaad2">gtfs::ShapePt</a>
-</li>
 <li>Segment()
-: <a class="el" href="classgtfs_1_1Segment.html#ac1457d5864e30d591eede10e92f6fd85">gtfs::Segment</a>
+: <a class="el" href="classgtfs_1_1Segment.html#a3ffae4434816b887aaa0ad599ca1776a">gtfs::Segment</a>
 </li>
 <li>segment
 : <a class="el" href="structgtfs_1_1ShapeSegment.html#a3253b76a15e2645f894a75be55006e09">gtfs::ShapeSegment</a>
+</li>
+<li>set_path()
+: <a class="el" href="classgtfs_1_1Shape.html#a39e7bb353e89f954d36eb7f9ca4820b9">gtfs::Shape</a>
 </li>
 <li>set_seed()
 : <a class="el" href="classsampling_1_1RNG.html#ad739124235d7d9bbe31f86d37f2fb9e5">sampling::RNG</a>
@@ -399,6 +437,9 @@ $(function() {
 
 
 <h3><a id="index_t"></a>- t -</h3><ul>
+<li>toInt()
+: <a class="el" href="classgtfs_1_1Segment.html#a2b289f1a504fcd1912e588525fc46a41">gtfs::Segment</a>
+</li>
 <li>transition()
 : <a class="el" href="classgtfs_1_1Particle.html#a18aeb1ccbc395210f80c18f9d0a0095c">gtfs::Particle</a>
 </li>
@@ -422,7 +463,7 @@ $(function() {
 : <a class="el" href="classsampling_1_1uniform.html#a414a98d445c6a07bbe78ea677db19f69">sampling::uniform</a>
 </li>
 <li>update()
-: <a class="el" href="classgtfs_1_1Vehicle.html#add9266d843398c88d3fcc22239f586a9">gtfs::Vehicle</a>
+: <a class="el" href="classgtfs_1_1Vehicle.html#a4baee648ab1db5b69aa2ffef7203c2bf">gtfs::Vehicle</a>
 </li>
 </ul>
 
@@ -432,7 +473,7 @@ $(function() {
 : <a class="el" href="classgtfs_1_1Particle.html#a81c313d505ecb592d79463f167dfb76c">gtfs::Particle</a>
 </li>
 <li>Vehicle()
-: <a class="el" href="classgtfs_1_1Vehicle.html#adf892e71483b7f9005846599fd0308e6">gtfs::Vehicle</a>
+: <a class="el" href="classgtfs_1_1Vehicle.html#ac3f8111a611378f5f8b29f7465e48919">gtfs::Vehicle</a>
 </li>
 </ul>
 

@@ -85,8 +85,12 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a774fc85267d9cd3d01d151e784f1112c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d421b8235201290c2a7c5d13eba097e"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgps_1_1Coord.html#a2d421b8235201290c2a7c5d13eba097e">crossTrackDistanceTo</a> (<a class="el" href="classgps_1_1Coord.html">gps::Coord</a> p1, <a class="el" href="classgps_1_1Coord.html">gps::Coord</a> p2) const</td></tr>
 <tr class="separator:a2d421b8235201290c2a7c5d13eba097e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69ead8580e270f1319d9bbf3da680d45"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgps_1_1Coord.html#a69ead8580e270f1319d9bbf3da680d45">alongTrackDistance</a> (<a class="el" href="classgps_1_1Coord.html">gps::Coord</a> p1, <a class="el" href="classgps_1_1Coord.html">gps::Coord</a> p2) const</td></tr>
+<tr class="separator:a69ead8580e270f1319d9bbf3da680d45"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a43b8263439170e923db7b21a32b653f8"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgps_1_1Coord.html#a43b8263439170e923db7b21a32b653f8">projectFlat</a> (<a class="el" href="classgps_1_1Coord.html">gps::Coord</a> origin) const</td></tr>
 <tr class="separator:a43b8263439170e923db7b21a32b653f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b7faf8c9e2b4196bcbb450b5448c36f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structgps_1_1nearPt.html">nearPt</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgps_1_1Coord.html#a4b7faf8c9e2b4196bcbb450b5448c36f">nearestPoint</a> (std::vector&lt; <a class="el" href="classgps_1_1Coord.html">gps::Coord</a> &gt; &amp;path)</td></tr>
+<tr class="separator:a4b7faf8c9e2b4196bcbb450b5448c36f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a254245e5cdfbac96a1c6e0332f2d65fb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgps_1_1Coord.html#a254245e5cdfbac96a1c6e0332f2d65fb">operator==</a> (const <a class="el" href="classgps_1_1Coord.html">Coord</a> &amp;p) const</td></tr>
 <tr class="separator:a254245e5cdfbac96a1c6e0332f2d65fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad832b140a8a39355874e268834d078cd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgps_1_1Coord.html#ad832b140a8a39355874e268834d078cd">operator!=</a> (const <a class="el" href="classgps_1_1Coord.html">Coord</a> &amp;p) const</td></tr>
@@ -138,6 +142,43 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a69ead8580e270f1319d9bbf3da680d45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69ead8580e270f1319d9bbf3da680d45">&#9670;&nbsp;</a></span>alongTrackDistance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double gps::Coord::alongTrackDistance </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classgps_1_1Coord.html">gps::Coord</a>&#160;</td>
+          <td class="paramname"><em>p1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classgps_1_1Coord.html">gps::Coord</a>&#160;</td>
+          <td class="paramname"><em>p2</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Compute the along-track distance to the nearest point on a line to the given point.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">p1</td><td>start of line </td></tr>
+    <tr><td class="paramname">p2</td><td>end of line </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>how far along the line is the nearest point to this </dd></dl>
+
+</div>
+</div>
 <a id="a304e6cb56296d8d945310d7b931fca4e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a304e6cb56296d8d945310d7b931fca4e">&#9670;&nbsp;</a></span>bearingTo()</h2>
 
@@ -261,6 +302,32 @@ Public Attributes</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>the distance, in meters, to the point </dd></dl>
+
+</div>
+</div>
+<a id="a4b7faf8c9e2b4196bcbb450b5448c36f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b7faf8c9e2b4196bcbb450b5448c36f">&#9670;&nbsp;</a></span>nearestPoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structgps_1_1nearPt.html">nearPt</a> gps::Coord::nearestPoint </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="classgps_1_1Coord.html">gps::Coord</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Find the nearest point on a given path.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">path</td><td>the path to use </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>a nearest point object, with the point and distance to it </dd></dl>
 
 </div>
 </div>

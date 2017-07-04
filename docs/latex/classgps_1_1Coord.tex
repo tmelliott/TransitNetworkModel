@@ -17,7 +17,11 @@ double \hyperlink{classgps_1_1Coord_a304e6cb56296d8d945310d7b931fca4e}{bearing\+
 \item 
 double \hyperlink{classgps_1_1Coord_a2d421b8235201290c2a7c5d13eba097e}{cross\+Track\+Distance\+To} (\hyperlink{classgps_1_1Coord}{gps\+::\+Coord} p1, \hyperlink{classgps_1_1Coord}{gps\+::\+Coord} p2) const
 \item 
+double \hyperlink{classgps_1_1Coord_a69ead8580e270f1319d9bbf3da680d45}{along\+Track\+Distance} (\hyperlink{classgps_1_1Coord}{gps\+::\+Coord} p1, \hyperlink{classgps_1_1Coord}{gps\+::\+Coord} p2) const
+\item 
 std\+::vector$<$ double $>$ \hyperlink{classgps_1_1Coord_a43b8263439170e923db7b21a32b653f8}{project\+Flat} (\hyperlink{classgps_1_1Coord}{gps\+::\+Coord} origin) const
+\item 
+\hyperlink{structgps_1_1nearPt}{near\+Pt} \hyperlink{classgps_1_1Coord_a4b7faf8c9e2b4196bcbb450b5448c36f}{nearest\+Point} (std\+::vector$<$ \hyperlink{classgps_1_1Coord}{gps\+::\+Coord} $>$ \&path)
 \item 
 bool \hyperlink{classgps_1_1Coord_a254245e5cdfbac96a1c6e0332f2d65fb}{operator==} (const \hyperlink{classgps_1_1Coord}{Coord} \&p) const
 \item 
@@ -52,6 +56,24 @@ Constructor for a co-\/ordinate
 
 
 \subsection{Member Function Documentation}
+\mbox{\Hypertarget{classgps_1_1Coord_a69ead8580e270f1319d9bbf3da680d45}\label{classgps_1_1Coord_a69ead8580e270f1319d9bbf3da680d45}} 
+\index{gps\+::\+Coord@{gps\+::\+Coord}!along\+Track\+Distance@{along\+Track\+Distance}}
+\index{along\+Track\+Distance@{along\+Track\+Distance}!gps\+::\+Coord@{gps\+::\+Coord}}
+\subsubsection{\texorpdfstring{along\+Track\+Distance()}{alongTrackDistance()}}
+{\footnotesize\ttfamily double gps\+::\+Coord\+::along\+Track\+Distance (\begin{DoxyParamCaption}\item[{\hyperlink{classgps_1_1Coord}{gps\+::\+Coord}}]{p1,  }\item[{\hyperlink{classgps_1_1Coord}{gps\+::\+Coord}}]{p2 }\end{DoxyParamCaption}) const}
+
+Compute the along-\/track distance to the nearest point on a line to the given point.
+
+
+\begin{DoxyParams}{Parameters}
+{\em p1} & start of line \\
+\hline
+{\em p2} & end of line \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+how far along the line is the nearest point to this 
+\end{DoxyReturn}
 \mbox{\Hypertarget{classgps_1_1Coord_a304e6cb56296d8d945310d7b931fca4e}\label{classgps_1_1Coord_a304e6cb56296d8d945310d7b931fca4e}} 
 \index{gps\+::\+Coord@{gps\+::\+Coord}!bearing\+To@{bearing\+To}}
 \index{bearing\+To@{bearing\+To}!gps\+::\+Coord@{gps\+::\+Coord}}
@@ -119,6 +141,22 @@ Compute the Great Circle Distance between to a point.
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 the distance, in meters, to the point 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classgps_1_1Coord_a4b7faf8c9e2b4196bcbb450b5448c36f}\label{classgps_1_1Coord_a4b7faf8c9e2b4196bcbb450b5448c36f}} 
+\index{gps\+::\+Coord@{gps\+::\+Coord}!nearest\+Point@{nearest\+Point}}
+\index{nearest\+Point@{nearest\+Point}!gps\+::\+Coord@{gps\+::\+Coord}}
+\subsubsection{\texorpdfstring{nearest\+Point()}{nearestPoint()}}
+{\footnotesize\ttfamily \hyperlink{structgps_1_1nearPt}{near\+Pt} gps\+::\+Coord\+::nearest\+Point (\begin{DoxyParamCaption}\item[{std\+::vector$<$ \hyperlink{classgps_1_1Coord}{gps\+::\+Coord} $>$ \&}]{path }\end{DoxyParamCaption})}
+
+Find the nearest point on a given path.
+
+
+\begin{DoxyParams}{Parameters}
+{\em path} & the path to use \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a nearest point object, with the point and distance to it 
 \end{DoxyReturn}
 \mbox{\Hypertarget{classgps_1_1Coord_ad832b140a8a39355874e268834d078cd}\label{classgps_1_1Coord_ad832b140a8a39355874e268834d078cd}} 
 \index{gps\+::\+Coord@{gps\+::\+Coord}!operator"!=@{operator"!=}}

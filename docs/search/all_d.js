@@ -1,17 +1,13 @@
 var searchData=
 [
-  ['sample',['sample',['../classsampling_1_1sample.html',1,'sampling::sample'],['../classsampling_1_1sample.html#a7c217cc7c5f9461835062a0362bec4d1',1,'sampling::sample::sample(int N)'],['../classsampling_1_1sample.html#aa5ce07807a24cd3387626b99b38255ad',1,'sampling::sample::sample(const std::vector&lt; double &gt; &amp;wts)']]],
-  ['sampling',['sampling',['../namespacesampling.html',1,'']]],
-  ['seg_5fdist_5ftraveled',['seg_dist_traveled',['../structgtfs_1_1ShapePt.html#ad3fe477575279af15fe33e0ce36eaad2',1,'gtfs::ShapePt']]],
-  ['segment',['Segment',['../classgtfs_1_1Segment.html',1,'gtfs::Segment'],['../classgtfs_1_1Segment.html#ac1457d5864e30d591eede10e92f6fd85',1,'gtfs::Segment::Segment()'],['../structgtfs_1_1ShapeSegment.html#a3253b76a15e2645f894a75be55006e09',1,'gtfs::ShapeSegment::segment()']]],
-  ['segment_5fshapes',['segment_shapes',['../load__gtfs_8cpp.html#a4c73441dc3489abcadf91f57dd472673',1,'load_gtfs.cpp']]],
-  ['set_5fseed',['set_seed',['../classsampling_1_1RNG.html#ad739124235d7d9bbe31f86d37f2fb9e5',1,'sampling::RNG']]],
-  ['set_5ftrip',['set_trip',['../classgtfs_1_1Vehicle.html#a47ceaf4bb31c01dd4b26a12f1b7b7089',1,'gtfs::Vehicle']]],
-  ['shape',['Shape',['../classgtfs_1_1Shape.html',1,'gtfs::Shape'],['../classgtfs_1_1Shape.html#ace6a58f57452ab0d2830b518a0ed2bde',1,'gtfs::Shape::Shape()']]],
-  ['shape_5fdist_5ftraveled',['shape_dist_traveled',['../structgtfs_1_1RouteStop.html#ab738c008a00eab17953ab124a86ca207',1,'gtfs::RouteStop::shape_dist_traveled()'],['../structgtfs_1_1ShapeSegment.html#a64afdd03235b9bc256fc18652c6f9c47',1,'gtfs::ShapeSegment::shape_dist_traveled()']]],
-  ['shapept',['ShapePt',['../structgtfs_1_1ShapePt.html',1,'gtfs::ShapePt'],['../structgtfs_1_1ShapePt.html#a34e7da183770e2ab8360e286596ff18a',1,'gtfs::ShapePt::ShapePt()']]],
-  ['shapesegment',['ShapeSegment',['../structgtfs_1_1ShapeSegment.html',1,'gtfs::ShapeSegment'],['../structgtfs_1_1ShapeSegment.html#af1bdb1504d16a49ab6ac8ea34da59c5f',1,'gtfs::ShapeSegment::ShapeSegment()']]],
-  ['stop',['Stop',['../classgtfs_1_1Stop.html',1,'gtfs::Stop'],['../structgtfs_1_1RouteStop.html#af70ced2604121bbeb159da66bbd00c64',1,'gtfs::RouteStop::stop()'],['../structgtfs_1_1StopTime.html#a586702c54a1ad350d486c6639558b4ca',1,'gtfs::StopTime::stop()'],['../classgtfs_1_1Stop.html#ac2654c54aaf615ad670c1f9c0c2fe729',1,'gtfs::Stop::Stop()']]],
-  ['stoptime',['StopTime',['../structgtfs_1_1StopTime.html',1,'gtfs::StopTime'],['../structgtfs_1_1StopTime.html#adb27c1b3ad66cdc37e4a78338ad2b1a5',1,'gtfs::StopTime::StopTime()']]],
-  ['system',['system',['../load__gtfs_8cpp.html#acc289d9bfee4c154322662aef55c5438',1,'load_gtfs.cpp']]]
+  ['r',['R',['../namespacegps.html#a336bcadf804afba736e0cf773b5a36e8',1,'gps']]],
+  ['rad',['rad',['../namespacegps.html#ad44ea39876137fc96774486e3a60f004',1,'gps']]],
+  ['rand',['rand',['../classsampling_1_1uniform.html#aee0b21aec2c50cdb6d926d5c3890d695',1,'sampling::uniform::rand()'],['../classsampling_1_1normal.html#a12d6d445fc209f91733aa6f8140001be',1,'sampling::normal::rand()'],['../classsampling_1_1exponential.html#ae225fd6ab66ed65ae1ef4cf090060149',1,'sampling::exponential::rand()']]],
+  ['resample',['resample',['../classgtfs_1_1Vehicle.html#a8367fc70a64b7e596422f880dbff1193',1,'gtfs::Vehicle']]],
+  ['reset',['reset',['../classgtfs_1_1Vehicle.html#a63474849e632ce31730b120debe50792',1,'gtfs::Vehicle']]],
+  ['rng',['RNG',['../classsampling_1_1RNG.html',1,'sampling::RNG'],['../classsampling_1_1RNG.html#ae61ad8991680f68b8c144a03a09a767a',1,'sampling::RNG::RNG()'],['../classsampling_1_1RNG.html#a2fa1a6176fc0fbc96a5c4a4ead6d7927',1,'sampling::RNG::RNG(unsigned int seed)']]],
+  ['rnorm',['rnorm',['../classsampling_1_1RNG.html#af16b7ef97abf5c1e5cd03f301bbdb8b2',1,'sampling::RNG']]],
+  ['route',['Route',['../classgtfs_1_1Route.html',1,'gtfs::Route'],['../classgtfs_1_1Route.html#a32550fdfee780a26c596172184b86148',1,'gtfs::Route::Route(std::string &amp;id, std::string &amp;short_name, std::string &amp;long_name)'],['../classgtfs_1_1Route.html#aa216efacee7f9eeab810e044894d3ec0',1,'gtfs::Route::Route(std::string &amp;id, std::string &amp;short_name, std::string &amp;long_name, std::shared_ptr&lt; Shape &gt; shape)']]],
+  ['routestop',['RouteStop',['../structgtfs_1_1RouteStop.html',1,'gtfs::RouteStop'],['../structgtfs_1_1RouteStop.html#a6ec05e2393ac8980e5c8a71d74c6d70d',1,'gtfs::RouteStop::RouteStop(std::shared_ptr&lt; Stop &gt; stop)'],['../structgtfs_1_1RouteStop.html#a5f3dba72665e9731bad7a844bee4a949',1,'gtfs::RouteStop::RouteStop(std::shared_ptr&lt; Stop &gt; stop, double d)']]],
+  ['runif',['runif',['../classsampling_1_1RNG.html#aec538d8d9798abae38de908f69784421',1,'sampling::RNG']]]
 ];

@@ -22,13 +22,14 @@ Include dependency graph for load\+\_\+gtfs.\+cpp\+:\nopagebreak
 \item 
 int \hyperlink{load__gtfs_8cpp_acc289d9bfee4c154322662aef55c5438}{system} (std\+::string const \&s)
 \item 
-void \hyperlink{load__gtfs_8cpp_a4f311128b9bf5549011dc5d2a288a0b0}{convert\+\_\+shapes} (sqlite3 $\ast$db)
-\item 
 void \hyperlink{load__gtfs_8cpp_a54ef9ab4a1985152c9cf7ec290fbea2d}{import\+\_\+intersections} (sqlite3 $\ast$db, std\+::vector$<$ std\+::string $>$ files)
+\item 
+void \hyperlink{load__gtfs_8cpp_a2f86801b49d8f0b1649a9edc0e197172}{set\+\_\+distances} (sqlite3 $\ast$db)
 \item 
 void \hyperlink{load__gtfs_8cpp_a4c73441dc3489abcadf91f57dd472673}{segment\+\_\+shapes} (sqlite3 $\ast$db)
 \item 
-void \hyperlink{load__gtfs_8cpp_afc0ec9cd72ffe92b7aacb7c58aeea6b3}{calculate\+\_\+stop\+\_\+distances} (std\+::string \&dbname)
+\mbox{\Hypertarget{load__gtfs_8cpp_afc0ec9cd72ffe92b7aacb7c58aeea6b3}\label{load__gtfs_8cpp_afc0ec9cd72ffe92b7aacb7c58aeea6b3}} 
+void {\bfseries calculate\+\_\+stop\+\_\+distances} (std\+::string \&dbname)
 \item 
 int \hyperlink{load__gtfs_8cpp_a0ddf1224851353fc92bfbff6f499fa97}{main} (int argc, char $\ast$argv\mbox{[}$\,$\mbox{]})
 \end{DoxyCompactItemize}
@@ -50,30 +51,6 @@ Tom Elliott \href{mailto:tom.elliott@auckland.ac.nz}{\tt tom.\+elliott@auckland.
 
 
 \subsection{Function Documentation}
-\mbox{\Hypertarget{load__gtfs_8cpp_afc0ec9cd72ffe92b7aacb7c58aeea6b3}\label{load__gtfs_8cpp_afc0ec9cd72ffe92b7aacb7c58aeea6b3}} 
-\index{load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}!calculate\+\_\+stop\+\_\+distances@{calculate\+\_\+stop\+\_\+distances}}
-\index{calculate\+\_\+stop\+\_\+distances@{calculate\+\_\+stop\+\_\+distances}!load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}}
-\subsubsection{\texorpdfstring{calculate\+\_\+stop\+\_\+distances()}{calculate\_stop\_distances()}}
-{\footnotesize\ttfamily void calculate\+\_\+stop\+\_\+distances (\begin{DoxyParamCaption}\item[{std\+::string \&}]{dbname }\end{DoxyParamCaption})}
-
-Compute the shape distance traveled for each stop along a route. 
-\begin{DoxyParams}{Parameters}
-{\em dbname} & The database to connect to \\
-\hline
-\end{DoxyParams}
-\mbox{\Hypertarget{load__gtfs_8cpp_a4f311128b9bf5549011dc5d2a288a0b0}\label{load__gtfs_8cpp_a4f311128b9bf5549011dc5d2a288a0b0}} 
-\index{load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}!convert\+\_\+shapes@{convert\+\_\+shapes}}
-\index{convert\+\_\+shapes@{convert\+\_\+shapes}!load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}}
-\subsubsection{\texorpdfstring{convert\+\_\+shapes()}{convert\_shapes()}}
-{\footnotesize\ttfamily void convert\+\_\+shapes (\begin{DoxyParamCaption}\item[{sqlite3 $\ast$}]{db }\end{DoxyParamCaption})}
-
-Converts shapes from their raw G\+T\+FS format to our segmented format.
-
-For now, each shape is simply converted into a single segment. 
-\begin{DoxyParams}{Parameters}
-{\em db} & the database to work with \\
-\hline
-\end{DoxyParams}
 \mbox{\Hypertarget{load__gtfs_8cpp_a54ef9ab4a1985152c9cf7ec290fbea2d}\label{load__gtfs_8cpp_a54ef9ab4a1985152c9cf7ec290fbea2d}} 
 \index{load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}!import\+\_\+intersections@{import\+\_\+intersections}}
 \index{import\+\_\+intersections@{import\+\_\+intersections}!load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}}
@@ -117,33 +94,33 @@ database connection to use \mbox{\Hypertarget{load__gtfs_8cpp_a4c73441dc3489abca
 
 Segment shapes.
 
-One check to make\+: length before segmentation == length after segmentation!
 
-For each segment
+\begin{DoxyParams}{Parameters}
+{\em db} & a database connection \\
+\hline
+\end{DoxyParams}
+A split object, used only to find intersections at which to split the route.\mbox{\Hypertarget{load__gtfs_8cpp_a2f86801b49d8f0b1649a9edc0e197172}\label{load__gtfs_8cpp_a2f86801b49d8f0b1649a9edc0e197172}} 
+\index{load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}!set\+\_\+distances@{set\+\_\+distances}}
+\index{set\+\_\+distances@{set\+\_\+distances}!load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}}
+\subsubsection{\texorpdfstring{set\+\_\+distances()}{set\_distances()}}
+{\footnotesize\ttfamily void set\+\_\+distances (\begin{DoxyParamCaption}\item[{sqlite3 $\ast$}]{db }\end{DoxyParamCaption})}
+
+Set distance in database for segments and stops
+
+To reduce reads, perform all at once, route by route. For each route
 \begin{DoxyItemize}
-\item find intersections on the segment
-\item split at intersections
+\item load associated shape data into a Shape object
+\item find intersections (in path order)
 \begin{DoxyItemize}
-\item S\+P\+L\+IT = from nearest point on path to A to nearest point on path to B, I\+N\+C\+L\+U\+S\+I\+VE
+\item (use code from segment\+\_\+shape fn)
 \end{DoxyItemize}
-\item for each S\+P\+L\+IT, look for existing segment between A and B
-\begin{DoxyItemize}
-\item IF exists, use that,
-\item E\+L\+SE create new segment
-\end{DoxyItemize}
-\item compare length of original with new\+:
-\begin{DoxyItemize}
-\item IF equal, then replace all rows of S\+H\+A\+P\+ES with new segments
-\begin{DoxyItemize}
-\item and delete the original segment
-\end{DoxyItemize}
-\item E\+L\+SE report an error creating the segment
-\end{DoxyItemize}
+\item load stops
+\item travel along path computing distance traveled for each stop and intersection along the way
 \end{DoxyItemize}
 
 
 \begin{DoxyParams}{Parameters}
-{\em db} & a database connection \\
+{\em db} & the database to use \\
 \hline
 \end{DoxyParams}
 \mbox{\Hypertarget{load__gtfs_8cpp_acc289d9bfee4c154322662aef55c5438}\label{load__gtfs_8cpp_acc289d9bfee4c154322662aef55c5438}} 
