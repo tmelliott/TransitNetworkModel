@@ -30,10 +30,10 @@ CREATE TABLE shapes (
 	shape_id      TEXT,
 	seq           INT,
 	lat           REAL,
-	lng           REAL
+	lng           REAL,
 	dist_traveled REAL
 );
-INSERT INTO shapes
+INSERT INTO shapes (shape_id,seq,lat,lng)
 	SELECT shape_id, shape_pt_sequence, shape_pt_lat, shape_pt_lon FROM shapes_tmp;
 DROP TABLE shapes_tmp;
 
@@ -43,7 +43,7 @@ CREATE TABLE segments (
 	from_id         INT,
 	to_id           INT,
 	start_at        TEXT,
-	end_at          TEXT
+	end_at          TEXT,
 	length          REAL,
 	travel_time     REAL,     /* average travel time along the segment */
 	var_travel_time REAL,     /* variance of  travel time along the segment */

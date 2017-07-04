@@ -377,6 +377,7 @@ namespace gtfs {
 	class Shape {
 	private:
 		std::string id;
+		std::vector<ShapePt> path;
 		std::vector<ShapeSegment> segments;
 
 	public:
@@ -386,14 +387,34 @@ namespace gtfs {
 		 */
 		Shape (std::string& id) : id (id) {};
 
+		/**
+		 * Constructor for a shape with a path
+		 * @param id   the ID of the shape
+		 * @param path the path, sequence of cooridinates, for the shape
+		 */
+		Shape (std::string& id, std::vector<ShapePt>& path) : id (id), path (path) {};
+
+		/**
+		 * Constructor for a shape with path and segments.
+		 * @param id       the ID of the shape
+		 * @param path     the path, sequence of cooridinates, for the shape
+		 * @param segments vector of segments making up the shape
+		 */
+		Shape (std::string& id, std::vector<ShapePt>& path, std::vector<ShapeSegment> segments) :
+			id (id), path (path), segments (segments) {};
+
 		// --- GETTERS
 		/** @return the shape's ID */
 		std::string get_id (void) const { return id; };
 
-		// /** @return a vector of shape segments */
+		/** @return a vector of points making up the shape's path */
+		const std::vector<ShapePt>& get_path (void) const { return path; };
+
+		/** @return a vector of shape segments */
 		const std::vector<ShapeSegment>& get_segments (void) const { return segments; };
 
 		// --- SETTERS
+		void set_path (std::vector<ShapePt>& path);
 		void add_segment (std::shared_ptr<Segment> segment, double distance);
 
 
@@ -434,29 +455,86 @@ namespace gtfs {
 	class Segment {
 	private:
 		unsigned long id;            /*!< ID of the segment - should be unique and autoincrement ... */
-		std::shared_ptr<Intersection> start_at;      /*!< pointer to the first intersection */
-		std::shared_ptr<Intersection> end_at;        /*!< pointer to the last intersection */
-		std::vector<ShapePt> path;   /*!< vector of shape points */
+		std::shared_ptr<Intersection> from_id;      /*!< pointer to the first intersection */
+		std::shared_ptr<Intersection> to_id;        /*!< pointer to the last intersection */
+		std::shared_ptr<Stop> start_at;     /*!< pointer to the first stop */
+		std::shared_ptr<Stop> end_at;       /*!< pointer to the last stop */
+		// std::vector<ShapePt> path;   /*!< vector of shape points */
 		double length;               /*!< the length of this segment */
+		int type;                    /*!< the type of segment, 1=int->int, 2=stop->int, 3=int->stop, 4=stop->stop */
 
 		double velocity;             /*!< the mean speed along the segment */
 		double velocity_var;         /*!< the variance of speed along the segment */
 		uint64_t timestamp;          /*!< updated at timestamp */
 
 	public:
+		/**
+		 * Constructor for a segment between two intersections
+		 * @param id     The segment's ID
+		 * @param from   pointer to the starting stop/intersection
+		 * @param to     pointer to the ending stop/intersection
+		 * @param length length of the segment, in meters
+		 */
 		Segment (unsigned long id,
-				 std::shared_ptr<Intersection> start,
-				 std::shared_ptr<Intersection> end,
-				 std::vector<ShapePt>& path,
-				 double length);
+				 std::shared_ptr<Intersection> from,
+				 std::shared_ptr<Intersection> to,
+				 double len) : id (id), from_id (from), to_id (to), length (len), type (1) {};
+		/**
+		 * Constructor for a segment from a stop to an intersection
+		 * @param id     The segment's ID
+		 * @param start  pointer to the starting stop
+		 * @param end    pointer to the ending intersection
+		 * @param length length of the segment, in meters
+		 */
+		Segment (unsigned long id,
+				 std::shared_ptr<Stop> start,
+				 std::shared_ptr<Intersection> to,
+				 double len) : id (id), to_id (to), start_at (start), length (len), type (2) {};
+		/**
+		 * Constructor for a segment from an intersection to a stop
+		 * @param id     The segment's ID
+		 * @param start  pointer to the starting intersection
+		 * @param end    pointer to the ending stop
+		 * @param length length of the segment, in meters
+		 */
+		Segment (unsigned long id,
+				 std::shared_ptr<Intersection> from,
+				 std::shared_ptr<Stop> end,
+				 double len) : id (id), from_id (from), end_at (end), length (len), type (3) {};
+		/**
+		 * Constructor for a segment between two stops (i.e., a route with no intersections ...)
+		 * @param id     The segment's ID
+		 * @param start  pointer to the starting stop
+		 * @param end    pointer to the ending stop
+		 * @param length length of the segment, in meters
+		 */
+		Segment (unsigned long id,
+				 std::shared_ptr<Stop> start,
+				 std::shared_ptr<Stop> end,
+				 double len) : id (id), start_at (start), end_at (end), length (len), type (4) {};
+
 
 		// --- GETTERS
 		/** @return the segment's ID */
 		const unsigned long& get_id (void) const { return id; };
-		/** @return a vector of shape points defining the segment's shape */
-		const std::vector<ShapePt>& get_path (void) const { return path; };
 		/** @return the length of the segment */
 		double get_length (void) { return length; };
+
+		/** @return the starting intersection */
+		std::shared_ptr<Intersection> get_from (void) { return from_id; };
+		/** @return the ending intersection */
+		std::shared_ptr<Intersection> get_to (void) { return from_id; };
+		/** @return the starting stop */
+		std::shared_ptr<Intersection> get_start (void) { return from_id; };
+		/** @return the ending stop */
+		std::shared_ptr<Intersection> get_end (void) { return from_id; };
+		/** @return the segment type (integer) */
+		int get_type (void) const { return type; };
+		/** @return logical, if the segment starts at an intersection */
+		bool fromInt (void) { return type == 1 || type == 3; };
+		/** @return logical, if the segment ends at an intersection */
+		bool toInt (void) { return type == 1 || type == 2; };
+
 
 		// --- METHODS
 		// void update (void);
@@ -471,11 +549,17 @@ namespace gtfs {
 		 * which defines a GPS location and how far into the shape that point is.
 		 *
 		 * @param pt       GPS position of the point
-		 * @param distance the distance into the segment of the point
+		 * @param distance the point's distance along the path
 		 */
-		ShapePt (gps::Coord pt, double distance) : pt (pt), seg_dist_traveled (distance) {};
+		ShapePt (gps::Coord pt, double distance) : pt (pt), dist_traveled (distance) {};
+		/**
+		 * Constructor without distance.
+		 * @param pt GPS position of point.
+		 */
+		ShapePt (gps::Coord pt) : pt (pt) {};
+
 		gps::Coord pt;             /*!< GPS coordinate of the point */
-		double seg_dist_traveled;  /*!< cumulative distance traveled along the shape */
+		double dist_traveled;      /*!< cumulative distance traveled along the shape */
 	};
 
 	/**

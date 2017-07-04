@@ -99,18 +99,16 @@ namespace gtfs {
 			// Detect initial range of vehicle's "distance into trip"
 			// -- just rough, so find points on the route within 100m of the GPS position
 			std::vector<double> init_range {100000.0, 0.0};
-			auto segs = trip->get_route ()->get_shape ()->get_segments ();
-			for (auto& seg: segs) {
-				double d (seg.shape_dist_traveled);
-				for (auto& p: seg.segment->get_path ()) {
-					if (p.pt.distanceTo(this->position) < 100.0) {
-						double ds (d + p.seg_dist_traveled);
-						if (ds < init_range[0]) init_range[0] = ds;
-						if (ds > init_range[1]) init_range[1] = ds;
-					}
+			auto shape = trip->get_route ()->get_shape ();
+			for (auto& p: shape->get_path ()) {
+				if (p.pt.distanceTo(this->position) < 100.0) {
+					double ds (p.dist_traveled);
+					if (ds < init_range[0]) init_range[0] = ds;
+					if (ds > init_range[1]) init_range[1] = ds;
 				}
-				printf("between %*.2f and %*.2f m\n", 8, init_range[0], 8, init_range[1]);
 			}
+			printf("between %*.2f and %*.2f m\n", 8, init_range[0], 8, init_range[1]);
+
 			if (init_range[0] > init_range[1]) {
 				std::cout << "   -> unable to locate vehicle on route -> cannot initialize.\n";
 				return;

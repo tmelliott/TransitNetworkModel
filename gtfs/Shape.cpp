@@ -8,6 +8,14 @@ namespace gtfs {
 	// --- SETTERS
 
 	/**
+	 * Set a shape's path
+	 * @param path vector of coordinates
+	 */
+	void Shape::set_path (std::vector<ShapePt>& path) {
+		(*this).path = path;
+	};
+
+	/**
 	 * Add a segment to a shape.
 	 * @param segment  Pointer to the segment object.
 	 * @param distance How far into the overall shape this segment begins at.
