@@ -594,61 +594,83 @@ std::vector<Split> find_intersections (std::shared_ptr<gtfs::Shape> shape,
 	// OK so we've found some intersections - now we gotta order them and stuff
 	//
 	// Travel along the route, splitting it whenever come to an intersection.
+
+
 	std::vector<int> x1, x2; // shape index, intersection index  (< 40m)
 	for (unsigned int i=1; i<shapepts.size (); i++) {
 		auto& p1 = shapepts[i-1], p2 = shapepts[i];
-		if (p1 == p2) continue;
-		std::vector<gps::Coord> pseg {p1, p2};
-		double closest = 100;
-		int cid = -1;
-		for (auto it: ikeep) { // ikeep is a vector of Intersection* objects
+		// if (p1 == p2) continue;
+		double d12 (p1.distanceTo (p2));
+
+		// - find any intersections within D(p1,p2) of p1 AND p2;
+		//   where CTD(p1,p2) < threshold
+		for (auto it: ikeep) {
 			auto pt = it->get_pos ();
-			auto np = pt.nearestPoint (pseg);
-			if (np.d < 40 && np.d < closest) {
-				closest = np.d;
-				cid = it->get_id ();
+			if (fabs(pt.crossTrackDistanceTo (p1, p2)) < 40 &&
+				pt.alongTrackDistance (p1, p2) <= d12 &&
+				pt.alongTrackDistance (p2, p1) <= d12) {
+
+				std::vector<gps::Coord> subp;
+				subp.push_back (p1);
+				subp.push_back (p2);
+				auto np = pt.nearestPoint (subp);
+				splitpts.emplace_back (it->get_id (), np.pt);
+			} else if (pt.distanceTo (p1) < 40 && p1 == p2) {
+				splitpts.emplace_back (it->get_id (), p1);
 			}
 		}
-		if (cid >= 0 && closest < 40) {
-			x1.push_back (i-1);
-			x2.push_back (cid);
-		}
-	}
-	x1.push_back (0); // add a zero so we don't need a special end condition
-	x2.push_back (0);
-	if (x1.size () != x2.size ()) {
-		std::cerr << "Something very, very terrible went wrong: "
-			<< x1.size () << " + " << x2.size ();
-		throw "Something went wrong. Very wrong!";
-	}
 
-	for (unsigned int i=0; i<x1.size (); i++)
-		printf("\n [%*d] - %d", 4, x1[i], x2[i]);
-
-	std::vector<gps::Coord> subpath;
-	for (unsigned int i=0; i<x1.size ()-1; i++) {
-		// so long as shape index is less than 10 smaller than next index,
-		// and segment index is the same as the next one, keep going
-		if (x1[i] + 10 > x1[i+1] && x2[i] == x2[i+1]) {
-			subpath.push_back (shapepts[x1[i]]);
-		} else {
-			// Otherwise, save this intersection
-			subpath.push_back (shapepts[x1[i]]);
-			subpath.push_back (shapepts[x1[i]+1]);
-			gps::nearPt np;
-			for (auto it: ikeep) {
-				// step through intersections until we find the one we're after
-				if ((int)it->get_id () == x2[i]) {
-					auto pt = it->get_pos ();
-					// then find the nearest point to it on the shape:
-					np = pt.nearestPoint (subpath);
-					if (np.d < 40) splitpts.emplace_back (it->get_id (), pt);
-					break;
-				}
-			}
-			subpath.clear ();
-		}
+		// std::vector<gps::Coord> pseg {p1, p2};
+		// double closest = 100;
+		// int cid = -1;
+		// for (auto it: ikeep) { // ikeep is a vector of Intersection* objects
+		// 	auto pt = it->get_pos ();
+		// 	auto np = pt.nearestPoint (pseg);
+		// 	if (np.d < 40 && np.d < closest) {
+		// 		closest = np.d;
+		// 		cid = it->get_id ();
+		// 	}
+		// }
+		// if (cid >= 0 && closest < 40) {
+		// 	x1.push_back (i-1);
+		// 	x2.push_back (cid);
+		// }
 	}
+	// x1.push_back (0); // add a zero so we don't need a special end condition
+	// x2.push_back (0);
+	// if (x1.size () != x2.size ()) {
+	// 	std::cerr << "Something very, very terrible went wrong: "
+	// 		<< x1.size () << " + " << x2.size ();
+	// 	throw "Something went wrong. Very wrong!";
+	// }
+	//
+	// for (unsigned int i=0; i<x1.size (); i++)
+	// 	printf("\n [%*d] - %d", 4, x1[i], x2[i]);
+	//
+	// std::vector<gps::Coord> subpath;
+	// for (unsigned int i=0; i<x1.size ()-1; i++) {
+	// 	// so long as shape index is less than 10 smaller than next index,
+	// 	// and segment index is the same as the next one, keep going
+	// 	if (x1[i] + 10 > x1[i+1] && x2[i] == x2[i+1]) {
+	// 		subpath.push_back (shapepts[x1[i]]);
+	// 	} else {
+	// 		// Otherwise, save this intersection
+	// 		subpath.push_back (shapepts[x1[i]]);
+	// 		subpath.push_back (shapepts[x1[i]+1]);
+	// 		gps::nearPt np;
+	// 		for (auto it: ikeep) {
+	// 			// step through intersections until we find the one we're after
+	// 			if ((int)it->get_id () == x2[i]) {
+	// 				auto pt = it->get_pos ();
+	// 				// then find the nearest point to it on the shape:
+	// 				np = pt.nearestPoint (subpath);
+	// 				if (np.d < 40) splitpts.emplace_back (it->get_id (), pt);
+	// 				break;
+	// 			}
+	// 		}
+	// 		subpath.clear ();
+	// 	}
+	// }
 
 	return splitpts;
 };
