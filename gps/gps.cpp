@@ -150,23 +150,25 @@ namespace gps {
 		gps::Coord pt (lat, lng);
 		for (unsigned int i=1; i<path.size (); i++) {
 			if (path[i-1] == path[i]) continue;
-			double dat = alongTrackDistance(path[i-1], path[i]);
+			double dat1 = alongTrackDistance(path[i-1], path[i]);
+			double dat2 = alongTrackDistance(path[i], path[i-1]);
+			double dx = path[i-1].distanceTo (path[i]);
 			double di;
-			if (dat <= 0.0) {
+			if (dat2 >= dx) {
 				di = distanceTo (path[i-1]);
-			} else if (dat >= path[i-1].distanceTo (path[i])) {
+			} else if (dat1 >= dx) {
 				di = distanceTo (path[i]);
 			} else {
 				di = fabs(crossTrackDistanceTo (path[i-1], path[i]));
 			}
 			if (di < d) {
 				d = di;
-				if (dat <= 0.0) {
+				if (dat2 >= dx) {
 					pt = path[i-1];
-				} else if (dat >= path[i-1].distanceTo (path[i])) {
+				} else if (dat1 >= dx) {
 					pt = path[i];
 				} else {
-					pt = path[i-1].destinationPoint(dat, path[i-1].bearingTo (path[i]));
+					pt = path[i-1].destinationPoint(dat1, path[i-1].bearingTo (path[i]));
 				}
 			}
 		}
