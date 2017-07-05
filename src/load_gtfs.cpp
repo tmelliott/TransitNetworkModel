@@ -39,6 +39,18 @@ int system (std::string const& s) { return system (s.c_str ()); }
 void import_intersections (sqlite3* db, std::vector<std::string> files);
 void set_distances (sqlite3* db);
 
+/**
+ * A split object, used only to find intersections at which
+ * to split the route.
+ */
+struct Split {
+	int id;
+	gps::Coord at;
+	Split (int id, gps::Coord at) : id (id), at (at) {};
+};
+std::vector<Split> find_intersections (std::shared_ptr<gtfs::Shape> shape,
+									   std::vector<gtfs::Intersection>& intersections);
+
 void segment_shapes (sqlite3* db);
 void calculate_stop_distances (std::string& dbname);
 
@@ -322,7 +334,7 @@ void set_distances (sqlite3* db) {
 
 	// SELECT all route IDs and their shape IDs to loop over.
 	sqlite3_stmt* select_routes;
-	qry = "SELECT route_id, shape_id FROM routes LIMIT 10";
+	qry = "SELECT route_id, shape_id FROM routes WHERE route_id LIKE '%_v54.27' LIMIT 20";
 	if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &select_routes, 0) != SQLITE_OK) {
 		std::cerr << "\n x Unable to prepare `" << qry << "`";
 		throw "Unable to prepare query - invalid, perhaps?";
@@ -356,14 +368,22 @@ void set_distances (sqlite3* db) {
 	}
 	std::clog << "\n + Prepared `" << qry << "`";
 
-	// SELECT stops (just use FIRST trip_id for each route) [route_id]
+	// SELECT all stops
 	sqlite3_stmt* select_stops;
-	qry = "SELECT stops.stop_id, lat, lng FROM stops, stop_times "
-		  "WHERE stops.stop_id=stop_times.stop_id "
-		  "AND stop_times.trip_id="
-		  	"(SELECT trip_id FROM trips WHERE route_id=$1 LIMIT 1) "
-		  "ORDER BY stop_sequence";
+	qry = "SELECT stop_id, lat, lng FROM stops";
 	if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &select_stops, 0) != SQLITE_OK) {
+		std::cerr << "\n x Unable to prepare `" << qry << "`";
+		throw "Unable to prepare query - invalid, perhaps?";
+	}
+	std::clog << "\n + Prepared `" << qry << "`";
+
+
+	// SELECT stops (just use FIRST trip_id for each route) [route_id]
+	sqlite3_stmt* select_rstops;
+	qry = "SELECT stop_id FROM stop_times "
+		  "WHERE trip_id=(SELECT trip_id FROM trips WHERE route_id=$1 LIMIT 1) "
+		  "ORDER BY stop_sequence";
+	if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &select_rstops, 0) != SQLITE_OK) {
 		std::cerr << "\n x Unable to prepare `" << qry << "`";
 		throw "Unable to prepare query - invalid, perhaps?";
 	}
@@ -412,16 +432,25 @@ void set_distances (sqlite3* db) {
 	}
 	std::clog << "\n + Prepared `" << qry << "`";
 
-	std::string shapeid;
+	std::string shapeid, routeid;
 	std::vector<gtfs::ShapePt> path;
-	std::shared_ptr<gtfs::Shape> shape;
 	std::vector<gtfs::Shape> shapes;
-	std::vector<gtfs::RouteStop> rstops;
-	std::map<std::string, gtfs::Stop> stops;
+	std::map<std::string, std::shared_ptr<gtfs::Stop> > stops; // for ALL stops
+
+	std::cout << "\n * Loading stops ...";
+	while (sqlite3_step (select_stops) == SQLITE_ROW) {
+		std::string stop_id = (char*)sqlite3_column_text (select_stops, 0);
+		gps::Coord pos (sqlite3_column_double (select_stops, 1),
+						sqlite3_column_double (select_stops, 2));
+		std::shared_ptr<gtfs::Stop> stop (new gtfs::Stop(stop_id, pos));
+		stops.emplace (stop_id, stop);
+	}
+	std::cout << " done.";
 
 	std::cout << "\n * Loading Shapes ... ";
 	while (sqlite3_step (select_routes) == SQLITE_ROW) {
 		// fetch the shape
+		routeid = (char*)sqlite3_column_text (select_routes, 0);
 		shapeid = (char*)sqlite3_column_text (select_routes, 1);
 		std::cout << "\n    - loading shape " << shapeid;
 		if (sqlite3_bind_text (select_shape, 1, shapeid.c_str (), -1, SQLITE_STATIC) != SQLITE_OK) {
@@ -439,14 +468,38 @@ void set_distances (sqlite3* db) {
 		}
 		sqlite3_reset (select_shape);
 
-		shape = std::shared_ptr<gtfs::Shape> (new gtfs::Shape (shapeid, path));
+		auto shape = std::shared_ptr<gtfs::Shape> (new gtfs::Shape (shapeid, path));
 		path.clear ();
 
-		// Figure out shape's segments and stops ...
+		// Figure out shape's stops ...
+		if (sqlite3_bind_text (select_rstops, 1, routeid.c_str (), -1, SQLITE_TRANSIENT) != SQLITE_OK) {
+			std::cerr << "\n x Unable to bind route_id to SELECT route stops query";
+			throw "Unable to bind route_id to query  :(";
+		}
+		std::vector<gtfs::RouteStop> rstops;
+		while (sqlite3_step (select_rstops) == SQLITE_ROW) {
+			std::string stopid = (char*)sqlite3_column_text (select_rstops, 0);
+			auto si = stops.find (stopid);
+			if (si == stops.end ()) {
+				std::cerr << "\n x Umm... the stops aren't loaded properly.";
+				throw "Improper stop requested ...";
+			}
+			rstops.emplace_back (si->second);
+		}
+		sqlite3_reset (select_rstops);
+		std::cout << " - " << rstops.size () << " stops loaded.";
+
+		// Figure out shape's segments ... use a function 'cause its complicated
+		auto split_at = find_intersections (shape, intersections);
+		std::cout << " -> " << split_at.size () << " split points";
+		for (auto& s: split_at) {
+			std::cout << std::setprecision (10) << "\n" << s.at.lat << "," << s.at.lng;
+		}
+
 
 		shapes.push_back (*shape);
 	}
-	std::cout << " - done\n\n";
+	std::cout << "\n - done\n\n";
 	std::cout.flush ();
 
 	// Write updated shapes (i.e., with distances)
@@ -494,12 +547,113 @@ void set_distances (sqlite3* db) {
 	sqlite3_finalize (delete_shape);
 	sqlite3_finalize (insert_shape);
 	sqlite3_finalize (select_stops);
+	sqlite3_finalize (select_rstops);
 	sqlite3_finalize (update_stops);
 	sqlite3_finalize (select_segment);
 	sqlite3_finalize (insert_segment);
 	sqlite3_finalize (insert_shapeseg);
 	std::clog << "\n --- finished.\n";
 };
+
+/**
+ * Find intersections along a path (multiple if it loops etc).
+ * @param  path          path to look through
+ * @param  intersections possible intersections
+ * @return               vector of split points
+ */
+std::vector<Split> find_intersections (std::shared_ptr<gtfs::Shape> shape,
+									   std::vector<gtfs::Intersection>& intersections) {
+    // OK let's go
+	auto path = shape->get_path ();
+	std::vector<gps::Coord> shapepts;
+	for (auto& p: path) shapepts.emplace_back (p.pt);
+
+	// Compute a bounding box to reduce the number of intersections to check
+	double latmin = 90, latmax = -90, lngmin = 180, lngmax = -180;
+	for (auto& pt: shapepts) {
+		if (pt.lat < latmin) latmin = pt.lat;
+		if (pt.lat > latmax) latmax = pt.lat;
+		if (pt.lng < lngmin) lngmin = pt.lng;
+		if (pt.lng > lngmax) lngmax = pt.lng;
+	}
+
+	std::vector<gtfs::Intersection*> ikeep;
+	for (auto& it: intersections) {
+		auto pt = it.get_pos ();
+		if (pt.lat > latmin && pt.lat < latmax &&
+			pt.lng > lngmin && pt.lng < lngmax) {
+			auto np = pt.nearestPoint (shapepts);
+			if (np.d < 40) ikeep.push_back (&it);
+		}
+	}
+	std::cout << " -> found " << ikeep.size () << " intersections.";
+
+	std::vector<Split> splitpts;
+	if (ikeep.size () == 0) return splitpts;
+
+	// OK so we've found some intersections - now we gotta order them and stuff
+	//
+	// Travel along the route, splitting it whenever come to an intersection.
+	std::vector<int> x1, x2; // shape index, intersection index  (< 40m)
+	for (unsigned int i=1; i<shapepts.size (); i++) {
+		auto& p1 = shapepts[i-1], p2 = shapepts[i];
+		if (p1 == p2) continue;
+		std::vector<gps::Coord> pseg {p1, p2};
+		double closest = 100;
+		int cid = -1;
+		for (auto it: ikeep) { // ikeep is a vector of Intersection* objects
+			auto pt = it->get_pos ();
+			auto np = pt.nearestPoint (pseg);
+			if (np.d < 40 && np.d < closest) {
+				closest = np.d;
+				cid = it->get_id ();
+			}
+		}
+		if (cid >= 0 && closest < 40) {
+			x1.push_back (i-1);
+			x2.push_back (cid);
+		}
+	}
+	x1.push_back (0); // add a zero so we don't need a special end condition
+	x2.push_back (0);
+	if (x1.size () != x2.size ()) {
+		std::cerr << "Something very, very terrible went wrong: "
+			<< x1.size () << " + " << x2.size ();
+		throw "Something went wrong. Very wrong!";
+	}
+
+	for (unsigned int i=0; i<x1.size (); i++)
+		printf("\n [%*d] - %d", 4, x1[i], x2[i]);
+
+	std::vector<gps::Coord> subpath;
+	for (unsigned int i=0; i<x1.size ()-1; i++) {
+		// so long as shape index is less than 10 smaller than next index,
+		// and segment index is the same as the next one, keep going
+		if (x1[i] + 10 > x1[i+1] && x2[i] == x2[i+1]) {
+			subpath.push_back (shapepts[x1[i]]);
+		} else {
+			// Otherwise, save this intersection
+			subpath.push_back (shapepts[x1[i]]);
+			subpath.push_back (shapepts[x1[i]+1]);
+			gps::nearPt np;
+			for (auto it: ikeep) {
+				// step through intersections until we find the one we're after
+				if ((int)it->get_id () == x2[i]) {
+					auto pt = it->get_pos ();
+					// then find the nearest point to it on the shape:
+					np = pt.nearestPoint (subpath);
+					if (np.d < 40) splitpts.emplace_back (it->get_id (), pt);
+					break;
+				}
+			}
+			subpath.clear ();
+		}
+	}
+
+	return splitpts;
+};
+
+
 
 
 /**
@@ -1026,6 +1180,8 @@ void segment_shapes (sqlite3* db) {
 	sqlite3_finalize (stmt_shape);
 	sqlite3_finalize (stmt_segs);
 };
+
+
 
 // /**
 //  * Compute the shape distance traveled for each stop along a route.

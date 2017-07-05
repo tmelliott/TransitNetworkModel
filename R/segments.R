@@ -2,6 +2,43 @@ library(ggmap)
 library(RSQLite)
 con = dbConnect(SQLite(), "../gtfs.db")
 
+ints <- dbGetQuery(con, "SELECT * FROM intersections")
+shapeq <- dbSendQuery(con, "SELECT * FROM shapes WHERE shape_id=?")
+dbBind(shapeq, list("327-20170602141618_v54.27"))
+shape <- dbFetch(shapeq)
+dbClearResult(shapeq)
+
+splits <- read.csv(textConnection("-36.8851505,174.7756417
+-36.8787897,174.7763805
+-36.8826611,174.784999
+-36.8819087,174.7862605
+-36.8826611,174.784999
+-36.8790564,174.7904506
+-36.8797008,174.7924892
+-36.8806795,174.7976834
+-36.8807208,174.7981621
+-36.8812081,174.8026445
+-36.8641645,174.8001576
+-36.866772,174.807239
+-36.8610761,174.8128512
+-36.8598417,174.8296743
+-36.8600527,174.8373173
+-36.8613633,174.838608
+-36.8682595,174.8454336
+-36.8593851,174.8603028
+-36.8513357,174.8579918
+"), header = FALSE)
+
+with(shape, plot(lng, lat, type = "l", asp=1.2))
+with(ints, points(lng, lat, col = "#990000"))
+points(splits[, 2], splits[, 1], col = "#000099", pch = 1:4)
+
+with(ints, plot(lng, lat, pch = 19, col = "#990000", cex = 0.4, asp=1.2))
+with(shape, lines(lng, lat))
+
+
+
+
 segs = dbGetQuery(con, "SELECT * FROM segment_pt ORDER BY segment_id, seg_pt_sequence")
 ## segs2 = do.call(rbind, tapply(1:nrow(segs), segs$segment_id, function(i) {
 ##     segs[c(min(i), max(i)), ]
