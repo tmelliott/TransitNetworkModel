@@ -402,20 +402,47 @@ void set_distances (sqlite3* db) {
 	std::clog << "\n + Prepared `" << qry << "`";
 
 	// SELECT segment - check if it exists, and return id
-	sqlite3_stmt* select_segment;
+	sqlite3_stmt* select_segment0;
 	qry = "SELECT segment_id FROM segments "
-		"WHERE from_id=$1 AND to_id=$2 AND start_at=$3 AND end_at=$4";
-	if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &select_segment, 0) != SQLITE_OK) {
+		"WHERE from_id=$1 AND to_id=$2";
+	if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &select_segment0, 0) != SQLITE_OK) {
+		std::cerr << "\n x Unable to prepare `" << qry << "`";
+		throw "Unable to prepare query - invalid, perhaps?";
+	}
+	std::clog << "\n + Prepared `" << qry << "`";
+
+	sqlite3_stmt* select_segment1;
+	qry = "SELECT segment_id FROM segments "
+		"WHERE start_at=$1 AND to_id=$2";
+	if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &select_segment1, 0) != SQLITE_OK) {
+		std::cerr << "\n x Unable to prepare `" << qry << "`";
+		throw "Unable to prepare query - invalid, perhaps?";
+	}
+	std::clog << "\n + Prepared `" << qry << "`";
+
+	sqlite3_stmt* select_segment2;
+	qry = "SELECT segment_id FROM segments "
+		"WHERE from_id=$1 AND end_at=$2";
+	if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &select_segment2, 0) != SQLITE_OK) {
+		std::cerr << "\n x Unable to prepare `" << qry << "`";
+		throw "Unable to prepare query - invalid, perhaps?";
+	}
+	std::clog << "\n + Prepared `" << qry << "`";
+
+	sqlite3_stmt* select_segment3;
+	qry = "SELECT segment_id FROM segments "
+		"WHERE start_at=$1 AND end_at=$2";
+	if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &select_segment3, 0) != SQLITE_OK) {
 		std::cerr << "\n x Unable to prepare `" << qry << "`";
 		throw "Unable to prepare query - invalid, perhaps?";
 	}
 	std::clog << "\n + Prepared `" << qry << "`";
 
 
-	// INSERT segment - these are created between two intersections
+	// INSERT segment - these are created between two intersections/stops
 	sqlite3_stmt* insert_segment;
-	qry = "INSERT INTO segments (from_id,to_id,start_at,end_at,length) "
-		"VALUES ($1,$2,$3,$4,$5)";
+	qry = "INSERT INTO segments (from_id,to_id,start_at,end_at) "
+		"VALUES ($1,$2,$3,$4)";
 	if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &insert_segment, 0) != SQLITE_OK) {
 		std::cerr << "\n x Unable to prepare `" << qry << "`";
 		throw "Unable to prepare query - invalid, perhaps?";
@@ -491,15 +518,336 @@ void set_distances (sqlite3* db) {
 
 		// Figure out shape's segments ... use a function 'cause its complicated
 		auto split_at = find_intersections (shape, intersections);
-		// std::cout << " -> " << split_at.size () << " split points";
+		std::cout << " -> " << split_at.size () << " split points";
 		// for (auto& s: split_at) {
 		// 	std::cout << std::setprecision (10) << "\n" << s.at.lat << "," << s.at.lng;
 		// }
 
+		// Create segment objects
+		std::vector<gtfs::Segment> segments; // create new ones as necessary
+		segments.reserve (split_at.size () + 1);
+		for (unsigned int i=0; i<=split_at.size (); i++) {
+			unsigned long segid;
+			// first, try find the segment ...
+			if (split_at.size () == 0) {
+				// stop -> stop
+				if (sqlite3_bind_text (select_segment3, 1, rstops[0].stop->get_id ().c_str (),
+									   -1, SQLITE_STATIC) != SQLITE_OK ||
+				    sqlite3_bind_text (select_segment3, 1, rstops.back ().stop->get_id ().c_str (),
+									   -1, SQLITE_STATIC) != SQLITE_OK) {
+					std::cerr << "\n x Unable to bind values to SELECT segment query";
+					throw "Unable to bind values to query";
+				}
+				auto qr = sqlite3_step (select_segment3);
+				if (qr == SQLITE_DONE) {
+					// segment doesn't exist
+					if (sqlite3_bind_null (insert_segment, 1) != SQLITE_OK ||
+						sqlite3_bind_null (insert_segment, 2) != SQLITE_OK ||
+						sqlite3_bind_text (insert_segment, 3, rstops[0].stop->get_id ().c_str (),
+										   -1, SQLITE_STATIC) != SQLITE_OK ||
+						sqlite3_bind_text (insert_segment, 3, rstops.back ().stop->get_id ().c_str (),
+										   -1, SQLITE_STATIC) != SQLITE_OK) {
+						std::cerr << "\n x Unable to bind values to INSERT/SELECT segment query";
+						throw "Unable to bind values to query";
+					}
+					if (sqlite3_step (insert_segment) != SQLITE_DONE) {
+						std::cerr << "\n x Unable to run INSERT/SELECT segment query";
+						throw "Unable to run query";
+					}
+					sqlite3_reset (insert_segment);
+
+					sqlite3_reset (select_segment3);
+					if (sqlite3_bind_text (select_segment3, 1, rstops[0].stop->get_id ().c_str (),
+										   -1, SQLITE_STATIC) != SQLITE_OK ||
+					    sqlite3_bind_text (select_segment3, 1, rstops.back ().stop->get_id ().c_str (),
+										   -1, SQLITE_STATIC) != SQLITE_OK) {
+						std::cerr << "\n x Unable to bind values to SELECT segment query";
+						throw "Unable to bind values to query";
+					}
+					auto q2 = sqlite3_step (select_segment3);
+					if (q2 == SQLITE_DONE) {
+						std::cout << "(fail to insert/select) ";
+					} else if (q2 != SQLITE_ROW) {
+						std::cerr << "\n x Something went wrong trying to insert and select new segment";
+						throw "Unable to insert and select new segment";
+					}
+					segid = sqlite3_column_int (select_segment3, 0);
+				} else if (qr == SQLITE_ROW) {
+					// segment exists - fetch it!
+					segid = sqlite3_column_int (select_segment3, 0);
+				} else {
+					// query didn't work :(
+					std::cerr << "\n x Unable to run SELECT segment query";
+					throw "Unable to run query";
+				}
+				sqlite3_reset (select_segment3);
+
+				segments.emplace_back (segid, rstops[0].stop, rstops.back ().stop, 0);
+			} else if (i == 0) {
+				// stop -> intersection
+				if (sqlite3_bind_text (select_segment1, 1, rstops[0].stop->get_id ().c_str (),
+									   -1, SQLITE_STATIC) != SQLITE_OK ||
+					sqlite3_bind_int (select_segment1, 2, split_at[i].id) != SQLITE_OK) {
+					std::cerr << "\n x Unable to bind values to SELECT segment query";
+					throw "Unable to bind values to query";
+				}
+				auto qr = sqlite3_step (select_segment1);
+				if (qr == SQLITE_DONE) {
+					// segment doesn't exist
+					if (sqlite3_bind_null (insert_segment, 1) != SQLITE_OK ||
+						sqlite3_bind_int (insert_segment, 2, split_at[i].id) != SQLITE_OK ||
+						sqlite3_bind_text (insert_segment, 3, rstops[0].stop->get_id ().c_str (),
+										   -1, SQLITE_STATIC) != SQLITE_OK ||
+						sqlite3_bind_null (insert_segment, 4) != SQLITE_OK) {
+						std::cerr << "\n x Unable to bind values to INSERT/SELECT segment query";
+						throw "Unable to bind values to query";
+					}
+					if (sqlite3_step (insert_segment) != SQLITE_DONE) {
+						std::cerr << "\n x Unable to run INSERT/SELECT segment query";
+						throw "Unable to run query";
+					}
+					sqlite3_reset (insert_segment);
+
+					sqlite3_reset (select_segment1);
+					if (sqlite3_bind_text (select_segment1, 1, rstops[0].stop->get_id ().c_str (),
+										   -1, SQLITE_STATIC) != SQLITE_OK ||
+						sqlite3_bind_int (select_segment1, 2, split_at[i].id) != SQLITE_OK) {
+						std::cerr << "\n x Unable to bind values to SELECT segment query";
+						throw "Unable to bind values to query";
+					}
+					auto q2 = sqlite3_step (select_segment1);
+					if (q2 == SQLITE_DONE) {
+						std::cout << "(fail to insert/select) ";
+					} else if (q2 != SQLITE_ROW) {
+						std::cerr << "\n x Something went wrong trying to insert and select new segment";
+						throw "Unable to insert and select new segment";
+					}
+					segid = sqlite3_column_int (select_segment1, 0);
+				} else if (qr == SQLITE_ROW) {
+					// segment exists - fetch it!
+					segid = sqlite3_column_int (select_segment1, 0);
+				} else {
+					// query didn't work :(
+					std::cerr << "\n x Unable to run SELECT segment query";
+					throw "Unable to run query";
+				}
+				sqlite3_reset (select_segment1);
+
+				unsigned int intid1 = split_at[i].id;
+				auto int1 = find_if (intersections.begin (), intersections.end(),
+					[&intid1](const gtfs::Intersection& it) { return it.get_id () == intid1; });
+				if (int1 == intersections.end ()) std::cerr << "\n x Couldn't find the intersection.";
+
+				std::shared_ptr<gtfs::Intersection> i1 = std::make_shared<gtfs::Intersection> (int1[0]);
+				segments.emplace_back (segid, rstops[0].stop, i1, 0);
+			} else if (i == split_at.size ()) {
+				// intersection -> stop
+				if (sqlite3_bind_int (select_segment2, 1, split_at[i-1].id) != SQLITE_OK ||
+					sqlite3_bind_text (select_segment2, 2, rstops.back ().stop->get_id ().c_str (),
+									   -1, SQLITE_STATIC) != SQLITE_OK) {
+					std::cerr << "\n x Unable to bind values to SELECT segment query";
+					throw "Unable to bind values to query";
+				}
+				auto qr = sqlite3_step (select_segment2);
+				if (qr == SQLITE_DONE) {
+					// segment doesn't exist
+					if (sqlite3_bind_int (insert_segment, 1, split_at[i-1].id) != SQLITE_OK ||
+						sqlite3_bind_null (insert_segment, 2) != SQLITE_OK ||
+						sqlite3_bind_null (insert_segment, 3) != SQLITE_OK ||
+						sqlite3_bind_text (insert_segment, 4, rstops.back ().stop->get_id ().c_str (),
+										   -1, SQLITE_STATIC) != SQLITE_OK) {
+						std::cerr << "\n x Unable to bind values to INSERT/SELECT segment query";
+						throw "Unable to bind values to query";
+					}
+					if (sqlite3_step (insert_segment) != SQLITE_DONE) {
+						std::cerr << "\n x Unable to run INSERT/SELECT segment query";
+						throw "Unable to run query";
+					}
+					sqlite3_reset (insert_segment);
+
+					sqlite3_reset (select_segment2);
+					if (sqlite3_bind_int (select_segment2, 1, split_at[i-1].id) != SQLITE_OK ||
+						sqlite3_bind_text (select_segment2, 2, rstops.back ().stop->get_id ().c_str (),
+										   -1, SQLITE_STATIC) != SQLITE_OK) {
+						std::cerr << "\n x Unable to bind values to SELECT segment query";
+						throw "Unable to bind values to query";
+					}
+					auto q2 = sqlite3_step (select_segment2);
+					if (q2 == SQLITE_DONE) {
+						std::cout << "(fail to insert/select) ";
+					} else if (q2 != SQLITE_ROW) {
+						std::cerr << "\n x Something went wrong trying to insert and select new segment";
+						throw "Unable to insert and select new segment";
+					}
+					segid = sqlite3_column_int (select_segment2, 0);
+				} else if (qr == SQLITE_ROW) {
+					// segment exists - fetch it!
+					segid = sqlite3_column_int (select_segment2, 0);
+				} else {
+					// query didn't work :(
+					std::cerr << "\n x Unable to run SELECT segment query";
+					throw "Unable to run query";
+				}
+				sqlite3_reset (select_segment2);
+
+				unsigned int intid1 = split_at[i-1].id;
+				auto int1 = find_if (intersections.begin (), intersections.end(),
+					[&intid1](const gtfs::Intersection& it) { return it.get_id () == intid1; });
+				if (int1 == intersections.end ()) std::cerr << "\n x Couldn't find the intersection.";
+
+				std::shared_ptr<gtfs::Intersection> i1 = std::make_shared<gtfs::Intersection> (int1[0]);
+				segments.emplace_back (segid, i1, rstops.back ().stop, 0);
+			} else {
+				// intersection -> intersection
+				if (sqlite3_bind_int (select_segment0, 1, split_at[i-1].id) != SQLITE_OK ||
+					sqlite3_bind_int (select_segment0, 2, split_at[i].id) != SQLITE_OK) {
+					std::cerr << "\n x Unable to bind values to SELECT segment query";
+					throw "Unable to bind values to query";
+				}
+				auto qr = sqlite3_step (select_segment0);
+				if (qr == SQLITE_DONE) {
+					// segment doesn't exist
+					if (sqlite3_bind_int (insert_segment, 1, split_at[i-1].id) != SQLITE_OK ||
+						sqlite3_bind_int (insert_segment, 2, split_at[i].id) != SQLITE_OK ||
+						sqlite3_bind_null (insert_segment, 3) != SQLITE_OK ||
+						sqlite3_bind_null (insert_segment, 4) != SQLITE_OK) {
+						std::cerr << "\n x Unable to bind values to INSERT/SELECT segment query";
+						throw "Unable to bind values to query";
+					}
+					if (sqlite3_step (insert_segment) != SQLITE_DONE) {
+						std::cerr << "\n x Unable to run INSERT/SELECT segment query";
+						throw "Unable to run query";
+					}
+					sqlite3_reset (insert_segment);
+
+					sqlite3_reset (select_segment0);
+					if (sqlite3_bind_int (select_segment0, 1, split_at[i-1].id) != SQLITE_OK ||
+						sqlite3_bind_int (select_segment0, 2, split_at[i].id) != SQLITE_OK) {
+						std::cerr << "\n x Unable to bind values to SELECT segment query";
+						throw "Unable to bind values to query";
+					}
+					auto q2 = sqlite3_step (select_segment0);
+					if (q2 == SQLITE_DONE) {
+						std::cout << "(fail to insert/select 3) ";
+					} else if (q2 != SQLITE_ROW) {
+						std::cerr << "\n x Something went wrong trying to insert and select new segment";
+						throw "Unable to insert and select new segment";
+					}
+					segid = sqlite3_column_int (select_segment0, 0);
+				} else if (qr == SQLITE_ROW) {
+					// segment exists - fetch it!
+					segid = sqlite3_column_int (select_segment0, 0);
+				} else {
+					// query didn't work :(
+					std::cerr << "\n x Unable to run SELECT segment query";
+					throw "Unable to run query";
+				}
+				sqlite3_reset (select_segment0);
+
+				unsigned int intid1 = split_at[i-1].id;
+				auto int1 = find_if (intersections.begin (), intersections.end(),
+					[&intid1](const gtfs::Intersection& it) { return it.get_id () == intid1; });
+				if (int1 == intersections.end ()) std::cerr << "\n x Couldn't find the intersection.";
+
+				unsigned int intid2 = split_at[i].id;
+				auto int2 = find_if (intersections.begin (), intersections.end(),
+					[&intid2](const gtfs::Intersection& it) { return it.get_id () == intid2; });
+				if (int2 == intersections.end ()) std::cerr << "\n x Couldn't find the intersection.";
+
+				// std::cout << int1[0].get_id () << " -> " << int2[0].get_id () << ", ";
+				std::shared_ptr<gtfs::Intersection> i1 = std::make_shared<gtfs::Intersection> (int1[0]);
+				std::shared_ptr<gtfs::Intersection> i2 = std::make_shared<gtfs::Intersection> (int2[0]);
+				segments.emplace_back (segid, i1, i2, 0);
+			}
+		}
+		std::cout << " > formed " << segments.size () << " segments";
+
+
 		// Now just travel along the route looking for the next stop/intersection,
 		// and set it's dist_traveled.
+		std::vector<double> seg_ds (segments.size (), 0);
+		int stpi (1), segi (1);
+		double dtrav = 0;
+		for (unsigned int i=1; i<shape->get_path ().size (); i++) {
+			auto p1=shape->get_path ()[i-1].pt,
+				 p2=shape->get_path ()[i].pt;
+			if (p1 == p2) continue;
+			double d12 = p1.distanceTo (p2);
 
+			std::vector<gps::Coord> spth;
+			spth.push_back (p1);
+			spth.push_back (p2);
 
+			// STOPS
+			if (stpi < (int)rstops.size ()) {
+				auto sipt = rstops[stpi].stop->get_pos ();
+				auto np = sipt.nearestPoint (spth);
+				// If point is too far away, move on.
+				if (np.d <= 40) {
+					// if point is AHEAD of p2, move on.
+					double sd1 = sipt.alongTrackDistance (p1, p2),
+						   sd2 = sipt.alongTrackDistance (p2, p1);
+					if (sd1 > d12) {
+						// do nothing
+					} else if (sd2 > d12) {
+						// if point is BEFORE p1, use p1
+						rstops[stpi].shape_dist_traveled = dtrav;
+						stpi++;
+					} else {
+						// if point is between p1 and p2, find closest point
+						rstops[stpi].shape_dist_traveled = dtrav + sd1;
+						stpi++;
+					}
+				}
+			}
+
+			// SEGMENTS (repeat)
+			if (segi < (int)segments.size ()) {
+				// it's always going to be from an intersection ...
+				// gps::Coord& sipt;
+				if (!segments[segi].get_from ()) {
+					std::cerr << "\n Something bad ........";
+				}
+				auto sipt = segments[segi].get_from ()->get_pos ();
+				auto np = sipt.nearestPoint (spth);
+				// If point is too far away, move on.
+				if (np.d <= 40) {
+					// if point is AHEAD of p2, move on.
+					double sd1 = sipt.alongTrackDistance (p1, p2),
+						   sd2 = sipt.alongTrackDistance (p2, p1);
+					if (sd1 > d12) {
+						// do nothing
+					} else if (sd2 > d12) {
+						// if point is BEFORE p1, use p1
+						seg_ds[segi] = dtrav;
+						segi++;
+					} else {
+						// if point is between p1 and p2, find closest point
+						seg_ds[segi] = dtrav + sd1;
+						segi++;
+					}
+				}
+			}
+
+			dtrav += p1.distanceTo (p2);
+		}
+		std::cout << " - " << dtrav << "m long";
+
+		std::cout << "\n   -> stops: ";
+		for (auto& s: rstops) std::cout << s.shape_dist_traveled << ", ";
+		std::cout << "\n   -> segments: ";
+		for (auto& s: seg_ds) std::cout << s << ", ";
+
+		// sqlite3_exec (db, "BEGIN", NULL, NULL, NULL);
+		// for (unsigned int i=0; i<segments.size (); i++) {
+		// 	if (sqlite3_bind_string (insert_shapeseg, 1, shapeid) != SQLITE_OK ||
+		// 		sqlite3_bind_int (insert_shapeseg, 2, segments[i].get_id ()) != SQLITE_OK ||
+		// 		sqlite3_bind_int (insert_shapeseg, 3, i+1) != SQLITE_OK ||
+		// 		sqlite3_bind_double (insert_shapeseg, 4, segments[i].get_distance ()) != SQLITE_OK) {
+		//
+		// 	}
+		// }
+		// sqlite3_exec (db, "COMMIT", NULL, NULL, NULL);
 
 		shapes.push_back (*shape);
 	}
@@ -553,7 +901,10 @@ void set_distances (sqlite3* db) {
 	sqlite3_finalize (select_stops);
 	sqlite3_finalize (select_rstops);
 	sqlite3_finalize (update_stops);
-	sqlite3_finalize (select_segment);
+	sqlite3_finalize (select_segment0);
+	sqlite3_finalize (select_segment1);
+	sqlite3_finalize (select_segment2);
+	sqlite3_finalize (select_segment3);
 	sqlite3_finalize (insert_segment);
 	sqlite3_finalize (insert_shapeseg);
 	std::clog << "\n --- finished.\n";

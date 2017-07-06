@@ -4,34 +4,24 @@ con = dbConnect(SQLite(), "../gtfs.db")
 
 ints <- dbGetQuery(con, "SELECT * FROM intersections")
 shapeq <- dbSendQuery(con, "SELECT * FROM shapes WHERE shape_id=?")
-dbBind(shapeq, list("327-20170602141618_v54.27"))
+dbBind(shapeq, list("1104-20170602141618_v54.27"))
 shape <- dbFetch(shapeq)
 dbClearResult(shapeq)
 
 splits <- read.csv(textConnection("lat,lng
--36.88514282,174.7756441
--36.87879075,174.7763875
--36.88265448,174.7849927
--36.88186915,174.7862111
--36.87907052,174.7904947
--36.87969165,174.7924938
--36.880701,174.79768
--36.88075,174.79817
--36.8812,174.80263
--36.86416164,174.8001579
--36.86673,174.80721
--36.86105133,174.8127974
--36.85986,174.8296744
--36.86008047,174.8373281
--36.86138373,174.8385852
--36.86814969,174.8455194
--36.85938413,174.8602952
--36.85135573,174.8580037
+-36.82282524,174.6113078
+-36.83169581,174.6156127
+-36.83190085,174.6183563
+-36.83265054,174.6213648
+-36.83265054,174.6213648
+-36.83190085,174.6183563
+-36.8316958,174.6156127
+-36.82282524,174.6113078
 "))
 
 with(shape, plot(lng, lat, type = "l", asp=1.2))
 with(ints, points(lng, lat, col = "#990000", pch = 19, cex = 0.5))
-points(splits[, 2], splits[, 1], col = "#000099", pch = 4)
+points(splits[, 2], splits[, 1], col = "#000099", pch = 1:4)
 
 #bbox <- locator(2)
 with(shape, plot(lng, lat, type = "l", asp=1.6, xlim = bbox$x, ylim = bbox$y))
