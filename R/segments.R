@@ -2,7 +2,7 @@ library(ggmap)
 library(RSQLite)
 con = dbConnect(SQLite(), "../gtfs.db")
 
-shapeid <- "820-20170602141618_v54.27"
+shapeid <- "1143-20170602141618_v54.27"
 intq <- dbSendQuery(con, "SELECT * FROM intersections WHERE intersection_id IN (SELECT from_id FROM segments WHERE segment_id IN (SELECT segment_id FROM shape_segments WHERE shape_id=?))")
 dbBind(intq, list(shapeid))
 ints <- dbFetch(intq)
@@ -18,24 +18,41 @@ dbBind(segq, list(shapeid))
 segs <- dbFetch(segq)
 dbClearResult(segq)
 
-## splits <- read.csv(textConnection("lat,lng
-## -36.82282524,174.6113078
-## -36.83169581,174.6156127
-## -36.83190085,174.6183563
-## -36.83265054,174.6213648
-## -36.83265054,174.6213648
-## -36.83190085,174.6183563
-## -36.8316958,174.6156127
-## -36.82282524,174.6113078
-## "))
+splits <- read.csv(textConnection("lat,lng
+-36.86416164,174.8001579
+-36.86677829,174.8072324
+-36.8812,174.80263
+-36.88075,174.79817
+-36.880701,174.79768
+-36.87969165,174.7924937
+-36.8790736,174.7904909
+-36.88186565,174.7862167
+-36.88265,174.785
+-36.87807141,174.7805795
+-36.89332313,174.7744492
+-36.89972679,174.7730144
+-36.9106557,174.7695492
+-36.90915833,174.7621942
+-36.90916759,174.7585965
+-36.90685216,174.748684
+-36.90633,174.74118
+-36.90966,174.7401
+-36.9109964,174.7397212
+-36.91155985,174.7395434
+-36.92061,174.73623
+-36.91488514,174.7300426
+-36.91268,174.72787
+-36.92170502,174.7151205
+-36.92285,174.70158"))
 
 with(shape, plot(lng, lat, type = "l", asp=1.2))
 with(ints, points(lng, lat, col = "#990000", pch = 19, cex = 0.5))
-
+points(splits[, 2], splits[, 1], col = "#000099", pch = 1:4)
 
 bbox <- locator(2)
 with(shape, plot(lng, lat, type = "l", asp=1.6, xlim = bbox$x, ylim = bbox$y))
 with(ints, points(lng, lat, col = "#990000", pch = 19, cex = 0.5))
+points(splits[, 2], splits[, 1], col = "#000099", pch = 1:4)
 
 
 xr = extendrange(shape$lng)

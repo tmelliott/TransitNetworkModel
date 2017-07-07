@@ -502,7 +502,7 @@ void set_distances (sqlite3* db) {
 		// fetch the shape
 		routeid = (char*)sqlite3_column_text (select_routes, 0);
 		shapeid = (char*)sqlite3_column_text (select_routes, 1);
-		// std::cout << "\n    - loading shape " << shapeid;
+		std::clog << "\n    - loading shape " << shapeid;
 		if (sqlite3_bind_text (select_shape, 1, shapeid.c_str (), -1, SQLITE_STATIC) != SQLITE_OK) {
 			std::cerr << "\n x Unable to bind shape_id to SELECT shape query";
 			throw "Unable to bind shape_id to query  :(";
@@ -537,14 +537,14 @@ void set_distances (sqlite3* db) {
 			rstops.emplace_back (si->second);
 		}
 		sqlite3_reset (select_rstops);
-		// std::cout << " - " << rstops.size () << " stops loaded.";
+		std::clog << " - " << rstops.size () << " stops loaded.";
 
 		// Figure out shape's segments ... use a function 'cause its complicated
 		auto split_at = find_intersections (shape, intersections);
-		// std::cout << " -> " << split_at.size () << " split points";
-		// for (auto& s: split_at) {
-		// 	std::cout << std::setprecision (10) << "\n" << s.at.lat << "," << s.at.lng;
-		// }
+		std::clog << " -> " << split_at.size () << " split points";
+		for (auto& s: split_at) {
+			std::clog << std::setprecision (10) << "\n" << s.at.lat << "," << s.at.lng;
+		}
 
 		// Create segment objects
 		std::vector<gtfs::Segment> segments; // create new ones as necessary
@@ -783,7 +783,7 @@ void set_distances (sqlite3* db) {
 				segments.emplace_back (segid, i1, i2, 0);
 			}
 		}
-		// std::cout << " > formed " << segments.size () << " segments";
+		std::clog << " > formed " << segments.size () << " segments";
 
 
 		// Now just travel along the route looking for the next stop/intersection,
@@ -825,7 +825,8 @@ void set_distances (sqlite3* db) {
 			}
 
 			// SEGMENTS (repeat)
-			if (segi < (int)segments.size ()) {
+			if (segi < (int)segments.size () &&
+				(seg_ds.size () == 0 || dtrav > seg_ds.back () + 200)) {
 				// it's always going to be from an intersection ...
 				// gps::Coord& sipt;
 				if (!segments[segi].get_from ()) {
@@ -833,35 +834,45 @@ void set_distances (sqlite3* db) {
 				}
 				// auto sipt = segments[segi].get_from ()->get_pos ();
 				auto sipt = split_at[segi-1].at;
-				auto np = sipt.nearestPoint (spth);
+				// auto np = sipt.nearestPoint (spth);
 				// If point is too far away, move on.
-				if (np.d <= 40) {
+				// if (np.d <= 40) {
+				if (sipt == p2) {
+					// get it next time
+				} else if (sipt == p1) {
+					seg_ds[segi] = dtrav;
+					segi++;
+				} else if (sipt.crossTrackDistanceTo (p1, p2) <= 1) {
 					// if point is AHEAD of p2, move on.
 					double sd1 = sipt.alongTrackDistance (p1, p2),
 						   sd2 = sipt.alongTrackDistance (p2, p1);
-					if (sd1 > d12) {
-						// do nothing
-					} else if (sd2 > d12) {
-						// if point is BEFORE p1, use p1
-						seg_ds[segi] = dtrav;
-						segi++;
-					} else {
-						// if point is between p1 and p2, find closest point
+					if (sd1 < d12 && sd2 < d12) {
 						seg_ds[segi] = dtrav + sd1;
 						segi++;
 					}
+					// if (sd1 > d12) {
+					// 	// do nothing
+					// } else if (sd2 > d12) {
+					// 	// if point is BEFORE p1, use p1
+					// 	seg_ds[segi] = dtrav;
+					// 	segi++;
+					// } else {
+					// 	// if point is between p1 and p2, find closest point
+					// 	seg_ds[segi] = dtrav + sd1;
+					// 	segi++;
+					// }
 				}
 			}
 
 			dtrav += p1.distanceTo (p2);
 		}
 		rstops.back ().shape_dist_traveled = dtrav;
-		// std::cout << " - " << dtrav << "m long";
+		std::clog << " - " << dtrav << "m long";
 
-		// std::cout << "\n   -> stops: ";
-		// for (auto& s: rstops) std::cout << s.shape_dist_traveled << ", ";
-		// std::cout << "\n   -> segments: ";
-		// for (auto& s: seg_ds) std::cout << s << ", ";
+		std::clog << "\n   -> stops: ";
+		for (auto& s: rstops) std::clog << s.shape_dist_traveled << ", ";
+		std::clog << "\n   -> segments: ";
+		for (auto& s: seg_ds) std::clog << s << ", ";
 
 		sqlite3_exec (db, "BEGIN", NULL, NULL, NULL);
 		for (unsigned int i=0; i<rstops.size (); i++) {
@@ -904,6 +915,7 @@ void set_distances (sqlite3* db) {
 		sqlite3_exec (db, "COMMIT", NULL, NULL, NULL);
 
 		shapes.push_back (*shape);
+		std::clog << "\n";
 	}
 	std::cout << "\n - done\n\n";
 	std::cout.flush ();
