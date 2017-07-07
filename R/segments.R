@@ -2,31 +2,40 @@ library(ggmap)
 library(RSQLite)
 con = dbConnect(SQLite(), "../gtfs.db")
 
-ints <- dbGetQuery(con, "SELECT * FROM intersections")
+shapeid <- "820-20170602141618_v54.27"
+intq <- dbSendQuery(con, "SELECT * FROM intersections WHERE intersection_id IN (SELECT from_id FROM segments WHERE segment_id IN (SELECT segment_id FROM shape_segments WHERE shape_id=?))")
+dbBind(intq, list(shapeid))
+ints <- dbFetch(intq)
+dbClearResult(intq)
+
 shapeq <- dbSendQuery(con, "SELECT * FROM shapes WHERE shape_id=?")
-dbBind(shapeq, list("1104-20170602141618_v54.27"))
+dbBind(shapeq, list(shapeid))
 shape <- dbFetch(shapeq)
 dbClearResult(shapeq)
 
-splits <- read.csv(textConnection("lat,lng
--36.82282524,174.6113078
--36.83169581,174.6156127
--36.83190085,174.6183563
--36.83265054,174.6213648
--36.83265054,174.6213648
--36.83190085,174.6183563
--36.8316958,174.6156127
--36.82282524,174.6113078
-"))
+segq <- dbSendQuery(con, "SELECT shape_segments.*, segments.from_id FROM shape_segments, segments WHERE shape_segments.segment_id=segments.segment_id AND shape_id=? ORDER BY leg")
+dbBind(segq, list(shapeid))
+segs <- dbFetch(segq)
+dbClearResult(segq)
+
+## splits <- read.csv(textConnection("lat,lng
+## -36.82282524,174.6113078
+## -36.83169581,174.6156127
+## -36.83190085,174.6183563
+## -36.83265054,174.6213648
+## -36.83265054,174.6213648
+## -36.83190085,174.6183563
+## -36.8316958,174.6156127
+## -36.82282524,174.6113078
+## "))
 
 with(shape, plot(lng, lat, type = "l", asp=1.2))
 with(ints, points(lng, lat, col = "#990000", pch = 19, cex = 0.5))
-points(splits[, 2], splits[, 1], col = "#000099", pch = 1:4)
 
-#bbox <- locator(2)
+
+bbox <- locator(2)
 with(shape, plot(lng, lat, type = "l", asp=1.6, xlim = bbox$x, ylim = bbox$y))
 with(ints, points(lng, lat, col = "#990000", pch = 19, cex = 0.5))
-points(splits[, 2], splits[, 1], col = "#000099", pch = 4)
 
 
 xr = extendrange(shape$lng)
@@ -36,7 +45,7 @@ akl = get_stamenmap(bbox, zoom = 14, maptype = "toner-lite")
 
 ggmap(akl) +
     geom_path(aes(lng, lat), data = shape, color = "steelblue", lwd = 2) +
-    geom_point(aes(lng, lat), data = splits, color = "steelblue", size = 2.5, pch = 21, fill = "white", stroke = 2)
+    geom_point(aes(lng, lat), data = ints, color = "steelblue", size = 2.5, pch = 21, fill = "white", stroke = 2)
 
 
 
