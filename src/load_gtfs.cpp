@@ -846,7 +846,7 @@ void set_distances (sqlite3* db) {
 					// if point is AHEAD of p2, move on.
 					double sd1 = sipt.alongTrackDistance (p1, p2),
 						   sd2 = sipt.alongTrackDistance (p2, p1);
-					if (sd1 < d12 && sd2 < d12) {
+					if (sd1 < d12 && sd2 < d12 && sd1 >= 0 && sd2 >= 0) {
 						seg_ds[segi] = dtrav + sd1;
 						segi++;
 					}
