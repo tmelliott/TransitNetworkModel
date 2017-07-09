@@ -335,10 +335,9 @@ void set_distances (sqlite3* db) {
 
 	// SELECT all route IDs and their shape IDs to loop over.
 	sqlite3_stmt* select_routes;
-	qry = "SELECT route_id, shape_id FROM routes WHERE route_id LIKE '%_v54.27' "
-		"AND shape_id IN "
-		"(select distinct shape_id from shape_segments "
-		 "where leg>1 and shape_dist_traveled=0 order by shape_id, leg)";
+	qry = "SELECT route_id, shape_id FROM routes WHERE route_id LIKE '%_v54.27' ";
+		"AND shape_id NOT IN "
+		"(select distinct shape_id from shape_segments)";
 	if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &select_routes, 0) != SQLITE_OK) {
 		std::cerr << "\n x Unable to prepare `" << qry << "`";
 		throw "Unable to prepare query - invalid, perhaps?";
@@ -842,7 +841,7 @@ void set_distances (sqlite3* db) {
 				} else if (sipt == p1) {
 					seg_ds[segi] = dtrav;
 					segi++;
-				} else if (sipt.crossTrackDistanceTo (p1, p2) <= 1) {
+				} else if (sipt.crossTrackDistanceTo (p1, p2) <= 10) {
 					// if point is AHEAD of p2, move on.
 					double sd1 = sipt.alongTrackDistance (p1, p2),
 						   sd2 = sipt.alongTrackDistance (p2, p1);
@@ -864,7 +863,7 @@ void set_distances (sqlite3* db) {
 				}
 			}
 
-			dtrav += p1.distanceTo (p2);
+			dtrav += d12;
 		}
 		rstops.back ().shape_dist_traveled = dtrav;
 		std::clog << " - " << dtrav << "m long";
