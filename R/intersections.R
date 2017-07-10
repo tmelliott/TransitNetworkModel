@@ -1,6 +1,6 @@
 library(RSQLite)
 library(ggmap)
-con = dbConnect(SQLite(), "../gtfs-backup2.db")
+con = dbConnect(SQLite(), "../gtfs.db")
 
 ints = dbGetQuery(con, "SELECT * FROM intersections")
 

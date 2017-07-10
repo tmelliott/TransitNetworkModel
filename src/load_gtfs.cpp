@@ -112,6 +112,8 @@ int main (int argc, char* argv[]) {
 		std::vector<std::string> files {dir + "/data/intersections_trafficlights.json",
 										dir + "/data/intersections_roundabouts.json"};
 		import_intersections (db, files);
+		// Temporary fix for the domestic airport problem
+		sqlite3_exec (db, "DELETE FROM intersections WHERE intersection_id=708", NULL, NULL, NULL);
 		system ("cp ../gtfs.db ../gtfs-backup2.db");
 		std::cout << "done.\n";
 	} else {
