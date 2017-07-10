@@ -335,7 +335,7 @@ void set_distances (sqlite3* db) {
 
 	// SELECT all route IDs and their shape IDs to loop over.
 	sqlite3_stmt* select_routes;
-	qry = "SELECT route_id, shape_id FROM routes WHERE route_id LIKE '%_v54.27' ";
+	qry = "SELECT route_id, shape_id FROM routes WHERE route_id LIKE '%_v54.27' "
 		"AND shape_id NOT IN "
 		"(select distinct shape_id from shape_segments)";
 	if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &select_routes, 0) != SQLITE_OK) {
@@ -803,29 +803,37 @@ void set_distances (sqlite3* db) {
 			// STOPS
 			if (stpi < (int)rstops.size ()) {
 				auto sipt = rstops[stpi].stop->get_pos ();
-				auto np = sipt.nearestPoint (spth);
-				// If point is too far away, move on.
-				if (np.d <= 40) {
-					// if point is AHEAD of p2, move on.
-					double sd1 = sipt.alongTrackDistance (p1, p2),
-						   sd2 = sipt.alongTrackDistance (p2, p1);
-					if (sd1 > d12) {
-						// do nothing
-					} else if (sd2 > d12) {
-						// if point is BEFORE p1, use p1
-						rstops[stpi].shape_dist_traveled = dtrav;
-						stpi++;
-					} else {
-						// if point is between p1 and p2, find closest point
-						rstops[stpi].shape_dist_traveled = dtrav + sd1;
-						stpi++;
+				if (sipt == p1) {
+					rstops[stpi].shape_dist_traveled = dtrav;
+					stpi++;
+				} else if (sipt == p2) {
+					rstops[stpi].shape_dist_traveled = dtrav + d12;
+					stpi++;
+				} else {
+					auto np = sipt.nearestPoint (spth);
+					// If point is too far away, move on.
+					if (np.d <= 40) {
+						// if point is AHEAD of p2, move on.
+						double sd1 = sipt.alongTrackDistance (p1, p2),
+							   sd2 = sipt.alongTrackDistance (p2, p1);
+						if (sd1 > d12) {
+							// do nothing
+						} else if (sd2 > d12) {
+							// if point is BEFORE p1, use p1
+							rstops[stpi].shape_dist_traveled = dtrav;
+							stpi++;
+						} else {
+							// if point is between p1 and p2, find closest point
+							rstops[stpi].shape_dist_traveled = dtrav + sd1;
+							stpi++;
+						}
 					}
 				}
 			}
 
 			// SEGMENTS (repeat)
 			if (segi < (int)segments.size () &&
-				(seg_ds.size () == 0 || dtrav > seg_ds.back () + 200)) {
+				(segi == 1 || dtrav > seg_ds.back () + 50)) {
 				// it's always going to be from an intersection ...
 				// gps::Coord& sipt;
 				if (!segments[segi].get_from ()) {
@@ -833,21 +841,30 @@ void set_distances (sqlite3* db) {
 				}
 				// auto sipt = segments[segi].get_from ()->get_pos ();
 				auto sipt = split_at[segi-1].at;
-				// auto np = sipt.nearestPoint (spth);
-				// If point is too far away, move on.
-				// if (np.d <= 40) {
 				if (sipt == p2) {
-					// get it next time
+					seg_ds[segi] = dtrav + d12;
+					// std::clog << "\n  >>(1) segment "
+						// << segi << " - " << seg_ds[segi];
+					segi++;
 				} else if (sipt == p1) {
 					seg_ds[segi] = dtrav;
+					// std::clog << "\n  >>(2) segment "
+						// << segi << " - " << seg_ds[segi];
 					segi++;
-				} else if (sipt.crossTrackDistanceTo (p1, p2) <= 10) {
-					// if point is AHEAD of p2, move on.
-					double sd1 = sipt.alongTrackDistance (p1, p2),
-						   sd2 = sipt.alongTrackDistance (p2, p1);
-					if (sd1 < d12 && sd2 < d12 && sd1 >= 0 && sd2 >= 0) {
-						seg_ds[segi] = dtrav + sd1;
-						segi++;
+				// } else if (sipt.crossTrackDistanceTo (p1, p2) <= 10) {
+				} else {
+					auto np = sipt.nearestPoint (spth);
+					// If point is too far away, move on.
+					if (np.d <= 1) {
+						// if point is AHEAD of p2, move on.
+						double sd1 = sipt.alongTrackDistance (p1, p2),
+							   sd2 = sipt.alongTrackDistance (p2, p1);
+						if (sd1 < d12 && sd2 < d12 && sd1 >= 0 && sd2 >= 0) {
+							seg_ds[segi] = dtrav + sd1;
+							// std::clog << "\n  >>(3) segment "
+							// 	<< segi << " - " << seg_ds[segi];
+							segi++;
+						}
 					}
 					// if (sd1 > d12) {
 					// 	// do nothing
@@ -893,7 +910,7 @@ void set_distances (sqlite3* db) {
 			sqlite3_reset (update_stops);
 		}
 
-		if (seg_ds.back () > 0) {
+		if (seg_ds.size () == 1 || seg_ds.back () > 0) {
 			for (unsigned int i=0; i<segments.size (); i++) {
 				if (sqlite3_bind_text (insert_shapeseg, 1, shapeid.c_str (), -1, SQLITE_STATIC) != SQLITE_OK ||
 					sqlite3_bind_int (insert_shapeseg, 2, segments[i].get_id ()) != SQLITE_OK ||
@@ -1063,12 +1080,20 @@ std::vector<Split> find_intersections (std::shared_ptr<gtfs::Shape> shape,
 					auto pt = it->get_pos ();
 					// then find the nearest point to it on the shape:
 					np = pt.nearestPoint (subpath);
-					if (np.d < 40) splitpts.emplace_back (it->get_id (), np.pt);
+					if (np.d < 40) {
+						// if (np.pt == shapepts[0] && np.d > 1) break;
+						splitpts.emplace_back (it->get_id (), np.pt);
+					};
 					break;
 				}
 			}
 			subpath.clear ();
 		}
+	}
+
+	if (splitpts[0].at.distanceTo (shapepts[0]) < 40) {
+		// too close to start
+		splitpts.erase (splitpts.begin ());
 	}
 
 	return splitpts;
