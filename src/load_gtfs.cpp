@@ -87,7 +87,7 @@ int main (int argc, char* argv[]) {
 	// Prepare database if it needs to be ...
 	if (!std::ifstream ("../gtfs-backup1.db")) {
 		std::cout << " * Importing raw GTFS into database ...\n";
-		system ("cd .. && rm gtfs.db && sqlite3 gtfs.db < load_gtfs.sql && cp gtfs.db gtfs-backup1.db");
+		system ("cd .. && rm -f gtfs.db && sqlite3 gtfs.db < load_gtfs.sql && cp gtfs.db gtfs-backup1.db");
 	} else {
 		system ("cp ../gtfs-backup1.db ../gtfs.db");
 	}
