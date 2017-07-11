@@ -119,8 +119,24 @@ int main (int argc, char* argv[]) {
 	sampling::RNG rng;
 	bool forever = true;
 
-	// std::clock_t clockend;
+	std::cout << " * Loaded " << gtfs.get_stops ().size () << " stops\n";
+	std::cout << " * Loaded " << gtfs.get_intersections ().size () << " intersections\n";
+	std::cout << " * Loaded " << gtfs.get_segments ().size () << " segments\n\n";
 
+	std::vector<std::string> tps;
+	tps.push_back ("1992054126-20170602141618_v54.27");
+	tps.push_back ("1123078856-20170602141618_v54.27");
+	tps.push_back ("1064073764-20170602141618_v54.27");
+	tps.push_back ("14255047700-20170602141618_v54.27");
+	tps.push_back ("14255066331-20170602141618_v54.27");
+	for (auto& tp: tps) gtfs.get_trip (tp);
+	std::cout << " * Loaded " << gtfs.get_trips ().size () << " trips\n";
+	std::cout << " * Loaded " << gtfs.get_routes ().size () << " routes\n";
+	std::cout << " * Loaded " << gtfs.get_shapes ().size () << " shapes\n";
+
+
+	// std::clock_t clockend;
+/*
 	while (forever) {
 		// forever = false;
 		{
@@ -255,7 +271,7 @@ int main (int argc, char* argv[]) {
 
 		if (forever) std::this_thread::sleep_for (std::chrono::milliseconds (10 * 1000));
 	}
-
+*/
 	return 0;
 }
 

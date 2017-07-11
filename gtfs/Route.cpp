@@ -14,7 +14,7 @@ namespace gtfs {
 		std::string& short_name,
 		std::string& long_name
 	) : id (id), route_short_name (short_name), route_long_name (long_name) {
-		std::clog << " + Created route " << id << "\n";
+		// std::clog << " + Created route " << id << "\n";
 	};
 	/**
 	 * Constructor for a route object, with a shape pointer.
@@ -54,5 +54,5 @@ namespace gtfs {
 		trips.push_back (trip);
 	};
 
-	
+
 };

@@ -11,7 +11,7 @@ namespace gtfs {
 		std::string& id,
 		std::shared_ptr<Route> route
 	) : id (id), route (route) {
-		std::clog << " + Created trip " << id << "\n";
+		// std::clog << " + Created trip " << id << "\n";
 	};
 
 }; // end namespace gtfs

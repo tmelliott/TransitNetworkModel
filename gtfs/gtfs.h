@@ -68,33 +68,59 @@ namespace gtfs {
 		std::string database_; /*!< the database file loaded into memory. */
 		std::string version_;  /*!< when initialized, the version is set. */
 
+		// Pre-loaded
+		std::unordered_map<std::string, std::shared_ptr<Stop> >
+		stops;          /*!< A map of stop pointers */
+		std::unordered_map<unsigned long, std::shared_ptr<Intersection> >
+		intersections;  /*!< A map of intersection pointers */
+		std::unordered_map<unsigned long, std::shared_ptr<Segment> >
+		segments;       /*!< A map of segment pointers */
+
+		// Loaded as required
 		std::unordered_map<std::string, std::shared_ptr<Trip> > trips; /*!< A map of trip pointers */
 		std::unordered_map<std::string, std::shared_ptr<Route> > routes; /*!< A map of route pointers */
 		std::unordered_map<std::string, std::shared_ptr<Shape> > shapes; /*!< A map of shape pointers */
-		std::unordered_map<unsigned long, std::shared_ptr<Segment> > segments; /*!< A map of segment pointers */
-		std::unordered_map<std::string, std::shared_ptr<Stop> > stops;  /*!< A map of stop pointers */
 
 	public:
 		GTFS (std::string& dbname, std::string& v);
 
-		// Get individual objects
-		std::shared_ptr<Trip> get_trip (std::string& t) const;
-		std::shared_ptr<Route> get_route (std::string& r) const;
-		std::shared_ptr<Shape> get_shape (std::string& s) const;
-		std::shared_ptr<Segment> get_segment (unsigned long s) const;
+		// --- Get individual objects
 		std::shared_ptr<Stop> get_stop (std::string& s) const;
+		std::shared_ptr<Intersection> get_intersection (unsigned int i) const;
+		std::shared_ptr<Segment> get_segment (unsigned long s) const;
 
-		// Get all objects ...
-		/** @return an unordered map of Route objects */
-		std::unordered_map<std::string, std::shared_ptr<Route> > get_routes (void) { return routes; };
-		/** @return an unordered map of Trip objects */
-		std::unordered_map<std::string, std::shared_ptr<Trip> > get_trips (void) { return trips; };
-		/** @return an unordered map of Shape objects */
-		std::unordered_map<std::string, std::shared_ptr<Shape> > get_shapes (void) { return shapes; };
-		/** @return an unordered map of Segment objects */
-		std::unordered_map<unsigned long, std::shared_ptr<Segment> > get_segments (void) { return segments; };
+		// --- Get objects, and load if necessary
+		std::shared_ptr<Trip> get_trip (std::string& t);
+		std::shared_ptr<Route> get_route (std::string& r);
+		std::shared_ptr<Shape> get_shape (std::string& s);
+
+
+
+		// --- Get all objects ...
+
 		/** @return an unordered map of Stop objects */
-		std::unordered_map<std::string, std::shared_ptr<Stop> > get_stops (void) { return stops; };
+		std::unordered_map<std::string, std::shared_ptr<Stop> >
+		get_stops (void) { return stops; };
+
+		/** @return an unordered map of Intersection objects */
+		std::unordered_map<unsigned long, std::shared_ptr<Intersection> >
+		get_intersections (void) { return intersections; };
+
+		/** @return an unordered map of Segment objects */
+		std::unordered_map<unsigned long, std::shared_ptr<Segment> >
+		get_segments (void) { return segments; };
+
+		/** @return an unordered map of Trip objects */
+		std::unordered_map<std::string, std::shared_ptr<Trip> >
+		get_trips (void) { return trips; };
+
+		/** @return an unordered map of Route objects */
+		std::unordered_map<std::string, std::shared_ptr<Route> >
+		get_routes (void) { return routes; };
+
+		/** @return an unordered map of Shape objects */
+		std::unordered_map<std::string, std::shared_ptr<Shape> >
+		get_shapes (void) { return shapes; };
 
 	};
 
@@ -302,6 +328,12 @@ namespace gtfs {
 
 		// --- SETTERS
 		void add_trip (std::shared_ptr<Trip> trip);
+
+		/**
+		 * Add a shape to a route.
+		 * @param sh pointer to a Shape object.
+		 */
+		void add_shape (std::shared_ptr<Shape> sh) { shape = sh; };
 
 		/**
 		 * Add stops to a route.
@@ -575,7 +607,7 @@ namespace gtfs {
 	private:
 		unsigned long id;       /*!< ID of the intersection */
 		gps::Coord pos;         /*!< gps location of the intersection */
-		std::string type;
+		std::string type;       /*!< the type of intersection */
 
 		double delay;           /*!< the average delay at that intersection */
 		double delay_var;       /*!< delay variability at that intersection */
