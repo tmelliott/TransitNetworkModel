@@ -154,16 +154,12 @@ int main (int argc, char* argv[]) {
 
 			std::cout << "\n";
 			// -> triggers particle transition -> resample
-			std::vector<std::string> USEDtrips {"274", "277", "224", "222", "258", "NEX", "129"};
 			time_start (clockstart, wallstart);
 			for (auto& v: vehicles) {
 				if (!v.second->get_trip ()) continue;
 				if (!v.second->get_trip ()->get_route ()) continue;
-				if (std::find (USEDtrips.begin (), USEDtrips.end (),
-							   v.second->get_trip ()->get_route ()->get_short_name ()) == USEDtrips.end ()) {
-				    continue;
-			    }
-				std::cout << "- Route " << v.second->get_trip ()->get_route ()->get_short_name () << "\n";
+				std::cout << "\n ++++++++++++++++++++++++++++++++++++++++ Route "
+					<< v.second->get_trip ()->get_route ()->get_short_name () << "\n";
 				v.second->update (rng);
 			}
 			std::cout << "\n";
@@ -177,13 +173,17 @@ int main (int argc, char* argv[]) {
 
 		{
 			// Update ETA predictions
+			time_start (clockstart, wallstart);
+			std::cout << "\n * Calculating ETAs ...";
 			for (auto& v: vehicles) {
 				if (!v.second->get_trip ()) continue;
 				for (auto& p: v.second->get_particles ()) p.calculate_etas ();
 			}
+			std::cout << "\n";
+			time_end (clockstart, wallstart);
 		}
 
-		{
+		if (false) {
 			// Write results to file
 			time_start (clockstart, wallstart);
 			std::cout << "\n * Writing particles to db ...";
@@ -297,10 +297,41 @@ bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> >
 
 	// Cycle through feed entities and update associated vehicles, or create a new one.
 
+	// sqlite3* db;
+	// sqlite3_stmt* tripskeep;
+	// std::string qry = "SELECT trip_id FROM trips WHERE route_id IN "
+	// 	"(SELECT route_id FROM routes WHERE route_short_name IN "
+	// 	"('274','277','224','222','258','NEX','129'))";
+	// std::vector<std::string> KEEPtrips;
+	// if (sqlite3_open (gtfs.get_dbname ().c_str (), &db)) {
+	// 	std::cerr << "\n x oops...";
+	// } else if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &tripskeep, 0) != SQLITE_OK) {
+	// 	std::cerr << "\n x oops2...";
+	//
+	// } else {
+	// 	while (sqlite3_step (tripskeep) == SQLITE_ROW) {
+	// 		std::string t = (char*)sqlite3_column_text (tripskeep, 0);
+	// 		KEEPtrips.push_back (t);
+	// 	}
+	// }
+	// std::cout << " trips being tracked.";
+
 	for (int i=0; i<feed.entity_size (); i++) {
 		printf(" * Processing feed: %*d%%\r", 3, (int)(100 * (i+1) / feed.entity_size ()));
 		std::cout.flush ();
 		auto& ent = feed.entity (i);
+		// if (ent.has_trip_update () && ent.trip_update ().has_trip () &&
+		// 	ent.trip_update ().trip ().has_trip_id ()) {
+		// 	std::cout << "\n + " << ent.trip_update ().trip ().trip_id ();
+		// 	if (std::find (KEEPtrips.begin (), KEEPtrips.end (),
+		// 				   ent.trip_update ().trip ().trip_id ()) == KEEPtrips.end ()) continue;
+	    // } else if (ent.has_vehicle () && ent.vehicle ().has_trip () &&
+		// 		   ent.vehicle ().trip ().has_trip_id ()) {
+		// 	if (std::find (KEEPtrips.begin (), KEEPtrips.end (),
+		// 				   ent.vehicle ().trip ().trip_id ()) == KEEPtrips.end ()) continue;
+	    // } else {
+		// 	continue;
+		// }
 		std::string vid;
 		if (ent.has_trip_update () && ent.trip_update ().has_vehicle ()) {
 			vid = ent.trip_update ().vehicle ().id ();

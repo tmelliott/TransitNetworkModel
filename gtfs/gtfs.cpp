@@ -522,6 +522,38 @@ namespace gtfs {
 			}
 
 			route->add_shape (shape);
+
+			// --- Route Stops
+			sqlite3_stmt* select_routestops;
+			qry = "SELECT stop_id, shape_dist_traveled FROM stop_times "
+				"WHERE trip_id IN (SELECT trip_id FROM trips WHERE route_id=? LIMIT 1) ORDER BY stop_sequence";
+			if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &select_routestops, 0) != SQLITE_OK) {
+				std::cerr << "\n * Can't prepare query: " << sqlite3_errmsg (db) << "\n";
+				sqlite3_finalize (select_routestops);
+				sqlite3_close (db);
+				return nullptr;
+			}
+			if (sqlite3_bind_text (select_routestops, 1, r.c_str (), -1, SQLITE_STATIC) != SQLITE_OK) {
+				std::cerr << " * Can't bind route_id to query: " << sqlite3_errmsg (db) << "\n";
+				sqlite3_finalize (select_routestops);
+				sqlite3_close (db);
+				return nullptr;
+			}
+			std::vector<RouteStop> rstops;
+			while (sqlite3_step (select_routestops) == SQLITE_ROW) {
+				std::string stopid = (char*)sqlite3_column_text (select_routestops, 0);
+				auto stop = get_stop (stopid);
+				if (!stop) {
+					sqlite3_finalize (select_routestops);
+					sqlite3_close (db);
+					return nullptr;
+				}
+				rstops.emplace_back (stop, sqlite3_column_double (select_routestops, 1));
+			}
+			sqlite3_finalize (select_routestops);
+			sqlite3_close (db);
+
+			route->add_stops (rstops);
 			routes.emplace (r, route);
 
 			return route;

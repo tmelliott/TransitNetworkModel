@@ -87,20 +87,20 @@ namespace gtfs {
 	void Vehicle::update ( sampling::RNG& rng ) {
 		std::cout << "Vehicle ID: " << id
 			<< " " << position
-			<< " - ts=" << timestamp
-			<< " (" << delta << " seconds since last observation)";
+			<< " - ts = " << timestamp;
 		if (newtrip) std::cout << " - newtrip";
 		if (!initialized) std::cout << " - initialization required";
-		std::cout << "\n";
+		if (initialized)
+			std::cout << " (" << delta << " seconds since last observation)";
+
 
 		if (newtrip || !initialized) {
-			std::cout << " * Initializing particles: ";
+			std::cout << "\n * Initializing particles: ";
 
 			// Detect initial range of vehicle's "distance into trip"
 			// -- just rough, so find points on the route within 100m of the GPS position
 			std::vector<double> init_range {100000.0, 0.0};
 			auto shape = trip->get_route ()->get_shape ();
-			std::cout << " (" << shape->get_path ().size () << " points in path) -";
 			for (auto& p: shape->get_path ()) {
 				if (p.pt.distanceTo(this->position) < 100.0) {
 					double ds (p.dist_traveled);
@@ -108,10 +108,10 @@ namespace gtfs {
 					if (ds > init_range[1]) init_range[1] = ds;
 				}
 			}
-			printf("between %*.2f and %*.2f m\n", 8, init_range[0], 8, init_range[1]);
+			printf("between %*.2f and %*.2f m", 8, init_range[0], 8, init_range[1]);
 
 			if (init_range[0] > init_range[1]) {
-				std::cout << "   -> unable to locate vehicle on route -> cannot initialize.\n";
+				std::cout << "\n   -> unable to locate vehicle on route -> cannot initialize.";
 				return;
 			} else if (init_range[0] == init_range[1]) {
 				init_range[0] = init_range[0] - 100;
@@ -122,8 +122,8 @@ namespace gtfs {
 			for (auto& p: particles) p.initialize (udist, uspeed, rng);
 
 			initialized = true;
-		} else if (delta > 0 ) {
-			std::cout << " * Updating particles: " << delta << "s\n";
+		} else if (delta > 0) {
+			std::cout << "\n * Updating particles: " << delta << "s";
 
 			double dbar = 0;
 			double vbar = 0;
@@ -131,9 +131,8 @@ namespace gtfs {
 				dbar += p.get_distance ();
 				vbar += p.get_velocity ();
 			}
-			printf("   - Distance = %*.0fm, Velocity = %*.1fm/s.\n",
+			printf("\n   - Distance = %*.0fm, Velocity = %*.1fm/s.",
 				   5, dbar / particles.size (), 5, vbar / particles.size ());
-
 			for (auto& p: particles) p.transition (rng);
 		} else {
 			return;
@@ -146,16 +145,15 @@ namespace gtfs {
 		if (*std::max_element (lh.begin (), lh.end ()) < -10) {
 			std::cout << "   - Reset vehicle (not close particles) "
 				<< " - max likelihood = exp(" << *std::max_element (lh.begin (), lh.end ())
-				<< ")\n";
+				<< ")";
 			reset ();
 
 			return;
 		}
 
 		// Resample them!
-		std::cout << "   - Resampling ";
+		std::cout << "\n   - Resampling ";
 		resample (rng);
-		std::cout << "\n";
 
 		// Estimate parameters
 		double dbar = 0;
@@ -164,8 +162,9 @@ namespace gtfs {
 			dbar += p.get_distance ();
 			vbar += p.get_velocity ();
 		}
-		printf("   - Distance = %*.0fm, Velocity = %*.1fm/s.\n",
+		printf("\n   - Distance = %*.0fm, Velocity = %*.1fm/s.",
 			   5, dbar / particles.size (), 5, vbar / particles.size ());
+
 	}
 
 	/**
@@ -195,7 +194,7 @@ namespace gtfs {
 								  vp.position ().longitude ());
 		}
 		if (vp.has_timestamp () && timestamp != vp.timestamp ()) {
-			if (timestamp > 0 && timestamp < vp.timestamp ()) {
+			if (initialized && timestamp > 0 && timestamp < vp.timestamp ()) {
 				delta = vp.timestamp () - timestamp;
 			} else {
 				delta = 0;
@@ -286,8 +285,6 @@ namespace gtfs {
 		for (auto& i: pkeep) {
 			particles.push_back(old_particles[i]);
 		}
-		std::cout << "\n";
-
 	};
 
 	/**

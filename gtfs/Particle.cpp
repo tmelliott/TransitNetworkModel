@@ -145,7 +145,6 @@ namespace gtfs {
 		// PHASE THREE: transition forward
 		transition_phase3 (rng);
 
-
 		std::clog << *this << " -> ";
 
 		// Done with transition; compute likelihood and finish.
@@ -230,16 +229,19 @@ namespace gtfs {
 		if (!route) return;
 		auto shape = route->get_shape ();
 		if (!shape) return;
-		if (shape->get_segments ().size () == 0) return;
+		if (route->get_stops ().size () == 0) return;
 		auto stops = route->get_stops ();
 
-		if (!shape->get_segments ().back ().segment) {
+		if (shape->get_segments ().size () == 0) return;
+		auto segments = shape->get_segments ();
+
+		if (!segments.back ().segment) {
 			finished = true;
 			return;
 		}
 
 		int M (stops.size ());
-		int L (shape->get_segments ().size());
+		int L (segments.size());
 
 		while (delta_t > 0 && !finished) {
 			/**
@@ -283,7 +285,7 @@ namespace gtfs {
 	 */
 	void Particle::calculate_etas (void) {
 		if (etas.size () > 0) {
-			std::cerr << "Particle already has ETAs; something went wrong!\n";
+			// std::cerr << "Particle already has ETAs; something went wrong!\n";
 			return;
 		}
 

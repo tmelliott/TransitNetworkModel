@@ -84,6 +84,8 @@ namespace gtfs {
 	public:
 		GTFS (std::string& dbname, std::string& v);
 
+        std::string& get_dbname (void) { return database_; };
+
 		// --- Get individual objects
 		std::shared_ptr<Stop> get_stop (std::string& s) const;
 		std::shared_ptr<Intersection> get_intersection (unsigned int i) const;
