@@ -100,6 +100,7 @@ namespace gtfs {
 			// -- just rough, so find points on the route within 100m of the GPS position
 			std::vector<double> init_range {100000.0, 0.0};
 			auto shape = trip->get_route ()->get_shape ();
+			std::cout << " (" << shape->get_path ().size () << " points in path) -";
 			for (auto& p: shape->get_path ()) {
 				if (p.pt.distanceTo(this->position) < 100.0) {
 					double ds (p.dist_traveled);
