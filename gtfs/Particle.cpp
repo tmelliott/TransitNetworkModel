@@ -111,11 +111,21 @@ namespace gtfs {
 		if (!route) return;
 		auto stops = route->get_stops ();
 		if (stops.size () == 0) return;
+		auto shape = route->get_shape ();
+		if (!shape) return;
+		auto segments = shape->get_segments ();
+		if (segments.size () == 0) return;
 
 		for (unsigned int i=0; i<stops.size (); i++) {
 			// once distance smaller than stop's, we're done
 			if (distance < stops[i].shape_dist_traveled) break;
-			stop_index = i+1;
+			stop_index = i+1; // 1-based index
+		}
+
+		for (unsigned int i=0; i<segments.size (); i++) {
+			// once distance smaller than segment's, we're done
+			if (distance < segments[i].shape_dist_traveled) break;
+			segment_index = i; // 0-based index
 		}
 
 		std::clog << "   - " << *this << " -> ";
@@ -194,9 +204,23 @@ namespace gtfs {
 			if (dwell_time < gamma) dwell_time = gamma;
 			dwell_time += exptau.rand (rng);
 			delta_t = vehicle->get_timestamp () - (arrival_time + dwell_time);
+		} else if (queue_time > 0 && begin_time == 0) {
+			// --- Particle is queued at an intersection
+			sampling::exponential expkappa (1.0 / 20.0);
+			int qt = (int) expkappa.rand (rng);
+			if (qt < delta_t) {
+				// particle queues LESS than time remaining; goes through
+				queue_time += qt;
+				delta_t -= qt;
+				begin_time = vehicle->get_timestamp () - delta_t;
+			} else {
+				// particle queues too long - remains at intersection
+				queue_time += delta_t;
+				delta_t = 0;
+			}
 		} else {
-			// deal with segments later ...
 			// for now we'll just stay where we are with some probability
+			// if not at stop/segment
 			if (rng.runif () < 0.3) delta_t = 0;
 		}
 
@@ -251,15 +275,27 @@ namespace gtfs {
 			 * Therefore, the ith stop is stop_index = i, which is stops[i-1].
 			 * To make things more complicated, the (i+1)th stop is stop+index = i+1,
 			 * 								which is stops[i]!!!
+			 *
+			 * However, segments are 0-indexed, so a particle with segment_index=1 is
+			 * is on the SECOND (i+1th) segment.
 			 */
-			if (true) { // Next up: STOP!
-				double eta = (1 / velocity) * (stops[stop_index].shape_dist_traveled - distance);
+			// distance of next stop, segment
+			double Sd = stops[stop_index].shape_dist_traveled;
+			double Rd;
+			if (segment_index + 1 >= L) {
+				// on last segment
+				Rd = Sd;
+			} else {
+				Rd = segments[segment_index+1].shape_dist_traveled;
+			}
+			if (Sd <= Rd) { // Next up: STOP! (including if segmnet )
+				double eta = (1 / velocity) * (Sd - distance);
 				if (eta <= delta_t) {
 					delta_t = delta_t - eta;
 					stop_index++;
 					arrival_time = vehicle->get_timestamp () - delta_t;
 					dwell_time = 0;
-					distance = stops[stop_index-1].shape_dist_traveled;
+					distance = Sd;
 					if (stop_index == M) {
 						finished = true;
 						break;
@@ -274,7 +310,35 @@ namespace gtfs {
 					delta_t = 0;
 				}
 			} else {    // Next up: INTERSECTION!
-
+				double eta = (1 / velocity) * (Rd - distance);
+				if (eta <= delta_t) {
+					delta_t = delta_t - eta;
+					segment_index++; // arrive at next intersection
+					// --- at some point, we'll want to store the travel time of this particle along
+					//     previous segment
+					queue_time = 0;
+					begin_time = 0;
+					distance = Rd;
+					if (segment_index == L) {
+						// actually this should never happen!
+						finished = true;
+						break;
+					}
+					double rho (0.5);
+					sampling::exponential expkappa (1.0 / 20.0);
+					if (rng.runif () < rho) queue_time = (int) expkappa.rand (rng);
+					// max queue time till observation; allow next iteration to extend duration
+					if (queue_time > delta_t) {
+						queue_time = delta_t;
+						delta_t = 0;
+					} else {
+						delta_t -= queue_time;
+						begin_time = vehicle->get_timestamp () - delta_t;
+					}
+				} else {
+					distance += velocity * delta_t;
+					delta_t = 0;
+				}
 			}
 		}
 	};
@@ -301,7 +365,7 @@ namespace gtfs {
 		etas.reserve (stops.size ());
 		for (unsigned int i=0; i<stops.size (); i++) {
 			// STOP INDEX is 1-based; stop 0-index of CURRENT is stop_index-1.
-			if (i < stop_index) {
+			if ((int)i < stop_index) {
 				etas.emplace_back (0);
 			} else {
 				etas.emplace_back (vehicle->get_timestamp () +

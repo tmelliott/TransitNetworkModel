@@ -124,6 +124,8 @@ namespace gtfs {
 			initialized = true;
 		} else if (delta > 0) {
 			std::cout << "\n * Updating particles: " << delta << "s";
+			std::cout << " | M = " << trip->get_route ()->get_stops ().size ()
+				<< ", L = " << trip->get_route ()->get_shape ()->get_segments ().size ();
 
 			double dbar = 0;
 			double vbar = 0;
