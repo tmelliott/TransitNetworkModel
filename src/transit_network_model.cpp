@@ -183,6 +183,44 @@ int main (int argc, char* argv[]) {
 			time_end (clockstart, wallstart);
 		}
 
+		{
+			// Write results to CSV files
+			time_start (clockstart, wallstart);
+			std::cout << "\n * Writing particles to CSV ...";
+			system("rm -f PARTICLES.csv ETAS.csv");
+			std::ofstream particlefile; // file for particles
+			particlefile.open ("PARTICLES.csv");
+			particlefile << "vehicle_id,particle_id,timestamp,trip_id,distance,velocity,parent_id,lat,lng\n";
+			std::ofstream etafile;      // file for particles/stop ETAs
+			etafile.open ("ETAS.csv");
+			etafile << "vehicle_id,particle_id,stop_sequence,eta\n";
+			for (auto& v: vehicles) {
+				if (!v.second->get_trip ()) continue;
+				auto shape = v.second->get_trip ()->get_route ()->get_shape ();
+				for (auto& p: v.second->get_particles ()) {
+					auto pos = gtfs::get_coords (p.get_distance (), shape);
+					particlefile
+						<< v.second->get_id () << "," << p.get_id () << ","
+					 	<< v.second->get_timestamp () << "," << v.second->get_trip ()->get_id () << ","
+						<< p.get_distance () << "," << p.get_velocity () << ","
+						<< p.get_parent_id () << "," << pos.lat << "," << pos.lng << "\n";
+					if (p.get_etas ().size () > 0) {
+						for (unsigned int i=0; i<p.get_etas ().size (); i++) {
+							if (p.get_eta (i) && p.get_eta (i) > 0) {
+								etafile
+									<< v.second->get_id () << "," << p.get_id () << ","
+									<< (i+1) << "," << p.get_eta (i) << "\n";
+							}
+						}
+					}
+				}
+			}
+			particlefile.close ();
+			etafile.close ();
+			std::cout << "\n";
+			time_end (clockstart, wallstart);
+		}
+
 		if (false) {
 			// Write results to file
 			time_start (clockstart, wallstart);
@@ -301,7 +339,8 @@ bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> >
 	sqlite3_stmt* tripskeep;
 	std::string qry = "SELECT trip_id FROM trips WHERE route_id IN "
 		"(SELECT route_id FROM routes WHERE route_short_name IN "
-		"('274','277','224','222','258','NEX','129'))";
+		"('274'))";
+		// "('274','277','224','222','258','NEX','129'))";
 	std::vector<std::string> KEEPtrips;
 	if (sqlite3_open (gtfs.get_dbname ().c_str (), &db)) {
 		std::cerr << "\n x oops...";
