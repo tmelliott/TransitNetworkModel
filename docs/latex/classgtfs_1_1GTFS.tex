@@ -9,25 +9,32 @@
 \item 
 \hyperlink{classgtfs_1_1GTFS_abe065541610fe5d9673bc4befd0bcf94}{G\+T\+FS} (std\+::string \&dbname, std\+::string \&v)
 \item 
-std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Trip}{Trip} $>$ \hyperlink{classgtfs_1_1GTFS_aec86fae3dee1e13f541798266fb2317e}{get\+\_\+trip} (std\+::string \&t) const
+std\+::string \& {\bfseries get\+\_\+dbname} (void)\hypertarget{classgtfs_1_1GTFS_a40054a8e935d46bb372538a4b3d8e262}{}\label{classgtfs_1_1GTFS_a40054a8e935d46bb372538a4b3d8e262}
+
 \item 
-std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Route}{Route} $>$ \hyperlink{classgtfs_1_1GTFS_a47cfbb8ca6cb8986e95f1038dcc7c04b}{get\+\_\+route} (std\+::string \&r) const
+std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Stop}{Stop} $>$ \hyperlink{classgtfs_1_1GTFS_a860f598fdd39e238cae2a446826ede7b}{get\+\_\+stop} (std\+::string \&s) const 
 \item 
-std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Shape}{Shape} $>$ \hyperlink{classgtfs_1_1GTFS_a59d1a7209999120b2446298f9fac4564}{get\+\_\+shape} (std\+::string \&s) const
+std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Intersection}{Intersection} $>$ \hyperlink{classgtfs_1_1GTFS_ac5cc16f11c4e0db3d2003e591e4d79a5}{get\+\_\+intersection} (unsigned int i) const 
 \item 
-std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Segment}{Segment} $>$ \hyperlink{classgtfs_1_1GTFS_afb9b3152a524f393c4414611dbeeba48}{get\+\_\+segment} (unsigned long s) const
+std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Segment}{Segment} $>$ \hyperlink{classgtfs_1_1GTFS_aaa171ddb8e40baa60375a0d1f171941e}{get\+\_\+segment} (unsigned long s) const 
 \item 
-std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Stop}{Stop} $>$ \hyperlink{classgtfs_1_1GTFS_a34304835b203901a972d40cc4f1d060a}{get\+\_\+stop} (std\+::string \&s) const
+std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Trip}{Trip} $>$ \hyperlink{classgtfs_1_1GTFS_a4aeffca4aa9bed086fe99166f1e9ebe7}{get\+\_\+trip} (std\+::string \&t)
 \item 
-std\+::unordered\+\_\+map$<$ std\+::string, std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Route}{Route} $>$ $>$ \hyperlink{classgtfs_1_1GTFS_aef6a88c15cdf8bf788e41c81a14ecc76}{get\+\_\+routes} (void)
+std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Route}{Route} $>$ \hyperlink{classgtfs_1_1GTFS_ae2363b2b77498cf0096f81b2d848e17b}{get\+\_\+route} (std\+::string \&r)
 \item 
-std\+::unordered\+\_\+map$<$ std\+::string, std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Trip}{Trip} $>$ $>$ \hyperlink{classgtfs_1_1GTFS_ad526fc627fe1ce81b8a669f6187be0c0}{get\+\_\+trips} (void)
+std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Shape}{Shape} $>$ \hyperlink{classgtfs_1_1GTFS_af370a41d67e8978da1c6243279c70919}{get\+\_\+shape} (std\+::string \&s)
 \item 
-std\+::unordered\+\_\+map$<$ std\+::string, std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Shape}{Shape} $>$ $>$ \hyperlink{classgtfs_1_1GTFS_a91ada6a3f02e3ee9b6a723a6c6fc50af}{get\+\_\+shapes} (void)
+std\+::unordered\+\_\+map$<$ std\+::string, std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Stop}{Stop} $>$ $>$ \hyperlink{classgtfs_1_1GTFS_a33a81248120e12d5a5d52a92821b827e}{get\+\_\+stops} (void)
+\item 
+std\+::unordered\+\_\+map$<$ unsigned long, std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Intersection}{Intersection} $>$ $>$ \hyperlink{classgtfs_1_1GTFS_a132b9a970f4ff1c04fd30a69fc1815a0}{get\+\_\+intersections} (void)
 \item 
 std\+::unordered\+\_\+map$<$ unsigned long, std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Segment}{Segment} $>$ $>$ \hyperlink{classgtfs_1_1GTFS_ae124db38217498c5e1090447ccf11953}{get\+\_\+segments} (void)
 \item 
-std\+::unordered\+\_\+map$<$ std\+::string, std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Stop}{Stop} $>$ $>$ \hyperlink{classgtfs_1_1GTFS_a33a81248120e12d5a5d52a92821b827e}{get\+\_\+stops} (void)
+std\+::unordered\+\_\+map$<$ std\+::string, std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Trip}{Trip} $>$ $>$ \hyperlink{classgtfs_1_1GTFS_ad526fc627fe1ce81b8a669f6187be0c0}{get\+\_\+trips} (void)
+\item 
+std\+::unordered\+\_\+map$<$ std\+::string, std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Route}{Route} $>$ $>$ \hyperlink{classgtfs_1_1GTFS_aef6a88c15cdf8bf788e41c81a14ecc76}{get\+\_\+routes} (void)
+\item 
+std\+::unordered\+\_\+map$<$ std\+::string, std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Shape}{Shape} $>$ $>$ \hyperlink{classgtfs_1_1GTFS_a91ada6a3f02e3ee9b6a723a6c6fc50af}{get\+\_\+shapes} (void)
 \end{DoxyCompactItemize}
 
 
@@ -44,12 +51,14 @@ trp->get\_route ()->get\_short\_name ();
  
 
 \subsection{Constructor \& Destructor Documentation}
-\mbox{\Hypertarget{classgtfs_1_1GTFS_abe065541610fe5d9673bc4befd0bcf94}\label{classgtfs_1_1GTFS_abe065541610fe5d9673bc4befd0bcf94}} 
 \index{gtfs\+::\+G\+T\+FS@{gtfs\+::\+G\+T\+FS}!G\+T\+FS@{G\+T\+FS}}
 \index{G\+T\+FS@{G\+T\+FS}!gtfs\+::\+G\+T\+FS@{gtfs\+::\+G\+T\+FS}}
-\subsubsection{\texorpdfstring{G\+T\+F\+S()}{GTFS()}}
-{\footnotesize\ttfamily gtfs\+::\+G\+T\+F\+S\+::\+G\+T\+FS (\begin{DoxyParamCaption}\item[{std\+::string \&}]{dbname,  }\item[{std\+::string \&}]{v }\end{DoxyParamCaption})}
-
+\subsubsection[{\texorpdfstring{G\+T\+F\+S(std\+::string \&dbname, std\+::string \&v)}{GTFS(std::string &dbname, std::string &v)}}]{\setlength{\rightskip}{0pt plus 5cm}gtfs\+::\+G\+T\+F\+S\+::\+G\+T\+FS (
+\begin{DoxyParamCaption}
+\item[{std\+::string \&}]{dbname, }
+\item[{std\+::string \&}]{v}
+\end{DoxyParamCaption}
+)}\hypertarget{classgtfs_1_1GTFS_abe065541610fe5d9673bc4befd0bcf94}{}\label{classgtfs_1_1GTFS_abe065541610fe5d9673bc4befd0bcf94}
 Default constructor for the main \hyperlink{classgtfs_1_1GTFS}{G\+T\+FS} object.
 
 This contains the actual values of all the \hyperlink{classgtfs_1_1GTFS}{G\+T\+FS} static data, so it can be accessed throughout the program.
@@ -61,15 +70,88 @@ This contains the actual values of all the \hyperlink{classgtfs_1_1GTFS}{G\+T\+F
 {\em v} & a version string to limit how much data is loaded \\
 \hline
 \end{DoxyParams}
+\begin{DoxyVerb}    if (false) {
+        std::string qry;
+\end{DoxyVerb}
 
+
+Stops sqlite3\+\_\+stmt$\ast$ stmt\+\_\+stops; qry = \char`\"{}\+S\+E\+L\+E\+C\+T stop\+\_\+id, lat, lng F\+R\+O\+M stops\char`\"{}; if (sqlite3\+\_\+prepare\+\_\+v2 (db, qry.\+c\+\_\+str (), -\/1, \&stmt\+\_\+stops, 0) != S\+Q\+L\+I\+T\+E\+\_\+\+OK) \{ std\+::cerr $<$$<$ \char`\"{} $\ast$ Can\textquotesingle{}t prepare query \char`\"{} $<$$<$ qry $<$$<$ \char`\"{}\textbackslash{}n\char`\"{}; throw std\+::runtime\+\_\+error (\char`\"{}\+Cannot prepare query.\char`\"{}); \}; std\+::clog $<$$<$ \char`\"{} $\ast$ \mbox{[}prepared\mbox{]} \char`\"{} $<$$<$ qry $<$$<$ \char`\"{}\textbackslash{}n\char`\"{}; while (sqlite3\+\_\+step (stmt\+\_\+stops) == S\+Q\+L\+I\+T\+E\+\_\+\+R\+OW) \{ std\+::string stop\+\_\+id = (char$\ast$)sqlite3\+\_\+column\+\_\+text (stmt\+\_\+stops, 0); \hyperlink{classgps_1_1Coord}{gps\+::\+Coord} pos (sqlite3\+\_\+column\+\_\+double (stmt\+\_\+stops, 1), sqlite3\+\_\+column\+\_\+double (stmt\+\_\+stops, 2)); std\+::shared\+\_\+ptr$<$gtfs\+::\+Stop$>$ stop (new \hyperlink{classgtfs_1_1Stop}{gtfs\+::\+Stop(stop\+\_\+id, pos)}); stops.\+emplace (stop\+\_\+id, stop); \} sqlite3\+\_\+finalize (stmt\+\_\+stops);
+
+N segments\+: sqlite3\+\_\+stmt$\ast$ stmt\+\_\+n; int Nseg = 0; std\+::string qwhere; qwhere = \char`\"{} W\+H\+E\+R\+E segment\+\_\+id I\+N (\+S\+E\+L\+E\+C\+T segment\+\_\+id F\+R\+O\+M shapes W\+H\+E\+R\+E shape\+\_\+id L\+I\+K\+E \textquotesingle{}\%\+\_\+v\char`\"{} + v + \char`\"{}\textquotesingle{})\char`\"{}; qwhere = \char`\"{} W\+H\+E\+R\+E segment\+\_\+id I\+N (\+S\+E\+L\+E\+C\+T segment\+\_\+id F\+R\+O\+M shapes W\+H\+E\+R\+E shape\+\_\+id I\+N (\char`\"{} \char`\"{}\+S\+E\+L\+E\+C\+T shape\+\_\+id F\+R\+O\+M routes W\+H\+E\+R\+E shape\+\_\+id L\+I\+K\+E \textquotesingle{}\%\+\_\+v\char`\"{} + v + \char`\"{}\textquotesingle{} A\+N\+D route\+\_\+short\+\_\+name I\+N (\textquotesingle{}274\textquotesingle{},\textquotesingle{}277\textquotesingle{},\textquotesingle{}258\textquotesingle{},\textquotesingle{}\+N\+E\+X\textquotesingle{},\textquotesingle{}881\textquotesingle{}) ) )\char`\"{}; if (sqlite3\+\_\+prepare\+\_\+v2 (db, (\char`\"{}\+S\+E\+L\+E\+C\+T count(segment\+\_\+id) F\+R\+O\+M segments\char`\"{} + qwhere).c\+\_\+str (), -\/1, \&stmt\+\_\+n, 0) == S\+Q\+L\+I\+T\+E\+\_\+\+OK \&\& sqlite3\+\_\+step (stmt\+\_\+n) == S\+Q\+L\+I\+T\+E\+\_\+\+R\+OW) \{ Nseg = sqlite3\+\_\+column\+\_\+int (stmt\+\_\+n, 0); \} sqlite3\+\_\+finalize (stmt\+\_\+n);
+
+Load all gtfs {\ttfamily segments} sqlite3\+\_\+stmt$\ast$ stmt\+\_\+segs; qry = \char`\"{}\+S\+E\+L\+E\+C\+T segment\+\_\+id, start\+\_\+id, end\+\_\+id, length F\+R\+O\+M segments\char`\"{} + qwhere;
+
+if (sqlite3\+\_\+prepare\+\_\+v2 (db, qry.\+c\+\_\+str (), -\/1, \&stmt\+\_\+segs, 0) != S\+Q\+L\+I\+T\+E\+\_\+\+OK) \{ std\+::cerr $<$$<$ \char`\"{} $\ast$ Can\textquotesingle{}t prepare query \char`\"{} $<$$<$ qry $<$$<$ \char`\"{}\+: \char`\"{} $<$$<$ sqlite3\+\_\+errmsg (db) $<$$<$ \char`\"{}\textbackslash{}n\char`\"{}; throw std\+::runtime\+\_\+error (\char`\"{}\+Cannot prepare query.\char`\"{}); \} std\+::clog $<$$<$ \char`\"{} $\ast$ \mbox{[}prepared\mbox{]} \char`\"{} $<$$<$ qry $<$$<$ \char`\"{}\textbackslash{}n\char`\"{}; P\+R\+E\+P\+A\+RE query for segment path sqlite3\+\_\+stmt$\ast$ stmt\+\_\+path; if (sqlite3\+\_\+prepare\+\_\+v2 (db, \char`\"{}\+S\+E\+L\+E\+C\+T lat, lng, seg\+\_\+dist\+\_\+traveled F\+R\+O\+M segment\+\_\+pt W\+H\+E\+R\+E segment\+\_\+id=?1 O\+R\+D\+E\+R B\+Y seg\+\_\+pt\+\_\+sequence\char`\"{}, -\/1, \&stmt\+\_\+path, 0) != S\+Q\+L\+I\+T\+E\+\_\+\+OK) \{ throw std\+::runtime\+\_\+error (\char`\"{}\+Cannot prepare S\+E\+L\+E\+C\+T P\+A\+T\+H query.\char`\"{}); \} int i = 0; while (sqlite3\+\_\+step (stmt\+\_\+segs) == S\+Q\+L\+I\+T\+E\+\_\+\+R\+OW) \{ unsigned long segment\+\_\+id = sqlite3\+\_\+column\+\_\+int (stmt\+\_\+segs, 0); std\+::shared\+\_\+ptr$<$\+Intersection$>$ start\+\_\+at, end\+\_\+at; if (sqlite3\+\_\+column\+\_\+type (stmt\+\_\+segs, 1) != S\+Q\+L\+I\+T\+E\+\_\+\+N\+U\+LL) \{ unsigned long start\+\_\+id = sqlite3\+\_\+column\+\_\+int (stmt\+\_\+segs, 1); get intersection object \begin{DoxyVerb}            }
+            if (sqlite3_column_type (stmt_segs, 2) != SQLITE_NULL) {
+                unsigned long end_id = sqlite3_column_int (stmt_segs, 2);
+\end{DoxyVerb}
+ get intersection object \begin{DoxyVerb}            }
+            double length = sqlite3_column_double (stmt_segs, 3);
+\end{DoxyVerb}
+ Get the segment\textquotesingle{}s P\+A\+TH\+: if (sqlite3\+\_\+bind\+\_\+int64 (stmt\+\_\+path, 1, segment\+\_\+id) != S\+Q\+L\+I\+T\+E\+\_\+\+OK) \{ throw std\+::runtime\+\_\+error (\char`\"{}\+Cannot fetch segment path.\char`\"{}); \} std\+::vector$<$\+Shape\+Pt$>$ path; while (sqlite3\+\_\+step (stmt\+\_\+path) == S\+Q\+L\+I\+T\+E\+\_\+\+R\+OW) \{ path.\+emplace\+\_\+back (\hyperlink{classgps_1_1Coord}{gps\+::\+Coord} (sqlite3\+\_\+column\+\_\+double (stmt\+\_\+path, 0), sqlite3\+\_\+column\+\_\+double (stmt\+\_\+path, 1)), sqlite3\+\_\+column\+\_\+double (stmt\+\_\+path, 2)); \} sqlite3\+\_\+reset (stmt\+\_\+path); std\+::shared\+\_\+ptr$<$\+Segment$>$ segment (new \hyperlink{classgtfs_1_1Segment}{Segment} (segment\+\_\+id, start\+\_\+at, end\+\_\+at, path, length)); segments.\+emplace (segment\+\_\+id, segment);
+
+printf(\char`\"{} $\ast$ Loading shapes\+: \%$\ast$d\%\%\textbackslash{}r\char`\"{}, 3, 100 $\ast$ (++i) / Nseg); std\+::cout.\+flush (); \} sqlite3\+\_\+finalize (stmt\+\_\+segs); sqlite3\+\_\+finalize (stmt\+\_\+path);
+
+Load all gtfs {\ttfamily shapes} sqlite3\+\_\+stmt$\ast$ stmt\+\_\+shapes; qry = \char`\"{}\+S\+E\+L\+E\+C\+T shape\+\_\+id, leg, segment\+\_\+id, shape\+\_\+dist\+\_\+traveled F\+R\+O\+M shapes\char`\"{}; if (version\+\_\+ != \char`\"{}\char`\"{}) qry += \char`\"{} W\+H\+E\+R\+E shape\+\_\+id L\+I\+K\+E \textquotesingle{}\%\+\_\+v\char`\"{} + version\+\_\+ + \char`\"{}\textquotesingle{}\char`\"{}; qry += \char`\"{} O\+R\+D\+E\+R B\+Y shape\+\_\+id, leg\char`\"{}; if (sqlite3\+\_\+prepare\+\_\+v2 (db, qry.\+c\+\_\+str (), -\/1, \&stmt\+\_\+shapes, 0) != S\+Q\+L\+I\+T\+E\+\_\+\+OK) \{ std\+::cerr $<$$<$ \char`\"{} $\ast$ Can\textquotesingle{}t prepare query \char`\"{} $<$$<$ qry $<$$<$ \char`\"{}\textbackslash{}n\char`\"{}; throw std\+::runtime\+\_\+error (\char`\"{}\+Cannot prepare query.\char`\"{}); \} std\+::clog $<$$<$ \char`\"{} $\ast$ \mbox{[}prepared\mbox{]} \char`\"{} $<$$<$ qry $<$$<$ \char`\"{}\textbackslash{}n\char`\"{}; while (sqlite3\+\_\+step (stmt\+\_\+shapes) == S\+Q\+L\+I\+T\+E\+\_\+\+R\+OW) \{ std\+::string shape\+\_\+id = (char$\ast$)sqlite3\+\_\+column\+\_\+text (stmt\+\_\+shapes, 0); std\+::shared\+\_\+ptr$<$\+Shape$>$ shape (get\+\_\+shape (shape\+\_\+id)); Does that shape already exist? if (shape == nullptr) \{ Nope -\/ create a new one std\+::shared\+\_\+ptr$<$\+Shape$>$ sh (new Shape(shape\+\_\+id)); shape = sh; shapes.\+emplace (shape\+\_\+id, shape); \} Find segment\+: std\+::shared\+\_\+ptr$<$\+Segment$>$ segment = get\+\_\+segment (sqlite3\+\_\+column\+\_\+int (stmt\+\_\+shapes, 2)); if (segment != nullptr) \{ shape-\/$>$add\+\_\+segment (segment, sqlite3\+\_\+column\+\_\+double (stmt\+\_\+shapes, 3)); \} \} sqlite3\+\_\+finalize (stmt\+\_\+shapes);
+
+Load all gtfs {\ttfamily routes} sqlite3\+\_\+stmt$\ast$ stmt\+\_\+routes; qry = \char`\"{}\+S\+E\+L\+E\+C\+T route\+\_\+id, route\+\_\+short\+\_\+name, route\+\_\+long\+\_\+name, shape\+\_\+id F\+R\+O\+M routes\char`\"{}; if (version\+\_\+ != \char`\"{}\char`\"{}) qry += \char`\"{} W\+H\+E\+R\+E route\+\_\+id L\+I\+K\+E \textquotesingle{}\%\+\_\+v\char`\"{} + version\+\_\+ + \char`\"{}\textquotesingle{}\char`\"{}; if (sqlite3\+\_\+prepare\+\_\+v2 (db, qry.\+c\+\_\+str (), -\/1, \&stmt\+\_\+routes, 0) != S\+Q\+L\+I\+T\+E\+\_\+\+OK) \{ std\+::cerr $<$$<$ \char`\"{} $\ast$ Can\textquotesingle{}t prepare query \char`\"{} $<$$<$ qry $<$$<$ \char`\"{}\textbackslash{}n\char`\"{}; throw std\+::runtime\+\_\+error (\char`\"{}\+Cannot prepare query.\char`\"{}); \} std\+::clog $<$$<$ \char`\"{} $\ast$ \mbox{[}prepared\mbox{]} \char`\"{} $<$$<$ qry $<$$<$ \char`\"{}\textbackslash{}n\char`\"{}; while (sqlite3\+\_\+step (stmt\+\_\+routes) == S\+Q\+L\+I\+T\+E\+\_\+\+R\+OW) \{ std\+::string route\+\_\+id = (char$\ast$)sqlite3\+\_\+column\+\_\+text (stmt\+\_\+routes, 0); std\+::string short\+\_\+name = (char$\ast$)sqlite3\+\_\+column\+\_\+text (stmt\+\_\+routes, 1); std\+::string long\+\_\+name = (char$\ast$)sqlite3\+\_\+column\+\_\+text (stmt\+\_\+routes, 2); std\+::string shape\+\_\+id = (char$\ast$)sqlite3\+\_\+column\+\_\+text (stmt\+\_\+routes, 3); std\+::shared\+\_\+ptr$<$\+Shape$>$ shape (get\+\_\+shape (shape\+\_\+id)); std\+::shared\+\_\+ptr$<$gtfs\+::\+Route$>$ route (new \hyperlink{classgtfs_1_1Route}{gtfs\+::\+Route(route\+\_\+id, short\+\_\+name, long\+\_\+name, shape)}); routes.\+emplace (route\+\_\+id, route); \} sqlite3\+\_\+finalize (stmt\+\_\+routes);
+
+n T\+R\+I\+PS int Ntrip = 0; qwhere = \char`\"{} W\+H\+E\+R\+E segment\+\_\+id I\+N (\+S\+E\+L\+E\+C\+T segment\+\_\+id F\+R\+O\+M shapes W\+H\+E\+R\+E shape\+\_\+id L\+I\+K\+E \textquotesingle{}\%\+\_\+v\char`\"{} + v + \char`\"{}\textquotesingle{})\char`\"{}; qwhere = \char`\"{} W\+H\+E\+R\+E route\+\_\+id I\+N (\+S\+E\+L\+E\+C\+T route\+\_\+id F\+R\+O\+M routes W\+H\+E\+R\+E route\+\_\+id L\+I\+K\+E \textquotesingle{}\%\+\_\+v\char`\"{}
+\begin{DoxyItemize}
+\item v + \char`\"{}\textquotesingle{} A\+N\+D route\+\_\+short\+\_\+name I\+N (\textquotesingle{}274\textquotesingle{},\textquotesingle{}277\textquotesingle{},\textquotesingle{}258\textquotesingle{},\textquotesingle{}\+N\+E\+X\textquotesingle{},\textquotesingle{}881\textquotesingle{}) )\char`\"{}; if (sqlite3\+\_\+prepare\+\_\+v2 (db, (\char`\"{}\+S\+E\+L\+E\+C\+T count(trip\+\_\+id) F\+R\+O\+M trips\char`\"{} + qwhere).c\+\_\+str (), -\/1, \&stmt\+\_\+n, 0) == S\+Q\+L\+I\+T\+E\+\_\+\+OK \&\& sqlite3\+\_\+step (stmt\+\_\+n) == S\+Q\+L\+I\+T\+E\+\_\+\+R\+OW) \{ Ntrip = sqlite3\+\_\+column\+\_\+int (stmt\+\_\+n, 0); \} sqlite3\+\_\+finalize (stmt\+\_\+n);
+\end{DoxyItemize}
+
+Load all gtfs {\ttfamily trips} sqlite3\+\_\+stmt$\ast$ stmt\+\_\+trips; sqlite3\+\_\+stmt$\ast$ stmt\+\_\+stoptimes; qry = \char`\"{}\+S\+E\+L\+E\+C\+T trip\+\_\+id, route\+\_\+id F\+R\+O\+M trips\char`\"{} + qwhere;
+
+if (sqlite3\+\_\+prepare\+\_\+v2 (db, qry.\+c\+\_\+str (), -\/1, \&stmt\+\_\+trips, 0) != S\+Q\+L\+I\+T\+E\+\_\+\+OK) \{ std\+::cerr $<$$<$ \char`\"{} $\ast$ Can\textquotesingle{}t prepare query \char`\"{} $<$$<$ qry $<$$<$ \char`\"{}\textbackslash{}n\char`\"{}; throw std\+::runtime\+\_\+error (\char`\"{}\+Cannot prepare query.\char`\"{}); \} std\+::cout $<$$<$ \char`\"{} $\ast$ \mbox{[}prepared\mbox{]} \char`\"{} $<$$<$ qry $<$$<$ \char`\"{}\textbackslash{}n\char`\"{}; std\+::string qry\+\_\+st (\char`\"{}\+S\+E\+L\+E\+C\+T stop\+\_\+id, arrival\+\_\+time, departure\+\_\+time, shape\+\_\+dist\+\_\+traveled F\+R\+O\+M stop\+\_\+times W\+H\+E\+R\+E trip\+\_\+id=\$1 O\+R\+D\+E\+R B\+Y stop\+\_\+sequence\char`\"{}); if (sqlite3\+\_\+prepare\+\_\+v2 (db, qry\+\_\+st.\+c\+\_\+str (), -\/1, \&stmt\+\_\+stoptimes, 0) != S\+Q\+L\+I\+T\+E\+\_\+\+OK) \{ std\+::cerr $<$$<$ \char`\"{} $\ast$ Can\textquotesingle{}t prepare query \char`\"{} $<$$<$ qry\+\_\+st $<$$<$ \char`\"{}\textbackslash{}n\char`\"{}; throw std\+::runtime\+\_\+error (\char`\"{}\+Cannot prepare query.\char`\"{}); \} std\+::clog $<$$<$ \char`\"{} $\ast$ \mbox{[}prepared\mbox{]} \char`\"{} $<$$<$ qry\+\_\+st $<$$<$ \char`\"{}\textbackslash{}n\char`\"{};
+
+int ti=0; std\+::cout $<$$<$ \char`\"{}\textbackslash{}n   -\/ \char`\"{} $<$$<$ Ntrip $<$$<$ \char`\"{} trips to load ...\textbackslash{}n\char`\"{}; while (sqlite3\+\_\+step (stmt\+\_\+trips) == S\+Q\+L\+I\+T\+E\+\_\+\+R\+OW) \{ ti++; printf(\char`\"{} $\ast$ Loading trips\+: \%$\ast$d\%\%\textbackslash{}r\char`\"{}, 3, 100 $\ast$ (ti) / Ntrip); std\+::cout.\+flush ();
+
+Load that trip into memory\+: \mbox{[}id, (route)\mbox{]} std\+::string trip\+\_\+id = (char$\ast$)sqlite3\+\_\+column\+\_\+text (stmt\+\_\+trips, 0); std\+::string route\+\_\+id = (char$\ast$)sqlite3\+\_\+column\+\_\+text (stmt\+\_\+trips, 1); auto route = get\+\_\+route (route\+\_\+id); if (!route) continue; std\+::shared\+\_\+ptr$<$gtfs\+::\+Trip$>$ trip (new \hyperlink{classgtfs_1_1Trip}{gtfs\+::\+Trip(trip\+\_\+id, route)}); route-\/$>$add\+\_\+trip (trip);
+
+Load trip stop times if (sqlite3\+\_\+bind\+\_\+text (stmt\+\_\+stoptimes, 1, trip\+\_\+id.\+c\+\_\+str (), -\/1, S\+Q\+L\+I\+T\+E\+\_\+\+S\+T\+A\+T\+IC) == S\+Q\+L\+I\+T\+E\+\_\+\+OK) \{ std\+::vector$<$\+Stop\+Time$>$ stoptimes; std\+::vector$<$double$>$ distances; while (sqlite3\+\_\+step (stmt\+\_\+stoptimes) == S\+Q\+L\+I\+T\+E\+\_\+\+R\+OW) \{ Take stop\+\_\+time append to vector std\+::string stop\+\_\+id = (char$\ast$)sqlite3\+\_\+column\+\_\+text (stmt\+\_\+stoptimes, 0); auto stop = get\+\_\+stop (stop\+\_\+id); if (!stop) break; // missing any stops, don\textquotesingle{}t include any std\+::string arr = (char$\ast$)sqlite3\+\_\+column\+\_\+text (stmt\+\_\+stoptimes, 1); std\+::string dep = (char$\ast$)sqlite3\+\_\+column\+\_\+text (stmt\+\_\+stoptimes, 2); stoptimes.\+emplace\+\_\+back (stop, arr, dep); distances.\+emplace\+\_\+back (sqlite3\+\_\+column\+\_\+double (stmt\+\_\+stoptimes, 3)); \} sqlite3\+\_\+reset (stmt\+\_\+stoptimes);
+
+trip-\/$>$add\+\_\+stoptimes (stoptimes);
+
+If route doesn\textquotesingle{}t have stops already, add them now\+: if (route-\/$>$get\+\_\+stops ().size () == 0) \{ std\+::vector$<$\+Route\+Stop$>$ stops; stops.\+reserve (trip-\/$>$get\+\_\+stoptimes ().size ()); int si = 0; for (auto\& st\+: trip-\/$>$get\+\_\+stoptimes ()) \{ if (distances.\+size () == trip-\/$>$get\+\_\+stoptimes ().size ()) \{ stops.\+emplace\+\_\+back (st.\+stop, distances\mbox{[}si\mbox{]}); si++; \} else \{ stops.\+emplace\+\_\+back (st.\+stop, 0); \} \} route-\/$>$add\+\_\+stops (stops); \} \} else \{ std\+::cerr $<$$<$ \char`\"{}\textbackslash{}n     x Error binding trip I\+D to stoptimes query \char`\"{}; continue; \}
+
+And save the trip away trips.\+emplace (trip\+\_\+id, trip); \} sqlite3\+\_\+finalize (stmt\+\_\+stoptimes); sqlite3\+\_\+finalize (stmt\+\_\+trips); std\+::clog $<$$<$ \char`\"{}\textbackslash{}n\char`\"{};
+
+sqlite3\+\_\+close (db); \}
 
 \subsection{Member Function Documentation}
-\mbox{\Hypertarget{classgtfs_1_1GTFS_a47cfbb8ca6cb8986e95f1038dcc7c04b}\label{classgtfs_1_1GTFS_a47cfbb8ca6cb8986e95f1038dcc7c04b}} 
+\index{gtfs\+::\+G\+T\+FS@{gtfs\+::\+G\+T\+FS}!get\+\_\+intersection@{get\+\_\+intersection}}
+\index{get\+\_\+intersection@{get\+\_\+intersection}!gtfs\+::\+G\+T\+FS@{gtfs\+::\+G\+T\+FS}}
+\subsubsection[{\texorpdfstring{get\+\_\+intersection(unsigned int i) const }{get_intersection(unsigned int i) const }}]{\setlength{\rightskip}{0pt plus 5cm}std\+::shared\+\_\+ptr$<$ {\bf Intersection} $>$ gtfs\+::\+G\+T\+F\+S\+::get\+\_\+intersection (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{i}
+\end{DoxyParamCaption}
+) const}\hypertarget{classgtfs_1_1GTFS_ac5cc16f11c4e0db3d2003e591e4d79a5}{}\label{classgtfs_1_1GTFS_ac5cc16f11c4e0db3d2003e591e4d79a5}
+Load an \hyperlink{classgtfs_1_1Intersection}{Intersection} object. 
+\begin{DoxyParams}{Parameters}
+{\em i} & the ID of the intersection we want \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+an \hyperlink{classgtfs_1_1Intersection}{Intersection} object, or null pointer if it wasn\textquotesingle{}t found 
+\end{DoxyReturn}
+\index{gtfs\+::\+G\+T\+FS@{gtfs\+::\+G\+T\+FS}!get\+\_\+intersections@{get\+\_\+intersections}}
+\index{get\+\_\+intersections@{get\+\_\+intersections}!gtfs\+::\+G\+T\+FS@{gtfs\+::\+G\+T\+FS}}
+\subsubsection[{\texorpdfstring{get\+\_\+intersections(void)}{get_intersections(void)}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::unordered\+\_\+map$<$unsigned long, std\+::shared\+\_\+ptr$<${\bf Intersection}$>$ $>$ gtfs\+::\+G\+T\+F\+S\+::get\+\_\+intersections (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{classgtfs_1_1GTFS_a132b9a970f4ff1c04fd30a69fc1815a0}{}\label{classgtfs_1_1GTFS_a132b9a970f4ff1c04fd30a69fc1815a0}
+\begin{DoxyReturn}{Returns}
+an unordered map of \hyperlink{classgtfs_1_1Intersection}{Intersection} objects 
+\end{DoxyReturn}
 \index{gtfs\+::\+G\+T\+FS@{gtfs\+::\+G\+T\+FS}!get\+\_\+route@{get\+\_\+route}}
 \index{get\+\_\+route@{get\+\_\+route}!gtfs\+::\+G\+T\+FS@{gtfs\+::\+G\+T\+FS}}
-\subsubsection{\texorpdfstring{get\+\_\+route()}{get\_route()}}
-{\footnotesize\ttfamily std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Route}{Route} $>$ gtfs\+::\+G\+T\+F\+S\+::get\+\_\+route (\begin{DoxyParamCaption}\item[{std\+::string \&}]{r }\end{DoxyParamCaption}) const}
-
+\subsubsection[{\texorpdfstring{get\+\_\+route(std\+::string \&r)}{get_route(std::string &r)}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::shared\+\_\+ptr$<$ {\bf Route} $>$ gtfs\+::\+G\+T\+F\+S\+::get\+\_\+route (
+\begin{DoxyParamCaption}
+\item[{std\+::string \&}]{r}
+\end{DoxyParamCaption}
+)}\hypertarget{classgtfs_1_1GTFS_ae2363b2b77498cf0096f81b2d848e17b}{}\label{classgtfs_1_1GTFS_ae2363b2b77498cf0096f81b2d848e17b}
 Load a \hyperlink{classgtfs_1_1Route}{Route} object. 
 \begin{DoxyParams}{Parameters}
 {\em r} & the ID of the route we want \\
@@ -78,21 +160,23 @@ Load a \hyperlink{classgtfs_1_1Route}{Route} object.
 \begin{DoxyReturn}{Returns}
 a \hyperlink{classgtfs_1_1Route}{Route} object, or null pointer if it wasn\textquotesingle{}t found 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classgtfs_1_1GTFS_aef6a88c15cdf8bf788e41c81a14ecc76}\label{classgtfs_1_1GTFS_aef6a88c15cdf8bf788e41c81a14ecc76}} 
 \index{gtfs\+::\+G\+T\+FS@{gtfs\+::\+G\+T\+FS}!get\+\_\+routes@{get\+\_\+routes}}
 \index{get\+\_\+routes@{get\+\_\+routes}!gtfs\+::\+G\+T\+FS@{gtfs\+::\+G\+T\+FS}}
-\subsubsection{\texorpdfstring{get\+\_\+routes()}{get\_routes()}}
-{\footnotesize\ttfamily std\+::unordered\+\_\+map$<$std\+::string, std\+::shared\+\_\+ptr$<$\hyperlink{classgtfs_1_1Route}{Route}$>$ $>$ gtfs\+::\+G\+T\+F\+S\+::get\+\_\+routes (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
+\subsubsection[{\texorpdfstring{get\+\_\+routes(void)}{get_routes(void)}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::unordered\+\_\+map$<$std\+::string, std\+::shared\+\_\+ptr$<${\bf Route}$>$ $>$ gtfs\+::\+G\+T\+F\+S\+::get\+\_\+routes (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{classgtfs_1_1GTFS_aef6a88c15cdf8bf788e41c81a14ecc76}{}\label{classgtfs_1_1GTFS_aef6a88c15cdf8bf788e41c81a14ecc76}
 \begin{DoxyReturn}{Returns}
 an unordered map of \hyperlink{classgtfs_1_1Route}{Route} objects 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classgtfs_1_1GTFS_afb9b3152a524f393c4414611dbeeba48}\label{classgtfs_1_1GTFS_afb9b3152a524f393c4414611dbeeba48}} 
 \index{gtfs\+::\+G\+T\+FS@{gtfs\+::\+G\+T\+FS}!get\+\_\+segment@{get\+\_\+segment}}
 \index{get\+\_\+segment@{get\+\_\+segment}!gtfs\+::\+G\+T\+FS@{gtfs\+::\+G\+T\+FS}}
-\subsubsection{\texorpdfstring{get\+\_\+segment()}{get\_segment()}}
-{\footnotesize\ttfamily std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Segment}{Segment} $>$ gtfs\+::\+G\+T\+F\+S\+::get\+\_\+segment (\begin{DoxyParamCaption}\item[{unsigned long}]{s }\end{DoxyParamCaption}) const}
-
+\subsubsection[{\texorpdfstring{get\+\_\+segment(unsigned long s) const }{get_segment(unsigned long s) const }}]{\setlength{\rightskip}{0pt plus 5cm}std\+::shared\+\_\+ptr$<$ {\bf Segment} $>$ gtfs\+::\+G\+T\+F\+S\+::get\+\_\+segment (
+\begin{DoxyParamCaption}
+\item[{unsigned long}]{s}
+\end{DoxyParamCaption}
+) const}\hypertarget{classgtfs_1_1GTFS_aaa171ddb8e40baa60375a0d1f171941e}{}\label{classgtfs_1_1GTFS_aaa171ddb8e40baa60375a0d1f171941e}
 Load a \hyperlink{classgtfs_1_1Segment}{Segment} object. 
 \begin{DoxyParams}{Parameters}
 {\em s} & the ID of the segment we want \\
@@ -101,21 +185,23 @@ Load a \hyperlink{classgtfs_1_1Segment}{Segment} object.
 \begin{DoxyReturn}{Returns}
 a \hyperlink{classgtfs_1_1Segment}{Segment} object, or null pointer if it wasn\textquotesingle{}t found 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classgtfs_1_1GTFS_ae124db38217498c5e1090447ccf11953}\label{classgtfs_1_1GTFS_ae124db38217498c5e1090447ccf11953}} 
 \index{gtfs\+::\+G\+T\+FS@{gtfs\+::\+G\+T\+FS}!get\+\_\+segments@{get\+\_\+segments}}
 \index{get\+\_\+segments@{get\+\_\+segments}!gtfs\+::\+G\+T\+FS@{gtfs\+::\+G\+T\+FS}}
-\subsubsection{\texorpdfstring{get\+\_\+segments()}{get\_segments()}}
-{\footnotesize\ttfamily std\+::unordered\+\_\+map$<$unsigned long, std\+::shared\+\_\+ptr$<$\hyperlink{classgtfs_1_1Segment}{Segment}$>$ $>$ gtfs\+::\+G\+T\+F\+S\+::get\+\_\+segments (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
+\subsubsection[{\texorpdfstring{get\+\_\+segments(void)}{get_segments(void)}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::unordered\+\_\+map$<$unsigned long, std\+::shared\+\_\+ptr$<${\bf Segment}$>$ $>$ gtfs\+::\+G\+T\+F\+S\+::get\+\_\+segments (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{classgtfs_1_1GTFS_ae124db38217498c5e1090447ccf11953}{}\label{classgtfs_1_1GTFS_ae124db38217498c5e1090447ccf11953}
 \begin{DoxyReturn}{Returns}
 an unordered map of \hyperlink{classgtfs_1_1Segment}{Segment} objects 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classgtfs_1_1GTFS_a59d1a7209999120b2446298f9fac4564}\label{classgtfs_1_1GTFS_a59d1a7209999120b2446298f9fac4564}} 
 \index{gtfs\+::\+G\+T\+FS@{gtfs\+::\+G\+T\+FS}!get\+\_\+shape@{get\+\_\+shape}}
 \index{get\+\_\+shape@{get\+\_\+shape}!gtfs\+::\+G\+T\+FS@{gtfs\+::\+G\+T\+FS}}
-\subsubsection{\texorpdfstring{get\+\_\+shape()}{get\_shape()}}
-{\footnotesize\ttfamily std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Shape}{Shape} $>$ gtfs\+::\+G\+T\+F\+S\+::get\+\_\+shape (\begin{DoxyParamCaption}\item[{std\+::string \&}]{s }\end{DoxyParamCaption}) const}
-
+\subsubsection[{\texorpdfstring{get\+\_\+shape(std\+::string \&s)}{get_shape(std::string &s)}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::shared\+\_\+ptr$<$ {\bf Shape} $>$ gtfs\+::\+G\+T\+F\+S\+::get\+\_\+shape (
+\begin{DoxyParamCaption}
+\item[{std\+::string \&}]{s}
+\end{DoxyParamCaption}
+)}\hypertarget{classgtfs_1_1GTFS_af370a41d67e8978da1c6243279c70919}{}\label{classgtfs_1_1GTFS_af370a41d67e8978da1c6243279c70919}
 Load a \hyperlink{classgtfs_1_1Shape}{Shape} object. 
 \begin{DoxyParams}{Parameters}
 {\em s} & the ID of the shape we want \\
@@ -124,21 +210,23 @@ Load a \hyperlink{classgtfs_1_1Shape}{Shape} object.
 \begin{DoxyReturn}{Returns}
 a \hyperlink{classgtfs_1_1Shape}{Shape} object, or null pointer if it wasn\textquotesingle{}t found 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classgtfs_1_1GTFS_a91ada6a3f02e3ee9b6a723a6c6fc50af}\label{classgtfs_1_1GTFS_a91ada6a3f02e3ee9b6a723a6c6fc50af}} 
 \index{gtfs\+::\+G\+T\+FS@{gtfs\+::\+G\+T\+FS}!get\+\_\+shapes@{get\+\_\+shapes}}
 \index{get\+\_\+shapes@{get\+\_\+shapes}!gtfs\+::\+G\+T\+FS@{gtfs\+::\+G\+T\+FS}}
-\subsubsection{\texorpdfstring{get\+\_\+shapes()}{get\_shapes()}}
-{\footnotesize\ttfamily std\+::unordered\+\_\+map$<$std\+::string, std\+::shared\+\_\+ptr$<$\hyperlink{classgtfs_1_1Shape}{Shape}$>$ $>$ gtfs\+::\+G\+T\+F\+S\+::get\+\_\+shapes (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
+\subsubsection[{\texorpdfstring{get\+\_\+shapes(void)}{get_shapes(void)}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::unordered\+\_\+map$<$std\+::string, std\+::shared\+\_\+ptr$<${\bf Shape}$>$ $>$ gtfs\+::\+G\+T\+F\+S\+::get\+\_\+shapes (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{classgtfs_1_1GTFS_a91ada6a3f02e3ee9b6a723a6c6fc50af}{}\label{classgtfs_1_1GTFS_a91ada6a3f02e3ee9b6a723a6c6fc50af}
 \begin{DoxyReturn}{Returns}
 an unordered map of \hyperlink{classgtfs_1_1Shape}{Shape} objects 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classgtfs_1_1GTFS_a34304835b203901a972d40cc4f1d060a}\label{classgtfs_1_1GTFS_a34304835b203901a972d40cc4f1d060a}} 
 \index{gtfs\+::\+G\+T\+FS@{gtfs\+::\+G\+T\+FS}!get\+\_\+stop@{get\+\_\+stop}}
 \index{get\+\_\+stop@{get\+\_\+stop}!gtfs\+::\+G\+T\+FS@{gtfs\+::\+G\+T\+FS}}
-\subsubsection{\texorpdfstring{get\+\_\+stop()}{get\_stop()}}
-{\footnotesize\ttfamily std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Stop}{Stop} $>$ gtfs\+::\+G\+T\+F\+S\+::get\+\_\+stop (\begin{DoxyParamCaption}\item[{std\+::string \&}]{s }\end{DoxyParamCaption}) const}
-
+\subsubsection[{\texorpdfstring{get\+\_\+stop(std\+::string \&s) const }{get_stop(std::string &s) const }}]{\setlength{\rightskip}{0pt plus 5cm}std\+::shared\+\_\+ptr$<$ {\bf Stop} $>$ gtfs\+::\+G\+T\+F\+S\+::get\+\_\+stop (
+\begin{DoxyParamCaption}
+\item[{std\+::string \&}]{s}
+\end{DoxyParamCaption}
+) const}\hypertarget{classgtfs_1_1GTFS_a860f598fdd39e238cae2a446826ede7b}{}\label{classgtfs_1_1GTFS_a860f598fdd39e238cae2a446826ede7b}
 Load a \hyperlink{classgtfs_1_1Stop}{Stop} object. 
 \begin{DoxyParams}{Parameters}
 {\em s} & the ID of the stop we want \\
@@ -147,21 +235,23 @@ Load a \hyperlink{classgtfs_1_1Stop}{Stop} object.
 \begin{DoxyReturn}{Returns}
 a \hyperlink{classgtfs_1_1Stop}{Stop} object, or null pointer if it wasn\textquotesingle{}t found 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classgtfs_1_1GTFS_a33a81248120e12d5a5d52a92821b827e}\label{classgtfs_1_1GTFS_a33a81248120e12d5a5d52a92821b827e}} 
 \index{gtfs\+::\+G\+T\+FS@{gtfs\+::\+G\+T\+FS}!get\+\_\+stops@{get\+\_\+stops}}
 \index{get\+\_\+stops@{get\+\_\+stops}!gtfs\+::\+G\+T\+FS@{gtfs\+::\+G\+T\+FS}}
-\subsubsection{\texorpdfstring{get\+\_\+stops()}{get\_stops()}}
-{\footnotesize\ttfamily std\+::unordered\+\_\+map$<$std\+::string, std\+::shared\+\_\+ptr$<$\hyperlink{classgtfs_1_1Stop}{Stop}$>$ $>$ gtfs\+::\+G\+T\+F\+S\+::get\+\_\+stops (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
+\subsubsection[{\texorpdfstring{get\+\_\+stops(void)}{get_stops(void)}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::unordered\+\_\+map$<$std\+::string, std\+::shared\+\_\+ptr$<${\bf Stop}$>$ $>$ gtfs\+::\+G\+T\+F\+S\+::get\+\_\+stops (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{classgtfs_1_1GTFS_a33a81248120e12d5a5d52a92821b827e}{}\label{classgtfs_1_1GTFS_a33a81248120e12d5a5d52a92821b827e}
 \begin{DoxyReturn}{Returns}
 an unordered map of \hyperlink{classgtfs_1_1Stop}{Stop} objects 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classgtfs_1_1GTFS_aec86fae3dee1e13f541798266fb2317e}\label{classgtfs_1_1GTFS_aec86fae3dee1e13f541798266fb2317e}} 
 \index{gtfs\+::\+G\+T\+FS@{gtfs\+::\+G\+T\+FS}!get\+\_\+trip@{get\+\_\+trip}}
 \index{get\+\_\+trip@{get\+\_\+trip}!gtfs\+::\+G\+T\+FS@{gtfs\+::\+G\+T\+FS}}
-\subsubsection{\texorpdfstring{get\+\_\+trip()}{get\_trip()}}
-{\footnotesize\ttfamily std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Trip}{Trip} $>$ gtfs\+::\+G\+T\+F\+S\+::get\+\_\+trip (\begin{DoxyParamCaption}\item[{std\+::string \&}]{t }\end{DoxyParamCaption}) const}
-
+\subsubsection[{\texorpdfstring{get\+\_\+trip(std\+::string \&t)}{get_trip(std::string &t)}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::shared\+\_\+ptr$<$ {\bf Trip} $>$ gtfs\+::\+G\+T\+F\+S\+::get\+\_\+trip (
+\begin{DoxyParamCaption}
+\item[{std\+::string \&}]{t}
+\end{DoxyParamCaption}
+)}\hypertarget{classgtfs_1_1GTFS_a4aeffca4aa9bed086fe99166f1e9ebe7}{}\label{classgtfs_1_1GTFS_a4aeffca4aa9bed086fe99166f1e9ebe7}
 Load a \hyperlink{classgtfs_1_1Trip}{Trip} object. 
 \begin{DoxyParams}{Parameters}
 {\em t} & the ID of the trip we want \\
@@ -170,12 +260,13 @@ Load a \hyperlink{classgtfs_1_1Trip}{Trip} object.
 \begin{DoxyReturn}{Returns}
 a \hyperlink{classgtfs_1_1Trip}{Trip} object, or null pointer if it wasn\textquotesingle{}t found 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classgtfs_1_1GTFS_ad526fc627fe1ce81b8a669f6187be0c0}\label{classgtfs_1_1GTFS_ad526fc627fe1ce81b8a669f6187be0c0}} 
 \index{gtfs\+::\+G\+T\+FS@{gtfs\+::\+G\+T\+FS}!get\+\_\+trips@{get\+\_\+trips}}
 \index{get\+\_\+trips@{get\+\_\+trips}!gtfs\+::\+G\+T\+FS@{gtfs\+::\+G\+T\+FS}}
-\subsubsection{\texorpdfstring{get\+\_\+trips()}{get\_trips()}}
-{\footnotesize\ttfamily std\+::unordered\+\_\+map$<$std\+::string, std\+::shared\+\_\+ptr$<$\hyperlink{classgtfs_1_1Trip}{Trip}$>$ $>$ gtfs\+::\+G\+T\+F\+S\+::get\+\_\+trips (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
+\subsubsection[{\texorpdfstring{get\+\_\+trips(void)}{get_trips(void)}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::unordered\+\_\+map$<$std\+::string, std\+::shared\+\_\+ptr$<${\bf Trip}$>$ $>$ gtfs\+::\+G\+T\+F\+S\+::get\+\_\+trips (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{classgtfs_1_1GTFS_ad526fc627fe1ce81b8a669f6187be0c0}{}\label{classgtfs_1_1GTFS_ad526fc627fe1ce81b8a669f6187be0c0}
 \begin{DoxyReturn}{Returns}
 an unordered map of \hyperlink{classgtfs_1_1Trip}{Trip} objects 
 \end{DoxyReturn}

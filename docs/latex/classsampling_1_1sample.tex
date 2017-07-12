@@ -23,12 +23,13 @@ A class for taking a random (weighted) sample.
 All samples are made with replacement. If constructed with an I\+NT, then equal weights are used; otherwise weights are passed as a const reference, otherwise a lot of copying would take place! 
 
 \subsection{Constructor \& Destructor Documentation}
-\mbox{\Hypertarget{classsampling_1_1sample_a7c217cc7c5f9461835062a0362bec4d1}\label{classsampling_1_1sample_a7c217cc7c5f9461835062a0362bec4d1}} 
 \index{sampling\+::sample@{sampling\+::sample}!sample@{sample}}
 \index{sample@{sample}!sampling\+::sample@{sampling\+::sample}}
-\subsubsection{\texorpdfstring{sample()}{sample()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily sampling\+::sample\+::sample (\begin{DoxyParamCaption}\item[{int}]{N }\end{DoxyParamCaption})}
-
+\subsubsection[{\texorpdfstring{sample(int N)}{sample(int N)}}]{\setlength{\rightskip}{0pt plus 5cm}sampling\+::sample\+::sample (
+\begin{DoxyParamCaption}
+\item[{int}]{N}
+\end{DoxyParamCaption}
+)}\hypertarget{classsampling_1_1sample_a7c217cc7c5f9461835062a0362bec4d1}{}\label{classsampling_1_1sample_a7c217cc7c5f9461835062a0362bec4d1}
 A non-\/weighted sampler.
 
 
@@ -36,12 +37,13 @@ A non-\/weighted sampler.
 {\em N} & the size of the sample to be sampled from. \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{classsampling_1_1sample_aa5ce07807a24cd3387626b99b38255ad}\label{classsampling_1_1sample_aa5ce07807a24cd3387626b99b38255ad}} 
 \index{sampling\+::sample@{sampling\+::sample}!sample@{sample}}
 \index{sample@{sample}!sampling\+::sample@{sampling\+::sample}}
-\subsubsection{\texorpdfstring{sample()}{sample()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily sampling\+::sample\+::sample (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ double $>$ \&}]{wts }\end{DoxyParamCaption})}
-
+\subsubsection[{\texorpdfstring{sample(const std\+::vector$<$ double $>$ \&wts)}{sample(const std::vector< double > &wts)}}]{\setlength{\rightskip}{0pt plus 5cm}sampling\+::sample\+::sample (
+\begin{DoxyParamCaption}
+\item[{const std\+::vector$<$ double $>$ \&}]{wts}
+\end{DoxyParamCaption}
+)}\hypertarget{classsampling_1_1sample_aa5ce07807a24cd3387626b99b38255ad}{}\label{classsampling_1_1sample_aa5ce07807a24cd3387626b99b38255ad}
 A weighted sampler.
 
 
@@ -52,12 +54,13 @@ A weighted sampler.
 
 
 \subsection{Member Function Documentation}
-\mbox{\Hypertarget{classsampling_1_1sample_addc486d8e1dca7d0a09be0a7fa95fc77}\label{classsampling_1_1sample_addc486d8e1dca7d0a09be0a7fa95fc77}} 
 \index{sampling\+::sample@{sampling\+::sample}!get@{get}}
 \index{get@{get}!sampling\+::sample@{sampling\+::sample}}
-\subsubsection{\texorpdfstring{get()}{get()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily std\+::vector$<$ int $>$ sampling\+::sample\+::get (\begin{DoxyParamCaption}\item[{\hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&}]{rng }\end{DoxyParamCaption})}
-
+\subsubsection[{\texorpdfstring{get(sampling\+::\+R\+N\+G \&rng)}{get(sampling::RNG &rng)}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::vector$<$ int $>$ sampling\+::sample\+::get (
+\begin{DoxyParamCaption}
+\item[{{\bf sampling\+::\+R\+NG} \&}]{rng}
+\end{DoxyParamCaption}
+)}\hypertarget{classsampling_1_1sample_addc486d8e1dca7d0a09be0a7fa95fc77}{}\label{classsampling_1_1sample_addc486d8e1dca7d0a09be0a7fa95fc77}
 Perform resampling, using the same number of observations as in the original sample.
 
 
@@ -68,12 +71,14 @@ Perform resampling, using the same number of observations as in the original sam
 \begin{DoxyReturn}{Returns}
 a vector of sample indexes 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classsampling_1_1sample_ab2c4a10e7971983a8e4acdbb0ad37055}\label{classsampling_1_1sample_ab2c4a10e7971983a8e4acdbb0ad37055}} 
 \index{sampling\+::sample@{sampling\+::sample}!get@{get}}
 \index{get@{get}!sampling\+::sample@{sampling\+::sample}}
-\subsubsection{\texorpdfstring{get()}{get()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily std\+::vector$<$ int $>$ sampling\+::sample\+::get (\begin{DoxyParamCaption}\item[{int}]{n,  }\item[{\hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&}]{rng }\end{DoxyParamCaption})}
-
+\subsubsection[{\texorpdfstring{get(int n, sampling\+::\+R\+N\+G \&rng)}{get(int n, sampling::RNG &rng)}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::vector$<$ int $>$ sampling\+::sample\+::get (
+\begin{DoxyParamCaption}
+\item[{int}]{n, }
+\item[{{\bf sampling\+::\+R\+NG} \&}]{rng}
+\end{DoxyParamCaption}
+)}\hypertarget{classsampling_1_1sample_ab2c4a10e7971983a8e4acdbb0ad37055}{}\label{classsampling_1_1sample_ab2c4a10e7971983a8e4acdbb0ad37055}
 Perform resampling, taking a sample of size {\ttfamily n}.
 
 

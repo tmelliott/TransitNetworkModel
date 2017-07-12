@@ -26,39 +26,30 @@ bool \hyperlink{structgtfs_1_1StopTime_af8cc780329a837a49a5d6af60b74b9bf}{layove
 A struct representing an instance of a trip arriving at a stop. 
 
 \subsection{Constructor \& Destructor Documentation}
-\mbox{\Hypertarget{structgtfs_1_1StopTime_adb27c1b3ad66cdc37e4a78338ad2b1a5}\label{structgtfs_1_1StopTime_adb27c1b3ad66cdc37e4a78338ad2b1a5}} 
 \index{gtfs\+::\+Stop\+Time@{gtfs\+::\+Stop\+Time}!Stop\+Time@{Stop\+Time}}
 \index{Stop\+Time@{Stop\+Time}!gtfs\+::\+Stop\+Time@{gtfs\+::\+Stop\+Time}}
-\subsubsection{\texorpdfstring{Stop\+Time()}{StopTime()}}
-{\footnotesize\ttfamily gtfs\+::\+Stop\+Time\+::\+Stop\+Time (\begin{DoxyParamCaption}\item[{std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Stop}{Stop} $>$}]{stop,  }\item[{std\+::string \&}]{arrival,  }\item[{std\+::string \&}]{departure }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
+\subsubsection[{\texorpdfstring{Stop\+Time(std\+::shared\+\_\+ptr$<$ Stop $>$ stop, std\+::string \&arrival, std\+::string \&departure)}{StopTime(std::shared_ptr< Stop > stop, std::string &arrival, std::string &departure)}}]{\setlength{\rightskip}{0pt plus 5cm}gtfs\+::\+Stop\+Time\+::\+Stop\+Time (
+\begin{DoxyParamCaption}
+\item[{std\+::shared\+\_\+ptr$<$ {\bf Stop} $>$}]{stop, }
+\item[{std\+::string \&}]{arrival, }
+\item[{std\+::string \&}]{departure}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{structgtfs_1_1StopTime_adb27c1b3ad66cdc37e4a78338ad2b1a5}{}\label{structgtfs_1_1StopTime_adb27c1b3ad66cdc37e4a78338ad2b1a5}
 Constructor for a \hyperlink{structgtfs_1_1StopTime}{Stop\+Time} struct 
 
 \subsection{Member Data Documentation}
-\mbox{\Hypertarget{structgtfs_1_1StopTime_a994ec898edd96675200f759acd76a57c}\label{structgtfs_1_1StopTime_a994ec898edd96675200f759acd76a57c}} 
 \index{gtfs\+::\+Stop\+Time@{gtfs\+::\+Stop\+Time}!arrival\+\_\+time@{arrival\+\_\+time}}
 \index{arrival\+\_\+time@{arrival\+\_\+time}!gtfs\+::\+Stop\+Time@{gtfs\+::\+Stop\+Time}}
-\subsubsection{\texorpdfstring{arrival\+\_\+time}{arrival\_time}}
-{\footnotesize\ttfamily boost\+::posix\+\_\+time\+::time\+\_\+duration gtfs\+::\+Stop\+Time\+::arrival\+\_\+time}
-
-the scheduled arrival time \mbox{\Hypertarget{structgtfs_1_1StopTime_ad11c398eca36ff99f0934883141de3c9}\label{structgtfs_1_1StopTime_ad11c398eca36ff99f0934883141de3c9}} 
-\index{gtfs\+::\+Stop\+Time@{gtfs\+::\+Stop\+Time}!departure\+\_\+time@{departure\+\_\+time}}
+\subsubsection[{\texorpdfstring{arrival\+\_\+time}{arrival_time}}]{\setlength{\rightskip}{0pt plus 5cm}boost\+::posix\+\_\+time\+::time\+\_\+duration gtfs\+::\+Stop\+Time\+::arrival\+\_\+time}\hypertarget{structgtfs_1_1StopTime_a994ec898edd96675200f759acd76a57c}{}\label{structgtfs_1_1StopTime_a994ec898edd96675200f759acd76a57c}
+the scheduled arrival time \index{gtfs\+::\+Stop\+Time@{gtfs\+::\+Stop\+Time}!departure\+\_\+time@{departure\+\_\+time}}
 \index{departure\+\_\+time@{departure\+\_\+time}!gtfs\+::\+Stop\+Time@{gtfs\+::\+Stop\+Time}}
-\subsubsection{\texorpdfstring{departure\+\_\+time}{departure\_time}}
-{\footnotesize\ttfamily boost\+::posix\+\_\+time\+::time\+\_\+duration gtfs\+::\+Stop\+Time\+::departure\+\_\+time}
-
-the scheduled departure time \mbox{\Hypertarget{structgtfs_1_1StopTime_af8cc780329a837a49a5d6af60b74b9bf}\label{structgtfs_1_1StopTime_af8cc780329a837a49a5d6af60b74b9bf}} 
-\index{gtfs\+::\+Stop\+Time@{gtfs\+::\+Stop\+Time}!layover@{layover}}
+\subsubsection[{\texorpdfstring{departure\+\_\+time}{departure_time}}]{\setlength{\rightskip}{0pt plus 5cm}boost\+::posix\+\_\+time\+::time\+\_\+duration gtfs\+::\+Stop\+Time\+::departure\+\_\+time}\hypertarget{structgtfs_1_1StopTime_ad11c398eca36ff99f0934883141de3c9}{}\label{structgtfs_1_1StopTime_ad11c398eca36ff99f0934883141de3c9}
+the scheduled departure time \index{gtfs\+::\+Stop\+Time@{gtfs\+::\+Stop\+Time}!layover@{layover}}
 \index{layover@{layover}!gtfs\+::\+Stop\+Time@{gtfs\+::\+Stop\+Time}}
-\subsubsection{\texorpdfstring{layover}{layover}}
-{\footnotesize\ttfamily bool gtfs\+::\+Stop\+Time\+::layover}
-
-if true, the stop is a layover and we assume the bus doesn\textquotesingle{}t leave until the scheduled departure time \mbox{\Hypertarget{structgtfs_1_1StopTime_a586702c54a1ad350d486c6639558b4ca}\label{structgtfs_1_1StopTime_a586702c54a1ad350d486c6639558b4ca}} 
-\index{gtfs\+::\+Stop\+Time@{gtfs\+::\+Stop\+Time}!stop@{stop}}
+\subsubsection[{\texorpdfstring{layover}{layover}}]{\setlength{\rightskip}{0pt plus 5cm}bool gtfs\+::\+Stop\+Time\+::layover}\hypertarget{structgtfs_1_1StopTime_af8cc780329a837a49a5d6af60b74b9bf}{}\label{structgtfs_1_1StopTime_af8cc780329a837a49a5d6af60b74b9bf}
+if true, the stop is a layover and we assume the bus doesn\textquotesingle{}t leave until the scheduled departure time \index{gtfs\+::\+Stop\+Time@{gtfs\+::\+Stop\+Time}!stop@{stop}}
 \index{stop@{stop}!gtfs\+::\+Stop\+Time@{gtfs\+::\+Stop\+Time}}
-\subsubsection{\texorpdfstring{stop}{stop}}
-{\footnotesize\ttfamily std\+::shared\+\_\+ptr$<$\hyperlink{classgtfs_1_1Stop}{Stop}$>$ gtfs\+::\+Stop\+Time\+::stop}
-
+\subsubsection[{\texorpdfstring{stop}{stop}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::shared\+\_\+ptr$<${\bf Stop}$>$ gtfs\+::\+Stop\+Time\+::stop}\hypertarget{structgtfs_1_1StopTime_a586702c54a1ad350d486c6639558b4ca}{}\label{structgtfs_1_1StopTime_a586702c54a1ad350d486c6639558b4ca}
 pointer to the stop 
 
 The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}

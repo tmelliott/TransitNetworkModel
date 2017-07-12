@@ -44,12 +44,14 @@ std\+::ostream \& \hyperlink{namespacegtfs_a3a0b93a57343e447187095cfbbf0af9a}{op
 All aspects of the program refering to the \hyperlink{classgtfs_1_1GTFS}{G\+T\+FS} information are in this namespace. 
 
 \subsection{Function Documentation}
-\mbox{\Hypertarget{namespacegtfs_af4dc0313dc585ab27351aac9bfca32f6}\label{namespacegtfs_af4dc0313dc585ab27351aac9bfca32f6}} 
 \index{gtfs@{gtfs}!get\+\_\+coords@{get\+\_\+coords}}
 \index{get\+\_\+coords@{get\+\_\+coords}!gtfs@{gtfs}}
-\subsubsection{\texorpdfstring{get\+\_\+coords()}{get\_coords()}}
-{\footnotesize\ttfamily \hyperlink{classgps_1_1Coord}{gps\+::\+Coord} gtfs\+::get\+\_\+coords (\begin{DoxyParamCaption}\item[{double}]{distance,  }\item[{std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Shape}{Shape} $>$}]{shape }\end{DoxyParamCaption})}
-
+\subsubsection[{\texorpdfstring{get\+\_\+coords(double distance, std\+::shared\+\_\+ptr$<$ Shape $>$ shape)}{get_coords(double distance, std::shared_ptr< Shape > shape)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf gps\+::\+Coord} gtfs\+::get\+\_\+coords (
+\begin{DoxyParamCaption}
+\item[{double}]{distance, }
+\item[{std\+::shared\+\_\+ptr$<$ {\bf Shape} $>$}]{shape}
+\end{DoxyParamCaption}
+)}\hypertarget{namespacegtfs_af4dc0313dc585ab27351aac9bfca32f6}{}\label{namespacegtfs_af4dc0313dc585ab27351aac9bfca32f6}
 Get the coordinates of a point a given distance along a shape. 
 \begin{DoxyParams}{Parameters}
 {\em distance} & total distance traveled along path, in meters \\
@@ -60,12 +62,14 @@ Get the coordinates of a point a given distance along a shape.
 \begin{DoxyReturn}{Returns}
 a coordinate object 
 \end{DoxyReturn}
-\mbox{\Hypertarget{namespacegtfs_a3a0b93a57343e447187095cfbbf0af9a}\label{namespacegtfs_a3a0b93a57343e447187095cfbbf0af9a}} 
 \index{gtfs@{gtfs}!operator$<$$<$@{operator$<$$<$}}
 \index{operator$<$$<$@{operator$<$$<$}!gtfs@{gtfs}}
-\subsubsection{\texorpdfstring{operator$<$$<$()}{operator<<()}}
-{\footnotesize\ttfamily std\+::ostream\& gtfs\+::operator$<$$<$ (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{os,  }\item[{const \hyperlink{classgtfs_1_1Particle}{Particle} \&}]{p }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
+\subsubsection[{\texorpdfstring{operator$<$$<$(std\+::ostream \&os, const Particle \&p)}{operator<<(std::ostream &os, const Particle &p)}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::ostream\& gtfs\+::operator$<$$<$ (
+\begin{DoxyParamCaption}
+\item[{std\+::ostream \&}]{os, }
+\item[{const {\bf Particle} \&}]{p}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{namespacegtfs_a3a0b93a57343e447187095cfbbf0af9a}{}\label{namespacegtfs_a3a0b93a57343e447187095cfbbf0af9a}
 Print a particle object state. 
 \begin{DoxyParams}{Parameters}
 {\em os} & the ostream to write to \\

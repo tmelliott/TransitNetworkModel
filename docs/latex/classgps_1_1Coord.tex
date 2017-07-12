@@ -9,23 +9,23 @@
 \item 
 \hyperlink{classgps_1_1Coord_afcc45fae837b48cd7d9bd545c4dc574c}{Coord} (double \hyperlink{classgps_1_1Coord_a17cbbd7580a83c42f650b8f93e14d98e}{lat}, double \hyperlink{classgps_1_1Coord_abca98aaabe2dc3cf50ebdd687c2f47e8}{lng})
 \item 
-double \hyperlink{classgps_1_1Coord_a24d3b9899dc262a40728f7e343781ab6}{distance\+To} (\hyperlink{classgps_1_1Coord}{gps\+::\+Coord} destination) const
+double \hyperlink{classgps_1_1Coord_a21be4f425a5575531e56ccd8c70be0fa}{distance\+To} (\hyperlink{classgps_1_1Coord}{gps\+::\+Coord} destination) const 
 \item 
-double \hyperlink{classgps_1_1Coord_a304e6cb56296d8d945310d7b931fca4e}{bearing\+To} (\hyperlink{classgps_1_1Coord}{gps\+::\+Coord} destination) const
+double \hyperlink{classgps_1_1Coord_ae11512ff67ea20ae1eddf59c5b0b6e70}{bearing\+To} (\hyperlink{classgps_1_1Coord}{gps\+::\+Coord} destination) const 
 \item 
-\hyperlink{classgps_1_1Coord}{gps\+::\+Coord} \hyperlink{classgps_1_1Coord_a774fc85267d9cd3d01d151e784f1112c}{destination\+Point} (double distance, double bearing) const
+\hyperlink{classgps_1_1Coord}{gps\+::\+Coord} \hyperlink{classgps_1_1Coord_a6d463e7e0462c6b1fc02cd64a252071a}{destination\+Point} (double distance, double bearing) const 
 \item 
-double \hyperlink{classgps_1_1Coord_a2d421b8235201290c2a7c5d13eba097e}{cross\+Track\+Distance\+To} (\hyperlink{classgps_1_1Coord}{gps\+::\+Coord} p1, \hyperlink{classgps_1_1Coord}{gps\+::\+Coord} p2) const
+double \hyperlink{classgps_1_1Coord_a42aa2b02ec1ac102154f29f6e8f0e9d5}{cross\+Track\+Distance\+To} (\hyperlink{classgps_1_1Coord}{gps\+::\+Coord} p1, \hyperlink{classgps_1_1Coord}{gps\+::\+Coord} p2) const 
 \item 
-double \hyperlink{classgps_1_1Coord_a69ead8580e270f1319d9bbf3da680d45}{along\+Track\+Distance} (\hyperlink{classgps_1_1Coord}{gps\+::\+Coord} p1, \hyperlink{classgps_1_1Coord}{gps\+::\+Coord} p2) const
+double \hyperlink{classgps_1_1Coord_a684f2e39962e95b02a612b8cd0a8bd99}{along\+Track\+Distance} (\hyperlink{classgps_1_1Coord}{gps\+::\+Coord} p1, \hyperlink{classgps_1_1Coord}{gps\+::\+Coord} p2) const 
 \item 
-std\+::vector$<$ double $>$ \hyperlink{classgps_1_1Coord_a43b8263439170e923db7b21a32b653f8}{project\+Flat} (\hyperlink{classgps_1_1Coord}{gps\+::\+Coord} origin) const
+std\+::vector$<$ double $>$ \hyperlink{classgps_1_1Coord_ad388be3d1aa1c3b6c868b4256cd00284}{project\+Flat} (\hyperlink{classgps_1_1Coord}{gps\+::\+Coord} origin) const 
 \item 
 \hyperlink{structgps_1_1nearPt}{near\+Pt} \hyperlink{classgps_1_1Coord_a4b7faf8c9e2b4196bcbb450b5448c36f}{nearest\+Point} (std\+::vector$<$ \hyperlink{classgps_1_1Coord}{gps\+::\+Coord} $>$ \&path)
 \item 
-bool \hyperlink{classgps_1_1Coord_a254245e5cdfbac96a1c6e0332f2d65fb}{operator==} (const \hyperlink{classgps_1_1Coord}{Coord} \&p) const
+bool \hyperlink{classgps_1_1Coord_a6e0f9d8bff57711675b435ca75fc6183}{operator==} (const \hyperlink{classgps_1_1Coord}{Coord} \&p) const 
 \item 
-bool \hyperlink{classgps_1_1Coord_ad832b140a8a39355874e268834d078cd}{operator!=} (const \hyperlink{classgps_1_1Coord}{Coord} \&p) const
+bool \hyperlink{classgps_1_1Coord_ac472964776941984f42d1dad1160eae6}{operator!=} (const \hyperlink{classgps_1_1Coord}{Coord} \&p) const 
 \end{DoxyCompactItemize}
 \subsection*{Public Attributes}
 \begin{DoxyCompactItemize}
@@ -40,12 +40,14 @@ double \hyperlink{classgps_1_1Coord_abca98aaabe2dc3cf50ebdd687c2f47e8}{lng}
 Coordinate class represents lat/lng points on the Earth. 
 
 \subsection{Constructor \& Destructor Documentation}
-\mbox{\Hypertarget{classgps_1_1Coord_afcc45fae837b48cd7d9bd545c4dc574c}\label{classgps_1_1Coord_afcc45fae837b48cd7d9bd545c4dc574c}} 
 \index{gps\+::\+Coord@{gps\+::\+Coord}!Coord@{Coord}}
 \index{Coord@{Coord}!gps\+::\+Coord@{gps\+::\+Coord}}
-\subsubsection{\texorpdfstring{Coord()}{Coord()}}
-{\footnotesize\ttfamily gps\+::\+Coord\+::\+Coord (\begin{DoxyParamCaption}\item[{double}]{Lat,  }\item[{double}]{Lng }\end{DoxyParamCaption})}
-
+\subsubsection[{\texorpdfstring{Coord(double lat, double lng)}{Coord(double lat, double lng)}}]{\setlength{\rightskip}{0pt plus 5cm}gps\+::\+Coord\+::\+Coord (
+\begin{DoxyParamCaption}
+\item[{double}]{Lat, }
+\item[{double}]{Lng}
+\end{DoxyParamCaption}
+)}\hypertarget{classgps_1_1Coord_afcc45fae837b48cd7d9bd545c4dc574c}{}\label{classgps_1_1Coord_afcc45fae837b48cd7d9bd545c4dc574c}
 Constructor for a co-\/ordinate 
 \begin{DoxyParams}{Parameters}
 {\em Lat} & the latitude (-\/90, 90), degrees North/\+South from the equator \\
@@ -56,12 +58,14 @@ Constructor for a co-\/ordinate
 
 
 \subsection{Member Function Documentation}
-\mbox{\Hypertarget{classgps_1_1Coord_a69ead8580e270f1319d9bbf3da680d45}\label{classgps_1_1Coord_a69ead8580e270f1319d9bbf3da680d45}} 
 \index{gps\+::\+Coord@{gps\+::\+Coord}!along\+Track\+Distance@{along\+Track\+Distance}}
 \index{along\+Track\+Distance@{along\+Track\+Distance}!gps\+::\+Coord@{gps\+::\+Coord}}
-\subsubsection{\texorpdfstring{along\+Track\+Distance()}{alongTrackDistance()}}
-{\footnotesize\ttfamily double gps\+::\+Coord\+::along\+Track\+Distance (\begin{DoxyParamCaption}\item[{\hyperlink{classgps_1_1Coord}{gps\+::\+Coord}}]{p1,  }\item[{\hyperlink{classgps_1_1Coord}{gps\+::\+Coord}}]{p2 }\end{DoxyParamCaption}) const}
-
+\subsubsection[{\texorpdfstring{along\+Track\+Distance(gps\+::\+Coord p1, gps\+::\+Coord p2) const }{alongTrackDistance(gps::Coord p1, gps::Coord p2) const }}]{\setlength{\rightskip}{0pt plus 5cm}double gps\+::\+Coord\+::along\+Track\+Distance (
+\begin{DoxyParamCaption}
+\item[{{\bf gps\+::\+Coord}}]{p1, }
+\item[{{\bf gps\+::\+Coord}}]{p2}
+\end{DoxyParamCaption}
+) const}\hypertarget{classgps_1_1Coord_a684f2e39962e95b02a612b8cd0a8bd99}{}\label{classgps_1_1Coord_a684f2e39962e95b02a612b8cd0a8bd99}
 Compute the along-\/track distance to the nearest point on a line to the given point.
 
 
@@ -74,12 +78,13 @@ Compute the along-\/track distance to the nearest point on a line to the given p
 \begin{DoxyReturn}{Returns}
 how far along the line is the nearest point to this 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classgps_1_1Coord_a304e6cb56296d8d945310d7b931fca4e}\label{classgps_1_1Coord_a304e6cb56296d8d945310d7b931fca4e}} 
 \index{gps\+::\+Coord@{gps\+::\+Coord}!bearing\+To@{bearing\+To}}
 \index{bearing\+To@{bearing\+To}!gps\+::\+Coord@{gps\+::\+Coord}}
-\subsubsection{\texorpdfstring{bearing\+To()}{bearingTo()}}
-{\footnotesize\ttfamily double gps\+::\+Coord\+::bearing\+To (\begin{DoxyParamCaption}\item[{\hyperlink{classgps_1_1Coord}{gps\+::\+Coord}}]{p }\end{DoxyParamCaption}) const}
-
+\subsubsection[{\texorpdfstring{bearing\+To(gps\+::\+Coord destination) const }{bearingTo(gps::Coord destination) const }}]{\setlength{\rightskip}{0pt plus 5cm}double gps\+::\+Coord\+::bearing\+To (
+\begin{DoxyParamCaption}
+\item[{{\bf gps\+::\+Coord}}]{p}
+\end{DoxyParamCaption}
+) const}\hypertarget{classgps_1_1Coord_ae11512ff67ea20ae1eddf59c5b0b6e70}{}\label{classgps_1_1Coord_ae11512ff67ea20ae1eddf59c5b0b6e70}
 Compute the (initial) bearing to a point.
 
 This function will compute the initial bearing, in degrees, when traveling from the current point to the destination point. Note that, due to curvature of the Earth, the bearing usually changes along the path (unless its along an axis).
@@ -92,12 +97,14 @@ This function will compute the initial bearing, in degrees, when traveling from 
 \begin{DoxyReturn}{Returns}
 the bearing, in degrees, to the point 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classgps_1_1Coord_a2d421b8235201290c2a7c5d13eba097e}\label{classgps_1_1Coord_a2d421b8235201290c2a7c5d13eba097e}} 
 \index{gps\+::\+Coord@{gps\+::\+Coord}!cross\+Track\+Distance\+To@{cross\+Track\+Distance\+To}}
 \index{cross\+Track\+Distance\+To@{cross\+Track\+Distance\+To}!gps\+::\+Coord@{gps\+::\+Coord}}
-\subsubsection{\texorpdfstring{cross\+Track\+Distance\+To()}{crossTrackDistanceTo()}}
-{\footnotesize\ttfamily double gps\+::\+Coord\+::cross\+Track\+Distance\+To (\begin{DoxyParamCaption}\item[{\hyperlink{classgps_1_1Coord}{gps\+::\+Coord}}]{p1,  }\item[{\hyperlink{classgps_1_1Coord}{gps\+::\+Coord}}]{p2 }\end{DoxyParamCaption}) const}
-
+\subsubsection[{\texorpdfstring{cross\+Track\+Distance\+To(gps\+::\+Coord p1, gps\+::\+Coord p2) const }{crossTrackDistanceTo(gps::Coord p1, gps::Coord p2) const }}]{\setlength{\rightskip}{0pt plus 5cm}double gps\+::\+Coord\+::cross\+Track\+Distance\+To (
+\begin{DoxyParamCaption}
+\item[{{\bf gps\+::\+Coord}}]{p1, }
+\item[{{\bf gps\+::\+Coord}}]{p2}
+\end{DoxyParamCaption}
+) const}\hypertarget{classgps_1_1Coord_a42aa2b02ec1ac102154f29f6e8f0e9d5}{}\label{classgps_1_1Coord_a42aa2b02ec1ac102154f29f6e8f0e9d5}
 Compute the cross-\/track distance between the given point, and a path between two points.
 
 This is the shortest distance between a given point, and the path between two points.
@@ -112,12 +119,14 @@ This is the shortest distance between a given point, and the path between two po
 \begin{DoxyReturn}{Returns}
 The shortest distance between the point and the path. 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classgps_1_1Coord_a774fc85267d9cd3d01d151e784f1112c}\label{classgps_1_1Coord_a774fc85267d9cd3d01d151e784f1112c}} 
 \index{gps\+::\+Coord@{gps\+::\+Coord}!destination\+Point@{destination\+Point}}
 \index{destination\+Point@{destination\+Point}!gps\+::\+Coord@{gps\+::\+Coord}}
-\subsubsection{\texorpdfstring{destination\+Point()}{destinationPoint()}}
-{\footnotesize\ttfamily \hyperlink{classgps_1_1Coord}{Coord} gps\+::\+Coord\+::destination\+Point (\begin{DoxyParamCaption}\item[{double}]{d,  }\item[{double}]{bearing }\end{DoxyParamCaption}) const}
-
+\subsubsection[{\texorpdfstring{destination\+Point(double distance, double bearing) const }{destinationPoint(double distance, double bearing) const }}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Coord} gps\+::\+Coord\+::destination\+Point (
+\begin{DoxyParamCaption}
+\item[{double}]{d, }
+\item[{double}]{bearing}
+\end{DoxyParamCaption}
+) const}\hypertarget{classgps_1_1Coord_a6d463e7e0462c6b1fc02cd64a252071a}{}\label{classgps_1_1Coord_a6d463e7e0462c6b1fc02cd64a252071a}
 Compute the destination given initial bearing and distance from a starting point. 
 \begin{DoxyParams}{Parameters}
 {\em d} & the distance to be traveled \\
@@ -128,12 +137,13 @@ Compute the destination given initial bearing and distance from a starting point
 \begin{DoxyReturn}{Returns}
 the destination point 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classgps_1_1Coord_a24d3b9899dc262a40728f7e343781ab6}\label{classgps_1_1Coord_a24d3b9899dc262a40728f7e343781ab6}} 
 \index{gps\+::\+Coord@{gps\+::\+Coord}!distance\+To@{distance\+To}}
 \index{distance\+To@{distance\+To}!gps\+::\+Coord@{gps\+::\+Coord}}
-\subsubsection{\texorpdfstring{distance\+To()}{distanceTo()}}
-{\footnotesize\ttfamily double gps\+::\+Coord\+::distance\+To (\begin{DoxyParamCaption}\item[{\hyperlink{classgps_1_1Coord}{gps\+::\+Coord}}]{p }\end{DoxyParamCaption}) const}
-
+\subsubsection[{\texorpdfstring{distance\+To(gps\+::\+Coord destination) const }{distanceTo(gps::Coord destination) const }}]{\setlength{\rightskip}{0pt plus 5cm}double gps\+::\+Coord\+::distance\+To (
+\begin{DoxyParamCaption}
+\item[{{\bf gps\+::\+Coord}}]{p}
+\end{DoxyParamCaption}
+) const}\hypertarget{classgps_1_1Coord_a21be4f425a5575531e56ccd8c70be0fa}{}\label{classgps_1_1Coord_a21be4f425a5575531e56ccd8c70be0fa}
 Compute the Great Circle Distance between to a point. 
 \begin{DoxyParams}{Parameters}
 {\em p} & the desination point \\
@@ -142,12 +152,13 @@ Compute the Great Circle Distance between to a point.
 \begin{DoxyReturn}{Returns}
 the distance, in meters, to the point 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classgps_1_1Coord_a4b7faf8c9e2b4196bcbb450b5448c36f}\label{classgps_1_1Coord_a4b7faf8c9e2b4196bcbb450b5448c36f}} 
 \index{gps\+::\+Coord@{gps\+::\+Coord}!nearest\+Point@{nearest\+Point}}
 \index{nearest\+Point@{nearest\+Point}!gps\+::\+Coord@{gps\+::\+Coord}}
-\subsubsection{\texorpdfstring{nearest\+Point()}{nearestPoint()}}
-{\footnotesize\ttfamily \hyperlink{structgps_1_1nearPt}{near\+Pt} gps\+::\+Coord\+::nearest\+Point (\begin{DoxyParamCaption}\item[{std\+::vector$<$ \hyperlink{classgps_1_1Coord}{gps\+::\+Coord} $>$ \&}]{path }\end{DoxyParamCaption})}
-
+\subsubsection[{\texorpdfstring{nearest\+Point(std\+::vector$<$ gps\+::\+Coord $>$ \&path)}{nearestPoint(std::vector< gps::Coord > &path)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf near\+Pt} gps\+::\+Coord\+::nearest\+Point (
+\begin{DoxyParamCaption}
+\item[{std\+::vector$<$ {\bf gps\+::\+Coord} $>$ \&}]{path}
+\end{DoxyParamCaption}
+)}\hypertarget{classgps_1_1Coord_a4b7faf8c9e2b4196bcbb450b5448c36f}{}\label{classgps_1_1Coord_a4b7faf8c9e2b4196bcbb450b5448c36f}
 Find the nearest point on a given path.
 
 
@@ -158,12 +169,13 @@ Find the nearest point on a given path.
 \begin{DoxyReturn}{Returns}
 a nearest point object, with the point and distance to it 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classgps_1_1Coord_ad832b140a8a39355874e268834d078cd}\label{classgps_1_1Coord_ad832b140a8a39355874e268834d078cd}} 
 \index{gps\+::\+Coord@{gps\+::\+Coord}!operator"!=@{operator"!=}}
 \index{operator"!=@{operator"!=}!gps\+::\+Coord@{gps\+::\+Coord}}
-\subsubsection{\texorpdfstring{operator"!=()}{operator!=()}}
-{\footnotesize\ttfamily bool gps\+::\+Coord\+::operator!= (\begin{DoxyParamCaption}\item[{const \hyperlink{classgps_1_1Coord}{Coord} \&}]{p }\end{DoxyParamCaption}) const}
-
+\subsubsection[{\texorpdfstring{operator"!=(const Coord \&p) const }{operator!=(const Coord &p) const }}]{\setlength{\rightskip}{0pt plus 5cm}bool gps\+::\+Coord\+::operator!= (
+\begin{DoxyParamCaption}
+\item[{const {\bf Coord} \&}]{p}
+\end{DoxyParamCaption}
+) const}\hypertarget{classgps_1_1Coord_ac472964776941984f42d1dad1160eae6}{}\label{classgps_1_1Coord_ac472964776941984f42d1dad1160eae6}
 Comparison (not equal) operator for two coordinates.
 
 Coordinates are considered equal if the distance between them is less than 1mm (1/1000 of a meter). In terms of this project, this is adequate.
@@ -176,12 +188,13 @@ Coordinates are considered equal if the distance between them is less than 1mm (
 \begin{DoxyReturn}{Returns}
 bool whether or not the coordinates are the same or not 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classgps_1_1Coord_a254245e5cdfbac96a1c6e0332f2d65fb}\label{classgps_1_1Coord_a254245e5cdfbac96a1c6e0332f2d65fb}} 
 \index{gps\+::\+Coord@{gps\+::\+Coord}!operator==@{operator==}}
 \index{operator==@{operator==}!gps\+::\+Coord@{gps\+::\+Coord}}
-\subsubsection{\texorpdfstring{operator==()}{operator==()}}
-{\footnotesize\ttfamily bool gps\+::\+Coord\+::operator== (\begin{DoxyParamCaption}\item[{const \hyperlink{classgps_1_1Coord}{Coord} \&}]{p }\end{DoxyParamCaption}) const}
-
+\subsubsection[{\texorpdfstring{operator==(const Coord \&p) const }{operator==(const Coord &p) const }}]{\setlength{\rightskip}{0pt plus 5cm}bool gps\+::\+Coord\+::operator== (
+\begin{DoxyParamCaption}
+\item[{const {\bf Coord} \&}]{p}
+\end{DoxyParamCaption}
+) const}\hypertarget{classgps_1_1Coord_a6e0f9d8bff57711675b435ca75fc6183}{}\label{classgps_1_1Coord_a6e0f9d8bff57711675b435ca75fc6183}
 Comparison operator for two coordinates.
 
 Coordinates are considered equal if the distance between them is less than 1mm (1/1000 of a meter). In terms of this project, this is adequate.
@@ -194,12 +207,13 @@ Coordinates are considered equal if the distance between them is less than 1mm (
 \begin{DoxyReturn}{Returns}
 bool whether or not the coordinates are the same or not 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classgps_1_1Coord_a43b8263439170e923db7b21a32b653f8}\label{classgps_1_1Coord_a43b8263439170e923db7b21a32b653f8}} 
 \index{gps\+::\+Coord@{gps\+::\+Coord}!project\+Flat@{project\+Flat}}
 \index{project\+Flat@{project\+Flat}!gps\+::\+Coord@{gps\+::\+Coord}}
-\subsubsection{\texorpdfstring{project\+Flat()}{projectFlat()}}
-{\footnotesize\ttfamily std\+::vector$<$ double $>$ gps\+::\+Coord\+::project\+Flat (\begin{DoxyParamCaption}\item[{\hyperlink{classgps_1_1Coord}{gps\+::\+Coord}}]{origin }\end{DoxyParamCaption}) const}
-
+\subsubsection[{\texorpdfstring{project\+Flat(gps\+::\+Coord origin) const }{projectFlat(gps::Coord origin) const }}]{\setlength{\rightskip}{0pt plus 5cm}std\+::vector$<$ double $>$ gps\+::\+Coord\+::project\+Flat (
+\begin{DoxyParamCaption}
+\item[{{\bf gps\+::\+Coord}}]{origin}
+\end{DoxyParamCaption}
+) const}\hypertarget{classgps_1_1Coord_ad388be3d1aa1c3b6c868b4256cd00284}{}\label{classgps_1_1Coord_ad388be3d1aa1c3b6c868b4256cd00284}
 Apply the Equirectangular projection to a point using a supplied point as the origin.
 
 The point is centered relative to the origin point, and then the Flat-\/\+Earth coordinates (meters north, east) are computed and returned in a vector.
@@ -215,18 +229,12 @@ a cartesian coordinate of the projected point
 
 
 \subsection{Member Data Documentation}
-\mbox{\Hypertarget{classgps_1_1Coord_a17cbbd7580a83c42f650b8f93e14d98e}\label{classgps_1_1Coord_a17cbbd7580a83c42f650b8f93e14d98e}} 
 \index{gps\+::\+Coord@{gps\+::\+Coord}!lat@{lat}}
 \index{lat@{lat}!gps\+::\+Coord@{gps\+::\+Coord}}
-\subsubsection{\texorpdfstring{lat}{lat}}
-{\footnotesize\ttfamily double gps\+::\+Coord\+::lat}
-
-the latitude value (-\/90,90) (degrees North/\+South of the equator) \mbox{\Hypertarget{classgps_1_1Coord_abca98aaabe2dc3cf50ebdd687c2f47e8}\label{classgps_1_1Coord_abca98aaabe2dc3cf50ebdd687c2f47e8}} 
-\index{gps\+::\+Coord@{gps\+::\+Coord}!lng@{lng}}
+\subsubsection[{\texorpdfstring{lat}{lat}}]{\setlength{\rightskip}{0pt plus 5cm}double gps\+::\+Coord\+::lat}\hypertarget{classgps_1_1Coord_a17cbbd7580a83c42f650b8f93e14d98e}{}\label{classgps_1_1Coord_a17cbbd7580a83c42f650b8f93e14d98e}
+the latitude value (-\/90,90) (degrees North/\+South of the equator) \index{gps\+::\+Coord@{gps\+::\+Coord}!lng@{lng}}
 \index{lng@{lng}!gps\+::\+Coord@{gps\+::\+Coord}}
-\subsubsection{\texorpdfstring{lng}{lng}}
-{\footnotesize\ttfamily double gps\+::\+Coord\+::lng}
-
+\subsubsection[{\texorpdfstring{lng}{lng}}]{\setlength{\rightskip}{0pt plus 5cm}double gps\+::\+Coord\+::lng}\hypertarget{classgps_1_1Coord_abca98aaabe2dc3cf50ebdd687c2f47e8}{}\label{classgps_1_1Coord_abca98aaabe2dc3cf50ebdd687c2f47e8}
 the longitude value (-\/180,180) (degrees East/\+West of Greenwich) 
 
 The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}

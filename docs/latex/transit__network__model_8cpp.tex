@@ -1,27 +1,28 @@
 \hypertarget{transit__network__model_8cpp}{}\section{src/transit\+\_\+network\+\_\+model.cpp File Reference}
 \label{transit__network__model_8cpp}\index{src/transit\+\_\+network\+\_\+model.\+cpp@{src/transit\+\_\+network\+\_\+model.\+cpp}}
-{\ttfamily \#include $<$iostream$>$}\newline
-{\ttfamily \#include $<$iomanip$>$}\newline
-{\ttfamily \#include $<$fstream$>$}\newline
-{\ttfamily \#include $<$memory$>$}\newline
-{\ttfamily \#include $<$vector$>$}\newline
-{\ttfamily \#include $<$string$>$}\newline
-{\ttfamily \#include $<$unordered\+\_\+map$>$}\newline
-{\ttfamily \#include $<$algorithm$>$}\newline
-{\ttfamily \#include $<$time.\+h$>$}\newline
-{\ttfamily \#include $<$sqlite3.\+h$>$}\newline
-{\ttfamily \#include $<$stdio.\+h$>$}\newline
-{\ttfamily \#include $<$chrono$>$}\newline
-{\ttfamily \#include $<$ctime$>$}\newline
-{\ttfamily \#include $<$thread$>$}\newline
-{\ttfamily \#include $<$boost/program\+\_\+options.\+hpp$>$}\newline
-{\ttfamily \#include $<$boost/algorithm/string/join.\+hpp$>$}\newline
-{\ttfamily \#include $<$boost/range/adaptor/transformed.\+hpp$>$}\newline
-{\ttfamily \#include \char`\"{}gtfs-\/realtime.\+pb.\+h\char`\"{}}\newline
-{\ttfamily \#include \char`\"{}sampling.\+h\char`\"{}}\newline
-{\ttfamily \#include \char`\"{}gtfs.\+h\char`\"{}}\newline
-{\ttfamily \#include \char`\"{}gps.\+h\char`\"{}}\newline
-Include dependency graph for transit\+\_\+network\+\_\+model.\+cpp\+:\nopagebreak
+{\ttfamily \#include $<$iostream$>$}\\*
+{\ttfamily \#include $<$iomanip$>$}\\*
+{\ttfamily \#include $<$fstream$>$}\\*
+{\ttfamily \#include $<$memory$>$}\\*
+{\ttfamily \#include $<$vector$>$}\\*
+{\ttfamily \#include $<$string$>$}\\*
+{\ttfamily \#include $<$unordered\+\_\+map$>$}\\*
+{\ttfamily \#include $<$algorithm$>$}\\*
+{\ttfamily \#include $<$time.\+h$>$}\\*
+{\ttfamily \#include $<$sqlite3.\+h$>$}\\*
+{\ttfamily \#include $<$stdio.\+h$>$}\\*
+{\ttfamily \#include $<$chrono$>$}\\*
+{\ttfamily \#include $<$ctime$>$}\\*
+{\ttfamily \#include $<$thread$>$}\\*
+{\ttfamily \#include $<$boost/program\+\_\+options.\+hpp$>$}\\*
+{\ttfamily \#include $<$boost/algorithm/string/join.\+hpp$>$}\\*
+{\ttfamily \#include $<$boost/range/adaptor/transformed.\+hpp$>$}\\*
+{\ttfamily \#include \char`\"{}gtfs-\/realtime.\+pb.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}sampling.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}gtfs.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}gps.\+h\char`\"{}}\\*
+Include dependency graph for transit\+\_\+network\+\_\+model.\+cpp\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -51,12 +52,17 @@ Tom Elliott \href{mailto:tom.elliott@auckland.ac.nz}{\tt tom.\+elliott@auckland.
 
 
 \subsection{Function Documentation}
-\mbox{\Hypertarget{transit__network__model_8cpp_a9df5b6525dce5514a8f465ea2c156e4f}\label{transit__network__model_8cpp_a9df5b6525dce5514a8f465ea2c156e4f}} 
 \index{transit\+\_\+network\+\_\+model.\+cpp@{transit\+\_\+network\+\_\+model.\+cpp}!load\+\_\+feed@{load\+\_\+feed}}
 \index{load\+\_\+feed@{load\+\_\+feed}!transit\+\_\+network\+\_\+model.\+cpp@{transit\+\_\+network\+\_\+model.\+cpp}}
-\subsubsection{\texorpdfstring{load\+\_\+feed()}{load\_feed()}}
-{\footnotesize\ttfamily bool load\+\_\+feed (\begin{DoxyParamCaption}\item[{std\+::unordered\+\_\+map$<$ std\+::string, std\+::unique\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Vehicle}{gtfs\+::\+Vehicle} $>$ $>$ \&}]{vs,  }\item[{std\+::string \&}]{feed\+\_\+file,  }\item[{int}]{N,  }\item[{\hyperlink{classsampling_1_1RNG}{sampling\+::\+R\+NG} \&}]{rng,  }\item[{\hyperlink{classgtfs_1_1GTFS}{gtfs\+::\+G\+T\+FS} \&}]{gtfs }\end{DoxyParamCaption})}
-
+\subsubsection[{\texorpdfstring{load\+\_\+feed(std\+::unordered\+\_\+map$<$ std\+::string, std\+::unique\+\_\+ptr$<$ gtfs\+::\+Vehicle $>$ $>$ \&vs, std\+::string \&feed\+\_\+file, int N, sampling\+::\+R\+N\+G \&rng, gtfs\+::\+G\+T\+F\+S \&gtfs)}{load_feed(std::unordered_map< std::string, std::unique_ptr< gtfs::Vehicle > > &vs, std::string &feed_file, int N, sampling::RNG &rng, gtfs::GTFS &gtfs)}}]{\setlength{\rightskip}{0pt plus 5cm}bool load\+\_\+feed (
+\begin{DoxyParamCaption}
+\item[{std\+::unordered\+\_\+map$<$ std\+::string, std\+::unique\+\_\+ptr$<$ {\bf gtfs\+::\+Vehicle} $>$ $>$ \&}]{vs, }
+\item[{std\+::string \&}]{feed\+\_\+file, }
+\item[{int}]{N, }
+\item[{{\bf sampling\+::\+R\+NG} \&}]{rng, }
+\item[{{\bf gtfs\+::\+G\+T\+FS} \&}]{gtfs}
+\end{DoxyParamCaption}
+)}\hypertarget{transit__network__model_8cpp_a9df5b6525dce5514a8f465ea2c156e4f}{}\label{transit__network__model_8cpp_a9df5b6525dce5514a8f465ea2c156e4f}
 Load a feed message into vehicle object vector 
 \begin{DoxyParams}{Parameters}
 {\em vs} & reference to vector of vehicle pointers \\
@@ -73,12 +79,14 @@ Load a feed message into vehicle object vector
 \begin{DoxyReturn}{Returns}
 true if the feed is loaded correctly, false if it is not 
 \end{DoxyReturn}
-\mbox{\Hypertarget{transit__network__model_8cpp_a0ddf1224851353fc92bfbff6f499fa97}\label{transit__network__model_8cpp_a0ddf1224851353fc92bfbff6f499fa97}} 
 \index{transit\+\_\+network\+\_\+model.\+cpp@{transit\+\_\+network\+\_\+model.\+cpp}!main@{main}}
 \index{main@{main}!transit\+\_\+network\+\_\+model.\+cpp@{transit\+\_\+network\+\_\+model.\+cpp}}
-\subsubsection{\texorpdfstring{main()}{main()}}
-{\footnotesize\ttfamily int main (\begin{DoxyParamCaption}\item[{int}]{argc,  }\item[{char $\ast$}]{argv\mbox{[}$\,$\mbox{]} }\end{DoxyParamCaption})}
-
+\subsubsection[{\texorpdfstring{main(int argc, char $\ast$argv[])}{main(int argc, char *argv[])}}]{\setlength{\rightskip}{0pt plus 5cm}int main (
+\begin{DoxyParamCaption}
+\item[{int}]{argc, }
+\item[{char $\ast$}]{argv\mbox{[}$\,$\mbox{]}}
+\end{DoxyParamCaption}
+)}\hypertarget{transit__network__model_8cpp_a0ddf1224851353fc92bfbff6f499fa97}{}\label{transit__network__model_8cpp_a0ddf1224851353fc92bfbff6f499fa97}
 Transit Network Model\+: a realtime model running indefinitely (while (true) \{ ... \})
 
 Cycles through latest vehicles in the Realtime Feed, and updates/creates accordingly.
@@ -97,12 +105,14 @@ vehicle positions file
 
 database connection to use
 
-number of particles per vehicle \mbox{\Hypertarget{transit__network__model_8cpp_ae8b2c4377d7ea72a33d0edaf8fad14b3}\label{transit__network__model_8cpp_ae8b2c4377d7ea72a33d0edaf8fad14b3}} 
-\index{transit\+\_\+network\+\_\+model.\+cpp@{transit\+\_\+network\+\_\+model.\+cpp}!time\+\_\+end@{time\+\_\+end}}
+number of particles per vehicle \index{transit\+\_\+network\+\_\+model.\+cpp@{transit\+\_\+network\+\_\+model.\+cpp}!time\+\_\+end@{time\+\_\+end}}
 \index{time\+\_\+end@{time\+\_\+end}!transit\+\_\+network\+\_\+model.\+cpp@{transit\+\_\+network\+\_\+model.\+cpp}}
-\subsubsection{\texorpdfstring{time\+\_\+end()}{time\_end()}}
-{\footnotesize\ttfamily void time\+\_\+end (\begin{DoxyParamCaption}\item[{std\+::clock\+\_\+t \&}]{clock,  }\item[{std\+::chrono\+::high\+\_\+resolution\+\_\+clock\+::time\+\_\+point \&}]{wall }\end{DoxyParamCaption})}
-
+\subsubsection[{\texorpdfstring{time\+\_\+end(std\+::clock\+\_\+t \&clock, std\+::chrono\+::high\+\_\+resolution\+\_\+clock\+::time\+\_\+point \&wall)}{time_end(std::clock_t &clock, std::chrono::high_resolution_clock::time_point &wall)}}]{\setlength{\rightskip}{0pt plus 5cm}void time\+\_\+end (
+\begin{DoxyParamCaption}
+\item[{std\+::clock\+\_\+t \&}]{clock, }
+\item[{std\+::chrono\+::high\+\_\+resolution\+\_\+clock\+::time\+\_\+point \&}]{wall}
+\end{DoxyParamCaption}
+)}\hypertarget{transit__network__model_8cpp_ae8b2c4377d7ea72a33d0edaf8fad14b3}{}\label{transit__network__model_8cpp_ae8b2c4377d7ea72a33d0edaf8fad14b3}
 End a timer and print the results. 
 \begin{DoxyParams}{Parameters}
 {\em clock} & a C\+PU clock \\
@@ -110,12 +120,14 @@ End a timer and print the results.
 {\em wall} & a wall clock \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{transit__network__model_8cpp_aed0cc99c4e64e139becfd28b75cd45fa}\label{transit__network__model_8cpp_aed0cc99c4e64e139becfd28b75cd45fa}} 
 \index{transit\+\_\+network\+\_\+model.\+cpp@{transit\+\_\+network\+\_\+model.\+cpp}!time\+\_\+start@{time\+\_\+start}}
 \index{time\+\_\+start@{time\+\_\+start}!transit\+\_\+network\+\_\+model.\+cpp@{transit\+\_\+network\+\_\+model.\+cpp}}
-\subsubsection{\texorpdfstring{time\+\_\+start()}{time\_start()}}
-{\footnotesize\ttfamily void time\+\_\+start (\begin{DoxyParamCaption}\item[{std\+::clock\+\_\+t \&}]{clock,  }\item[{std\+::chrono\+::high\+\_\+resolution\+\_\+clock\+::time\+\_\+point \&}]{wall }\end{DoxyParamCaption})}
-
+\subsubsection[{\texorpdfstring{time\+\_\+start(std\+::clock\+\_\+t \&clock, std\+::chrono\+::high\+\_\+resolution\+\_\+clock\+::time\+\_\+point \&wall)}{time_start(std::clock_t &clock, std::chrono::high_resolution_clock::time_point &wall)}}]{\setlength{\rightskip}{0pt plus 5cm}void time\+\_\+start (
+\begin{DoxyParamCaption}
+\item[{std\+::clock\+\_\+t \&}]{clock, }
+\item[{std\+::chrono\+::high\+\_\+resolution\+\_\+clock\+::time\+\_\+point \&}]{wall}
+\end{DoxyParamCaption}
+)}\hypertarget{transit__network__model_8cpp_aed0cc99c4e64e139becfd28b75cd45fa}{}\label{transit__network__model_8cpp_aed0cc99c4e64e139becfd28b75cd45fa}
 Start timer. 
 \begin{DoxyParams}{Parameters}
 {\em clock} & a C\+PU clock \\

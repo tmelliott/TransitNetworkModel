@@ -13,11 +13,11 @@
 \item 
 \hyperlink{classgtfs_1_1Shape_af7205aeb0d641d27e01df87a8351283e}{Shape} (std\+::string \&id, std\+::vector$<$ \hyperlink{structgtfs_1_1ShapePt}{Shape\+Pt} $>$ \&path, std\+::vector$<$ \hyperlink{structgtfs_1_1ShapeSegment}{Shape\+Segment} $>$ segments)
 \item 
-std\+::string \hyperlink{classgtfs_1_1Shape_ad8f8c0c5c19d4a8e840be1ed9a89de9e}{get\+\_\+id} (void) const
+std\+::string \hyperlink{classgtfs_1_1Shape_ad829fc5da27e6402265864d647c08d1f}{get\+\_\+id} (void) const 
 \item 
-const std\+::vector$<$ \hyperlink{structgtfs_1_1ShapePt}{Shape\+Pt} $>$ \& \hyperlink{classgtfs_1_1Shape_a3b9c24a3ec0de99e4e7ac2fe2bb128a0}{get\+\_\+path} (void) const
+const std\+::vector$<$ \hyperlink{structgtfs_1_1ShapePt}{Shape\+Pt} $>$ \& \hyperlink{classgtfs_1_1Shape_a2a8840b13035b44e97ce4a0b56e39d9c}{get\+\_\+path} (void) const 
 \item 
-const std\+::vector$<$ \hyperlink{structgtfs_1_1ShapeSegment}{Shape\+Segment} $>$ \& \hyperlink{classgtfs_1_1Shape_ab6959c8c957c2548313e4cf76bd2a2dd}{get\+\_\+segments} (void) const
+const std\+::vector$<$ \hyperlink{structgtfs_1_1ShapeSegment}{Shape\+Segment} $>$ \& \hyperlink{classgtfs_1_1Shape_a7202518006f474db4e8005ad8b9d4055}{get\+\_\+segments} (void) const 
 \item 
 void \hyperlink{classgtfs_1_1Shape_a39e7bb353e89f954d36eb7f9ca4820b9}{set\+\_\+path} (std\+::vector$<$ \hyperlink{structgtfs_1_1ShapePt}{Shape\+Pt} $>$ \&path)
 \item 
@@ -31,23 +31,26 @@ An object of this class represents the path a vehicles takes from origin to dest
 The path is made up of one or more segments, and each is associated with an initial distance traveled up until the beginning of that segment. 
 
 \subsection{Constructor \& Destructor Documentation}
-\mbox{\Hypertarget{classgtfs_1_1Shape_ace6a58f57452ab0d2830b518a0ed2bde}\label{classgtfs_1_1Shape_ace6a58f57452ab0d2830b518a0ed2bde}} 
 \index{gtfs\+::\+Shape@{gtfs\+::\+Shape}!Shape@{Shape}}
 \index{Shape@{Shape}!gtfs\+::\+Shape@{gtfs\+::\+Shape}}
-\subsubsection{\texorpdfstring{Shape()}{Shape()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
-{\footnotesize\ttfamily gtfs\+::\+Shape\+::\+Shape (\begin{DoxyParamCaption}\item[{std\+::string \&}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
+\subsubsection[{\texorpdfstring{Shape(std\+::string \&id)}{Shape(std::string &id)}}]{\setlength{\rightskip}{0pt plus 5cm}gtfs\+::\+Shape\+::\+Shape (
+\begin{DoxyParamCaption}
+\item[{std\+::string \&}]{id}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{classgtfs_1_1Shape_ace6a58f57452ab0d2830b518a0ed2bde}{}\label{classgtfs_1_1Shape_ace6a58f57452ab0d2830b518a0ed2bde}
 Default constructor for a shape object. 
 \begin{DoxyParams}{Parameters}
 {\em id} & the ID of the shape \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{classgtfs_1_1Shape_a17adce0bcc4f7f7b159a08f8fa8eed56}\label{classgtfs_1_1Shape_a17adce0bcc4f7f7b159a08f8fa8eed56}} 
 \index{gtfs\+::\+Shape@{gtfs\+::\+Shape}!Shape@{Shape}}
 \index{Shape@{Shape}!gtfs\+::\+Shape@{gtfs\+::\+Shape}}
-\subsubsection{\texorpdfstring{Shape()}{Shape()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
-{\footnotesize\ttfamily gtfs\+::\+Shape\+::\+Shape (\begin{DoxyParamCaption}\item[{std\+::string \&}]{id,  }\item[{std\+::vector$<$ \hyperlink{structgtfs_1_1ShapePt}{Shape\+Pt} $>$ \&}]{path }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
+\subsubsection[{\texorpdfstring{Shape(std\+::string \&id, std\+::vector$<$ Shape\+Pt $>$ \&path)}{Shape(std::string &id, std::vector< ShapePt > &path)}}]{\setlength{\rightskip}{0pt plus 5cm}gtfs\+::\+Shape\+::\+Shape (
+\begin{DoxyParamCaption}
+\item[{std\+::string \&}]{id, }
+\item[{std\+::vector$<$ {\bf Shape\+Pt} $>$ \&}]{path}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{classgtfs_1_1Shape_a17adce0bcc4f7f7b159a08f8fa8eed56}{}\label{classgtfs_1_1Shape_a17adce0bcc4f7f7b159a08f8fa8eed56}
 Constructor for a shape with a path 
 \begin{DoxyParams}{Parameters}
 {\em id} & the ID of the shape \\
@@ -55,12 +58,15 @@ Constructor for a shape with a path
 {\em path} & the path, sequence of cooridinates, for the shape \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{classgtfs_1_1Shape_af7205aeb0d641d27e01df87a8351283e}\label{classgtfs_1_1Shape_af7205aeb0d641d27e01df87a8351283e}} 
 \index{gtfs\+::\+Shape@{gtfs\+::\+Shape}!Shape@{Shape}}
 \index{Shape@{Shape}!gtfs\+::\+Shape@{gtfs\+::\+Shape}}
-\subsubsection{\texorpdfstring{Shape()}{Shape()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
-{\footnotesize\ttfamily gtfs\+::\+Shape\+::\+Shape (\begin{DoxyParamCaption}\item[{std\+::string \&}]{id,  }\item[{std\+::vector$<$ \hyperlink{structgtfs_1_1ShapePt}{Shape\+Pt} $>$ \&}]{path,  }\item[{std\+::vector$<$ \hyperlink{structgtfs_1_1ShapeSegment}{Shape\+Segment} $>$}]{segments }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
+\subsubsection[{\texorpdfstring{Shape(std\+::string \&id, std\+::vector$<$ Shape\+Pt $>$ \&path, std\+::vector$<$ Shape\+Segment $>$ segments)}{Shape(std::string &id, std::vector< ShapePt > &path, std::vector< ShapeSegment > segments)}}]{\setlength{\rightskip}{0pt plus 5cm}gtfs\+::\+Shape\+::\+Shape (
+\begin{DoxyParamCaption}
+\item[{std\+::string \&}]{id, }
+\item[{std\+::vector$<$ {\bf Shape\+Pt} $>$ \&}]{path, }
+\item[{std\+::vector$<$ {\bf Shape\+Segment} $>$}]{segments}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{classgtfs_1_1Shape_af7205aeb0d641d27e01df87a8351283e}{}\label{classgtfs_1_1Shape_af7205aeb0d641d27e01df87a8351283e}
 Constructor for a shape with path and segments. 
 \begin{DoxyParams}{Parameters}
 {\em id} & the ID of the shape \\
@@ -73,12 +79,14 @@ Constructor for a shape with path and segments.
 
 
 \subsection{Member Function Documentation}
-\mbox{\Hypertarget{classgtfs_1_1Shape_afb5bfd99bafb82eb085198218fe13342}\label{classgtfs_1_1Shape_afb5bfd99bafb82eb085198218fe13342}} 
 \index{gtfs\+::\+Shape@{gtfs\+::\+Shape}!add\+\_\+segment@{add\+\_\+segment}}
 \index{add\+\_\+segment@{add\+\_\+segment}!gtfs\+::\+Shape@{gtfs\+::\+Shape}}
-\subsubsection{\texorpdfstring{add\+\_\+segment()}{add\_segment()}}
-{\footnotesize\ttfamily void gtfs\+::\+Shape\+::add\+\_\+segment (\begin{DoxyParamCaption}\item[{std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Segment}{Segment} $>$}]{segment,  }\item[{double}]{distance }\end{DoxyParamCaption})}
-
+\subsubsection[{\texorpdfstring{add\+\_\+segment(std\+::shared\+\_\+ptr$<$ Segment $>$ segment, double distance)}{add_segment(std::shared_ptr< Segment > segment, double distance)}}]{\setlength{\rightskip}{0pt plus 5cm}void gtfs\+::\+Shape\+::add\+\_\+segment (
+\begin{DoxyParamCaption}
+\item[{std\+::shared\+\_\+ptr$<$ {\bf Segment} $>$}]{segment, }
+\item[{double}]{distance}
+\end{DoxyParamCaption}
+)}\hypertarget{classgtfs_1_1Shape_afb5bfd99bafb82eb085198218fe13342}{}\label{classgtfs_1_1Shape_afb5bfd99bafb82eb085198218fe13342}
 Add a segment to a shape. 
 \begin{DoxyParams}{Parameters}
 {\em segment} & Pointer to the segment object. \\
@@ -86,39 +94,43 @@ Add a segment to a shape.
 {\em distance} & How far into the overall shape this segment begins at. \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{classgtfs_1_1Shape_ad8f8c0c5c19d4a8e840be1ed9a89de9e}\label{classgtfs_1_1Shape_ad8f8c0c5c19d4a8e840be1ed9a89de9e}} 
 \index{gtfs\+::\+Shape@{gtfs\+::\+Shape}!get\+\_\+id@{get\+\_\+id}}
 \index{get\+\_\+id@{get\+\_\+id}!gtfs\+::\+Shape@{gtfs\+::\+Shape}}
-\subsubsection{\texorpdfstring{get\+\_\+id()}{get\_id()}}
-{\footnotesize\ttfamily std\+::string gtfs\+::\+Shape\+::get\+\_\+id (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
-
+\subsubsection[{\texorpdfstring{get\+\_\+id(void) const }{get_id(void) const }}]{\setlength{\rightskip}{0pt plus 5cm}std\+::string gtfs\+::\+Shape\+::get\+\_\+id (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{classgtfs_1_1Shape_ad829fc5da27e6402265864d647c08d1f}{}\label{classgtfs_1_1Shape_ad829fc5da27e6402265864d647c08d1f}
 \begin{DoxyReturn}{Returns}
 the shape\textquotesingle{}s ID 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classgtfs_1_1Shape_a3b9c24a3ec0de99e4e7ac2fe2bb128a0}\label{classgtfs_1_1Shape_a3b9c24a3ec0de99e4e7ac2fe2bb128a0}} 
 \index{gtfs\+::\+Shape@{gtfs\+::\+Shape}!get\+\_\+path@{get\+\_\+path}}
 \index{get\+\_\+path@{get\+\_\+path}!gtfs\+::\+Shape@{gtfs\+::\+Shape}}
-\subsubsection{\texorpdfstring{get\+\_\+path()}{get\_path()}}
-{\footnotesize\ttfamily const std\+::vector$<$\hyperlink{structgtfs_1_1ShapePt}{Shape\+Pt}$>$\& gtfs\+::\+Shape\+::get\+\_\+path (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
-
+\subsubsection[{\texorpdfstring{get\+\_\+path(void) const }{get_path(void) const }}]{\setlength{\rightskip}{0pt plus 5cm}const std\+::vector$<${\bf Shape\+Pt}$>$\& gtfs\+::\+Shape\+::get\+\_\+path (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{classgtfs_1_1Shape_a2a8840b13035b44e97ce4a0b56e39d9c}{}\label{classgtfs_1_1Shape_a2a8840b13035b44e97ce4a0b56e39d9c}
 \begin{DoxyReturn}{Returns}
 a vector of points making up the shape\textquotesingle{}s path 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classgtfs_1_1Shape_ab6959c8c957c2548313e4cf76bd2a2dd}\label{classgtfs_1_1Shape_ab6959c8c957c2548313e4cf76bd2a2dd}} 
 \index{gtfs\+::\+Shape@{gtfs\+::\+Shape}!get\+\_\+segments@{get\+\_\+segments}}
 \index{get\+\_\+segments@{get\+\_\+segments}!gtfs\+::\+Shape@{gtfs\+::\+Shape}}
-\subsubsection{\texorpdfstring{get\+\_\+segments()}{get\_segments()}}
-{\footnotesize\ttfamily const std\+::vector$<$\hyperlink{structgtfs_1_1ShapeSegment}{Shape\+Segment}$>$\& gtfs\+::\+Shape\+::get\+\_\+segments (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
-
+\subsubsection[{\texorpdfstring{get\+\_\+segments(void) const }{get_segments(void) const }}]{\setlength{\rightskip}{0pt plus 5cm}const std\+::vector$<${\bf Shape\+Segment}$>$\& gtfs\+::\+Shape\+::get\+\_\+segments (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{classgtfs_1_1Shape_a7202518006f474db4e8005ad8b9d4055}{}\label{classgtfs_1_1Shape_a7202518006f474db4e8005ad8b9d4055}
 \begin{DoxyReturn}{Returns}
 a vector of shape segments 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classgtfs_1_1Shape_a39e7bb353e89f954d36eb7f9ca4820b9}\label{classgtfs_1_1Shape_a39e7bb353e89f954d36eb7f9ca4820b9}} 
 \index{gtfs\+::\+Shape@{gtfs\+::\+Shape}!set\+\_\+path@{set\+\_\+path}}
 \index{set\+\_\+path@{set\+\_\+path}!gtfs\+::\+Shape@{gtfs\+::\+Shape}}
-\subsubsection{\texorpdfstring{set\+\_\+path()}{set\_path()}}
-{\footnotesize\ttfamily void gtfs\+::\+Shape\+::set\+\_\+path (\begin{DoxyParamCaption}\item[{std\+::vector$<$ \hyperlink{structgtfs_1_1ShapePt}{Shape\+Pt} $>$ \&}]{path }\end{DoxyParamCaption})}
-
+\subsubsection[{\texorpdfstring{set\+\_\+path(std\+::vector$<$ Shape\+Pt $>$ \&path)}{set_path(std::vector< ShapePt > &path)}}]{\setlength{\rightskip}{0pt plus 5cm}void gtfs\+::\+Shape\+::set\+\_\+path (
+\begin{DoxyParamCaption}
+\item[{std\+::vector$<$ {\bf Shape\+Pt} $>$ \&}]{path}
+\end{DoxyParamCaption}
+)}\hypertarget{classgtfs_1_1Shape_a39e7bb353e89f954d36eb7f9ca4820b9}{}\label{classgtfs_1_1Shape_a39e7bb353e89f954d36eb7f9ca4820b9}
 Set a shape\textquotesingle{}s path 
 \begin{DoxyParams}{Parameters}
 {\em path} & vector of coordinates \\

@@ -29,12 +29,13 @@ G\+PS Namespace for co-\/ordinate manipulation.
 Most of the formulae were obtained from \href{http://www.movable-type.co.uk/scripts/latlong.html}{\tt http\+://www.\+movable-\/type.\+co.\+uk/scripts/latlong.\+html} 
 
 \subsection{Function Documentation}
-\mbox{\Hypertarget{namespacegps_a5c00877fe5fce323f1c834c324018c8f}\label{namespacegps_a5c00877fe5fce323f1c834c324018c8f}} 
 \index{gps@{gps}!deg@{deg}}
 \index{deg@{deg}!gps@{gps}}
-\subsubsection{\texorpdfstring{deg()}{deg()}}
-{\footnotesize\ttfamily double gps\+::deg (\begin{DoxyParamCaption}\item[{double}]{r }\end{DoxyParamCaption})}
-
+\subsubsection[{\texorpdfstring{deg(double r)}{deg(double r)}}]{\setlength{\rightskip}{0pt plus 5cm}double gps\+::deg (
+\begin{DoxyParamCaption}
+\item[{double}]{r}
+\end{DoxyParamCaption}
+)}\hypertarget{namespacegps_a5c00877fe5fce323f1c834c324018c8f}{}\label{namespacegps_a5c00877fe5fce323f1c834c324018c8f}
 Convert radians to degrees
 
 $ \theta^\circ = \frac{180}{\pi} x $
@@ -47,12 +48,14 @@ $ \theta^\circ = \frac{180}{\pi} x $
 \begin{DoxyReturn}{Returns}
 an angle in degrees 
 \end{DoxyReturn}
-\mbox{\Hypertarget{namespacegps_a5fb543469635387159ce1b8e24f6f78a}\label{namespacegps_a5fb543469635387159ce1b8e24f6f78a}} 
 \index{gps@{gps}!operator$<$$<$@{operator$<$$<$}}
 \index{operator$<$$<$@{operator$<$$<$}!gps@{gps}}
-\subsubsection{\texorpdfstring{operator$<$$<$()}{operator<<()}}
-{\footnotesize\ttfamily std\+::ostream\& gps\+::operator$<$$<$ (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{os,  }\item[{const \hyperlink{classgps_1_1Coord}{Coord} \&}]{p }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
+\subsubsection[{\texorpdfstring{operator$<$$<$(std\+::ostream \&os, const Coord \&p)}{operator<<(std::ostream &os, const Coord &p)}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::ostream\& gps\+::operator$<$$<$ (
+\begin{DoxyParamCaption}
+\item[{std\+::ostream \&}]{os, }
+\item[{const {\bf Coord} \&}]{p}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{namespacegps_a5fb543469635387159ce1b8e24f6f78a}{}\label{namespacegps_a5fb543469635387159ce1b8e24f6f78a}
 Print a coord object. 
 \begin{DoxyParams}{Parameters}
 {\em os} & the ostream to write to \\
@@ -63,12 +66,13 @@ Print a coord object.
 \begin{DoxyReturn}{Returns}
 an ostream instance 
 \end{DoxyReturn}
-\mbox{\Hypertarget{namespacegps_ad44ea39876137fc96774486e3a60f004}\label{namespacegps_ad44ea39876137fc96774486e3a60f004}} 
 \index{gps@{gps}!rad@{rad}}
 \index{rad@{rad}!gps@{gps}}
-\subsubsection{\texorpdfstring{rad()}{rad()}}
-{\footnotesize\ttfamily double gps\+::rad (\begin{DoxyParamCaption}\item[{double}]{d }\end{DoxyParamCaption})}
-
+\subsubsection[{\texorpdfstring{rad(double d)}{rad(double d)}}]{\setlength{\rightskip}{0pt plus 5cm}double gps\+::rad (
+\begin{DoxyParamCaption}
+\item[{double}]{d}
+\end{DoxyParamCaption}
+)}\hypertarget{namespacegps_ad44ea39876137fc96774486e3a60f004}{}\label{namespacegps_ad44ea39876137fc96774486e3a60f004}
 Convert degrees to radians
 
 $ x = \frac{\pi}{180} \theta^\circ $
@@ -84,10 +88,7 @@ an angle in radians
 
 
 \subsection{Variable Documentation}
-\mbox{\Hypertarget{namespacegps_a336bcadf804afba736e0cf773b5a36e8}\label{namespacegps_a336bcadf804afba736e0cf773b5a36e8}} 
 \index{gps@{gps}!R@{R}}
 \index{R@{R}!gps@{gps}}
-\subsubsection{\texorpdfstring{R}{R}}
-{\footnotesize\ttfamily const double gps\+::R = 6371000.\+0}
-
+\subsubsection[{\texorpdfstring{R}{R}}]{\setlength{\rightskip}{0pt plus 5cm}const double gps\+::R = 6371000.\+0}\hypertarget{namespacegps_a336bcadf804afba736e0cf773b5a36e8}{}\label{namespacegps_a336bcadf804afba736e0cf773b5a36e8}
 Radius of the earth, in meters 

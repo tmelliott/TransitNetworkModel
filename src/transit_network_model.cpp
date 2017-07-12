@@ -156,7 +156,6 @@ int main (int argc, char* argv[]) {
 			// -> triggers particle transition -> resample
 			time_start (clockstart, wallstart);
 			// #pragma omp parallel for schedule(dynamic) num_threads(3)
-			// for (auto& v: vehicles) {
 			for (unsigned i=0; i<vehicles.bucket_count (); i++) {
 				std::cout << "\n - vehicle " << i;
 				for (auto v = vehicles.begin (i); v != vehicles.end (i); v++) {

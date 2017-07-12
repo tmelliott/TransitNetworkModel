@@ -1,22 +1,28 @@
 \hypertarget{load__gtfs_8cpp}{}\section{src/load\+\_\+gtfs.cpp File Reference}
 \label{load__gtfs_8cpp}\index{src/load\+\_\+gtfs.\+cpp@{src/load\+\_\+gtfs.\+cpp}}
-{\ttfamily \#include $<$iostream$>$}\newline
-{\ttfamily \#include $<$vector$>$}\newline
-{\ttfamily \#include $<$stdlib.\+h$>$}\newline
-{\ttfamily \#include $<$fstream$>$}\newline
-{\ttfamily \#include $<$algorithm$>$}\newline
-{\ttfamily \#include $<$boost/program\+\_\+options.\+hpp$>$}\newline
-{\ttfamily \#include $<$sqlite3.\+h$>$}\newline
-{\ttfamily \#include \char`\"{}gps.\+h\char`\"{}}\newline
-{\ttfamily \#include \char`\"{}gtfs.\+h\char`\"{}}\newline
-{\ttfamily \#include \char`\"{}json.\+hpp\char`\"{}}\newline
-Include dependency graph for load\+\_\+gtfs.\+cpp\+:\nopagebreak
+{\ttfamily \#include $<$iostream$>$}\\*
+{\ttfamily \#include $<$vector$>$}\\*
+{\ttfamily \#include $<$stdlib.\+h$>$}\\*
+{\ttfamily \#include $<$fstream$>$}\\*
+{\ttfamily \#include $<$algorithm$>$}\\*
+{\ttfamily \#include $<$boost/program\+\_\+options.\+hpp$>$}\\*
+{\ttfamily \#include $<$sqlite3.\+h$>$}\\*
+{\ttfamily \#include \char`\"{}gps.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}gtfs.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}json.\+hpp\char`\"{}}\\*
+Include dependency graph for load\+\_\+gtfs.\+cpp\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
 \includegraphics[width=350pt]{load__gtfs_8cpp__incl}
 \end{center}
 \end{figure}
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structSplit}{Split}
+\end{DoxyCompactItemize}
 \subsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
@@ -26,10 +32,13 @@ void \hyperlink{load__gtfs_8cpp_a54ef9ab4a1985152c9cf7ec290fbea2d}{import\+\_\+i
 \item 
 void \hyperlink{load__gtfs_8cpp_a2f86801b49d8f0b1649a9edc0e197172}{set\+\_\+distances} (sqlite3 $\ast$db)
 \item 
-void \hyperlink{load__gtfs_8cpp_a4c73441dc3489abcadf91f57dd472673}{segment\+\_\+shapes} (sqlite3 $\ast$db)
+std\+::vector$<$ \hyperlink{structSplit}{Split} $>$ \hyperlink{load__gtfs_8cpp_af82110f83438bd672ded68a2451e69f7}{find\+\_\+intersections} (std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Shape}{gtfs\+::\+Shape} $>$ shape, std\+::vector$<$ \hyperlink{classgtfs_1_1Intersection}{gtfs\+::\+Intersection} $>$ \&intersections)
 \item 
-\mbox{\Hypertarget{load__gtfs_8cpp_afc0ec9cd72ffe92b7aacb7c58aeea6b3}\label{load__gtfs_8cpp_afc0ec9cd72ffe92b7aacb7c58aeea6b3}} 
-void {\bfseries calculate\+\_\+stop\+\_\+distances} (std\+::string \&dbname)
+void {\bfseries segment\+\_\+shapes} (sqlite3 $\ast$db)\hypertarget{load__gtfs_8cpp_a4c73441dc3489abcadf91f57dd472673}{}\label{load__gtfs_8cpp_a4c73441dc3489abcadf91f57dd472673}
+
+\item 
+void {\bfseries calculate\+\_\+stop\+\_\+distances} (std\+::string \&dbname)\hypertarget{load__gtfs_8cpp_afc0ec9cd72ffe92b7aacb7c58aeea6b3}{}\label{load__gtfs_8cpp_afc0ec9cd72ffe92b7aacb7c58aeea6b3}
+
 \item 
 int \hyperlink{load__gtfs_8cpp_a0ddf1224851353fc92bfbff6f499fa97}{main} (int argc, char $\ast$argv\mbox{[}$\,$\mbox{]})
 \end{DoxyCompactItemize}
@@ -51,12 +60,32 @@ Tom Elliott \href{mailto:tom.elliott@auckland.ac.nz}{\tt tom.\+elliott@auckland.
 
 
 \subsection{Function Documentation}
-\mbox{\Hypertarget{load__gtfs_8cpp_a54ef9ab4a1985152c9cf7ec290fbea2d}\label{load__gtfs_8cpp_a54ef9ab4a1985152c9cf7ec290fbea2d}} 
+\index{load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}!find\+\_\+intersections@{find\+\_\+intersections}}
+\index{find\+\_\+intersections@{find\+\_\+intersections}!load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}}
+\subsubsection[{\texorpdfstring{find\+\_\+intersections(std\+::shared\+\_\+ptr$<$ gtfs\+::\+Shape $>$ shape, std\+::vector$<$ gtfs\+::\+Intersection $>$ \&intersections)}{find_intersections(std::shared_ptr< gtfs::Shape > shape, std::vector< gtfs::Intersection > &intersections)}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::vector$<$ {\bf Split} $>$ find\+\_\+intersections (
+\begin{DoxyParamCaption}
+\item[{std\+::shared\+\_\+ptr$<$ {\bf gtfs\+::\+Shape} $>$}]{shape, }
+\item[{std\+::vector$<$ {\bf gtfs\+::\+Intersection} $>$ \&}]{intersections}
+\end{DoxyParamCaption}
+)}\hypertarget{load__gtfs_8cpp_af82110f83438bd672ded68a2451e69f7}{}\label{load__gtfs_8cpp_af82110f83438bd672ded68a2451e69f7}
+Find intersections along a path (multiple if it loops etc). 
+\begin{DoxyParams}{Parameters}
+{\em path} & path to look through \\
+\hline
+{\em intersections} & possible intersections \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+vector of split points 
+\end{DoxyReturn}
 \index{load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}!import\+\_\+intersections@{import\+\_\+intersections}}
 \index{import\+\_\+intersections@{import\+\_\+intersections}!load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}}
-\subsubsection{\texorpdfstring{import\+\_\+intersections()}{import\_intersections()}}
-{\footnotesize\ttfamily void import\+\_\+intersections (\begin{DoxyParamCaption}\item[{sqlite3 $\ast$}]{db,  }\item[{std\+::vector$<$ std\+::string $>$}]{files }\end{DoxyParamCaption})}
-
+\subsubsection[{\texorpdfstring{import\+\_\+intersections(sqlite3 $\ast$db, std\+::vector$<$ std\+::string $>$ files)}{import_intersections(sqlite3 *db, std::vector< std::string > files)}}]{\setlength{\rightskip}{0pt plus 5cm}void import\+\_\+intersections (
+\begin{DoxyParamCaption}
+\item[{sqlite3 $\ast$}]{db, }
+\item[{std\+::vector$<$ std\+::string $>$}]{files}
+\end{DoxyParamCaption}
+)}\hypertarget{load__gtfs_8cpp_a54ef9ab4a1985152c9cf7ec290fbea2d}{}\label{load__gtfs_8cpp_a54ef9ab4a1985152c9cf7ec290fbea2d}
 Import insersections from a J\+S\+ON file into the database.
 
 Additionally, clusters of \char`\"{}points\char`\"{} belonging to the same intersection are combined into a single object.
@@ -68,12 +97,14 @@ Additionally, clusters of \char`\"{}points\char`\"{} belonging to the same inter
 {\em files} & the files to load intersections from \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{load__gtfs_8cpp_a0ddf1224851353fc92bfbff6f499fa97}\label{load__gtfs_8cpp_a0ddf1224851353fc92bfbff6f499fa97}} 
 \index{load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}!main@{main}}
 \index{main@{main}!load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}}
-\subsubsection{\texorpdfstring{main()}{main()}}
-{\footnotesize\ttfamily int main (\begin{DoxyParamCaption}\item[{int}]{argc,  }\item[{char $\ast$}]{argv\mbox{[}$\,$\mbox{]} }\end{DoxyParamCaption})}
-
+\subsubsection[{\texorpdfstring{main(int argc, char $\ast$argv[])}{main(int argc, char *argv[])}}]{\setlength{\rightskip}{0pt plus 5cm}int main (
+\begin{DoxyParamCaption}
+\item[{int}]{argc, }
+\item[{char $\ast$}]{argv\mbox{[}$\,$\mbox{]}}
+\end{DoxyParamCaption}
+)}\hypertarget{load__gtfs_8cpp_a0ddf1224851353fc92bfbff6f499fa97}{}\label{load__gtfs_8cpp_a0ddf1224851353fc92bfbff6f499fa97}
 Loads G\+T\+FS file into database and segments as necessary.
 
 
@@ -86,25 +117,13 @@ Loads G\+T\+FS file into database and segments as necessary.
 \begin{DoxyReturn}{Returns}
 0 if everything went OK; 1 if it didn\textquotesingle{}t 
 \end{DoxyReturn}
-database connection to use \mbox{\Hypertarget{load__gtfs_8cpp_a4c73441dc3489abcadf91f57dd472673}\label{load__gtfs_8cpp_a4c73441dc3489abcadf91f57dd472673}} 
-\index{load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}!segment\+\_\+shapes@{segment\+\_\+shapes}}
-\index{segment\+\_\+shapes@{segment\+\_\+shapes}!load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}}
-\subsubsection{\texorpdfstring{segment\+\_\+shapes()}{segment\_shapes()}}
-{\footnotesize\ttfamily void segment\+\_\+shapes (\begin{DoxyParamCaption}\item[{sqlite3 $\ast$}]{db }\end{DoxyParamCaption})}
-
-Segment shapes.
-
-
-\begin{DoxyParams}{Parameters}
-{\em db} & a database connection \\
-\hline
-\end{DoxyParams}
-A split object, used only to find intersections at which to split the route.\mbox{\Hypertarget{load__gtfs_8cpp_a2f86801b49d8f0b1649a9edc0e197172}\label{load__gtfs_8cpp_a2f86801b49d8f0b1649a9edc0e197172}} 
-\index{load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}!set\+\_\+distances@{set\+\_\+distances}}
+database connection to use \index{load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}!set\+\_\+distances@{set\+\_\+distances}}
 \index{set\+\_\+distances@{set\+\_\+distances}!load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}}
-\subsubsection{\texorpdfstring{set\+\_\+distances()}{set\_distances()}}
-{\footnotesize\ttfamily void set\+\_\+distances (\begin{DoxyParamCaption}\item[{sqlite3 $\ast$}]{db }\end{DoxyParamCaption})}
-
+\subsubsection[{\texorpdfstring{set\+\_\+distances(sqlite3 $\ast$db)}{set_distances(sqlite3 *db)}}]{\setlength{\rightskip}{0pt plus 5cm}void set\+\_\+distances (
+\begin{DoxyParamCaption}
+\item[{sqlite3 $\ast$}]{db}
+\end{DoxyParamCaption}
+)}\hypertarget{load__gtfs_8cpp_a2f86801b49d8f0b1649a9edc0e197172}{}\label{load__gtfs_8cpp_a2f86801b49d8f0b1649a9edc0e197172}
 Set distance in database for segments and stops
 
 To reduce reads, perform all at once, route by route. For each route
@@ -123,12 +142,13 @@ To reduce reads, perform all at once, route by route. For each route
 {\em db} & the database to use \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{load__gtfs_8cpp_acc289d9bfee4c154322662aef55c5438}\label{load__gtfs_8cpp_acc289d9bfee4c154322662aef55c5438}} 
 \index{load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}!system@{system}}
 \index{system@{system}!load\+\_\+gtfs.\+cpp@{load\+\_\+gtfs.\+cpp}}
-\subsubsection{\texorpdfstring{system()}{system()}}
-{\footnotesize\ttfamily int system (\begin{DoxyParamCaption}\item[{std\+::string const \&}]{s }\end{DoxyParamCaption})}
-
+\subsubsection[{\texorpdfstring{system(std\+::string const \&s)}{system(std::string const &s)}}]{\setlength{\rightskip}{0pt plus 5cm}int system (
+\begin{DoxyParamCaption}
+\item[{std\+::string const \&}]{s}
+\end{DoxyParamCaption}
+)}\hypertarget{load__gtfs_8cpp_acc289d9bfee4c154322662aef55c5438}{}\label{load__gtfs_8cpp_acc289d9bfee4c154322662aef55c5438}
 A \hyperlink{load__gtfs_8cpp_acc289d9bfee4c154322662aef55c5438}{system()} command that takes a std\+::string instead of a char. 
 \begin{DoxyParams}{Parameters}
 {\em s} & The command to run. \\

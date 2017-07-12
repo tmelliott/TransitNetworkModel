@@ -15,7 +15,7 @@
 \item 
 \hyperlink{classgtfs_1_1Segment_ab3de55f7f97c97ecd4be08be380129d0}{Segment} (unsigned long id, std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Stop}{Stop} $>$ start, std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Stop}{Stop} $>$ end, double len)
 \item 
-const unsigned long \& \hyperlink{classgtfs_1_1Segment_a5c324888b7535df4623d8f32d907fca3}{get\+\_\+id} (void) const
+const unsigned long \& \hyperlink{classgtfs_1_1Segment_a68a02d9941d73e46cb8be471bed620e7}{get\+\_\+id} (void) const 
 \item 
 double \hyperlink{classgtfs_1_1Segment_a4f42ea597e18e54c9ec506697eb333a9}{get\+\_\+length} (void)
 \item 
@@ -27,7 +27,7 @@ std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Intersection}{Intersection} $>
 \item 
 std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Intersection}{Intersection} $>$ \hyperlink{classgtfs_1_1Segment_a13181832822c8780ab7c944d2fea2a66}{get\+\_\+end} (void)
 \item 
-int \hyperlink{classgtfs_1_1Segment_a366d9b1437e4175c3f43d312fab09530}{get\+\_\+type} (void) const
+int \hyperlink{classgtfs_1_1Segment_ace65bcda26860737601ab722027d19db}{get\+\_\+type} (void) const 
 \item 
 bool \hyperlink{classgtfs_1_1Segment_aa6d202be9bccb10ebd3c9274b7ab9e0c}{from\+Int} (void)
 \item 
@@ -41,12 +41,16 @@ An object of this class represents a vehicles path between two intersections.
 The segment has a mean and variance of \char`\"{}speed\char`\"{} along it. At the beginning and end of routes, segments are defined from the first stop to the first intersection, and from the last intersection to the last stop, respectively. Each segment has a length, and consists of a sequence of \hyperlink{classgps_1_1Coord}{gps\+::\+Coord}\textquotesingle{}s which are in turn associated with a cumulative distance. 
 
 \subsection{Constructor \& Destructor Documentation}
-\mbox{\Hypertarget{classgtfs_1_1Segment_a3ffae4434816b887aaa0ad599ca1776a}\label{classgtfs_1_1Segment_a3ffae4434816b887aaa0ad599ca1776a}} 
 \index{gtfs\+::\+Segment@{gtfs\+::\+Segment}!Segment@{Segment}}
 \index{Segment@{Segment}!gtfs\+::\+Segment@{gtfs\+::\+Segment}}
-\subsubsection{\texorpdfstring{Segment()}{Segment()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
-{\footnotesize\ttfamily gtfs\+::\+Segment\+::\+Segment (\begin{DoxyParamCaption}\item[{unsigned long}]{id,  }\item[{std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Intersection}{Intersection} $>$}]{from,  }\item[{std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Intersection}{Intersection} $>$}]{to,  }\item[{double}]{len }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
+\subsubsection[{\texorpdfstring{Segment(unsigned long id, std\+::shared\+\_\+ptr$<$ Intersection $>$ from, std\+::shared\+\_\+ptr$<$ Intersection $>$ to, double len)}{Segment(unsigned long id, std::shared_ptr< Intersection > from, std::shared_ptr< Intersection > to, double len)}}]{\setlength{\rightskip}{0pt plus 5cm}gtfs\+::\+Segment\+::\+Segment (
+\begin{DoxyParamCaption}
+\item[{unsigned long}]{id, }
+\item[{std\+::shared\+\_\+ptr$<$ {\bf Intersection} $>$}]{from, }
+\item[{std\+::shared\+\_\+ptr$<$ {\bf Intersection} $>$}]{to, }
+\item[{double}]{len}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{classgtfs_1_1Segment_a3ffae4434816b887aaa0ad599ca1776a}{}\label{classgtfs_1_1Segment_a3ffae4434816b887aaa0ad599ca1776a}
 Constructor for a segment between two intersections 
 \begin{DoxyParams}{Parameters}
 {\em id} & The segment\textquotesingle{}s ID \\
@@ -58,12 +62,16 @@ Constructor for a segment between two intersections
 {\em length} & length of the segment, in meters \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{classgtfs_1_1Segment_a20c723d86a9a716a802b81971258a8dd}\label{classgtfs_1_1Segment_a20c723d86a9a716a802b81971258a8dd}} 
 \index{gtfs\+::\+Segment@{gtfs\+::\+Segment}!Segment@{Segment}}
 \index{Segment@{Segment}!gtfs\+::\+Segment@{gtfs\+::\+Segment}}
-\subsubsection{\texorpdfstring{Segment()}{Segment()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
-{\footnotesize\ttfamily gtfs\+::\+Segment\+::\+Segment (\begin{DoxyParamCaption}\item[{unsigned long}]{id,  }\item[{std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Stop}{Stop} $>$}]{start,  }\item[{std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Intersection}{Intersection} $>$}]{to,  }\item[{double}]{len }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
+\subsubsection[{\texorpdfstring{Segment(unsigned long id, std\+::shared\+\_\+ptr$<$ Stop $>$ start, std\+::shared\+\_\+ptr$<$ Intersection $>$ to, double len)}{Segment(unsigned long id, std::shared_ptr< Stop > start, std::shared_ptr< Intersection > to, double len)}}]{\setlength{\rightskip}{0pt plus 5cm}gtfs\+::\+Segment\+::\+Segment (
+\begin{DoxyParamCaption}
+\item[{unsigned long}]{id, }
+\item[{std\+::shared\+\_\+ptr$<$ {\bf Stop} $>$}]{start, }
+\item[{std\+::shared\+\_\+ptr$<$ {\bf Intersection} $>$}]{to, }
+\item[{double}]{len}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{classgtfs_1_1Segment_a20c723d86a9a716a802b81971258a8dd}{}\label{classgtfs_1_1Segment_a20c723d86a9a716a802b81971258a8dd}
 Constructor for a segment from a stop to an intersection 
 \begin{DoxyParams}{Parameters}
 {\em id} & The segment\textquotesingle{}s ID \\
@@ -75,12 +83,16 @@ Constructor for a segment from a stop to an intersection
 {\em length} & length of the segment, in meters \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{classgtfs_1_1Segment_a9f528f4e1abd3bdca0f38b2e8ca48fc1}\label{classgtfs_1_1Segment_a9f528f4e1abd3bdca0f38b2e8ca48fc1}} 
 \index{gtfs\+::\+Segment@{gtfs\+::\+Segment}!Segment@{Segment}}
 \index{Segment@{Segment}!gtfs\+::\+Segment@{gtfs\+::\+Segment}}
-\subsubsection{\texorpdfstring{Segment()}{Segment()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
-{\footnotesize\ttfamily gtfs\+::\+Segment\+::\+Segment (\begin{DoxyParamCaption}\item[{unsigned long}]{id,  }\item[{std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Intersection}{Intersection} $>$}]{from,  }\item[{std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Stop}{Stop} $>$}]{end,  }\item[{double}]{len }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
+\subsubsection[{\texorpdfstring{Segment(unsigned long id, std\+::shared\+\_\+ptr$<$ Intersection $>$ from, std\+::shared\+\_\+ptr$<$ Stop $>$ end, double len)}{Segment(unsigned long id, std::shared_ptr< Intersection > from, std::shared_ptr< Stop > end, double len)}}]{\setlength{\rightskip}{0pt plus 5cm}gtfs\+::\+Segment\+::\+Segment (
+\begin{DoxyParamCaption}
+\item[{unsigned long}]{id, }
+\item[{std\+::shared\+\_\+ptr$<$ {\bf Intersection} $>$}]{from, }
+\item[{std\+::shared\+\_\+ptr$<$ {\bf Stop} $>$}]{end, }
+\item[{double}]{len}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{classgtfs_1_1Segment_a9f528f4e1abd3bdca0f38b2e8ca48fc1}{}\label{classgtfs_1_1Segment_a9f528f4e1abd3bdca0f38b2e8ca48fc1}
 Constructor for a segment from an intersection to a stop 
 \begin{DoxyParams}{Parameters}
 {\em id} & The segment\textquotesingle{}s ID \\
@@ -92,12 +104,16 @@ Constructor for a segment from an intersection to a stop
 {\em length} & length of the segment, in meters \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{classgtfs_1_1Segment_ab3de55f7f97c97ecd4be08be380129d0}\label{classgtfs_1_1Segment_ab3de55f7f97c97ecd4be08be380129d0}} 
 \index{gtfs\+::\+Segment@{gtfs\+::\+Segment}!Segment@{Segment}}
 \index{Segment@{Segment}!gtfs\+::\+Segment@{gtfs\+::\+Segment}}
-\subsubsection{\texorpdfstring{Segment()}{Segment()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
-{\footnotesize\ttfamily gtfs\+::\+Segment\+::\+Segment (\begin{DoxyParamCaption}\item[{unsigned long}]{id,  }\item[{std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Stop}{Stop} $>$}]{start,  }\item[{std\+::shared\+\_\+ptr$<$ \hyperlink{classgtfs_1_1Stop}{Stop} $>$}]{end,  }\item[{double}]{len }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
+\subsubsection[{\texorpdfstring{Segment(unsigned long id, std\+::shared\+\_\+ptr$<$ Stop $>$ start, std\+::shared\+\_\+ptr$<$ Stop $>$ end, double len)}{Segment(unsigned long id, std::shared_ptr< Stop > start, std::shared_ptr< Stop > end, double len)}}]{\setlength{\rightskip}{0pt plus 5cm}gtfs\+::\+Segment\+::\+Segment (
+\begin{DoxyParamCaption}
+\item[{unsigned long}]{id, }
+\item[{std\+::shared\+\_\+ptr$<$ {\bf Stop} $>$}]{start, }
+\item[{std\+::shared\+\_\+ptr$<$ {\bf Stop} $>$}]{end, }
+\item[{double}]{len}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{classgtfs_1_1Segment_ab3de55f7f97c97ecd4be08be380129d0}{}\label{classgtfs_1_1Segment_ab3de55f7f97c97ecd4be08be380129d0}
 Constructor for a segment between two stops (i.\+e., a route with no intersections ...) 
 \begin{DoxyParams}{Parameters}
 {\em id} & The segment\textquotesingle{}s ID \\
@@ -112,84 +128,93 @@ Constructor for a segment between two stops (i.\+e., a route with no intersectio
 
 
 \subsection{Member Function Documentation}
-\mbox{\Hypertarget{classgtfs_1_1Segment_aa6d202be9bccb10ebd3c9274b7ab9e0c}\label{classgtfs_1_1Segment_aa6d202be9bccb10ebd3c9274b7ab9e0c}} 
 \index{gtfs\+::\+Segment@{gtfs\+::\+Segment}!from\+Int@{from\+Int}}
 \index{from\+Int@{from\+Int}!gtfs\+::\+Segment@{gtfs\+::\+Segment}}
-\subsubsection{\texorpdfstring{from\+Int()}{fromInt()}}
-{\footnotesize\ttfamily bool gtfs\+::\+Segment\+::from\+Int (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
+\subsubsection[{\texorpdfstring{from\+Int(void)}{fromInt(void)}}]{\setlength{\rightskip}{0pt plus 5cm}bool gtfs\+::\+Segment\+::from\+Int (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{classgtfs_1_1Segment_aa6d202be9bccb10ebd3c9274b7ab9e0c}{}\label{classgtfs_1_1Segment_aa6d202be9bccb10ebd3c9274b7ab9e0c}
 \begin{DoxyReturn}{Returns}
 logical, if the segment starts at an intersection 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classgtfs_1_1Segment_a13181832822c8780ab7c944d2fea2a66}\label{classgtfs_1_1Segment_a13181832822c8780ab7c944d2fea2a66}} 
 \index{gtfs\+::\+Segment@{gtfs\+::\+Segment}!get\+\_\+end@{get\+\_\+end}}
 \index{get\+\_\+end@{get\+\_\+end}!gtfs\+::\+Segment@{gtfs\+::\+Segment}}
-\subsubsection{\texorpdfstring{get\+\_\+end()}{get\_end()}}
-{\footnotesize\ttfamily std\+::shared\+\_\+ptr$<$\hyperlink{classgtfs_1_1Intersection}{Intersection}$>$ gtfs\+::\+Segment\+::get\+\_\+end (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
+\subsubsection[{\texorpdfstring{get\+\_\+end(void)}{get_end(void)}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::shared\+\_\+ptr$<${\bf Intersection}$>$ gtfs\+::\+Segment\+::get\+\_\+end (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{classgtfs_1_1Segment_a13181832822c8780ab7c944d2fea2a66}{}\label{classgtfs_1_1Segment_a13181832822c8780ab7c944d2fea2a66}
 \begin{DoxyReturn}{Returns}
 the ending stop 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classgtfs_1_1Segment_ae43fcbd6aab7e468122f0110a2d60968}\label{classgtfs_1_1Segment_ae43fcbd6aab7e468122f0110a2d60968}} 
 \index{gtfs\+::\+Segment@{gtfs\+::\+Segment}!get\+\_\+from@{get\+\_\+from}}
 \index{get\+\_\+from@{get\+\_\+from}!gtfs\+::\+Segment@{gtfs\+::\+Segment}}
-\subsubsection{\texorpdfstring{get\+\_\+from()}{get\_from()}}
-{\footnotesize\ttfamily std\+::shared\+\_\+ptr$<$\hyperlink{classgtfs_1_1Intersection}{Intersection}$>$ gtfs\+::\+Segment\+::get\+\_\+from (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
+\subsubsection[{\texorpdfstring{get\+\_\+from(void)}{get_from(void)}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::shared\+\_\+ptr$<${\bf Intersection}$>$ gtfs\+::\+Segment\+::get\+\_\+from (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{classgtfs_1_1Segment_ae43fcbd6aab7e468122f0110a2d60968}{}\label{classgtfs_1_1Segment_ae43fcbd6aab7e468122f0110a2d60968}
 \begin{DoxyReturn}{Returns}
 the starting intersection 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classgtfs_1_1Segment_a5c324888b7535df4623d8f32d907fca3}\label{classgtfs_1_1Segment_a5c324888b7535df4623d8f32d907fca3}} 
 \index{gtfs\+::\+Segment@{gtfs\+::\+Segment}!get\+\_\+id@{get\+\_\+id}}
 \index{get\+\_\+id@{get\+\_\+id}!gtfs\+::\+Segment@{gtfs\+::\+Segment}}
-\subsubsection{\texorpdfstring{get\+\_\+id()}{get\_id()}}
-{\footnotesize\ttfamily const unsigned long\& gtfs\+::\+Segment\+::get\+\_\+id (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
-
+\subsubsection[{\texorpdfstring{get\+\_\+id(void) const }{get_id(void) const }}]{\setlength{\rightskip}{0pt plus 5cm}const unsigned long\& gtfs\+::\+Segment\+::get\+\_\+id (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{classgtfs_1_1Segment_a68a02d9941d73e46cb8be471bed620e7}{}\label{classgtfs_1_1Segment_a68a02d9941d73e46cb8be471bed620e7}
 \begin{DoxyReturn}{Returns}
 the segment\textquotesingle{}s ID 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classgtfs_1_1Segment_a4f42ea597e18e54c9ec506697eb333a9}\label{classgtfs_1_1Segment_a4f42ea597e18e54c9ec506697eb333a9}} 
 \index{gtfs\+::\+Segment@{gtfs\+::\+Segment}!get\+\_\+length@{get\+\_\+length}}
 \index{get\+\_\+length@{get\+\_\+length}!gtfs\+::\+Segment@{gtfs\+::\+Segment}}
-\subsubsection{\texorpdfstring{get\+\_\+length()}{get\_length()}}
-{\footnotesize\ttfamily double gtfs\+::\+Segment\+::get\+\_\+length (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
+\subsubsection[{\texorpdfstring{get\+\_\+length(void)}{get_length(void)}}]{\setlength{\rightskip}{0pt plus 5cm}double gtfs\+::\+Segment\+::get\+\_\+length (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{classgtfs_1_1Segment_a4f42ea597e18e54c9ec506697eb333a9}{}\label{classgtfs_1_1Segment_a4f42ea597e18e54c9ec506697eb333a9}
 \begin{DoxyReturn}{Returns}
 the length of the segment 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classgtfs_1_1Segment_a8f64f5b0859e79e9bdd2c0faa7e50e23}\label{classgtfs_1_1Segment_a8f64f5b0859e79e9bdd2c0faa7e50e23}} 
 \index{gtfs\+::\+Segment@{gtfs\+::\+Segment}!get\+\_\+start@{get\+\_\+start}}
 \index{get\+\_\+start@{get\+\_\+start}!gtfs\+::\+Segment@{gtfs\+::\+Segment}}
-\subsubsection{\texorpdfstring{get\+\_\+start()}{get\_start()}}
-{\footnotesize\ttfamily std\+::shared\+\_\+ptr$<$\hyperlink{classgtfs_1_1Intersection}{Intersection}$>$ gtfs\+::\+Segment\+::get\+\_\+start (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
+\subsubsection[{\texorpdfstring{get\+\_\+start(void)}{get_start(void)}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::shared\+\_\+ptr$<${\bf Intersection}$>$ gtfs\+::\+Segment\+::get\+\_\+start (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{classgtfs_1_1Segment_a8f64f5b0859e79e9bdd2c0faa7e50e23}{}\label{classgtfs_1_1Segment_a8f64f5b0859e79e9bdd2c0faa7e50e23}
 \begin{DoxyReturn}{Returns}
 the starting stop 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classgtfs_1_1Segment_aba473075f7a10db66b5b99890c39852f}\label{classgtfs_1_1Segment_aba473075f7a10db66b5b99890c39852f}} 
 \index{gtfs\+::\+Segment@{gtfs\+::\+Segment}!get\+\_\+to@{get\+\_\+to}}
 \index{get\+\_\+to@{get\+\_\+to}!gtfs\+::\+Segment@{gtfs\+::\+Segment}}
-\subsubsection{\texorpdfstring{get\+\_\+to()}{get\_to()}}
-{\footnotesize\ttfamily std\+::shared\+\_\+ptr$<$\hyperlink{classgtfs_1_1Intersection}{Intersection}$>$ gtfs\+::\+Segment\+::get\+\_\+to (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
+\subsubsection[{\texorpdfstring{get\+\_\+to(void)}{get_to(void)}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::shared\+\_\+ptr$<${\bf Intersection}$>$ gtfs\+::\+Segment\+::get\+\_\+to (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{classgtfs_1_1Segment_aba473075f7a10db66b5b99890c39852f}{}\label{classgtfs_1_1Segment_aba473075f7a10db66b5b99890c39852f}
 \begin{DoxyReturn}{Returns}
 the ending intersection 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classgtfs_1_1Segment_a366d9b1437e4175c3f43d312fab09530}\label{classgtfs_1_1Segment_a366d9b1437e4175c3f43d312fab09530}} 
 \index{gtfs\+::\+Segment@{gtfs\+::\+Segment}!get\+\_\+type@{get\+\_\+type}}
 \index{get\+\_\+type@{get\+\_\+type}!gtfs\+::\+Segment@{gtfs\+::\+Segment}}
-\subsubsection{\texorpdfstring{get\+\_\+type()}{get\_type()}}
-{\footnotesize\ttfamily int gtfs\+::\+Segment\+::get\+\_\+type (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
-
+\subsubsection[{\texorpdfstring{get\+\_\+type(void) const }{get_type(void) const }}]{\setlength{\rightskip}{0pt plus 5cm}int gtfs\+::\+Segment\+::get\+\_\+type (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{classgtfs_1_1Segment_ace65bcda26860737601ab722027d19db}{}\label{classgtfs_1_1Segment_ace65bcda26860737601ab722027d19db}
 \begin{DoxyReturn}{Returns}
 the segment type (integer) 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classgtfs_1_1Segment_a2b289f1a504fcd1912e588525fc46a41}\label{classgtfs_1_1Segment_a2b289f1a504fcd1912e588525fc46a41}} 
 \index{gtfs\+::\+Segment@{gtfs\+::\+Segment}!to\+Int@{to\+Int}}
 \index{to\+Int@{to\+Int}!gtfs\+::\+Segment@{gtfs\+::\+Segment}}
-\subsubsection{\texorpdfstring{to\+Int()}{toInt()}}
-{\footnotesize\ttfamily bool gtfs\+::\+Segment\+::to\+Int (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
+\subsubsection[{\texorpdfstring{to\+Int(void)}{toInt(void)}}]{\setlength{\rightskip}{0pt plus 5cm}bool gtfs\+::\+Segment\+::to\+Int (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{classgtfs_1_1Segment_a2b289f1a504fcd1912e588525fc46a41}{}\label{classgtfs_1_1Segment_a2b289f1a504fcd1912e588525fc46a41}
 \begin{DoxyReturn}{Returns}
 logical, if the segment ends at an intersection 
 \end{DoxyReturn}

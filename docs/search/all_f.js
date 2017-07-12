@@ -9,5 +9,6 @@ var searchData=
   ['transition_5fphase1',['transition_phase1',['../classgtfs_1_1Particle.html#a5e964d5aa4698335de3c75938e55f5cd',1,'gtfs::Particle']]],
   ['transition_5fphase2',['transition_phase2',['../classgtfs_1_1Particle.html#ad9374830814c89b2d5c0af705bda8849',1,'gtfs::Particle']]],
   ['transition_5fphase3',['transition_phase3',['../classgtfs_1_1Particle.html#a68043b2380d8f530d648dd99e5a85101',1,'gtfs::Particle']]],
-  ['trip',['Trip',['../classgtfs_1_1Trip.html',1,'gtfs::Trip'],['../classgtfs_1_1Trip.html#a3014ee32fdb5abd550ad20088c91aae6',1,'gtfs::Trip::Trip()']]]
+  ['trip',['Trip',['../classgtfs_1_1Trip.html#a3014ee32fdb5abd550ad20088c91aae6',1,'gtfs::Trip']]],
+  ['trip',['Trip',['../classgtfs_1_1Trip.html',1,'gtfs']]]
 ];
