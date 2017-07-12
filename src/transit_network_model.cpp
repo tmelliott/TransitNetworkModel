@@ -155,23 +155,19 @@ int main (int argc, char* argv[]) {
 			std::cout << "\n";
 			// -> triggers particle transition -> resample
 			time_start (clockstart, wallstart);
-			// #pragma omp parallel// for schedule(dynamic) num_threads(3)
-			// {
-			// 	#pragma omp single
-			// 	{
-					for (auto& v: vehicles) {
-						// #pragma omp task firstprivate(v)
-						// {
-							if (v.second->get_trip () &&
-								v.second->get_trip ()->get_route ()) {
-								std::cout << "\n ++++++++++++++++++++++++++++++++++++++++ Route "
-								<< v.second->get_trip ()->get_route ()->get_short_name () << "\n";
-								v.second->update (rng);
-							}
-						// }
+			// #pragma omp parallel for schedule(dynamic) num_threads(3)
+			// for (auto& v: vehicles) {
+			for (unsigned i=0; i<vehicles.bucket_count (); i++) {
+				std::cout << "\n - vehicle " << i;
+				for (auto v = vehicles.begin (i); v != vehicles.end (i); v++) {
+					if (v->second->get_trip () &&
+						v->second->get_trip ()->get_route ()) {
+						std::cout << "\n ++++++++++++++++++++++++++++++++++++++++ Route "
+						<< v->second->get_trip ()->get_route ()->get_short_name () << "\n";
+						v->second->update (rng);
 					}
-			// 	}
-			// }
+				}
+			}
 			std::cout << "\n";
 			time_end (clockstart, wallstart);
 		}
