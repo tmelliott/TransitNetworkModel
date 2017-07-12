@@ -362,10 +362,11 @@ namespace gtfs {
 		auto stops = vehicle->get_trip ()->get_route ()->get_stops ();
 		if (stops.back ().shape_dist_traveled == 0) return;
 
-		etas.reserve (stops.size ());
-		for (unsigned int i=0; i<stops.size (); i++) {
+		// only M-1 stops to predict (can't do the first one)
+		etas.reserve (stops.size ()-1);
+		for (unsigned int i=1; i<stops.size (); i++) {
 			// STOP INDEX is 1-based; stop 0-index of CURRENT is stop_index-1.
-			if ((int)i < stop_index) {
+			if (stops[i].shape_dist_traveled <= distance) {
 				etas.emplace_back (0);
 			} else {
 				etas.emplace_back (vehicle->get_timestamp () +
