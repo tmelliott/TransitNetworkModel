@@ -337,8 +337,8 @@ void set_distances (sqlite3* db) {
 
 	// SELECT all route IDs and their shape IDs to loop over.
 	sqlite3_stmt* select_routes;
-	qry = "SELECT route_id, shape_id FROM routes WHERE route_id LIKE '%_v54.27' "
-		"AND shape_id NOT IN "
+	qry = "SELECT route_id, shape_id FROM routes "
+		"WHERE shape_id NOT IN "
 		"(select distinct shape_id from shape_segments)";
 	if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &select_routes, 0) != SQLITE_OK) {
 		std::cerr << "\n x Unable to prepare `" << qry << "`";
@@ -482,7 +482,7 @@ void set_distances (sqlite3* db) {
 
 	sqlite3_stmt* nshapes;
 	int Nshapes = 0;
-	if (sqlite3_prepare_v2 (db, "SELECT count(*) FROM routes WHERE route_id LIKE '%_v54.27'",
+	if (sqlite3_prepare_v2 (db, "SELECT count(*) FROM routes",
 							-1, &nshapes, 0) == SQLITE_OK &&
 		sqlite3_step (nshapes) == SQLITE_ROW) {
 		Nshapes = sqlite3_column_int (nshapes, 0);
