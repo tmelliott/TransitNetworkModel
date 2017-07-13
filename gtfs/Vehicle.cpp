@@ -21,7 +21,7 @@ namespace gtfs {
 	 */
 	Vehicle::Vehicle (std::string id, unsigned int n) :
 	id (id), initialized (false), n_particles (n), next_id (1) {
-		std::clog << " ++ Created vehicle " << id << std::endl;
+		// std::clog << " ++ Created vehicle " << id << std::endl;
 
 		particles.reserve(n_particles);
 		for (unsigned int i=0; i<n_particles; i++) {
@@ -33,7 +33,7 @@ namespace gtfs {
 	* Desctructor for a vehicle object, ensuring all particles are deleted too.
 	*/
 	Vehicle::~Vehicle() {
-		std::clog << " -- Vehicle " << id << " deleted!!" << std::endl;
+		// std::clog << " -- Vehicle " << id << " deleted!!" << std::endl;
 	};
 
 
@@ -85,17 +85,17 @@ namespace gtfs {
 	 * @param rng A random number generator
 	 */
 	void Vehicle::update ( sampling::RNG& rng ) {
-		std::cout << "Vehicle ID: " << id
-			<< " " << position
-			<< " - ts = " << timestamp;
-		if (newtrip) std::cout << " - newtrip";
-		if (!initialized) std::cout << " - initialization required";
-		if (initialized)
-			std::cout << " (" << delta << " seconds since last observation)";
+		// std::cout << "Vehicle ID: " << id
+		// 	<< " " << position
+		// 	<< " - ts = " << timestamp;
+		// if (newtrip) std::cout << " - newtrip";
+		// if (!initialized) std::cout << " - initialization required";
+		// if (initialized)
+		// 	std::cout << " (" << delta << " seconds since last observation)";
 
 
 		if (newtrip || !initialized) {
-			std::cout << "\n * Initializing particles: ";
+			// std::cout << "\n * Initializing particles: ";
 
 			// Detect initial range of vehicle's "distance into trip"
 			// -- just rough, so find points on the route within 100m of the GPS position
@@ -108,10 +108,10 @@ namespace gtfs {
 					if (ds > init_range[1]) init_range[1] = ds;
 				}
 			}
-			printf("between %*.2f and %*.2f m", 8, init_range[0], 8, init_range[1]);
+			// printf("between %*.2f and %*.2f m", 8, init_range[0], 8, init_range[1]);
 
 			if (init_range[0] > init_range[1]) {
-				std::cout << "\n   -> unable to locate vehicle on route -> cannot initialize.";
+				// std::cout << "\n   -> unable to locate vehicle on route -> cannot initialize.";
 				return;
 			} else if (init_range[0] == init_range[1]) {
 				init_range[0] = init_range[0] - 100;
@@ -123,9 +123,9 @@ namespace gtfs {
 
 			initialized = true;
 		} else if (delta > 0) {
-			std::cout << "\n * Updating particles: " << delta << "s";
-			std::cout << " | M = " << trip->get_route ()->get_stops ().size ()
-				<< ", L = " << trip->get_route ()->get_shape ()->get_segments ().size ();
+			// std::cout << "\n * Updating particles: " << delta << "s";
+			// std::cout << " | M = " << trip->get_route ()->get_stops ().size ()
+				// << ", L = " << trip->get_route ()->get_shape ()->get_segments ().size ();
 
 			double dbar = 0;
 			double vbar = 0;
@@ -133,8 +133,8 @@ namespace gtfs {
 				dbar += p.get_distance ();
 				vbar += p.get_velocity ();
 			}
-			printf("\n   - Distance = %*.0fm, Velocity = %*.1fm/s.",
-				   5, dbar / particles.size (), 5, vbar / particles.size ());
+			// printf("\n   - Distance = %*.0fm, Velocity = %*.1fm/s.",
+			// 	   5, dbar / particles.size (), 5, vbar / particles.size ());
 			for (auto& p: particles) p.transition (rng);
 		} else {
 			return;
@@ -145,16 +145,16 @@ namespace gtfs {
 		lh.reserve (particles.size ());
 		for (auto& p: particles) lh.push_back (p.get_likelihood ());
 		if (*std::max_element (lh.begin (), lh.end ()) < -10) {
-			std::cout << "   - Reset vehicle (not close particles) "
-				<< " - max likelihood = exp(" << *std::max_element (lh.begin (), lh.end ())
-				<< ")";
+			// std::cout << "   - Reset vehicle (not close particles) "
+				// << " - max likelihood = exp(" << *std::max_element (lh.begin (), lh.end ())
+				// << ")";
 			reset ();
 
 			return;
 		}
 
 		// Resample them!
-		std::cout << "\n   - Resampling ";
+		// std::cout << "\n   - Resampling ";
 		resample (rng);
 
 		// Estimate parameters
@@ -164,8 +164,8 @@ namespace gtfs {
 			dbar += p.get_distance ();
 			vbar += p.get_velocity ();
 		}
-		printf("\n   - Distance = %*.0fm, Velocity = %*.1fm/s.",
-			   5, dbar / particles.size (), 5, vbar / particles.size ());
+		// printf("\n   - Distance = %*.0fm, Velocity = %*.1fm/s.",
+		// 	   5, dbar / particles.size (), 5, vbar / particles.size ());
 
 	}
 
@@ -180,7 +180,7 @@ namespace gtfs {
 	 * @param gtfs a GTFS object containing the GTFS static data
 	 */
 	void Vehicle::update (const transit_realtime::VehiclePosition &vp, GTFS &gtfs) {
-		std::clog << "Updating vehicle location!\n";
+		// std::clog << "Updating vehicle location!\n";
 
 		newtrip = true; // always assume a new trip unless we know otherwise
 		if (vp.has_trip ()) { // TripDescriptor -> (trip_id, route_id)
@@ -215,7 +215,7 @@ namespace gtfs {
 	 * @param gtfs a GTFS object containing the GTFS static data
 	 */
 	void Vehicle::update (const transit_realtime::TripUpdate &vp, GTFS &gtfs) {
-		std::clog << "Updating vehicle trip update!\n";
+		// std::clog << "Updating vehicle trip update!\n";
 		if (vp.has_trip ()) { // TripDescriptor -> (trip_id, route_id)
 		  	if (vp.trip ().has_trip_id () &&
 				trip != nullptr &&
@@ -273,7 +273,7 @@ namespace gtfs {
 		std::vector<double> lh;
 		lh.reserve (particles.size ());
 		for (auto& p: particles) lh.push_back (exp(p.get_likelihood ()));
-		std::cout << " > Max likelihood: " << *std::max_element (lh.begin (), lh.end ());
+		// std::cout << " > Max likelihood: " << *std::max_element (lh.begin (), lh.end ());
 		// if (*std::max_element (lh.begin (), lh.end ()) < exp(-10)) return;
 
 		sampling::sample smp (lh);

@@ -31,8 +31,8 @@ namespace gtfs {
 		log_likelihood (-INFINITY),
 		vehicle (v) {
 
-		std::clog << " + Created particle for vehicle " << v->get_id ()
-			<< " with id = " << id << "\n";
+		// std::clog << " + Created particle for vehicle " << v->get_id ()
+		// 	<< " with id = " << id << "\n";
 	};
 
 	/**
@@ -44,7 +44,7 @@ namespace gtfs {
 	 * @param p the parent particle to be copied
 	 */
 	Particle::Particle (const Particle &p) {
-		std::clog << " >+ Copying particle " << p.get_id () << " -> ";
+		// std::clog << " >+ Copying particle " << p.get_id () << " -> ";
 
 		distance = p.get_distance ();
 		velocity = p.get_velocity ();
@@ -64,14 +64,14 @@ namespace gtfs {
 
 		// Increment particle id
 		id = p.vehicle->allocate_id ();
-		std::clog << id << std::endl;
+		// std::clog << id << std::endl;
 	};
 
 	/**
 	* Destructor for a particle.
 	*/
 	Particle::~Particle() {
-		std::clog << " - Particle " << id << " deleted." << std::endl;
+		// std::clog << " - Particle " << id << " deleted." << std::endl;
 	};
 
 
@@ -128,9 +128,9 @@ namespace gtfs {
 			segment_index = i; // 0-based index
 		}
 
-		std::clog << "   - " << *this << " -> ";
+		// std::clog << "   - " << *this << " -> ";
 		calculate_likelihood ();
-		std::clog << log_likelihood <<  "\n";
+		// std::clog << log_likelihood <<  "\n";
 	}
 
 	/**
@@ -143,7 +143,7 @@ namespace gtfs {
 		if (vehicle->get_delta () == 0 || finished) return;
 		delta_t = vehicle->get_delta ();
 
-		std::clog << "   - " << *this << " -> ";
+		// std::clog << "   - " << *this << " -> ";
 
 		// --- Three phases
 		// PHASE ONE: initial wait time
@@ -155,11 +155,11 @@ namespace gtfs {
 		// PHASE THREE: transition forward
 		transition_phase3 (rng);
 
-		std::clog << *this << " -> ";
+		// std::clog << *this << " -> ";
 
 		// Done with transition; compute likelihood and finish.
 		calculate_likelihood ();
-		std::clog << log_likelihood <<  "\n";
+		// std::clog << log_likelihood <<  "\n";
 	};
 
 	/**

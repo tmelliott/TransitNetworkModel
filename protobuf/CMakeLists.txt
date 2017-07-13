@@ -1,1 +1,1 @@
-add_library (gtfs-realtime gtfs-realtime.pb.cc)
+add_library (gtfs-realtime gtfs-realtime.pb.cc gtfs-eta.pb.cc)

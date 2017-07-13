@@ -155,14 +155,14 @@ int main (int argc, char* argv[]) {
 			std::cout << "\n";
 			// -> triggers particle transition -> resample
 			time_start (clockstart, wallstart);
-			// #pragma omp parallel for schedule(dynamic) num_threads(3)
+			#pragma omp parallel for schedule(static) num_threads(3)
 			for (unsigned i=0; i<vehicles.bucket_count (); i++) {
-				std::cout << "\n - vehicle " << i;
+				// std::cout << "\n - vehicle " << i;
 				for (auto v = vehicles.begin (i); v != vehicles.end (i); v++) {
 					if (v->second->get_trip () &&
 						v->second->get_trip ()->get_route ()) {
-						std::cout << "\n ++++++++++++++++++++++++++++++++++++++++ Route "
-						<< v->second->get_trip ()->get_route ()->get_short_name () << "\n";
+						// std::cout << "\n ++++++++++++++++++++++++++++++++++++++++ Route "
+						// << v->second->get_trip ()->get_route ()->get_short_name () << "\n";
 						v->second->update (rng);
 					}
 				}
@@ -180,6 +180,7 @@ int main (int argc, char* argv[]) {
 			// Update ETA predictions
 			time_start (clockstart, wallstart);
 			std::cout << "\n * Calculating ETAs ...";
+			std::cout.flush ();
 			for (auto& v: vehicles) {
 				if (!v.second->get_trip ()) continue;
 				for (auto& p: v.second->get_particles ()) p.calculate_etas ();
@@ -192,6 +193,7 @@ int main (int argc, char* argv[]) {
 			// Write results to CSV files
 			time_start (clockstart, wallstart);
 			std::cout << "\n * Writing particles to CSV ...";
+			std::cout.flush ();
 			system("rm -f PARTICLES.csv ETAS.csv");
 			std::ofstream particlefile; // file for particles
 			particlefile.open ("PARTICLES.csv");
