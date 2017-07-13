@@ -8,11 +8,15 @@ message Trip {
 
 	message ETA {
 		required uint32 stop_sequence = 1;
-		required string stop_id = 2;
+		optional string stop_id = 2;
 		required int64 arrival_min = 3;
 		required int64 arrival_max = 4;
 		required int64 arrival_eta = 5;
 	}
 
 	repeated ETA etas = 3;
+}
+
+message Feed {
+	repeated Trip entity = 1;
 }

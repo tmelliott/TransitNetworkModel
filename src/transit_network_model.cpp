@@ -36,6 +36,7 @@
 #include <boost/range/adaptor/transformed.hpp>
 
 #include "gtfs-realtime.pb.h"
+#include "gtfs-eta.pb.h"
 #include "sampling.h"
 #include "gtfs.h"
 #include "gps.h"
@@ -45,6 +46,7 @@ namespace po = boost::program_options;
 bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> > &vs,
 				std::string &feed_file, int N, sampling::RNG &rng,
 				gtfs::GTFS &gtfs);
+// bool write_etas (std::unique_ptr<gtfs::Vehicle>& v, std::string &eta_file);
 void time_start (std::clock_t& clock, std::chrono::high_resolution_clock::time_point& wall);
 void time_end (std::clock_t& clock, std::chrono::high_resolution_clock::time_point& wall);
 
@@ -185,6 +187,19 @@ int main (int argc, char* argv[]) {
 				if (!v.second->get_trip ()) continue;
 				for (auto& p: v.second->get_particles ()) p.calculate_etas ();
 			}
+			std::cout << "\n";
+			time_end (clockstart, wallstart);
+		}
+
+		{
+			// Write ETAs to buffers
+			time_start (clockstart, wallstart);
+			std::cout << "\n * Writing particles to CSV ...";
+			std::cout.flush ();
+
+			transit::Feed feed;
+			
+
 			std::cout << "\n";
 			time_end (clockstart, wallstart);
 		}
