@@ -28,6 +28,7 @@ namespace gtfs {
 		segment_index (0),
 		queue_time (0),
 		begin_time (0),
+		travel_times (v->get_trip ()->get_stoptimes ().size (), 0),
 		log_likelihood (-INFINITY),
 		vehicle (v) {
 
@@ -55,6 +56,7 @@ namespace gtfs {
 		segment_index = p.get_segment_index ();
 		queue_time = p.get_queue_time ();
 		begin_time = p.get_begin_time ();
+		travel_times = p.get_travel_times ();
 		log_likelihood = p.get_likelihood ();
 
 		// Copy vehicle pointer
@@ -376,15 +378,6 @@ namespace gtfs {
 			if (stops[i].shape_dist_traveled <= distance) {
 				etas.emplace_back (0);
 			} else {
-				// printf("\n   - (1 / %*f) %s (%*f - %*f) = %*f / %*f = %*f -> %lu)",
-				// 	   4, velocity, "*",
-				// 	   5, round(stops[i].shape_dist_traveled),
-				// 	   5, round(distance),
-				//    	   5, round(stops[i].shape_dist_traveled - distance),
-				// 	   4, velocity,
-				//    	   4, round((1 / velocity) * (stops[i].shape_dist_traveled - distance)),
-				// 	   vehicle->get_timestamp () +
-	   // 					(int)round((1 / velocity) * (stops[i].shape_dist_traveled - distance)));
 				etas.emplace_back (vehicle->get_timestamp () +
 					(int)round((1 / velocity) * (stops[i].shape_dist_traveled - distance)));
 			}

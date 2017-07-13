@@ -212,6 +212,7 @@ namespace gtfs {
 		int segment_index;        /*!< segment index (0-based, {0, ..., L-1}) */
 		int queue_time;           /*!< cumulative time spent queuing at intersction `segment_index` */
 		uint64_t begin_time;      /*!< time at which bus started along segment `segment_index` */
+		std::vector<int> travel_times; /*!< time taken to travel each segment */
 
 		int delta_t;              /*!< time this particular particle has left to travel */
 		double log_likelihood;    /*!< the likelihood of the particle, given the data */
@@ -249,6 +250,13 @@ namespace gtfs {
 		int get_queue_time () const {return queue_time; };
 		/** @return the particle's begin time at segment `segment_index` */
 		const uint64_t& get_begin_time () const { return begin_time; };
+		/** @return the particle's travel times along previous segments */
+		const std::vector<int>& get_travel_times () const { return travel_times; };
+		/** @return the particle's travel time along segment i */
+		int get_travel_time (unsigned i) {
+			if (i >= travel_times.size ()) return 0;
+			return travel_times[i];
+		};
 
 		/** @return the particle's remaining travel time */
 		int get_delta_t () const { return delta_t; };
@@ -494,12 +502,11 @@ namespace gtfs {
 		std::shared_ptr<Intersection> to_id;        /*!< pointer to the last intersection */
 		std::shared_ptr<Stop> start_at;     /*!< pointer to the first stop */
 		std::shared_ptr<Stop> end_at;       /*!< pointer to the last stop */
-		// std::vector<ShapePt> path;   /*!< vector of shape points */
 		double length;               /*!< the length of this segment */
 		int type;                    /*!< the type of segment, 1=int->int, 2=stop->int, 3=int->stop, 4=stop->stop */
 
-		double velocity;             /*!< the mean speed along the segment */
-		double velocity_var;         /*!< the variance of speed along the segment */
+		double travel_time;             /*!< the mean speed along the segment */
+		double travel_time_var;         /*!< the variance of speed along the segment */
 		uint64_t timestamp;          /*!< updated at timestamp */
 
 	public:

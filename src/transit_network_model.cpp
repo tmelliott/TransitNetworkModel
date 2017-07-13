@@ -173,13 +173,13 @@ int main (int argc, char* argv[]) {
 			time_end (clockstart, wallstart);
 		}
 
+		// Update road segments -> Kalman filter
 		{
-			// Update road segments -> Kalman filter
-
+			
 		}
 
+		// Update ETA predictions
 		{
-			// Update ETA predictions
 			time_start (clockstart, wallstart);
 			std::cout << "\n * Calculating ETAs ...";
 			std::cout.flush ();
@@ -193,8 +193,8 @@ int main (int argc, char* argv[]) {
 			time_end (clockstart, wallstart);
 		}
 
+		// Write ETAs to buffers
 		{
-			// Write ETAs to buffers
 			time_start (clockstart, wallstart);
 			std::cout << "\n * Writing ETAs to protocol buffer ...";
 			std::cout.flush ();
@@ -249,8 +249,8 @@ int main (int argc, char* argv[]) {
 			time_end (clockstart, wallstart);
 		}
 
-		{
-			// Write results to CSV files
+		// Write results to CSV files
+		if (false) {
 			time_start (clockstart, wallstart);
 			std::cout << "\n * Writing particles to CSV ...";
 			std::cout.flush ();
@@ -288,8 +288,8 @@ int main (int argc, char* argv[]) {
 			time_end (clockstart, wallstart);
 		}
 
+		// Write results to file - depreciated
 		if (false) {
-			// Write results to file
 			time_start (clockstart, wallstart);
 			std::cout << "\n * Writing particles to db ...";
 			std::cout.flush ();
@@ -403,23 +403,23 @@ bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> >
 	// Cycle through feed entities and update associated vehicles, or create a new one.
 	std::vector<std::string> KEEPtrips;
 
-	// sqlite3* db;
-	// sqlite3_stmt* tripskeep;
-	// std::string qry = "SELECT trip_id FROM trips WHERE route_id IN "
-	// 	"(SELECT route_id FROM routes WHERE route_short_name IN "
-	// 	"('274'))";
-	// 	// "('274','277','224','222','258','NEX','129'))";
-	// if (sqlite3_open (gtfs.get_dbname ().c_str (), &db)) {
-	// 	std::cerr << "\n x oops...";
-	// } else if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &tripskeep, 0) != SQLITE_OK) {
-	// 	std::cerr << "\n x oops2...";
-	//
-	// } else {
-	// 	while (sqlite3_step (tripskeep) == SQLITE_ROW) {
-	// 		std::string t = (char*)sqlite3_column_text (tripskeep, 0);
-	// 		KEEPtrips.push_back (t);
-	// 	}
-	// }
+	sqlite3* db;
+	sqlite3_stmt* tripskeep;
+	std::string qry = "SELECT trip_id FROM trips WHERE route_id IN "
+		"(SELECT route_id FROM routes WHERE route_short_name IN "
+		"('274'))";
+		// "('274','277','224','222','258','NEX','129'))";
+	if (sqlite3_open (gtfs.get_dbname ().c_str (), &db)) {
+		std::cerr << "\n x oops...";
+	} else if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &tripskeep, 0) != SQLITE_OK) {
+		std::cerr << "\n x oops2...";
+
+	} else {
+		while (sqlite3_step (tripskeep) == SQLITE_ROW) {
+			std::string t = (char*)sqlite3_column_text (tripskeep, 0);
+			KEEPtrips.push_back (t);
+		}
+	}
 
 	for (int i=0; i<feed.entity_size (); i++) {
 		printf(" * Processing feed: %*d%%\r", 3, (int)(100 * (i+1) / feed.entity_size ()));
