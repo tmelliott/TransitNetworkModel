@@ -18,5 +18,5 @@ message Trip {
 }
 
 message Feed {
-	repeated Trip entity = 1;
+	repeated Trip trips = 1;
 }

@@ -194,11 +194,53 @@ int main (int argc, char* argv[]) {
 		{
 			// Write ETAs to buffers
 			time_start (clockstart, wallstart);
-			std::cout << "\n * Writing particles to CSV ...";
+			std::cout << "\n * Writing ETAs to protocol buffer ...";
 			std::cout.flush ();
 
-			transit::Feed feed;
-			
+			transit_etas::Feed feed;
+
+			for (auto& v: vehicles) {
+				if (!v.second->get_trip ()) continue;
+				transit_etas::Trip* trip = feed.add_trips ();
+				trip->set_trip_id (v.second->get_trip ()->get_id ().c_str ());
+				trip->set_vehicle_id (v.second->get_id ().c_str ());
+
+				// Initialize a vector of ETAs for each particles; stop by stop
+				unsigned Np (v.second->get_particles ().size ());
+				std::vector<uint64_t> etas;
+				etas.reserve (Np);
+
+				auto stops = v.second->get_trip ()->get_stoptimes ();
+				for (unsigned j=0; j<stops.size (); j++) {
+					// For each stop, fetch ETAs for that stop
+					for (auto& p: v.second->get_particles ()) {
+						if (p.get_eta (j) == 0) continue;
+						etas.push_back (p.get_eta (j));
+					}
+					if (etas.size () == 0) continue;
+					// order them to get percentiles: 0.025, 0.5, 0.975
+					std::sort (etas.begin (), etas.end ());
+
+					// append to tripetas
+					transit_etas::Trip::ETA* tripetas = trip->add_etas ();
+					tripetas->set_stop_sequence (j+1);
+					tripetas->set_stop_id (stops[j].stop->get_id ().c_str ());
+					tripetas->set_arrival_min (etas[(int)(etas.size () * 0.025)]);
+					tripetas->set_arrival_max (etas[(int)(etas.size () * 0.975)]);
+					tripetas->set_arrival_eta (etas[(int)(etas.size () * 0.5)]);
+
+					// clear for next stop
+					etas.clear ();
+				}
+			}
+
+			std::fstream output ("gtfs_etas.pb",
+								 std::ios::out | std::ios::trunc | std::ios::binary);
+			if (!feed.SerializeToOstream (&output)) {
+				std::cerr << "\n x Failed to write ETA feed.\n";
+			}
+
+			google::protobuf::ShutdownProtobufLibrary ();
 
 			std::cout << "\n";
 			time_end (clockstart, wallstart);
