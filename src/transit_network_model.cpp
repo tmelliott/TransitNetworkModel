@@ -184,7 +184,9 @@ int main (int argc, char* argv[]) {
 			std::cout << "\n * Calculating ETAs ...";
 			std::cout.flush ();
 			for (auto& v: vehicles) {
-				if (!v.second->get_trip ()) continue;
+				if (!v.second->get_trip () || !v.second->is_initialized ()) continue;
+				// std::cout << "\n - Vehicle: " << v.second->get_id ()
+				// 	<< " - Time: " << v.second->get_timestamp ();
 				for (auto& p: v.second->get_particles ()) p.calculate_etas ();
 			}
 			std::cout << "\n";
@@ -200,10 +202,11 @@ int main (int argc, char* argv[]) {
 			transit_etas::Feed feed;
 
 			for (auto& v: vehicles) {
-				if (!v.second->get_trip ()) continue;
+				if (!v.second->get_trip () || !v.second->is_initialized ()) continue;
 				transit_etas::Trip* trip = feed.add_trips ();
-				trip->set_trip_id (v.second->get_trip ()->get_id ().c_str ());
 				trip->set_vehicle_id (v.second->get_id ().c_str ());
+				trip->set_trip_id (v.second->get_trip ()->get_id ().c_str ());
+				trip->set_route_id (v.second->get_trip ()->get_route ()->get_id ().c_str ());
 
 				// Initialize a vector of ETAs for each particles; stop by stop
 				unsigned Np (v.second->get_particles ().size ());
@@ -211,10 +214,10 @@ int main (int argc, char* argv[]) {
 				etas.reserve (Np);
 
 				auto stops = v.second->get_trip ()->get_stoptimes ();
-				for (unsigned j=0; j<stops.size (); j++) {
+				for (unsigned j=1; j<stops.size (); j++) {
 					// For each stop, fetch ETAs for that stop
 					for (auto& p: v.second->get_particles ()) {
-						if (p.get_eta (j) == 0) continue;
+						if (p.get_eta (j) == 0 || p.is_finished ()) continue;
 						etas.push_back (p.get_eta (j));
 					}
 					if (etas.size () == 0) continue;

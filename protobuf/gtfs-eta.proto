@@ -3,8 +3,9 @@ syntax = "proto2";
 package transit_etas;
 
 message Trip {
-	required string trip_id = 1;
-	required string vehicle_id = 2;
+	required string vehicle_id = 1;
+	required string trip_id = 2;
+	required string route_id = 3;
 
 	message ETA {
 		required uint32 stop_sequence = 1;
@@ -14,7 +15,7 @@ message Trip {
 		required int64 arrival_eta = 5;
 	}
 
-	repeated ETA etas = 3;
+	repeated ETA etas = 4;
 }
 
 message Feed {

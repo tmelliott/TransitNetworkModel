@@ -229,13 +229,19 @@ namespace gtfs {
 	/**
 	 * Phase 2 of the particle's transition, involving adding random
 	 * system noise.
+	 * Uses rejection sampling.
 	 *
 	 * @param rng reference to the random number generator
 	 */
 	void Particle::transition_phase2 (sampling::RNG& rng) {
 		double sigv (5);
-		double vel = 0.0;
-		while (vel <= 2 || vel >= 30) vel = rng.rnorm () * sigv + velocity;
+		double vel;
+		bool reject (true);
+		// while (vel <= 2 || vel >= 30) vel = rng.rnorm () * sigv + velocity;
+		while (reject) {
+			vel = velocity + rng.rnorm () * sigv;
+			reject = vel < 2 || vel > 30;
+		}
 		velocity = vel;
 	};
 
@@ -363,14 +369,24 @@ namespace gtfs {
 		if (stops.back ().shape_dist_traveled == 0) return;
 
 		// only M-1 stops to predict (can't do the first one)
-		etas.reserve (stops.size ()-1);
+		etas.reserve (stops.size ());
+		etas.emplace_back (0); // first one is always 0
 		for (unsigned int i=1; i<stops.size (); i++) {
 			// STOP INDEX is 1-based; stop 0-index of CURRENT is stop_index-1.
 			if (stops[i].shape_dist_traveled <= distance) {
 				etas.emplace_back (0);
 			} else {
+				// printf("\n   - (1 / %*f) %s (%*f - %*f) = %*f / %*f = %*f -> %lu)",
+				// 	   4, velocity, "*",
+				// 	   5, round(stops[i].shape_dist_traveled),
+				// 	   5, round(distance),
+				//    	   5, round(stops[i].shape_dist_traveled - distance),
+				// 	   4, velocity,
+				//    	   4, round((1 / velocity) * (stops[i].shape_dist_traveled - distance)),
+				// 	   vehicle->get_timestamp () +
+	   // 					(int)round((1 / velocity) * (stops[i].shape_dist_traveled - distance)));
 				etas.emplace_back (vehicle->get_timestamp () +
-					(1 / velocity) * (stops[i].shape_dist_traveled - distance));
+					(int)round((1 / velocity) * (stops[i].shape_dist_traveled - distance)));
 			}
 		}
 	};
