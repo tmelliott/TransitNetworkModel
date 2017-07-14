@@ -28,7 +28,6 @@ namespace gtfs {
 		segment_index (0),
 		queue_time (0),
 		begin_time (0),
-		travel_times (v->get_trip ()->get_stoptimes ().size (), 0),
 		log_likelihood (-INFINITY),
 		vehicle (v) {
 

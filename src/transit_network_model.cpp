@@ -175,7 +175,8 @@ int main (int argc, char* argv[]) {
 
 		// Update road segments -> Kalman filter
 		{
-			
+			// loop over VEHICLES that were updated this iteration (?)
+			// +
 		}
 
 		// Update ETA predictions

@@ -36,6 +36,8 @@ namespace gtfs {
 	class Stop;
 	struct StopTime;
 
+    struct TravelTime;
+
 	// Some parameters
 
 	// class params {
@@ -212,7 +214,7 @@ namespace gtfs {
 		int segment_index;        /*!< segment index (0-based, {0, ..., L-1}) */
 		int queue_time;           /*!< cumulative time spent queuing at intersction `segment_index` */
 		uint64_t begin_time;      /*!< time at which bus started along segment `segment_index` */
-		std::vector<int> travel_times; /*!< time taken to travel each segment */
+		std::vector<TravelTime> travel_times; /*!< time taken to travel each segment */
 
 		int delta_t;              /*!< time this particular particle has left to travel */
 		double log_likelihood;    /*!< the likelihood of the particle, given the data */
@@ -251,11 +253,11 @@ namespace gtfs {
 		/** @return the particle's begin time at segment `segment_index` */
 		const uint64_t& get_begin_time () const { return begin_time; };
 		/** @return the particle's travel times along previous segments */
-		const std::vector<int>& get_travel_times () const { return travel_times; };
+		const std::vector<TravelTime>& get_travel_times () const { return travel_times; };
 		/** @return the particle's travel time along segment i */
-		int get_travel_time (unsigned i) {
-			if (i >= travel_times.size ()) return 0;
-			return travel_times[i];
+		const TravelTime* get_travel_time (unsigned i) const {
+			if (i >= travel_times.size ()) return nullptr;
+			return &travel_times[i];
 		};
 
 		/** @return the particle's remaining travel time */
@@ -687,6 +689,18 @@ namespace gtfs {
 			departure_time = boost::posix_time::duration_from_string (departure);
 		};
 	};
+
+
+    /**
+     * A recent travel time associated with a particle.
+     */
+    struct TravelTime {
+        std::shared_ptr<Segment> segment; /*!< pointer to the segment */
+        int time;                         /*!< time, in seconds, taken to travel segment */
+		bool complete;                    /*!< true once particle has finished with the segment */
+
+		TravelTime () : time (0), complete (false) {};
+    };
 
 
 }; // end GTFS namespace
