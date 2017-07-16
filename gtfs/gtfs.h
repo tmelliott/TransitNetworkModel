@@ -693,13 +693,18 @@ namespace gtfs {
 
     /**
      * A recent travel time associated with a particle.
+     *
+     * Only consider travel times that have been initialized AND completed.
      */
     struct TravelTime {
         std::shared_ptr<Segment> segment; /*!< pointer to the segment */
         int time;                         /*!< time, in seconds, taken to travel segment */
 		bool complete;                    /*!< true once particle has finished with the segment */
+		bool initialized;                 /*!< true once particle starts AT THE BEGINNING of segment */
 
-		TravelTime () : time (0), complete (false) {};
+		TravelTime () : time (0), complete (false) , initialized (false) {};
+		TravelTime (std::shared_ptr<Segment> seg) :
+			segment (seg), time (0), complete (false), initialized (false) {};
     };
 
 

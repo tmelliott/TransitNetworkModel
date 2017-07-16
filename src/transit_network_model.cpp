@@ -176,7 +176,9 @@ int main (int argc, char* argv[]) {
 		// Update road segments -> Kalman filter
 		{
 			// loop over VEHICLES that were updated this iteration (?)
-			// +
+			// for (auto v = vehicles.begin (i); v != vehicles.end (i); v++) {
+			//
+			// }
 		}
 
 		// Update ETA predictions
@@ -295,7 +297,7 @@ int main (int argc, char* argv[]) {
 			std::cout << "\n * Writing particles to db ...";
 			std::cout.flush ();
 			sqlite3* db;
-			sqlite3_stmt* stmt_del;
+			// sqlite3_stmt* stmt_del;
 			sqlite3_stmt* stmt_ins;
 			if (sqlite3_open (dbname.c_str (), &db)) {
 				fprintf(stderr, " * Can't open db connection: %s\n", sqlite3_errmsg (db));
@@ -408,8 +410,8 @@ bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> >
 	sqlite3_stmt* tripskeep;
 	std::string qry = "SELECT trip_id FROM trips WHERE route_id IN "
 		"(SELECT route_id FROM routes WHERE route_short_name IN "
-		"('274'))";
-		// "('274','277','224','222','258','NEX','129'))";
+		// "('274'))";
+		"('274','277','224','222','258','NEX','129'))";
 	if (sqlite3_open (gtfs.get_dbname ().c_str (), &db)) {
 		std::cerr << "\n x oops...";
 	} else if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &tripskeep, 0) != SQLITE_OK) {
