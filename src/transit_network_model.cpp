@@ -37,6 +37,7 @@
 #include <boost/range/adaptor/transformed.hpp>
 
 #include "gtfs-realtime.pb.h"
+#include "gtfs-network.pb.h"
 #include "gtfs-eta.pb.h"
 #include "sampling.h"
 #include "gtfs.h"
@@ -198,7 +199,7 @@ int main (int argc, char* argv[]) {
 				std::cout << " - " << minSeg;
 				std::vector<int> tts;
 				tts.reserve (v.second->get_particles ().size ());
-				for (unsigned i=0; i<minSeg; i++) {
+				for (int i=0; i<minSeg; i++) {
 					tts.clear ();
 					std::shared_ptr<gtfs::Segment> segi;
 					for (auto& p: v.second->get_particles ()) {
@@ -223,12 +224,29 @@ int main (int argc, char* argv[]) {
 				}
 			}
 
+			// Update segments and write to protocol buffer
+			transit_network::Feed feed;
 			for (auto& s: gtfs.get_segments ()) {
 				if (s.second->has_data ()) {
 					std::cout << "\n + Update segment " << s.first << ": ";
 					s.second->update (curtime);
 				}
+				transit_network::Segment* seg = feed.add_segments ();
+				seg->set_segment_id (s.second->get_id ());
+				if (s.second->is_initialized ()) {
+					seg->set_travel_time (s.second->get_travel_time ());
+					seg->set_travel_time_var (s.second->get_travel_time_var ());
+					seg->set_timestamp (s.second->get_timestamp ());
+				}
 			}
+
+			std::fstream output ("gtfs_network.pb",
+								 std::ios::out | std::ios::trunc | std::ios::binary);
+			if (!feed.SerializeToOstream (&output)) {
+				std::cerr << "\n x Failed to write ETA feed.\n";
+			}
+
+			google::protobuf::ShutdownProtobufLibrary ();
 
 			std::cout << "\n";
 			time_end (clockstart, wallstart);

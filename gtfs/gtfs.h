@@ -584,6 +584,10 @@ namespace gtfs {
 		bool toInt (void) { return type == 1 || type == 2; };
 
 		bool has_data (void) { return data.size () > 0; };
+		bool is_initialized (void) { return timestamp > 0; };
+        double get_travel_time (void) { return travel_time; };
+        double get_travel_time_var (void) { return travel_time_var; };
+        const uint64_t& get_timestamp (void) const { return timestamp; };
 
 		// --- METHODS
 		void add_data (double mean, double variance);
