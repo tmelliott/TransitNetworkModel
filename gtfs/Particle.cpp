@@ -28,23 +28,22 @@ namespace gtfs {
 		segment_index (0),
 		queue_time (0),
 		begin_time (0),
-		travel_times (),
 		log_likelihood (-INFINITY),
 		vehicle (v) {
 
 		// std::clog << " + Created particle for vehicle " << v->get_id ()
 		// 	<< " with id = " << id << "\n";
-		if (vehicle && vehicle->get_trip () && vehicle->get_trip ()->get_route () &&
-			vehicle->get_trip ()->get_route ()->get_shape () &&
-			vehicle->get_trip ()->get_route ()->get_shape ()->get_segments ().size () > 0) {
-			travel_times.reserve (vehicle->get_trip ()->get_route ()
-									->get_shape ()->get_segments ().size ());
-			std::cout << "...";
-			for (auto& s: vehicle->get_trip ()->get_route ()
-							->get_shape ()->get_segments ()) {
-				travel_times.emplace_back (s.segment);
-			}
-		}
+		// if (vehicle && vehicle->get_trip () && vehicle->get_trip ()->get_route () &&
+		// 	vehicle->get_trip ()->get_route ()->get_shape () &&
+		// 	vehicle->get_trip ()->get_route ()->get_shape ()->get_segments ().size () > 0) {
+		// 	travel_times.reserve (vehicle->get_trip ()->get_route ()
+		// 							->get_shape ()->get_segments ().size ());
+		// 	std::cout << "...";
+		// 	for (auto& s: vehicle->get_trip ()->get_route ()
+		// 					->get_shape ()->get_segments ()) {
+		// 		travel_times.emplace_back (s.segment);
+		// 	}
+		// }
 	};
 
 	/**
@@ -135,10 +134,12 @@ namespace gtfs {
 			stop_index = i+1; // 1-based index
 		}
 
+		travel_times.reserve (segments.size ());
 		for (unsigned int i=0; i<segments.size (); i++) {
-			// once distance smaller than segment's, we're done
-			if (distance < segments[i].shape_dist_traveled) break;
-			segment_index = i; // 0-based index
+			if (distance >= segments[i].shape_dist_traveled) {
+				segment_index = i; // 0-based index
+			}
+			travel_times.emplace_back (segments[i].segment);
 		}
 
 		// std::clog << "   - " << *this << " -> ";
@@ -311,13 +312,14 @@ namespace gtfs {
 				double eta = (1 / velocity) * (Sd - distance);
 				if (eta <= delta_t) {
 					delta_t = delta_t - eta;
-					// travel_times[segment_index].time += eta;
+					travel_times[segment_index].time += eta;
 					stop_index++;
 					arrival_time = vehicle->get_timestamp () - delta_t;
 					dwell_time = 0;
 					distance = Sd;
 					if (stop_index == M) {
 						finished = true;
+						travel_times[segment_index].complete = true;
 						break;
 					}
 					double pi (0.5);
@@ -326,7 +328,7 @@ namespace gtfs {
 					if (rng.runif () < pi) dwell_time = (int) gamma + exptau.rand (rng);
 					delta_t -= dwell_time;
 				} else {
-					// travel_times[segment_index].time += delta_t;
+					travel_times[segment_index].time += delta_t;
 					distance += velocity * delta_t;
 					delta_t = 0;
 				}
@@ -334,14 +336,13 @@ namespace gtfs {
 				double eta = (1 / velocity) * (Rd - distance);
 				if (eta <= delta_t) {
 					delta_t = delta_t - eta;
-					std::cout << " > entering intersection; "
-						<< "there are " << travel_times.size () << " times initialized ...\n";
+					// std::cout << " > entering intersection; "
+						// << "there are " << travel_times.size () << " times initialized ...\n";
 					travel_times[segment_index].time += eta;
 					travel_times[segment_index].complete = true;
 					// arrive at next intersection
 					segment_index++;
 					travel_times[segment_index].initialized = true;
-					std::cout << ".";
 					queue_time = 0;
 					begin_time = 0;
 					distance = Rd;
@@ -367,6 +368,16 @@ namespace gtfs {
 					delta_t = 0;
 				}
 			}
+		}
+	};
+
+	/**
+	 * Reset travel times once they've been used for network state.
+	 * @param i which time to update
+	 */
+	void Particle::reset_travel_time (unsigned i) {
+		if (i < travel_times.size ()) {
+			travel_times[i].initialized = false;
 		}
 	};
 

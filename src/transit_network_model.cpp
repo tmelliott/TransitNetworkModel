@@ -20,6 +20,7 @@
 #include <fstream>
 #include <memory>
 #include <vector>
+#include <numeric>
 #include <string>
 #include <unordered_map>
 #include <algorithm>
@@ -175,10 +176,60 @@ int main (int argc, char* argv[]) {
 
 		// Update road segments -> Kalman filter
 		{
+			time_start (clockstart, wallstart);
+			std::cout << "\n * Updating road network with latest travel times ...";
 			// loop over VEHICLES that were updated this iteration (?)
-			// for (auto v = vehicles.begin (i); v != vehicles.end (i); v++) {
-			//
-			// }
+			for (auto& v: vehicles) {
+				std::cout << "\n - Vehicle " << v.second->get_id () << " travel times ("
+					<< v.second->get_particles()[0].get_travel_times ().size ()
+					// << v.second->get_trip ()->get_route ()->get_shape ()->get_segments ().size ()
+					<< ")";
+				if (!v.second->is_initialized ()) {
+					std::cout << " -- not init";
+					continue;
+				}
+				// only use segments that are LESS than MIN segment index
+				int minSeg = v.second->get_trip ()->get_route ()->get_shape ()->get_segments ().size ();
+				for (auto& p: v.second->get_particles ()) {
+					if (p.get_segment_index () < minSeg) minSeg = p.get_segment_index ();
+				}
+				std::cout << " - " << minSeg;
+				std::vector<int> tts;
+				tts.reserve (v.second->get_particles ().size ());
+				for (unsigned i=0; i<minSeg; i++) {
+					tts.clear ();
+					std::shared_ptr<gtfs::Segment> segi;
+					for (auto& p: v.second->get_particles ()) {
+						// if COMPLETE && INITIALIZED then append travel time to segment's data
+						// AND uninitialize the particle's travel time for that segment
+						// so it doesn't get reused next time
+						auto tt = p.get_travel_time (i);
+						if (!tt) break;
+						if (!tt->initialized || !tt->complete) break; // if any aren't, skip anyway!
+						if (!segi) segi = tt->segment;
+						tts.push_back (tt->time);
+					}
+					if (tts.size () != v.second->get_particles ().size ()) continue;
+					double ttmean = std::accumulate(tts.begin (), tts.end (), 0.0) / tts.size ();
+					double sqdiff = 0;
+					for (auto& t: tts) sqdiff += pow(t - ttmean, 2);
+					double var = sqdiff / tts.size ();
+					std::cout << "\n + Segment " << i << ": " << ttmean << " (" << sqrt(var) << ")";
+					segi->add_data (ttmean, var);
+					// give data to segment
+					for (auto& p: v.second->get_particles ()) p.reset_travel_time (i);
+				}
+			}
+
+			for (auto& s: gtfs.get_segments ()) {
+				if (s.second->has_data ()) {
+					std::cout << "\n + Update segment " << s.first << ": ";
+					s.second->update ();
+				}
+			}
+
+			std::cout << "\n";
+			time_end (clockstart, wallstart);
 		}
 
 		// Update ETA predictions
@@ -410,8 +461,8 @@ bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> >
 	sqlite3_stmt* tripskeep;
 	std::string qry = "SELECT trip_id FROM trips WHERE route_id IN "
 		"(SELECT route_id FROM routes WHERE route_short_name IN "
-		// "('274'))";
-		"('274','277','224','222','258','NEX','129'))";
+		"('274'))";
+		// "('274','277','224','222','258','NEX','129'))";
 	if (sqlite3_open (gtfs.get_dbname ().c_str (), &db)) {
 		std::cerr << "\n x oops...";
 	} else if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &tripskeep, 0) != SQLITE_OK) {

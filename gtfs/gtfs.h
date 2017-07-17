@@ -278,6 +278,8 @@ namespace gtfs {
 		void transition_phase3 (sampling::RNG& rng);
 		void calculate_likelihood (void);
 
+		void reset_travel_time (unsigned i);
+
 		void calculate_etas (void);
 	};
 
@@ -509,7 +511,9 @@ namespace gtfs {
 
 		double travel_time;             /*!< the mean speed along the segment */
 		double travel_time_var;         /*!< the variance of speed along the segment */
-		uint64_t timestamp;          /*!< updated at timestamp */
+		uint64_t timestamp;             /*!< updated at timestamp */
+
+		std::vector<std::tuple<double,double> > data; /*!< estimates of travel time for recent vehicles */
 
 	public:
 		/**
@@ -579,9 +583,11 @@ namespace gtfs {
 		/** @return logical, if the segment ends at an intersection */
 		bool toInt (void) { return type == 1 || type == 2; };
 
+		bool has_data (void) { return data.size () > 0; };
 
 		// --- METHODS
-		// void update (void);
+		void add_data (double mean, double variance);
+		void update (void);
 	};
 
 	/**
