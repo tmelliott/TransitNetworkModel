@@ -188,8 +188,14 @@ namespace gtfs {
 
 		double llhood = 0.0;
 		double sigy   = 10;
-		llhood -= log (2 * M_PI * sigy);
-		llhood -= (pow(z[0], 2) + pow(z[1], 2)) / (2 * pow(sigy, 2));
+
+		// if (arrival_time > 0 &&
+			// arrival_time + dwell_time >= vehicle->get_timestamp ()) {
+			llhood -= log (2 * M_PI * sigy);
+			llhood -= (pow(z[0], 2) + pow(z[1], 2)) / (2 * pow(sigy, 2));
+		// } else if (begin_time == 0) {
+
+		// }
 
 		log_likelihood = llhood;
 	};

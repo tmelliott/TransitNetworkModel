@@ -502,7 +502,7 @@ bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> >
 		if (KEEPtrips.size () > 0) {
 			if (ent.has_trip_update () && ent.trip_update ().has_trip () &&
 				ent.trip_update ().trip ().has_trip_id ()) {
-				std::cout << "\n + " << ent.trip_update ().trip ().trip_id ();
+				// std::cout << "\n + " << ent.trip_update ().trip ().trip_id ();
 				if (std::find (KEEPtrips.begin (), KEEPtrips.end (),
 							   ent.trip_update ().trip ().trip_id ()) == KEEPtrips.end ()) continue;
 		    } else if (ent.has_vehicle () && ent.vehicle ().has_trip () &&

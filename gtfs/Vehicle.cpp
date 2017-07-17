@@ -184,7 +184,8 @@ namespace gtfs {
 
 		newtrip = true; // always assume a new trip unless we know otherwise
 		if (vp.has_trip ()) { // TripDescriptor -> (trip_id, route_id)
-		  	if (vp.trip ().has_trip_id () && trip != nullptr) newtrip = vp.trip ().trip_id () != trip->get_id ();
+		  	if (vp.trip ().has_trip_id () && trip != nullptr)
+				newtrip = vp.trip ().trip_id () != trip->get_id ();
 			if (vp.trip ().has_trip_id () && newtrip) {
 				std::string trip_id = vp.trip ().trip_id ();
 				auto ti = gtfs.get_trip (trip_id);
