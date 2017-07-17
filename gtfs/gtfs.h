@@ -509,9 +509,9 @@ namespace gtfs {
 		double length;               /*!< the length of this segment */
 		int type;                    /*!< the type of segment, 1=int->int, 2=stop->int, 3=int->stop, 4=stop->stop */
 
-		double travel_time;             /*!< the mean speed along the segment */
-		double travel_time_var;         /*!< the variance of speed along the segment */
-		uint64_t timestamp;             /*!< updated at timestamp */
+		double travel_time = 0;             /*!< the mean speed along the segment */
+		double travel_time_var = 0;         /*!< the variance of speed along the segment */
+		uint64_t timestamp = 0;             /*!< updated at timestamp */
 
 		std::vector<std::tuple<double,double> > data; /*!< estimates of travel time for recent vehicles */
 
@@ -587,7 +587,7 @@ namespace gtfs {
 
 		// --- METHODS
 		void add_data (double mean, double variance);
-		void update (void);
+		void update (time_t t);
 	};
 
 	/**
