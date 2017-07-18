@@ -18,6 +18,7 @@ message Trip {
 	repeated ETA etas = 4;
 }
 
+
 message Feed {
 	repeated Trip trips = 1;
 }

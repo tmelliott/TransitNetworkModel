@@ -187,15 +187,40 @@ namespace gtfs {
 		std::vector<double> z (x.projectFlat(vehicle->get_position ()));
 
 		double llhood = 0.0;
-		double sigy   = 10;
+		double sigy   = 10.0;
 
-		// if (arrival_time > 0 &&
-			// arrival_time + dwell_time >= vehicle->get_timestamp ()) {
+		double epsS = 20.0;
+		double epsI = 30.0;
+
+		if (arrival_time > 0 &&
+			arrival_time + dwell_time >= vehicle->get_timestamp ()) {
+			// particle at stop
+			auto stop = vehicle->get_trip ()->get_stoptimes ()[stop_index-1].stop;
+			if (vehicle->get_position ().distanceTo (stop->get_pos ()) < epsS) {
+				llhood -= (log(M_PI) + 2 * log(epsS));
+			} else {
+				llhood = -INFINITY;
+			}
+		} else if (queue_time > 0 && begin_time == 0) {
+			// particle at intersection
+			if (segment_index == 0) llhood = -INFINITY;
+			auto dx = vehicle->get_trip ()->get_route ()->get_shape ()
+				->get_segments ()[segment_index].shape_dist_traveled;
+			auto Int = vehicle->get_trip ()->get_route ()->get_shape ()
+				->get_segments ()[segment_index].segment->get_from ();
+			auto B2 = get_coords (dx - epsI, vehicle->get_trip ()->get_route ()
+				->get_shape ());
+			if (vehicle->get_position ().distanceTo (Int->get_pos ()) < epsI &&
+				vehicle->get_position ().distanceTo (B2) < epsI) {
+				double logA = log(2) + 2 * log(epsI) +
+					log(acos(0.5) - acos(sqrt(3) / 4));
+				llhood -= logA;
+			}
+		} else {
+			// particle moving
 			llhood -= log (2 * M_PI * sigy);
 			llhood -= (pow(z[0], 2) + pow(z[1], 2)) / (2 * pow(sigy, 2));
-		// } else if (begin_time == 0) {
-
-		// }
+		}
 
 		log_likelihood = llhood;
 	};

@@ -1,7 +1,8 @@
+
 default: build
 	cd build && cmake ..
 
-build:
+build: protofiles
 	mkdir -p build
 
 FILES := $(shell find . -maxdepth 2 -type f -name "*h" -o -name "*.cpp")
@@ -10,8 +11,6 @@ docs: $(FILES)
 
 clean:
 	rm -rf build *.pb
-
-
 
 protofiles:
 	cd protobuf && ./build_proto_files
