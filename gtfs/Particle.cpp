@@ -147,9 +147,9 @@ namespace gtfs {
 			travel_times.emplace_back (segments[i].segment);
 		}
 
-		std::clog << "   - " << *this << " -> ";
+		// std::clog << "   - " << *this << " -> ";
 		calculate_likelihood ();
-		std::clog << log_likelihood <<  "\n";
+		// std::clog << log_likelihood <<  "\n";
 	}
 
 	/**
@@ -162,7 +162,7 @@ namespace gtfs {
 		if (vehicle->get_delta () == 0 || finished) return;
 		delta_t = vehicle->get_delta ();
 
-		std::clog << "   - " << *this << " -> ";
+		// std::clog << "   - " << *this << " -> ";
 
 		// --- Three phases
 		// PHASE ONE: initial wait time
@@ -174,11 +174,11 @@ namespace gtfs {
 		// PHASE THREE: transition forward
 		transition_phase3 (rng);
 
-		std::clog << *this << " -> ";
+		// std::clog << *this << " -> ";
 
 		// Done with transition; compute likelihood and finish.
 		calculate_likelihood ();
-		std::clog << log_likelihood <<  "\n";
+		// std::clog << log_likelihood <<  "\n";
 	};
 
 	/**
@@ -232,14 +232,14 @@ namespace gtfs {
 
 		// likelihood part 2: arrival/departure time(s)
 		if (vehicle->get_stop_sequence () == 0) {
-			std::clog << " - CASE 1";
+			// std::clog << " - CASE 1";
 			// do nothing - no arrival/departure info
 		} else if (stop_index < (int)vehicle->get_stop_sequence ()) {
-			std::clog << " - CASE 2";
+			// std::clog << " - CASE 2";
 			// particle is behind the real bus; let's delete it
 			llhood = -INFINITY;
 		} else if (stop_index > (int)vehicle->get_stop_sequence ()) {
-			std::clog << " - CASE 3";
+			// std::clog << " - CASE 3";
 			// particle is a stop AHEAD of the vehicle
 			if (arrival_time >= fmax(vehicle->get_arrival_time (), vehicle->get_departure_time ())) {
 				// particle arrived at later stop earlier than possible!!! DELETE!
@@ -248,32 +248,32 @@ namespace gtfs {
 		} else if (vehicle->get_departure_time () > 0 &&
 				   arrival_time > 0 &&
 				   arrival_time + dwell_time > vehicle->get_timestamp ()) {
-			std::clog << " - CASE 4";
+			// std::clog << " - CASE 4";
 			// particle is at stop; bus isn't :(
 			llhood = -INFINITY;
 		} else if (arrival_time == 0 && dwell_time == 0) {
 			// index is OK; but particle doesn't yet know when it arrived.
 		} else if (vehicle->get_arrival_time () > 0 &&
 				   vehicle->get_departure_time () > 0) {
-			std::clog << " - CASE 5";
+			// std::clog << " - CASE 5";
 			if (dwell_time == 0) {
 				llhood = -INFINITY;
 			} else {
 				auto fn = sampling::normal (arrival_time, sigDelay);
 				auto fe = sampling::exponential (dwell_time);
-				std::clog << ": Fn(" << vehicle->get_arrival_time () << "|"
-				 	<< arrival_time << ", " << sigDelay << ") Fe("
-					<< vehicle->get_departure_time () - vehicle->get_arrival_time ()
-					<< " | " << dwell_time << ")";
+				// std::clog << ": Fn(" << vehicle->get_arrival_time () << "|"
+					// 	<< arrival_time << ", " << sigDelay << ") Fe("
+					// << vehicle->get_departure_time () - vehicle->get_arrival_time ()
+					// << " | " << dwell_time << ")";
 				llhood += fn.pdf_log (vehicle->get_arrival_time ()) +
 					fe.pdf_log (vehicle->get_departure_time () - vehicle->get_arrival_time ());
 			}
 		} else if (vehicle->get_arrival_time () > 0) {
-			std::clog << " - CASE 6";
+			// std::clog << " - CASE 6";
 			auto fn = sampling::normal (arrival_time, sigDelay);
 			llhood += fn.pdf_log (vehicle->get_arrival_time ());
 		} else if (vehicle->get_departure_time () > 0) {
-			std::clog << " - CASE 7";
+			// std::clog << " - CASE 7";
 			auto fn = sampling::normal (arrival_time + dwell_time, sigDelay);
 			llhood += fn.pdf_log (vehicle->get_departure_time ());
 		}

@@ -85,18 +85,18 @@ namespace gtfs {
 	 * @param rng A random number generator
 	 */
 	void Vehicle::update ( sampling::RNG& rng ) {
-		std::clog << "\nVehicle ID: " << id
-			<< " " << position
-			<< " - ts = " << timestamp;
-		if (stop_sequence > 0) std::clog << " - at stop " << stop_sequence;
-		if (newtrip) std::clog << " - newtrip";
-		if (!initialized) std::clog << " - initialization required";
-		if (initialized)
-			std::clog << " (" << delta << " seconds since last observation)";
+		// std::clog << "\nVehicle ID: " << id
+		// 	<< " " << position
+		// 	<< " - ts = " << timestamp;
+		// if (stop_sequence > 0) std::clog << " - at stop " << stop_sequence;
+		// if (newtrip) std::clog << " - newtrip";
+		// if (!initialized) std::clog << " - initialization required";
+		// if (initialized)
+		// 	std::clog << " (" << delta << " seconds since last observation)";
 
 
 		if (newtrip || !initialized) {
-			std::clog << "\n * Initializing particles: ";
+			// std::clog << "\n * Initializing particles: ";
 
 			// Detect initial range of vehicle's "distance into trip"
 			// -- just rough, so find points on the route within 100m of the GPS position
@@ -124,9 +124,9 @@ namespace gtfs {
 
 			initialized = true;
 		} else if (delta > 0) {
-			std::clog << "\n * Updating particles: " << delta << "s";
-			std::clog << " | M = " << trip->get_route ()->get_stops ().size ()
-				<< ", L = " << trip->get_route ()->get_shape ()->get_segments ().size ();
+			// std::clog << "\n * Updating particles: " << delta << "s";
+			// std::clog << " | M = " << trip->get_route ()->get_stops ().size ()
+			// 	<< ", L = " << trip->get_route ()->get_shape ()->get_segments ().size ();
 
 			double dbar = 0;
 			double vbar = 0;
@@ -147,16 +147,16 @@ namespace gtfs {
 		lh.reserve (particles.size ());
 		for (auto& p: particles) lh.push_back (p.get_likelihood ());
 		if (*std::max_element (lh.begin (), lh.end ()) < -10) {
-			std::clog << "   - Reset vehicle (not close particles) "
-				<< " - max likelihood = exp(" << *std::max_element (lh.begin (), lh.end ())
-				<< ")";
+			// std::clog << "   - Reset vehicle (not close particles) "
+			// 	<< " - max likelihood = exp(" << *std::max_element (lh.begin (), lh.end ())
+			// 	<< ")";
 			reset ();
 
 			return;
 		}
 
 		// Resample them!
-		std::clog << "\n   - Resampling ";
+		// std::clog << "\n   - Resampling ";
 		resample (rng);
 
 		// Estimate parameters
