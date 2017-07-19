@@ -64,8 +64,9 @@ plotRoute <- function(routeid, maxSpeed = 100, .max = maxSpeed * 1000 / 60 / 60)
     invisible(segs)
 }
 
-
-NEX <- dbGetQuery(con, "SELECT * FROM routes WHERE route_short_name='NEX'")
+## con <- dbConnect(SQLite(), "../gtfs.db")
+## NEX <- dbGetQuery(con, "SELECT * FROM routes WHERE route_short_name='NEX'")
+## dbDisconnect(con)
 
 while (TRUE) {
     plotRoute("10001-20170705140526_v55.10")

@@ -73,16 +73,19 @@ int main (int argc, char* argv[]) {
 	std::vector<std::string> files;
 	/** database connection to use */
 	std::string dbname;
-	std::string version;
+	// std::string version;
 	/** number of particles per vehicle */
 	int N;
+	/** number of cores to use */
+	int numcore;
 
 	desc.add_options ()
 		("files", po::value<std::vector<std::string> >(&files)->multitoken (),
 			"GTFS Realtime protobuf feed files.")
 		("database", po::value<std::string>(&dbname), "Database Connection to use.")
-		("version", po::value<std::string>(&version), "Version number to pull subset from database.")
+		// ("version", po::value<std::string>(&version), "Version number to pull subset from database.")
 		("N", po::value<int>(&N)->default_value(1000), "Number of particles to initialize each vehicle.")
+		("numcore", po::value<int>(&numcore)->default_value(1), "Number of cores to use.")
 		("help", "Print this message and exit.")
 	;
 
@@ -104,17 +107,17 @@ int main (int argc, char* argv[]) {
 	    std::cerr << "No database specified. Use --database to select a SQLIte database.\n";
 		return -1;
 	}
-	if (!vm.count ("version")) {
-		std::cout << "WARNING: version number not specified; entire database will be loaded!\n";
-		version = "";
-	}
+	// if (!vm.count ("version")) {
+	// 	std::cout << "WARNING: version number not specified; entire database will be loaded!\n";
+	// 	version = "";
+	// }
 
 	std::clock_t clockstart;
 	std::chrono::high_resolution_clock::time_point wallstart;
 
 	// Load the global GTFS database object:
 	time_start (clockstart, wallstart);
-	gtfs::GTFS gtfs (dbname, version);
+	gtfs::GTFS gtfs (dbname);
 	std::cout << " * Database loaded into memory\n";
 	time_end (clockstart, wallstart);
 
@@ -161,7 +164,9 @@ int main (int argc, char* argv[]) {
 			std::cout << "\n";
 			// -> triggers particle transition -> resample
 			time_start (clockstart, wallstart);
-			#pragma omp parallel for schedule(static) num_threads(3)
+			std::cout << "\n * Running particle filter ...\n";
+			std::cout.flush ();
+			#pragma omp parallel for schedule(static) num_threads(numcore)
 			for (unsigned i=0; i<vehicles.bucket_count (); i++) {
 				// std::cout << "\n - vehicle " << i;
 				for (auto v = vehicles.begin (i); v != vehicles.end (i); v++) {
@@ -183,12 +188,12 @@ int main (int argc, char* argv[]) {
 			std::cout << "\n * Updating road network with latest travel times ...";
 			// loop over VEHICLES that were updated this iteration (?)
 			for (auto& v: vehicles) {
-				std::cout << "\n - Vehicle " << v.second->get_id () << " travel times ("
-					<< v.second->get_particles()[0].get_travel_times ().size ()
+				// std::cout << "\n - Vehicle " << v.second->get_id () << " travel times ("
+					// << v.second->get_particles()[0].get_travel_times ().size ()
 					// << v.second->get_trip ()->get_route ()->get_shape ()->get_segments ().size ()
-					<< ")";
+					// << ")";
 				if (!v.second->is_initialized ()) {
-					std::cout << " -- not init";
+					// std::cout << " -- not init";
 					continue;
 				}
 				// only use segments that are LESS than MIN segment index
@@ -196,7 +201,7 @@ int main (int argc, char* argv[]) {
 				for (auto& p: v.second->get_particles ()) {
 					if (p.get_segment_index () < minSeg) minSeg = p.get_segment_index ();
 				}
-				std::cout << " - " << minSeg;
+				// std::cout << " - " << minSeg;
 				std::vector<int> tts;
 				tts.reserve (v.second->get_particles ().size ());
 				for (int i=0; i<minSeg; i++) {
@@ -217,7 +222,7 @@ int main (int argc, char* argv[]) {
 					double sqdiff = 0;
 					for (auto& t: tts) sqdiff += pow(t - ttmean, 2);
 					double var = sqdiff / tts.size ();
-					std::cout << "\n + Segment " << i << ": " << ttmean << " (" << sqrt(var) << ")";
+					// std::cout << "\n + Segment " << i << ": " << ttmean << " (" << sqrt(var) << ")";
 					segi->add_data (ttmean, var);
 					// give data to segment
 					for (auto& p: v.second->get_particles ()) p.reset_travel_time (i);

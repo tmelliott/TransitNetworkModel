@@ -84,7 +84,9 @@ namespace gtfs {
 		std::unordered_map<std::string, std::shared_ptr<Shape> > shapes; /*!< A map of shape pointers */
 
 	public:
+		GTFS (std::string& dbname);
 		GTFS (std::string& dbname, std::string& v);
+		void initialize (void);
 
         std::string& get_dbname (void) { return database_; };
 
@@ -173,6 +175,13 @@ namespace gtfs {
 		const std::shared_ptr<Trip>& get_trip () const;
 		/** Return the vehicle's position */
 		const gps::Coord& get_position () const { return position; };
+
+		/** @return stop sequence of the vehicle */
+		unsigned int get_stop_sequence (void) { return stop_sequence; };
+		/** @return arrival time at last stop */
+		uint64_t get_arrival_time (void) { return arrival_time; };
+		/** @return departure time at last stop */
+		uint64_t get_departure_time (void) { return departure_time; };
 
 		/** @return the time the observation was last taken */
 		const uint64_t& get_timestamp () const { return timestamp; };

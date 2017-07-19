@@ -85,17 +85,18 @@ namespace gtfs {
 	 * @param rng A random number generator
 	 */
 	void Vehicle::update ( sampling::RNG& rng ) {
-		// std::cout << "Vehicle ID: " << id
-		// 	<< " " << position
-		// 	<< " - ts = " << timestamp;
-		// if (newtrip) std::cout << " - newtrip";
-		// if (!initialized) std::cout << " - initialization required";
-		// if (initialized)
-		// 	std::cout << " (" << delta << " seconds since last observation)";
+		std::clog << "\nVehicle ID: " << id
+			<< " " << position
+			<< " - ts = " << timestamp;
+		if (stop_sequence > 0) std::clog << " - at stop " << stop_sequence;
+		if (newtrip) std::clog << " - newtrip";
+		if (!initialized) std::clog << " - initialization required";
+		if (initialized)
+			std::clog << " (" << delta << " seconds since last observation)";
 
 
 		if (newtrip || !initialized) {
-			// std::cout << "\n * Initializing particles: ";
+			std::clog << "\n * Initializing particles: ";
 
 			// Detect initial range of vehicle's "distance into trip"
 			// -- just rough, so find points on the route within 100m of the GPS position
@@ -123,9 +124,9 @@ namespace gtfs {
 
 			initialized = true;
 		} else if (delta > 0) {
-			// std::cout << "\n * Updating particles: " << delta << "s";
-			// std::cout << " | M = " << trip->get_route ()->get_stops ().size ()
-				// << ", L = " << trip->get_route ()->get_shape ()->get_segments ().size ();
+			std::clog << "\n * Updating particles: " << delta << "s";
+			std::clog << " | M = " << trip->get_route ()->get_stops ().size ()
+				<< ", L = " << trip->get_route ()->get_shape ()->get_segments ().size ();
 
 			double dbar = 0;
 			double vbar = 0;
@@ -139,22 +140,23 @@ namespace gtfs {
 		} else {
 			return;
 		}
+		// std::cout << "\n - " << arrival_time << " - " << departure_time;
 
 		// No particles near? Oh ...
 		std::vector<double> lh;
 		lh.reserve (particles.size ());
 		for (auto& p: particles) lh.push_back (p.get_likelihood ());
 		if (*std::max_element (lh.begin (), lh.end ()) < -10) {
-			// std::cout << "   - Reset vehicle (not close particles) "
-				// << " - max likelihood = exp(" << *std::max_element (lh.begin (), lh.end ())
-				// << ")";
+			std::clog << "   - Reset vehicle (not close particles) "
+				<< " - max likelihood = exp(" << *std::max_element (lh.begin (), lh.end ())
+				<< ")";
 			reset ();
 
 			return;
 		}
 
 		// Resample them!
-		// std::cout << "\n   - Resampling ";
+		std::clog << "\n   - Resampling ";
 		resample (rng);
 
 		// Estimate parameters
@@ -192,6 +194,7 @@ namespace gtfs {
 				if (ti != nullptr) set_trip (ti);
 			}
 		}
+		if (newtrip) initialized = false;
 		if (vp.has_position ()) { // VehiclePosition -> (lat, lon)
 			position = gps::Coord(vp.position ().latitude (),
 								  vp.position ().longitude ());
