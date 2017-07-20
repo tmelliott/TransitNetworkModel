@@ -14,8 +14,10 @@ message Trip {
 		required int64 arrival_max = 4;
 		required int64 arrival_eta = 5;
 	}
-
 	repeated ETA etas = 4;
+
+	optional float distance_into_trip = 5;
+	optional float velocity = 6;
 }
 
 
