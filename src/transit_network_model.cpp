@@ -140,6 +140,16 @@ int main (int argc, char* argv[]) {
 
 	// std::clock_t clockend;
 
+	system("rm -f PARTICLES.csv ETAS.csv");
+	std::ofstream particlefile; // file for particles
+	particlefile.open ("PARTICLES.csv");
+	particlefile << "vehicle_id,particle_id,timestamp,trip_id,distance,velocity,parent_id,lat,lng,lh\n";
+	particlefile.close ();
+	std::ofstream etafile;      // file for particles/stop ETAs
+	etafile.open ("ETAS.csv");
+	etafile << "vehicle_id,particle_id,stop_sequence,eta\n";
+	etafile.close ();
+
 	time_t curtime;
 	while (forever) {
 		curtime = time (NULL);
@@ -346,13 +356,8 @@ int main (int argc, char* argv[]) {
 			time_start (clockstart, wallstart);
 			std::cout << "\n * Writing particles to CSV ...";
 			std::cout.flush ();
-			system("rm -f PARTICLES.csv ETAS.csv");
-			std::ofstream particlefile; // file for particles
-			particlefile.open ("PARTICLES.csv");
-			particlefile << "vehicle_id,particle_id,timestamp,trip_id,distance,velocity,parent_id,lat,lng,lh\n";
-			std::ofstream etafile;      // file for particles/stop ETAs
-			etafile.open ("ETAS.csv");
-			etafile << "vehicle_id,particle_id,stop_sequence,eta\n";
+			particlefile.open ("PARTICLES.csv", std::ofstream::app);
+			etafile.open ("ETAS.csv", std::ofstream::app);
 			for (auto& v: vehicles) {
 				if (!v.second->get_trip ()) continue;
 				auto shape = v.second->get_trip ()->get_route ()->get_shape ();
@@ -500,8 +505,8 @@ bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> >
 	sqlite3_stmt* tripskeep;
 	std::string qry = "SELECT trip_id FROM trips WHERE route_id IN "
 		"(SELECT route_id FROM routes WHERE route_short_name IN "
-		"('274','277','224','222','258','NEX','129'))";
-		// "('274'))";
+		// "('274','277','224','222','258','NEX','129'))";
+		"('274'))";
 	if (sqlite3_open (gtfs.get_dbname ().c_str (), &db)) {
 		std::cerr << "\n x oops...";
 	} else if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &tripskeep, 0) != SQLITE_OK) {

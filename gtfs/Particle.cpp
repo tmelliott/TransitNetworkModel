@@ -192,7 +192,7 @@ namespace gtfs {
 		std::vector<double> z (x.projectFlat(vehicle->get_position ()));
 
 		double llhood = 0.0;
-		double sigy   = 10.0;
+		double sigy   = 5.0;
 
 		double epsS = 20.0;
 		double epsI = 30.0;
@@ -200,8 +200,9 @@ namespace gtfs {
 		double sigDelay = 3.0; // error in seconds for arrival/departure times
 
 		// Likelihood part 1: position
-		if (arrival_time > 0 &&
-			arrival_time + dwell_time >= vehicle->get_timestamp ()) {
+		// if (arrival_time > 0 &&
+		// 	arrival_time + dwell_time >= vehicle->get_timestamp ()) {
+		if (at_stop) {
 			// particle at stop
 			auto stop = vehicle->get_trip ()->get_stoptimes ()[stop_index-1].stop;
 			if (vehicle->get_position ().distanceTo (stop->get_pos ()) < epsS) {
@@ -209,7 +210,8 @@ namespace gtfs {
 			} else {
 				llhood = -INFINITY;
 			}
-		} else if (queue_time > 0 && begin_time == 0) {
+		// } else if (queue_time > 0 && begin_time == 0) {
+		} else if (at_intersection) {
 			// particle at intersection
 			if (segment_index == 0) llhood = -INFINITY;
 			auto dx = vehicle->get_trip ()->get_route ()->get_shape ()
@@ -231,52 +233,84 @@ namespace gtfs {
 		}
 
 		// likelihood part 2: arrival/departure time(s)
-		if (vehicle->get_stop_sequence () == 0) {
-			// std::clog << " - CASE 1";
-			// do nothing - no arrival/departure info
-		} else if (stop_index < (int)vehicle->get_stop_sequence ()) {
-			// std::clog << " - CASE 2";
-			// particle is behind the real bus; let's delete it
-			llhood = -INFINITY;
-		} else if (stop_index > (int)vehicle->get_stop_sequence ()) {
-			// std::clog << " - CASE 3";
-			// particle is a stop AHEAD of the vehicle
-			if (arrival_time >= fmax(vehicle->get_arrival_time (), vehicle->get_departure_time ())) {
-				// particle arrived at later stop earlier than possible!!! DELETE!
-				llhood = -INFINITY;
-			}
-		} else if (vehicle->get_departure_time () > 0 &&
-				   arrival_time > 0 &&
-				   arrival_time + dwell_time > vehicle->get_timestamp ()) {
-			// std::clog << " - CASE 4";
-			// particle is at stop; bus isn't :(
-			llhood = -INFINITY;
-		} else if (arrival_time == 0 && dwell_time == 0) {
-			// index is OK; but particle doesn't yet know when it arrived.
-		} else if (vehicle->get_arrival_time () > 0 &&
-				   vehicle->get_departure_time () > 0) {
-			// std::clog << " - CASE 5";
-			if (dwell_time == 0) {
-				llhood = -INFINITY;
-			} else {
-				auto fn = sampling::normal (arrival_time, sigDelay);
-				auto fe = sampling::exponential (dwell_time);
-				// std::clog << ": Fn(" << vehicle->get_arrival_time () << "|"
-					// 	<< arrival_time << ", " << sigDelay << ") Fe("
-					// << vehicle->get_departure_time () - vehicle->get_arrival_time ()
-					// << " | " << dwell_time << ")";
-				llhood += fn.pdf_log (vehicle->get_arrival_time ()) +
-					fe.pdf_log (vehicle->get_departure_time () - vehicle->get_arrival_time ());
-			}
-		} else if (vehicle->get_arrival_time () > 0) {
-			// std::clog << " - CASE 6";
-			auto fn = sampling::normal (arrival_time, sigDelay);
-			llhood += fn.pdf_log (vehicle->get_arrival_time ());
-		} else if (vehicle->get_departure_time () > 0) {
-			// std::clog << " - CASE 7";
-			auto fn = sampling::normal (arrival_time + dwell_time, sigDelay);
-			llhood += fn.pdf_log (vehicle->get_departure_time ());
-		}
+		// if (vehicle->get_stop_sequence () == 0) {
+		// 	// std::clog << " - CASE 1";
+		// 	// do nothing - no arrival/departure info
+		// } else if (stop_index < (int)vehicle->get_stop_sequence ()) {
+		// 	// std::clog << " - CASE 2";
+		// 	// particle is behind the real bus; let's delete it
+		// 	llhood = -INFINITY;
+		// } else if (stop_index > (int)vehicle->get_stop_sequence ()) {
+		// 	// std::clog << " - CASE 3";
+		// 	// particle is a stop AHEAD of the vehicle
+		// 	if (arrival_time >= fmax(vehicle->get_arrival_time (),
+		// 							 vehicle->get_departure_time ())) {
+		// 		// particle arrived at later stop earlier than possible!!! DELETE!
+		// 		llhood = -INFINITY;
+		// 	}
+		// } else {
+		// 	if (vehicle->get_arrival_time () > 0 && vehicle->get_departure_time () > 0) {
+		// 		if (vehicle->get_departure_time () > vehicle->get_arrival_time ()) {
+		// 			if (dwell_time == 0) {
+		// 				llhood = -INFINITY;
+		// 			} else {
+		// 				auto fn = sampling::normal (arrival_time, sigDelay);
+		// 				auto fe = sampling::exponential (dwell_time);
+		// 				// std::clog << ": Fn(" << vehicle->get_arrival_time () << "|"
+		// 					// 	<< arrival_time << ", " << sigDelay << ") Fe("
+		// 					// << vehicle->get_departure_time () - vehicle->get_arrival_time ()
+		// 					// << " | " << dwell_time << ")";
+		// 				llhood += fn.pdf_log (vehicle->get_arrival_time ()) +
+		// 					fe.pdf_log (vehicle->get_departure_time () - vehicle->get_arrival_time ());
+		// 			}
+		// 		} else {
+		// 			if (dwell_time > 0) {
+		// 				llhood = -INFINITY;
+		// 			}
+		// 		}
+		// 	} else if (vehicle->get_departure_time () > 0) {
+		// 		auto fn = sampling::normal (arrival_time + dwell_time, sigDelay);
+		// 		llhood += fn.pdf_log (vehicle->get_departure_time ());
+		// 	} else if (vehicle->get_arrival_time () > 0) {
+		// 		auto fn = sampling::normal (arrival_time, sigDelay);
+		// 		llhood += fn.pdf_log (vehicle->get_arrival_time ());
+		// 	}
+		// }
+
+
+
+
+			// if (vehicle->get_departure_time () > 0 && at_stop) {\
+			// 	// std::clog << " - CASE 4";
+			// 	// particle is at stop; bus isn't :(
+			// 	llhood = -INFINITY;
+			// } else if (arrival_time == 0 && dwell_time == 0) {
+			// 	// index is OK; but particle doesn't yet know when it arrived.
+			// } else if (vehicle->get_arrival_time () > 0 &&
+			// 		   vehicle->get_departure_time () > 0) {
+			// 	// std::clog << " - CASE 5";
+			// 	if (dwell_time == 0) {
+			// 		llhood = -INFINITY;
+			// 	} else {
+			// 		auto fn = sampling::normal (arrival_time, sigDelay);
+			// 		auto fe = sampling::exponential (dwell_time);
+			// 		// std::clog << ": Fn(" << vehicle->get_arrival_time () << "|"
+			// 			// 	<< arrival_time << ", " << sigDelay << ") Fe("
+			// 			// << vehicle->get_departure_time () - vehicle->get_arrival_time ()
+			// 			// << " | " << dwell_time << ")";
+			// 		llhood += fn.pdf_log (vehicle->get_arrival_time ()) +
+			// 			fe.pdf_log (vehicle->get_departure_time () - vehicle->get_arrival_time ());
+			// 	}
+			// } else if (vehicle->get_arrival_time () > 0) {
+			// 	// std::clog << " - CASE 6";
+			// 	auto fn = sampling::normal (arrival_time, sigDelay);
+			// 	llhood += fn.pdf_log (vehicle->get_arrival_time ());
+			// } else if (vehicle->get_departure_time () > 0) {
+			// 	// std::clog << " - CASE 7";
+			// 	auto fn = sampling::normal (arrival_time + dwell_time, sigDelay);
+			// 	llhood += fn.pdf_log (vehicle->get_departure_time ());
+			// }
+
 
 		log_likelihood = llhood;
 	};
@@ -293,10 +327,10 @@ namespace gtfs {
 	 */
 	void Particle::transition_phase1 (sampling::RNG& rng) {
 
-		if (arrival_time > 0 &&
-			arrival_time + dwell_time >= vehicle->get_timestamp ()) {
+		// if (arrival_time > 0 &&
+		// 	arrival_time + dwell_time >= vehicle->get_timestamp ()) {
 		// {^-----------------------^} == departure_time
-
+		if (at_stop) {
 			// --- Particle is stopped at the bus stop
 			double gamma (6.0);
 			sampling::exponential exptau (1.0 / 10.0);
@@ -305,7 +339,9 @@ namespace gtfs {
 			if (dwell_time < gamma) dwell_time = gamma;
 			dwell_time += exptau.rand (rng);
 			delta_t = vehicle->get_timestamp () - (arrival_time + dwell_time);
-		} else if (queue_time > 0 && begin_time == 0) {
+			if (delta_t > 0) at_stop = false;
+		// } else if (queue_time > 0 && begin_time == 0) {
+		} else if (at_intersection) {
 			// --- Particle is queued at an intersection
 			sampling::exponential expkappa (1.0 / 20.0);
 			int qt = (int) expkappa.rand (rng);
@@ -314,6 +350,7 @@ namespace gtfs {
 				queue_time += qt;
 				delta_t -= qt;
 				begin_time = vehicle->get_timestamp () - delta_t;
+				at_intersection = false;
 			} else {
 				// particle queues too long - remains at intersection
 				queue_time += delta_t;
@@ -322,7 +359,7 @@ namespace gtfs {
 		} else {
 			// for now we'll just stay where we are with some probability
 			// if not at stop/segment
-			if (rng.runif () < 0.3) delta_t = 0;
+			if (rng.runif () < 0.01) delta_t = 0;
 		}
 
 	};
@@ -401,6 +438,7 @@ namespace gtfs {
 					delta_t = delta_t - eta;
 					travel_times[segment_index].time += eta;
 					stop_index++;
+					at_stop = true;
 					arrival_time = vehicle->get_timestamp () - delta_t;
 					dwell_time = 0;
 					distance = Sd;
@@ -414,6 +452,7 @@ namespace gtfs {
 					sampling::exponential exptau (1.0 / 10.0);
 					if (rng.runif () < pi) dwell_time = (int) gamma + exptau.rand (rng);
 					delta_t -= dwell_time;
+					at_stop = delta_t <= 0;
 				} else {
 					travel_times[segment_index].time += delta_t;
 					distance += velocity * delta_t;
@@ -429,6 +468,7 @@ namespace gtfs {
 					travel_times[segment_index].complete = true;
 					// arrive at next intersection
 					segment_index++;
+					at_intersection = true;
 					travel_times[segment_index].initialized = true;
 					queue_time = 0;
 					begin_time = 0;
@@ -448,6 +488,7 @@ namespace gtfs {
 					} else {
 						delta_t -= queue_time;
 						begin_time = vehicle->get_timestamp () - delta_t;
+						at_intersection = false;
 					}
 				} else {
 					travel_times[segment_index].time += delta_t;

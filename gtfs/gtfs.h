@@ -215,11 +215,13 @@ namespace gtfs {
 		double velocity;          /*!< velocity (m/s) */
 		bool finished;            /*!< set to TRUE once particle reaches end of route */
 
+        bool at_stop = false;     /*!< logical, only TRUE when particle known to be at a stop */
 		int stop_index;           /*!< stop index (1-based to match GTFS feed, {1, ..., M}) */
 		uint64_t arrival_time;    /*!< arrival time at stop `stop_index` */
 		int dwell_time;           /*!< dwell time at stop `stop_index`*/
 		                          // departure_time = arrival_time + dwell_time
 
+        bool at_intersection = false;     /*!< logical, only TRUE when particle known to be at an intersection */
 		int segment_index;        /*!< segment index (0-based, {0, ..., L-1}) */
 		int queue_time;           /*!< cumulative time spent queuing at intersction `segment_index` */
 		uint64_t begin_time;      /*!< time at which bus started along segment `segment_index` */
