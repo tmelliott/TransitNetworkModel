@@ -22,7 +22,7 @@ namespace gtfs {
 		double Vhat = 0, Phat = 0;
 		for (auto& d: data) {
 			Vhat += std::get<0>(d);
-			Phat += pow(std::get<0>(d), 2) + std::get<1>(d);
+			Phat += pow(std::get<0>(d), 2) + fmax(3, std::get<1>(d));
 			std::cout << std::get<0>(d) << " (" << std::get<1>(d) << "); ";
 		}
 		Vhat = Vhat / data.size ();

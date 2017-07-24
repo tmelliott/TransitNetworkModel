@@ -4,7 +4,7 @@ con <- dbConnect(SQLite(), "../gtfs.db")
 ## 1. read particles (+ ETAs)
 particles <- read.csv("../build/PARTICLES.csv",
                       colClasses = c("factor", "factor", "integer", "factor",
-                                     "numeric", "numeric", "integer", "numeric", "numeric"))
+                                     "numeric", "numeric", "integer", "numeric", "numeric", "numeric"))
 particles$timestamp <- as.POSIXct(particles$timestamp, origin = "1970-01-01")
 etas <- read.csv("../build/ETAS.csv",
                  colClasses = c("factor", "factor", "integer", "integer"))
@@ -15,6 +15,9 @@ routes <- dbGetQuery(con, sprintf("SELECT DISTINCT route_id FROM trips WHERE tri
 shapes <- dbGetQuery(con,
                      sprintf("SELECT DISTINCT shape_id FROM routes WHERE route_id IN ('%s')",
                              paste(routes, collapse = "','")))$shape_id
+
+trips <- dbGetQuery(con, sprintf("SELECT trip_id, route_id FROM trips WHERE trip_id IN ('%s')",
+                                 paste(unique(particles$trip_id), collapse = "','")))
 
 ## 2. read their shapes (including segments)
 shapeseg <- lapply(shapes, function(sid) {
@@ -41,11 +44,13 @@ for (i in seq_along(routes)) {
                pch = 21, bg = "white", lwd = 2)
     })
     with(shapeseg[[i]][-1,], {
-        arrows(shape_dist_traveled, -0.2, y1=0.2, code = 0, col = "#990000", lwd = 2)
+        arrows(shape_dist_traveled, -0.2, y1=0.2, code = 0, col = "#999999", lwd = 1)
+    })
+    with(particles[particles$trip_id %in% trips$trip_id[trips$route_id == routes[i]], ], {
+        points(distance, rep(0, length(distance)), pch = 4, cex = 0.5, col = "orangered")
     })
     locator(1)
     par(o)
 }
 
 
-particles

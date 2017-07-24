@@ -79,6 +79,8 @@ int main (int argc, char* argv[]) {
 	/** number of cores to use */
 	int numcore;
 
+	bool csvout;
+
 	desc.add_options ()
 		("files", po::value<std::vector<std::string> >(&files)->multitoken (),
 			"GTFS Realtime protobuf feed files.")
@@ -86,6 +88,7 @@ int main (int argc, char* argv[]) {
 		// ("version", po::value<std::string>(&version), "Version number to pull subset from database.")
 		("N", po::value<int>(&N)->default_value(1000), "Number of particles to initialize each vehicle.")
 		("numcore", po::value<int>(&numcore)->default_value(1), "Number of cores to use.")
+		("csv", po::value<bool>(&csvout)->default_value(false), "Setting to true will cause all particles and their ETAs to be written to PARTICLES.csv and ETAs.csv, respectively. WARNING: slow!")
 		("help", "Print this message and exit.")
 	;
 
@@ -140,9 +143,9 @@ int main (int argc, char* argv[]) {
 	time_t curtime;
 	while (forever) {
 		curtime = time (NULL);
-		// forever = false;
+
+		// Load GTFS feed -> vehicles
 		{
-			// Load GTFS feed -> vehicles
             // auto wallstart = std::chrono::high_resolution_clock::now();
             // auto wallend = std::chrono::high_resolution_clock::now();
 
@@ -159,9 +162,12 @@ int main (int argc, char* argv[]) {
 					std::cerr << "Error occured loading file.\n";
 				}
 			}
-			time_end (clockstart, wallstart);
-
 			std::cout << "\n";
+			time_end (clockstart, wallstart);
+		}
+
+		// Update each vehicle's particles
+		{
 			// -> triggers particle transition -> resample
 			time_start (clockstart, wallstart);
 			std::cout << "\n * Running particle filter ...\n";
@@ -336,14 +342,14 @@ int main (int argc, char* argv[]) {
 		}
 
 		// Write results to CSV files
-		if (false) {
+		if (csvout) {
 			time_start (clockstart, wallstart);
 			std::cout << "\n * Writing particles to CSV ...";
 			std::cout.flush ();
 			system("rm -f PARTICLES.csv ETAS.csv");
 			std::ofstream particlefile; // file for particles
 			particlefile.open ("PARTICLES.csv");
-			particlefile << "vehicle_id,particle_id,timestamp,trip_id,distance,velocity,parent_id,lat,lng\n";
+			particlefile << "vehicle_id,particle_id,timestamp,trip_id,distance,velocity,parent_id,lat,lng,lh\n";
 			std::ofstream etafile;      // file for particles/stop ETAs
 			etafile.open ("ETAS.csv");
 			etafile << "vehicle_id,particle_id,stop_sequence,eta\n";
@@ -356,7 +362,8 @@ int main (int argc, char* argv[]) {
 						<< v.second->get_id () << "," << p.get_id () << ","
 					 	<< v.second->get_timestamp () << "," << v.second->get_trip ()->get_id () << ","
 						<< p.get_distance () << "," << p.get_velocity () << ","
-						<< p.get_parent_id () << "," << pos.lat << "," << pos.lng << "\n";
+						<< p.get_parent_id () << "," << pos.lat << "," << pos.lng << ","
+						<< p.get_likelihood () << "\n";
 					if (p.get_etas ().size () > 0) {
 						for (unsigned int i=0; i<p.get_etas ().size (); i++) {
 							if (p.get_eta (i) && p.get_eta (i) > 0) {
