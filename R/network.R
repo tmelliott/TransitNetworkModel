@@ -51,7 +51,6 @@ plotRoute <- function(routeid, maxSpeed = 100, .max = maxSpeed * 1000 / 60 / 60)
     segs$state <- with(segs, length / tt)
     rownames(segs) <- segs$segment_id
     shape$speed <- pmin(segs[shape$seg, "state"], .max) * 60 * 60 / 1000
-
     with(segs, {
         plot(c(shape_dist_traveled, max(shape$dist_traveled)), rep(0, length(tt)+1),
              type = "l", lwd = 2,
@@ -60,6 +59,8 @@ plotRoute <- function(routeid, maxSpeed = 100, .max = maxSpeed * 1000 / 60 / 60)
         mid <- shape_dist_traveled + diff(c(shape_dist_traveled, max(shape$dist_traveled))) / 2
         lab <- ifelse(is.na(tt), "", sprintf("%.1f (%.1f)", tt, sqrt(ttvar)))
         text(mid, rep(0, length(mid)), lab, pos = c(1, 3), cex = 0.7)
+        l2 <- ifelse(is.na(state), "", sprintf("%.0f", state * 60 * 60 / 1000))
+        text(mid, rep(0, length(mid)), l2, pos = c(1, 3), offset = 1.5, cex = 0.7)
     })
     
     ## xr = extendrange(shape$lng)
@@ -82,6 +83,9 @@ r274 <- dbGetQuery(con, "SELECT * FROM routes WHERE route_short_name='274'")
 dbDisconnect(con)
 
 while (TRUE) {
+    o <- par(mfrow = c(2, 1))
+    plotRoute(r274$route_id[2])
     plotRoute(r274$route_id[4])
+    par(o)
     Sys.sleep(10)
 }

@@ -238,7 +238,7 @@ int main (int argc, char* argv[]) {
 					double sqdiff = 0;
 					for (auto& t: tts) sqdiff += pow(t - ttmean, 2);
 					double var = sqdiff / tts.size ();
-					// std::cout << "\n + Segment " << i << ": " << ttmean << " (" << sqrt(var) << ")";
+					std::cout << "\n + Segment " << i << ": " << ttmean << " (" << sqrt(var) << ")";
 					segi->add_data (ttmean, var);
 					// give data to segment
 					for (auto& p: v.second->get_particles ()) p.reset_travel_time (i);

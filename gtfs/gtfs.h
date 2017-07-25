@@ -221,7 +221,7 @@ namespace gtfs {
 		int dwell_time;           /*!< dwell time at stop `stop_index`*/
 		                          // departure_time = arrival_time + dwell_time
 
-        bool at_intersection = false;     /*!< logical, only TRUE when particle known to be at an intersection */
+        bool at_intersection = false; /*!< logical, only TRUE when particle known to be at an intersection */
 		int segment_index;        /*!< segment index (0-based, {0, ..., L-1}) */
 		int queue_time;           /*!< cumulative time spent queuing at intersction `segment_index` */
 		uint64_t begin_time;      /*!< time at which bus started along segment `segment_index` */
@@ -251,12 +251,17 @@ namespace gtfs {
 		const double& get_velocity () const { return velocity; };
 		/** @return true if the particle is at end of route; false otherwise */
 		bool is_finished () const { return finished; };
+
+		/** @return whether or not particle is at a stop */
+		bool is_at_stop () const { return at_stop; };
 		/** @return the particle's stop index */
 		int get_stop_index () const { return stop_index; };
 		/** @return the particle's arrival time at stop `stop_index` */
 		const uint64_t& get_arrival_time () const { return arrival_time; };
 		/** @return the particle's dwell time at stop `stop_index` */
 		int get_dwell_time () const { return dwell_time; };
+		/** @return whether or not particle is at an intersection */
+		bool is_at_intersection () const { return at_intersection; };
 		/** @return the particle's segment index */
 		int get_segment_index () const {return segment_index; };
 		/** @return the particle's queue time at segment `segment_index` */
