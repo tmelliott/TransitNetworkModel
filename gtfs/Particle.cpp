@@ -122,6 +122,11 @@ namespace gtfs {
 		dwell_time = 0;
 		queue_time = 0;
 		begin_time = 0;
+		if (distance < 50) {
+			distance = 0;
+			at_stop = true;
+			begin_time = vehicle->get_timestamp ();
+		}
 
 		// which stop are we at?
 		auto trip = vehicle->get_trip ();
@@ -147,6 +152,9 @@ namespace gtfs {
 				segment_index = i; // 0-based index
 			}
 			travel_times.emplace_back (segments[i].segment);
+		}
+		if (distance == 0) {
+			travel_times[0].initialized = 0;
 		}
 
 		// std::clog << "   - " << *this << " -> ";
@@ -337,7 +345,8 @@ namespace gtfs {
 		} else {
 			// for now we'll just stay where we are with some probability
 			// if not at stop/segment
-			// if (rng.runif () < 0.01) delta_t = 0;
+			travel_times[segment_index].time += delta_t;
+			if (rng.runif () < 0.01) delta_t = 0;
 		}
 
 	};

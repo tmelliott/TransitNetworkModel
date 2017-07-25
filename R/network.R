@@ -20,6 +20,14 @@ plotRoute <- function(routeid, maxSpeed = 100, .max = maxSpeed * 1000 / 60 / 60)
                        ts   = tt(x$timestamp)), class = "gtfs.segment")  
     }); names(segments) <- sapply(segments, function(x) x$id)
 
+    vs <- read(transit_etas.Feed, "../build/gtfs_etas.pb")$trips
+    vs <- do.call(rbind, lapply(vs, function(x) {
+        data.frame(vehicle_id = x$vehicle_id, trip_id = x$trip_id,
+                   route_id = x$route_id,
+                   distance = x$distance_into_trip,
+                   velocity = x$velocity)
+    }))
+
 
     ## Choose a route, fetch its shape and segments, and draw what's going on ...
     con <- dbConnect(SQLite(), "../gtfs.db")
@@ -62,6 +70,8 @@ plotRoute <- function(routeid, maxSpeed = 100, .max = maxSpeed * 1000 / 60 / 60)
         l2 <- ifelse(is.na(state), "", sprintf("%.0f", state * 60 * 60 / 1000))
         text(mid, rep(0, length(mid)), l2, pos = c(1, 3), offset = 1.5, cex = 0.7)
     })
+    with(vs[vs$route_id == routeid, ],
+         abline(v = distance, col = "#990000", lty = 2))
     
     ## xr = extendrange(shape$lng)
     ## yr = extendrange(shape$lat)

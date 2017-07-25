@@ -23,11 +23,11 @@ namespace gtfs {
 		for (auto& d: data) {
 			Vhat += std::get<0>(d);
 			Phat += pow(std::get<0>(d), 2) + fmax(3, std::get<1>(d));
-			std::cout << std::get<0>(d) << " (" << std::get<1>(d) << "); ";
+			// std::cout << std::get<0>(d) << " (" << std::get<1>(d) << "); ";
 		}
 		Vhat = Vhat / data.size ();
 		Phat = Phat / data.size () - pow(Vhat, 2);
-		std::cout << " => " << travel_time << " (" << travel_time_var << ")";
+		// std::cout << " => " << travel_time << " (" << travel_time_var << ")";
 
 		if (timestamp == 0) {
 			travel_time = Vhat;
@@ -42,7 +42,7 @@ namespace gtfs {
 			timestamp = t;
 		}
 		data.clear ();
-		std::cout << " ==> " << travel_time << " (" << travel_time_var << ")";
+		// std::cout << " ==> " << travel_time << " (" << travel_time_var << ")";
 	};
 
 }; // end namespace gtfs

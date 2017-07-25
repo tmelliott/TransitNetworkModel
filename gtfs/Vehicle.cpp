@@ -111,7 +111,10 @@ namespace gtfs {
 			}
 			// printf("between %*.2f and %*.2f m", 8, init_range[0], 8, init_range[1]);
 
-			if (init_range[0] > init_range[1]) {
+			if (this->position.distanceTo (shape->get_path ()[0].pt) < 50) {
+				init_range[0] = 0;
+				init_range[1] = 1;
+			} else if (init_range[0] > init_range[1]) {
 				// std::cout << "\n   -> unable to locate vehicle on route -> cannot initialize.";
 				return;
 			} else if (init_range[0] == init_range[1]) {
@@ -155,9 +158,11 @@ namespace gtfs {
 			return;
 		}
 
-		// Resample them!
+		// Resample them! - only if initialized?
 		// std::clog << "\n   - Resampling ";
-		resample (rng);
+
+		if (initialized)
+			resample (rng);
 
 		// Estimate parameters
 		double dbar = 0;

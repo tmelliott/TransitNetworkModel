@@ -143,7 +143,7 @@ int main (int argc, char* argv[]) {
 	system("rm -f PARTICLES.csv ETAS.csv");
 	std::ofstream particlefile; // file for particles
 	particlefile.open ("PARTICLES.csv");
-	particlefile << "vehicle_id,particle_id,timestamp,trip_id,distance,velocity,parent_id,lat,lng,lh\n";
+	particlefile << "vehicle_id,particle_id,timestamp,trip_id,distance,velocity,parent_id,lat,lng,lh,init\n";
 	particlefile.close ();
 	std::ofstream etafile;      // file for particles/stop ETAs
 	etafile.open ("ETAS.csv");
@@ -205,9 +205,9 @@ int main (int argc, char* argv[]) {
 			// loop over VEHICLES that were updated this iteration (?)
 			for (auto& v: vehicles) {
 				// std::cout << "\n - Vehicle " << v.second->get_id () << " travel times ("
-					// << v.second->get_particles()[0].get_travel_times ().size ()
-					// << v.second->get_trip ()->get_route ()->get_shape ()->get_segments ().size ()
-					// << ")";
+				// 	<< v.second->get_particles()[0].get_travel_times ().size ()
+				// 	<< v.second->get_trip ()->get_route ()->get_shape ()->get_segments ().size ()
+				// 	<< ")";
 				if (!v.second->is_initialized ()) {
 					// std::cout << " -- not init";
 					continue;
@@ -233,12 +233,14 @@ int main (int argc, char* argv[]) {
 						if (!segi) segi = tt->segment;
 						tts.push_back (tt->time);
 					}
+					// std::cout << " (" << tts.size () << " vs "
+					// 	<< v.second->get_particles ().size () << ")?";
 					if (tts.size () != v.second->get_particles ().size ()) continue;
 					double ttmean = std::accumulate(tts.begin (), tts.end (), 0.0) / tts.size ();
 					double sqdiff = 0;
 					for (auto& t: tts) sqdiff += pow(t - ttmean, 2);
 					double var = sqdiff / tts.size ();
-					std::cout << "\n + Segment " << i << ": " << ttmean << " (" << sqrt(var) << ")";
+					// std::cout << "\n + Segment " << i << ": " << ttmean << " (" << sqrt(var) << ")";
 					segi->add_data (ttmean, var);
 					// give data to segment
 					for (auto& p: v.second->get_particles ()) p.reset_travel_time (i);
@@ -247,9 +249,10 @@ int main (int argc, char* argv[]) {
 
 			// Update segments and write to protocol buffer
 			transit_network::Feed feed;
+			// std::cout << "\n ~~~~~~~~~~~~~~~~~~~ \n";
 			for (auto& s: gtfs.get_segments ()) {
 				if (s.second->has_data ()) {
-					std::cout << "\n + Update segment " << s.first << ": ";
+					// std::cout << "\n + Update segment " << s.first << ": ";
 					s.second->update (curtime);
 				}
 				transit_network::Segment* seg = feed.add_segments ();
@@ -368,7 +371,8 @@ int main (int argc, char* argv[]) {
 					 	<< v.second->get_timestamp () << "," << v.second->get_trip ()->get_id () << ","
 						<< p.get_distance () << "," << p.get_velocity () << ","
 						<< p.get_parent_id () << "," << pos.lat << "," << pos.lng << ","
-						<< p.get_likelihood () << "\n";
+						<< p.get_likelihood ()  << ","
+						<< v.second->is_initialized () << "\n";
 					if (p.get_etas ().size () > 0) {
 						for (unsigned int i=0; i<p.get_etas ().size (); i++) {
 							if (p.get_eta (i) && p.get_eta (i) > 0) {
