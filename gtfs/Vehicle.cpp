@@ -123,20 +123,26 @@ namespace gtfs {
 			}
 			sampling::uniform udist (init_range[0], init_range[1]);
 			sampling::uniform uspeed (2, 30);
-			for (auto& p: particles) p.initialize (udist, uspeed, rng);
+			for (auto& p: particles) {
+				p.initialize (udist, uspeed, rng);
+				p.set_weight (1.0 / particles.size ());
+			}
 
 			initialized = true;
-		} else if (delta > 0) {
+			return;
+		}
+
+		if (delta > 0) {
 			// std::clog << "\n * Updating particles: " << delta << "s";
 			// std::clog << " | M = " << trip->get_route ()->get_stops ().size ()
 			// 	<< ", L = " << trip->get_route ()->get_shape ()->get_segments ().size ();
 
-			double dbar = 0;
-			double vbar = 0;
-			for (auto& p: particles) {
-				dbar += p.get_distance ();
-				vbar += p.get_velocity ();
-			}
+			// double dbar = 0;
+			// double vbar = 0;
+			// for (auto& p: particles) {
+			// 	dbar += p.get_distance ();
+			// 	vbar += p.get_velocity ();
+			// }
 			// printf("\n   - Distance = %*.0fm, Velocity = %*.1fm/s.",
 			// 	   5, dbar / particles.size (), 5, vbar / particles.size ());
 			for (auto& p: particles) p.transition (rng);
@@ -146,34 +152,50 @@ namespace gtfs {
 		// std::cout << "\n - " << arrival_time << " - " << departure_time;
 
 		// No particles near? Oh ...
-		std::vector<double> lh;
-		lh.reserve (particles.size ());
-		for (auto& p: particles) lh.push_back (p.get_likelihood ());
-		if (*std::max_element (lh.begin (), lh.end ()) < -10) {
-			// std::clog << "   - Reset vehicle (not close particles) "
-			// 	<< " - max likelihood = exp(" << *std::max_element (lh.begin (), lh.end ())
-			// 	<< ")";
-			reset ();
-
-			return;
+		// std::vector<double> lh;
+		double lhsum = 0;
+		// lh.reserve (particles.size ());
+		for (auto& p: particles) {
+			lhsum += exp(p.get_likelihood ());
+			// lh.push_back (p.get_likelihood ());
 		}
+		// std::cout << "\n Lhoods: ";
+		// for (auto& p: particles) std::cout << exp(p.get_likelihood ()) << ", ";
+		// std::cout << "\n Sum(lhoods): " << lhsum;
+		// weights
+		double sumwt2 = 0;
+		for (auto& p: particles) {
+			p.set_weight (exp(p.get_likelihood ()) / lhsum);
+			sumwt2 += pow(p.get_weight (), 2);
+		}
+		// std::cout << "\nWeights: ";
+		// for (auto& p: particles) std::cout << p.get_weight () << ", ";
+		// std::cout << "\n---------------";
+		// std::cout << "\nSum Wt^2: " << sumwt2;
+		float Nth = 2 * particles.size () / 3;
+		// std::cout << " -> " << (1 / sumwt2) << " (Nth = " << Nth << "): ";
+		if (1 / sumwt2 < Nth) {
+			// std::cout << "resample";
+			resample (rng);
+			for (auto& p: particles) p.set_weight (1.0 / particles.size ());
+		}
+
+		// std::cout << "\nFinal weights: ";
+		// for (auto& p: particles) std::cout << std::setprecision(8) << p.get_weight () << ", ";
+
+		// if (*std::max_element (lh.begin (), lh.end ()) < -20) {
+		// 	// std::clog << "   - Reset vehicle (not close particles) "
+		// 	// 	<< " - max likelihood = exp(" << *std::max_element (lh.begin (), lh.end ())
+		// 	// 	<< ")";
+		// 	reset ();
+		//
+		// 	return;
+		// }
 
 		// Resample them! - only if initialized?
 		// std::clog << "\n   - Resampling ";
 
-		if (initialized)
-			resample (rng);
-
-		// Estimate parameters
-		double dbar = 0;
-		double vbar = 0;
-		for (auto& p: particles) {
-			dbar += p.get_distance ();
-			vbar += p.get_velocity ();
-		}
-		// printf("\n   - Distance = %*.0fm, Velocity = %*.1fm/s.",
-		// 	   5, dbar / particles.size (), 5, vbar / particles.size ());
-
+		// resample (rng);
 	}
 
 	/**

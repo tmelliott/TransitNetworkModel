@@ -61,7 +61,7 @@ plotRoute <- function(routeid, maxSpeed = 100, .max = maxSpeed * 1000 / 60 / 60)
     shape$speed <- pmin(segs[shape$seg, "state"], .max) * 60 * 60 / 1000
     with(segs, {
         plot(c(shape_dist_traveled, max(shape$dist_traveled)), rep(0, length(tt)+1),
-             type = "l", lwd = 2,
+             type = "l", lwd = 4,
              yaxt = "n", xlab = "Distance (m)", ylab = "")
         points(c(shape_dist_traveled, max(shape$dist_traveled)), rep(0, length(tt)+1), pch = 19)
         mid <- shape_dist_traveled + diff(c(shape_dist_traveled, max(shape$dist_traveled))) / 2
@@ -70,8 +70,8 @@ plotRoute <- function(routeid, maxSpeed = 100, .max = maxSpeed * 1000 / 60 / 60)
         l2 <- ifelse(is.na(state), "", sprintf("%.0f", state * 60 * 60 / 1000))
         text(mid, rep(0, length(mid)), l2, pos = c(1, 3), offset = 1.5, cex = 0.7)
     })
-    with(vs[vs$route_id == routeid, ],
-         abline(v = distance, col = "#990000", lty = 2))
+    #with(vs[vs$route_id == routeid, ],
+    #     abline(v = distance, col = "#990000", lty = 2))
     
     ## xr = extendrange(shape$lng)
     ## yr = extendrange(shape$lat)
@@ -93,9 +93,20 @@ r274 <- dbGetQuery(con, "SELECT * FROM routes WHERE route_short_name='274'")
 dbDisconnect(con)
 
 while (TRUE) {
-    o <- par(mfrow = c(2, 1))
-    plotRoute(r274$route_id[2])
-    plotRoute(r274$route_id[4])
+    ## ps <- read.csv("../build/PARTICLES.csv",
+    ##                colClasses = c("factor", "factor", "integer", "factor", "factor",
+    ##                               "numeric", "numeric", "integer", "numeric", "numeric", "numeric", "integer"))
+    o <- par(mfrow = c(2, 1), mar = c(5.1, 2.1, 2.1, 2.1))
+    dev.hold()
+    plotRoute(ri <- r274$route_id[2])
+    ## pp <- with(ps[ps$route_id == ri, ], tapply(distance, factor(vehicle_id), mean))
+    ## px <- with(ps[ps$route_id == ri, ], tapply(parent_id, factor(vehicle_id), mean))
+    ## points(pp, rep(0, length(pp)), col = ifelse(px == 0, "green", "magenta"), cex = 1, pch = 4)
+    plotRoute(ri <- r274$route_id[4])
+    ## pp <- with(ps[ps$route_id == ri, ], tapply(distance, factor(vehicle_id), mean))
+    ## px <- with(ps[ps$route_id == ri, ], tapply(parent_id, factor(vehicle_id), mean))
+    ## points(pp, rep(0, length(pp)), col = ifelse(px == 0, "green", "magenta"), cex = 1, pch = 4)
+    dev.flush()
     par(o)
     Sys.sleep(10)
 }

@@ -36,6 +36,8 @@ namespace gtfs {
 	class Stop;
 	struct StopTime;
 
+    struct DwellTime;
+    struct vTravelTime;
     struct TravelTime;
 
 	// Some parameters
@@ -157,6 +159,8 @@ namespace gtfs {
 		int delta;               /*!< time since previous observation */
 		bool initialized;        /*!< logical; set to TRUE once particles have successfully been initialized */
 
+        std::vector<DwellTime> dwell_times;  /*!< vehicle's dwell times at stops */
+        std::vector<vTravelTime> travel_times; /*!< vehicle's travel times through segments */
 	public:
 		unsigned int n_particles; /*!< the number of particles that will be created in the next sample */
 		unsigned long next_id;    /*!< the ID of the next particle to be created */
@@ -188,6 +192,21 @@ namespace gtfs {
 		int get_delta () const;
 		/** @return logical, if FALSE it means the vehicle needs to be initialized */
 		bool is_initialized () const { return initialized; };
+
+		/** @return the vehicle's dwell times at all stops */
+		const std::vector<DwellTime>& get_dwell_times () const { return dwell_times; };
+		/** @return the vehicle's dwell time at stop i */
+		const DwellTime* get_dwell_time (unsigned i) const {
+			if (i >= dwell_times.size ()) return nullptr;
+			return &dwell_times[i];
+		};
+		/** @return the vehicle's travel times along all segments */
+		const std::vector<vTravelTime>& get_travel_times () const { return travel_times; };
+		/** @return the vehicle's travel time along segment i */
+		const vTravelTime* get_travel_time (unsigned i) const {
+			if (i >= travel_times.size ()) return nullptr;
+			return &travel_times[i];
+		};
 
 
 		// Methods
@@ -229,6 +248,7 @@ namespace gtfs {
 
 		int delta_t;              /*!< time this particular particle has left to travel */
 		double log_likelihood;    /*!< the likelihood of the particle, given the data */
+		double weight;            /*!< the weight of this particle (set to 1/N after a resample) */
 
 		std::vector<uint64_t> etas; /*!< ETA at all future stops. Previous stops are simply 0. */
 
@@ -280,6 +300,7 @@ namespace gtfs {
 		int get_delta_t () const { return delta_t; };
 		/** @return the particle's likelihood */
 		const double& get_likelihood () const { return log_likelihood; };
+		double get_weight () { return weight; };
 
 		/** @return ETAs for all future stops */
 		const std::vector<uint64_t>& get_etas (void) const { return etas; };
@@ -293,6 +314,7 @@ namespace gtfs {
 		void transition_phase2 (sampling::RNG& rng);
 		void transition_phase3 (sampling::RNG& rng);
 		void calculate_likelihood (void);
+		void set_weight (double wt) { weight = wt; };
 
 		void reset_travel_time (unsigned i);
 
@@ -716,6 +738,48 @@ namespace gtfs {
 		};
 	};
 
+
+    /**
+     * Dwell times for stops along the route
+     */
+    struct DwellTime {
+        std::shared_ptr<Stop> stop; /*!< pointer to the stop */
+        int time = 0;               /*!< time, in seconds, spent at stop */
+		bool used = false;          /*!< true once model has used the value */
+
+		int nparticle = 0;          /*!< the number of particles that have contributed */
+		int nstop = 0;              /*!< the number of particles that stopped */
+		float dwellsum = 0;         /*!< the sum of dwell times of particles */
+
+		DwellTime () {};
+		DwellTime (std::shared_ptr<Stop> s) : stop (s) {};
+
+		void set_time (void) { time = dwellsum / nstop; };
+		int get_time (void) {
+			set_time ();
+			used = true;
+			return time;
+		};
+    };
+
+	struct vTravelTime {
+		std::shared_ptr<Segment> segment; /*!< pointer to the segment */
+		int time = 0;                     /*!< the time spent traveling */
+		bool used = false;                /*!< true once model has used the value */
+
+		int nparticle = 0;                /*!< the number of particles that have contributed */
+		float timesum = 0;                /*!< the sum of particle travel times */
+
+		vTravelTime () {};
+		vTravelTime (std::shared_ptr<Segment> seg) : segment (seg) {};
+
+		void set_time (void) { time = timesum / nparticle; };
+		int get_time (void) {
+			set_time ();
+			used = true;
+			return time;
+		};
+	};
 
     /**
      * A recent travel time associated with a particle.

@@ -79,7 +79,7 @@ int main (int argc, char* argv[]) {
 	/** number of cores to use */
 	int numcore;
 
-	bool csvout;
+	int csvout;
 
 	desc.add_options ()
 		("files", po::value<std::vector<std::string> >(&files)->multitoken (),
@@ -88,7 +88,7 @@ int main (int argc, char* argv[]) {
 		// ("version", po::value<std::string>(&version), "Version number to pull subset from database.")
 		("N", po::value<int>(&N)->default_value(1000), "Number of particles to initialize each vehicle.")
 		("numcore", po::value<int>(&numcore)->default_value(1), "Number of cores to use.")
-		("csv", po::value<bool>(&csvout)->default_value(false), "Setting to true will cause all particles and their ETAs to be written to PARTICLES.csv and ETAs.csv, respectively. WARNING: slow!")
+		("csv", po::value<int>(&csvout)->default_value(0), "Setting to 1 will cause all particles and their ETAs to be written to PARTICLES.csv and ETAs.csv, respectively; 2 will do the same but append to the file. WARNING: slow!")
 		("help", "Print this message and exit.")
 	;
 
@@ -141,14 +141,16 @@ int main (int argc, char* argv[]) {
 	// std::clock_t clockend;
 
 	system("rm -f PARTICLES.csv ETAS.csv");
-	std::ofstream particlefile; // file for particles
-	particlefile.open ("PARTICLES.csv");
-	particlefile << "vehicle_id,particle_id,timestamp,trip_id,distance,velocity,parent_id,lat,lng,lh,init\n";
-	particlefile.close ();
-	std::ofstream etafile;      // file for particles/stop ETAs
-	etafile.open ("ETAS.csv");
-	etafile << "vehicle_id,particle_id,stop_sequence,eta\n";
-	etafile.close ();
+	if (csvout == 2) {
+		std::ofstream particlefile; // file for particles
+		particlefile.open ("PARTICLES.csv");
+		particlefile << "vehicle_id,particle_id,timestamp,trip_id,route_id,distance,velocity,parent_id,lat,lng,lh,wt,init\n";
+		particlefile.close ();
+		std::ofstream etafile;      // file for particles/stop ETAs
+		etafile.open ("ETAS.csv");
+		etafile << "vehicle_id,particle_id,stop_sequence,eta\n";
+		etafile.close ();
+	}
 
 	time_t curtime;
 	while (forever) {
@@ -219,29 +221,39 @@ int main (int argc, char* argv[]) {
 				}
 				// std::cout << " - " << minSeg;
 				std::vector<int> tts;
+				std::vector<double> wts;
 				tts.reserve (v.second->get_particles ().size ());
 				for (int i=0; i<minSeg; i++) {
 					tts.clear ();
+					wts.clear ();
 					std::shared_ptr<gtfs::Segment> segi;
 					for (auto& p: v.second->get_particles ()) {
 						// if COMPLETE && INITIALIZED then append travel time to segment's data
 						// AND uninitialize the particle's travel time for that segment
 						// so it doesn't get reused next time
 						auto tt = p.get_travel_time (i);
-						if (!tt) break;
-						if (!tt->initialized || !tt->complete) break; // if any aren't, skip anyway!
+						if (!tt) continue;
+						if (!tt->initialized || !tt->complete) continue; // if any aren't, skip anyway!
+						// if (!tt->initialized) continue; // if any aren't, skip anyway!
 						if (!segi) segi = tt->segment;
 						tts.push_back (tt->time);
+						wts.push_back (p.get_weight ());
 					}
 					// std::cout << " (" << tts.size () << " vs "
 					// 	<< v.second->get_particles ().size () << ")?";
 					if (tts.size () != v.second->get_particles ().size ()) continue;
-					double ttmean = std::accumulate(tts.begin (), tts.end (), 0.0) / tts.size ();
-					double sqdiff = 0;
-					for (auto& t: tts) sqdiff += pow(t - ttmean, 2);
-					double var = sqdiff / tts.size ();
+					// if (tts.size () < 10) continue;
+					double ttmean = 0;
+					for (unsigned j=0; j<tts.size (); j++) ttmean += tts[j] * wts[j];
+					if (ttmean == 0) continue;
+					double ttvar = 0;
+					for (unsigned j=0; j<tts.size (); j++) ttvar += wts[j] * pow(tts[j] - ttmean, 2);
+					// double ttmean = std::accumulate(tts.begin (), tts.end (), 0.0) / tts.size ();
+					// double sqdiff = 0;
+					// for (auto& t: tts) sqdiff += pow(t - ttmean, 2);
+					// double var = sqdiff / tts.size ();
 					// std::cout << "\n + Segment " << i << ": " << ttmean << " (" << sqrt(var) << ")";
-					segi->add_data (ttmean, var);
+					segi->add_data (ttmean, ttvar);
 					// give data to segment
 					for (auto& p: v.second->get_particles ()) p.reset_travel_time (i);
 				}
@@ -355,23 +367,34 @@ int main (int argc, char* argv[]) {
 		}
 
 		// Write results to CSV files
-		if (csvout) {
+		if (csvout > 0) {
 			time_start (clockstart, wallstart);
 			std::cout << "\n * Writing particles to CSV ...";
 			std::cout.flush ();
-			particlefile.open ("PARTICLES.csv", std::ofstream::app);
-			etafile.open ("ETAS.csv", std::ofstream::app);
+			std::ofstream particlefile; // file for particles
+			std::ofstream etafile;      // file for particles/stop ETAs
+			if (csvout == 1) {
+				system("rm -f PARTICLES.csv ETAS.csv");
+				particlefile.open ("PARTICLES.csv");
+				particlefile << "vehicle_id,particle_id,timestamp,trip_id,route_id,distance,velocity,parent_id,lat,lng,lh,wt,init\n";
+				etafile.open ("ETAS.csv");
+				etafile << "vehicle_id,particle_id,stop_sequence,eta\n";
+			} else {
+				particlefile.open ("PARTICLES.csv", std::ofstream::app);
+				etafile.open ("ETAS.csv", std::ofstream::app);
+			}
 			for (auto& v: vehicles) {
 				if (!v.second->get_trip ()) continue;
 				auto shape = v.second->get_trip ()->get_route ()->get_shape ();
 				for (auto& p: v.second->get_particles ()) {
 					auto pos = gtfs::get_coords (p.get_distance (), shape);
-					particlefile
+					particlefile << std::setprecision(8)
 						<< v.second->get_id () << "," << p.get_id () << ","
 					 	<< v.second->get_timestamp () << "," << v.second->get_trip ()->get_id () << ","
+						<< v.second->get_trip ()->get_route ()->get_id () << ","
 						<< p.get_distance () << "," << p.get_velocity () << ","
 						<< p.get_parent_id () << "," << pos.lat << "," << pos.lng << ","
-						<< p.get_likelihood ()  << ","
+						<< p.get_likelihood ()  << "," << p.get_weight () << ","
 						<< v.second->is_initialized () << "\n";
 					if (p.get_etas ().size () > 0) {
 						for (unsigned int i=0; i<p.get_etas ().size (); i++) {
@@ -387,85 +410,6 @@ int main (int argc, char* argv[]) {
 			particlefile.close ();
 			etafile.close ();
 			std::cout << "\n";
-			time_end (clockstart, wallstart);
-		}
-
-		// Write results to file - depreciated
-		if (false) {
-			time_start (clockstart, wallstart);
-			std::cout << "\n * Writing particles to db ...";
-			std::cout.flush ();
-			sqlite3* db;
-			// sqlite3_stmt* stmt_del;
-			sqlite3_stmt* stmt_ins;
-			if (sqlite3_open (dbname.c_str (), &db)) {
-				fprintf(stderr, " * Can't open db connection: %s\n", sqlite3_errmsg (db));
-			} else {
-				sqlite3_exec (db, "BEGIN IMMEDIATE", NULL, NULL, NULL);
-				sqlite3_exec (db, "DELETE FROM particles", NULL, NULL, NULL);
-
-				// if (sqlite3_prepare_v2 (db, "DELETE FROM particles WHERE vehicle_id = $1",
-				// 						-1, &stmt_del, 0) != SQLITE_OK) {
-				// 	std::cerr << "\n  x Unable to prepare DELETE query ";
-				// }
-				if (sqlite3_prepare_v2 (db, "INSERT INTO particles VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)",
-					 	   					   -1, &stmt_ins, 0) != SQLITE_OK) {
-					std::cerr << "\n  x Unable to prepare INSERT query ";
-				} else {
-					// prepared OK
-					for (auto& v: vehicles) {
-						// if (! v.second->is_initialized ()) continue;
-						if (!v.second->get_trip ()) continue;
-						std::string tid = v.second->get_trip ()->get_id ();//.c_str ();
-						// if (sqlite3_bind_text (stmt_del, 1, v.second->get_id ().c_str (),
-						// 					   -1, SQLITE_STATIC) != SQLITE_OK ||
-						//     sqlite3_step (stmt_del) != SQLITE_DONE) {
-						// 	std::cerr << "\n  x Unable to delete particles ";
-						// }
-						// sqlite3_reset (stmt_del);
-						// std::cout << tid.c_str () << "\n";
-						auto shape = v.second->get_trip ()->get_route ()->get_shape ();
-						for (auto& p: v.second->get_particles ()) {
-							sqlite3_bind_int (stmt_ins, 1, p.get_id ());
-							sqlite3_bind_text (stmt_ins, 2, v.second->get_id ().c_str (), -1, SQLITE_TRANSIENT);
-							sqlite3_bind_text (stmt_ins, 3, tid.c_str (), -1, SQLITE_TRANSIENT);
-							sqlite3_bind_double (stmt_ins, 4, p.get_distance ());
-							sqlite3_bind_double (stmt_ins, 5, p.get_velocity ());
-							sqlite3_bind_int64 (stmt_ins, 6, v.second->get_timestamp ());
-							sqlite3_bind_double (stmt_ins, 7, p.get_likelihood ());
-							sqlite3_bind_int (stmt_ins, 8, p.get_parent_id ());
-							sqlite3_bind_int (stmt_ins, 9, v.second->is_initialized ());
-							// Write the ETAs
-							auto etas = p.get_etas ();
-							std::string etastr = "";
-							if (etas.size () > 0) {
-								etastr = boost::algorithm::join (etas |
-									boost::adaptors::transformed (static_cast<std::string(*)(uint64_t)>(std::to_string) ), ",");
-								// std::cout << etastr << "|  ";
-							}
-							sqlite3_bind_text (stmt_ins, 10, etastr.c_str (), -1, SQLITE_TRANSIENT);
-
-							auto pos = gtfs::get_coords (p.get_distance (), shape);
-							sqlite3_bind_double (stmt_ins, 11, pos.lat);
-							sqlite3_bind_double (stmt_ins, 12, pos.lng);
-
-							if (sqlite3_step (stmt_ins) != SQLITE_DONE) {
-								std::cerr << " x Error inserting value: " << sqlite3_errmsg (db);
-							}
-							sqlite3_reset (stmt_ins);
-						}
-					}
-				}
-				sqlite3_finalize (stmt_ins);
-
-				char* zErrMsg = 0;
-				if (sqlite3_exec (db, "COMMIT", NULL, NULL, &zErrMsg) == 0) {
-					std::cout << " done\n";
-				} else {
-					std::cout << "\nTransaction couldn't complete: " << zErrMsg << "\n";
-				}
-				sqlite3_close (db);
-			}
 			time_end (clockstart, wallstart);
 		}
 
