@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 
 #include "gtfs.h"
 
@@ -94,7 +95,14 @@ namespace gtfs {
 		// if (initialized)
 		// 	std::clog << " (" << delta << " seconds since last observation)";
 
-
+		std::ofstream histf; // file for particles
+		std::string fn = "HISTORY/" + id + ".csv";
+		std::ifstream checkf (fn.c_str ());
+		bool exists = checkf.good ();
+		checkf.close ();
+		histf.open (fn.c_str (), std::ios::app);
+		if (!exists)
+			histf << "particle_id,trip_id,timestamp,distance,event,parent,lh,wt\n";
 		if (newtrip || !initialized) {
 			// std::clog << "\n * Initializing particles: ";
 
@@ -126,6 +134,10 @@ namespace gtfs {
 			for (auto& p: particles) {
 				p.initialize (udist, uspeed, rng);
 				p.set_weight (1.0 / particles.size ());
+
+				histf << p.get_id () << "," << trip->get_id () << ","
+					<< timestamp << "," << p.get_distance () << ","
+					<< "init" << ",,," << p.get_weight () << "\n";
 			}
 
 			initialized = true;
@@ -133,7 +145,9 @@ namespace gtfs {
 		}
 
 		if (delta == 0) return;
-		for (auto& p: particles) p.transition (rng);
+		for (auto& p: particles) p.transition (rng, &histf);
+
+		histf.close ();
 
 		// No particles near? Oh ...
 		// std::vector<double> lh;
@@ -160,11 +174,16 @@ namespace gtfs {
 		float Nth = 2 * particles.size () / 3;
 		std::cout << " -> " << (1 / sumwt2) << " (Nth = " << Nth << "): ";
 		if (1 / sumwt2 < Nth) {
-			std::cout << "resample";
-			std::sort (particles.begin (), particles.end ());
+			std::cout << "resample\n>particle weights:";
+			for (auto& p: particles) std::cout << p.get_weight () << ", ";
+			// std::sort (particles.begin (), particles.end ());
+			std::cout << " - sorted - ";
 			resample (rng);
+			std::cout << "resample done.";
 			for (auto& p: particles) p.set_weight (1.0 / particles.size ());
+			std::cout << " (reweighted)";
 		}
+		std::cout << "\n---";
 	}
 
 	/**

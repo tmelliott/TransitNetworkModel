@@ -1,5 +1,6 @@
 #include <string>
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <math.h>
 
@@ -168,7 +169,7 @@ namespace gtfs {
 	 *
 	 * @param rng a random number generator
 	 */
-	void Particle::transition (sampling::RNG& rng) {
+	void Particle::transition (sampling::RNG& rng, std::ofstream* f) {
 		if (vehicle->get_delta () == 0 || finished) return;
 		delta_t = vehicle->get_delta ();
 
@@ -176,13 +177,13 @@ namespace gtfs {
 
 		// --- Three phases
 		// PHASE ONE: initial wait time
-		transition_phase1 (rng);
+		transition_phase1 (rng, f);
 
 		// PHASE TWO: system noise
 		transition_phase2 (rng);
 
 		// PHASE THREE: transition forward
-		transition_phase3 (rng);
+		transition_phase3 (rng, f);
 
 		// std::clog << *this << " -> ";
 
@@ -297,7 +298,7 @@ namespace gtfs {
 	 *
 	 * @param rng reference to the random number generator
 	 */
-	void Particle::transition_phase1 (sampling::RNG& rng) {
+	void Particle::transition_phase1 (sampling::RNG& rng, std::ofstream* f) {
 
 		if (at_stop) {
 			// --- Particle is stopped at the bus stop
@@ -308,7 +309,14 @@ namespace gtfs {
 			if (dwell_time < gamma) dwell_time = gamma;
 			dwell_time += exptau.rand (rng);
 			delta_t = vehicle->get_timestamp () - (arrival_time + dwell_time);
-			if (delta_t > 0) at_stop = false;
+			if (delta_t > 0) {
+				at_stop = false;
+				if (f)
+					*f << id << "," << vehicle->get_trip ()->get_id () << ","
+						<< arrival_time + dwell_time << "," << distance << ","
+						<< "depart" << "," << parent_id << "," << log_likelihood << ","
+						<< weight << "\n";
+			}
 		} else if (at_intersection) {
 			// --- Particle is queued at an intersection
 			sampling::exponential expkappa (1.0 / 20.0);
@@ -319,6 +327,11 @@ namespace gtfs {
 				delta_t -= qt;
 				begin_time = vehicle->get_timestamp () - delta_t;
 				at_intersection = false;
+				if (f)
+					*f << id << "," << vehicle->get_trip ()->get_id () << ","
+						<< begin_time << "," << distance << ","
+						<< "begin" << "," << parent_id << "," << log_likelihood << ","
+						<< weight << "\n";
 			} else {
 				// particle queues too long - remains at intersection
 				queue_time += delta_t;
@@ -327,12 +340,17 @@ namespace gtfs {
 		} else {
 			// for now we'll just stay where we are with some probability
 			// if not at stop/segment
-			if (rng.runif () < 0.1) {
-				sampling::exponential expz (1.0 / delta_t);
-				int wait = (int) expz.rand (rng);
-				travel_times[segment_index].time += std::min(delta_t, wait);
-				delta_t -= wait;
-			}
+			// if (rng.runif () < 0.1) {
+			// 	sampling::exponential expz (1.0 / delta_t);
+			// 	int wait = (int) expz.rand (rng);
+			// 	travel_times[segment_index].time += std::min(delta_t, wait);
+			// 	delta_t -= wait;
+			// 	if (f)
+			// 		*f << id << "," << vehicle->get_trip ()->get_id () << ","
+			// 			<< vehicle->get_timestamp () - std::max(0, delta_t) << "," << distance << ","
+			// 			<< "wait" << "," << parent_id << "," << log_likelihood << ","
+			// 			<< weight << "\n";
+			// }
 		}
 
 	};
@@ -361,7 +379,7 @@ namespace gtfs {
 	 *
 	 * @param rng reference to the random number generator
 	 */
-	void Particle::transition_phase3 (sampling::RNG& rng) {
+	void Particle::transition_phase3 (sampling::RNG& rng, std::ofstream* f) {
 		// double dmax;
 		auto trip = vehicle->get_trip ();
 		if (!trip) return;
@@ -414,6 +432,11 @@ namespace gtfs {
 					arrival_time = vehicle->get_timestamp () - delta_t;
 					dwell_time = 0;
 					distance = Sd;
+					if (f)
+						*f << id << "," << vehicle->get_trip ()->get_id () << ","
+							<< arrival_time << "," << distance << ","
+							<< "arrive" << "," << parent_id << "," << log_likelihood << ","
+							<< weight << "\n";
 					if (stop_index == M) {
 						finished = true;
 						travel_times[segment_index].complete = true;
@@ -425,10 +448,21 @@ namespace gtfs {
 					if (rng.runif () < pi) dwell_time = (int) gamma + exptau.rand (rng);
 					delta_t -= dwell_time;
 					at_stop = delta_t <= 0;
+
+					if (!at_stop && f)
+						*f << id << "," << vehicle->get_trip ()->get_id () << ","
+							<< arrival_time + dwell_time << "," << distance << ","
+							<< "depart" << "," << parent_id << "," << log_likelihood << ","
+							<< weight << "\n";
 				} else {
 					travel_times[segment_index].time += delta_t;
 					distance += velocity * delta_t;
 					delta_t = 0;
+					if (f)
+						*f << id << "," << vehicle->get_trip ()->get_id () << ","
+							<< vehicle->get_timestamp () << "," << distance << ","
+							<< "travel" << "," << parent_id << "," << log_likelihood << ","
+							<< weight << "\n";
 				}
 			} else {    // Next up: INTERSECTION!
 				double eta = (1 / velocity) * (Rd - distance);
@@ -447,6 +481,11 @@ namespace gtfs {
 					queue_time = 0;
 					begin_time = 0;
 					distance = Rd;
+					if (f)
+						*f << id << "," << vehicle->get_trip ()->get_id () << ","
+							<< vehicle->get_timestamp () - delta_t << "," << distance << ","
+							<< "end" << "," << parent_id << "," << log_likelihood << ","
+							<< weight << "\n";
 					if (segment_index == L) {
 						// actually this should never happen!
 						finished = true;
@@ -463,11 +502,21 @@ namespace gtfs {
 						delta_t -= queue_time;
 						begin_time = vehicle->get_timestamp () - delta_t;
 						at_intersection = false;
+						if (f)
+							*f << id << "," << vehicle->get_trip ()->get_id () << ","
+								<< begin_time << "," << distance << ","
+								<< "begin" << "," << parent_id << "," << log_likelihood << ","
+								<< weight << "\n";
 					}
 				} else {
 					travel_times[segment_index].time += delta_t;
 					distance += velocity * delta_t;
 					delta_t = 0;
+					if (f)
+						*f << id << "," << vehicle->get_trip ()->get_id () << ","
+							<< vehicle->get_timestamp () << "," << distance << ","
+							<< "travel" << "," << parent_id << "," << log_likelihood << ","
+							<< weight << "\n";
 				}
 			}
 		}

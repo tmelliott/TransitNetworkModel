@@ -309,10 +309,10 @@ namespace gtfs {
 
 		// Methods
 		void initialize (sampling::uniform& unif, sampling::uniform& speed, sampling::RNG& rng);
-		void transition (sampling::RNG& rng);
-		void transition_phase1 (sampling::RNG& rng);
+		void transition (sampling::RNG& rng, std::ofstream* f);
+		void transition_phase1 (sampling::RNG& rng, std::ofstream* f);
 		void transition_phase2 (sampling::RNG& rng);
-		void transition_phase3 (sampling::RNG& rng);
+		void transition_phase3 (sampling::RNG& rng, std::ofstream* f);
 		void calculate_likelihood (void);
 		void set_weight (double wt) { weight = wt; };
 

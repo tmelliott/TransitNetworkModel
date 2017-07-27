@@ -140,7 +140,7 @@ int main (int argc, char* argv[]) {
 
 	// std::clock_t clockend;
 
-	system("rm -f PARTICLES.csv ETAS.csv");
+	system("rm -f PARTICLES.csv ETAS.csv HISTORY/*.csv");
 	if (csvout == 2) {
 		std::ofstream particlefile; // file for particles
 		particlefile.open ("PARTICLES.csv");
@@ -413,7 +413,7 @@ int main (int argc, char* argv[]) {
 			time_end (clockstart, wallstart);
 		}
 
-		// if (forever) std::this_thread::sleep_for (std::chrono::milliseconds (10 * 1000));
+		if (forever) std::this_thread::sleep_for (std::chrono::milliseconds (10 * 1000));
 	}
 
 	return 0;
