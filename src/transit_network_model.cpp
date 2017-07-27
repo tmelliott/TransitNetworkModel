@@ -413,7 +413,7 @@ int main (int argc, char* argv[]) {
 			time_end (clockstart, wallstart);
 		}
 
-		if (forever) std::this_thread::sleep_for (std::chrono::milliseconds (10 * 1000));
+		// if (forever) std::this_thread::sleep_for (std::chrono::milliseconds (10 * 1000));
 	}
 
 	return 0;

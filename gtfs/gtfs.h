@@ -319,6 +319,11 @@ namespace gtfs {
 		void reset_travel_time (unsigned i);
 
 		void calculate_etas (void);
+
+        // Operators
+        bool operator<(const Particle &p2) const {
+            return weight > p2.weight;
+        }
 	};
 
 	/**
