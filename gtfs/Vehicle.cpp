@@ -149,6 +149,8 @@ namespace gtfs {
 
 		histf.close ();
 
+		return;
+
 		// No particles near? Oh ...
 		// std::vector<double> lh;
 		double lhsum = 0;

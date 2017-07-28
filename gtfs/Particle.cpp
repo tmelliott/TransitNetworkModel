@@ -203,7 +203,7 @@ namespace gtfs {
 		std::vector<double> z (x.projectFlat(vehicle->get_position ()));
 
 		double nllhood = 0.0;
-		double sigy   = 5.0;
+		double sigy   = 10.0;
 
 		double epsS = 20.0;
 		double epsI = 30.0;
@@ -254,36 +254,36 @@ namespace gtfs {
 			nllhood += (pow(z[0], 2) + pow(z[1], 2)) / (2 * pow(sigy, 2));
 		}
 
-		int vsi = vehicle->get_stop_sequence ();
-		if (vsi >= 0) {
-			if (vsi > stop_index) {
-				nllhood = INFINITY;
-			} else if (vsi < stop_index) {
-				if (arrival_time > fmax(vehicle->get_arrival_time (),
-									 	vehicle->get_departure_time ())) {
-					nllhood = INFINITY;
-				}
-			} else {
-				auto Ta = vehicle->get_arrival_time ();
-				auto Td = vehicle->get_departure_time ();
-
-				if (Ta > 0 && Td > 0) {
-					if (dwell_time == 0) {
-						nllhood = INFINITY;
-					} else {
-						auto fn1 = sampling::normal (arrival_time, sigDelay);
-						auto fn2 = sampling::normal (dwell_time, sigDelay);
-						nllhood -= fn1.pdf_log (Ta) + fn2.pdf_log (Td - Ta);
-					}
-				} else if (Ta > 0) {
-					auto fn = sampling::normal (arrival_time + dwell_time, sigDelay);
-					nllhood -= fn.pdf_log (Ta);
-				} else if (Td > 0) {
-					auto fn = sampling::normal (arrival_time + dwell_time, sigDelay);
-					nllhood -= fn.pdf_log (Td);
-				}
-			}
-		}
+		// int vsi = vehicle->get_stop_sequence ();
+		// if (vsi >= 0) {
+		// 	if (vsi > stop_index) {
+		// 		nllhood = INFINITY;
+		// 	} else if (vsi < stop_index) {
+		// 		if (arrival_time > fmax(vehicle->get_arrival_time (),
+		// 							 	vehicle->get_departure_time ())) {
+		// 			nllhood = INFINITY;
+		// 		}
+		// 	} else {
+		// 		auto Ta = vehicle->get_arrival_time ();
+		// 		auto Td = vehicle->get_departure_time ();
+		//
+		// 		if (Ta > 0 && Td > 0) {
+		// 			if (dwell_time == 0) {
+		// 				nllhood = INFINITY;
+		// 			} else {
+		// 				auto fn1 = sampling::normal (arrival_time, sigDelay);
+		// 				auto fn2 = sampling::normal (dwell_time, sigDelay);
+		// 				nllhood -= fn1.pdf_log (Ta) + fn2.pdf_log (Td - Ta);
+		// 			}
+		// 		} else if (Ta > 0) {
+		// 			auto fn = sampling::normal (arrival_time + dwell_time, sigDelay);
+		// 			nllhood -= fn.pdf_log (Ta);
+		// 		} else if (Td > 0) {
+		// 			auto fn = sampling::normal (arrival_time + dwell_time, sigDelay);
+		// 			nllhood -= fn.pdf_log (Td);
+		// 		}
+		// 	}
+		// }
 
 		log_likelihood = -nllhood;
 	};
@@ -307,7 +307,7 @@ namespace gtfs {
 
 			// min dwell time is 3 seconds
 			if (dwell_time < gamma) dwell_time = gamma;
-			dwell_time += exptau.rand (rng);
+			dwell_time += (int) exptau.rand (rng);
 			delta_t = vehicle->get_timestamp () - (arrival_time + dwell_time);
 			if (delta_t > 0) {
 				at_stop = false;
@@ -418,7 +418,7 @@ namespace gtfs {
 			double Rd;
 			if (segment_index + 1 >= L) {
 				// on last segment
-				Rd = Sd;
+				Rd = stops.back ().shape_dist_traveled;
 			} else {
 				Rd = segments[segment_index+1].shape_dist_traveled;
 			}
@@ -440,6 +440,7 @@ namespace gtfs {
 					if (stop_index == M) {
 						finished = true;
 						travel_times[segment_index].complete = true;
+						delta_t = 0;
 						break;
 					}
 					double pi (0.5);
