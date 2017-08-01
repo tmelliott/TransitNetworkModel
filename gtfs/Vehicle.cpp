@@ -11,7 +11,7 @@ namespace gtfs {
 	*
 	* @param id the ID of the vehicle as given in the GTFS feed
 	*/
-	Vehicle::Vehicle (std::string id) : Vehicle::Vehicle (id, 10) {};
+	Vehicle::Vehicle (std::string id) : Vehicle::Vehicle (id, 0) {};
 
 	/**
 	 * Create a vehicle with specified number of particles, and ID.
@@ -43,9 +43,11 @@ namespace gtfs {
 	/**
 	 * Specify the vehicles trip.
 	 * @param tp A shared trip pointer
+	 * @param t  Time of the first observation
 	 */
-	void Vehicle::set_trip (std::shared_ptr<Trip> tp) {
+	void Vehicle::set_trip (std::shared_ptr<Trip> tp, uint64_t t) {
 		trip = tp;
+		first_obs = t;
 	};
 
 	// --- GETTERS
@@ -208,7 +210,7 @@ namespace gtfs {
 			if (vp.trip ().has_trip_id () && newtrip) {
 				std::string trip_id = vp.trip ().trip_id ();
 				auto ti = gtfs.get_trip (trip_id);
-				if (ti != nullptr) set_trip (ti);
+				if (ti != nullptr) set_trip (ti, vp.timestamp ());
 			}
 		}
 		if (newtrip) initialized = false;

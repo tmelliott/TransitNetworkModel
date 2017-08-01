@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <inttypes.h>
 
+#include <boost/optional.hpp>
 #include "boost/date_time/posix_time/posix_time.hpp"
 
 #include "gps.h"
@@ -146,16 +147,17 @@ namespace gtfs {
 		std::string id; /*!< ID of vehicle, as per GTFS feed */
 		std::vector<Particle> particles; /*!< the particles associated with the vehicle */
 
-		bool newtrip; /*!< if this is true, the next `update()` will reinitialise the particles */
+		bool newtrip; /*!< if this is true, the next `update()` will reinitialise the particles AFTER finishing!!! */
 
 		// GTFS Realtime Fields
 		std::shared_ptr<Trip> trip;     /*!< the ID of the trip */
-		unsigned int stop_sequence;       /*!< the stop number of the last visited stop */
+		unsigned int stop_sequence;     /*!< the stop number of the last visited stop */
 		uint64_t arrival_time;   /*!< arrival time at last stop */
 		uint64_t departure_time; /*!< departure time at last stop */
 		gps::Coord position;     /*!< last reported GPS position */
+		uint64_t first_obs;      /*!< the time of the first observation for that trip; used to pin down start time */
 
-		uint64_t timestamp;      /*!< time of last observation */
+		uint64_t timestamp;      /*!< time of last (position) observation */
 		int delta;               /*!< time since previous observation */
 		bool initialized;        /*!< logical; set to TRUE once particles have successfully been initialized */
 
@@ -171,7 +173,7 @@ namespace gtfs {
 		~Vehicle();
 
 		// Setters
-		void set_trip (std::shared_ptr<Trip> tp);
+		void set_trip (std::shared_ptr<Trip> tp, uint64_t t);
 
 		// Getters
 		std::string get_id () const;
@@ -230,6 +232,18 @@ namespace gtfs {
 		unsigned long id;         /*!< a unique particle identifier */
 		unsigned long parent_id;  /*!< unique identifier of the particle that spawned this one */
 
+		uint64_t start;                    /*!< start time; trajector indices are seconds after this */
+		int latest = 0;                    /*!< index of the latest position update; only adjust trajectory after this */
+        std::vector<double[2]> trajectory; /*!< particle's trajectory, from 0 seconds into trip until end */
+        std::vector<int[2]> tstops;        /*!< [arrival,dwell] time at each stop along route */
+        std::vector<int[2]> tsegments;     /*!< [queue,travel] time at each intersection/segment along route */
+
+		double log_likelihood = 0;  /*!< the likelihood of the particle, given the data */
+		double weight;              /*!< the weight of this particle (reset to null after resample) */
+
+
+
+        // old stuff ..
 		double distance;          /*!< distance into trip */
 		double velocity;          /*!< velocity (m/s) */
 		bool finished;            /*!< set to TRUE once particle reaches end of route */
@@ -247,10 +261,8 @@ namespace gtfs {
 		std::vector<TravelTime> travel_times; /*!< time taken to travel each segment */
 
 		int delta_t;              /*!< time this particular particle has left to travel */
-		double log_likelihood;    /*!< the likelihood of the particle, given the data */
-		double weight;            /*!< the weight of this particle (set to 1/N after a resample) */
-
 		std::vector<uint64_t> etas; /*!< ETA at all future stops. Previous stops are simply 0. */
+
 
 	public:
 		Vehicle* vehicle;  /*!< pointer to the vehicle that owns this particle */
@@ -264,6 +276,11 @@ namespace gtfs {
 		// Getters
 		unsigned long get_id () const;
 		unsigned long get_parent_id () const;
+
+		double get_distance (int t) const;
+		double get_velocity (int t) const;
+
+		/// OLD
 
 		/** @return the particle's distance into trip */
 		const double& get_distance () const { return distance; };
