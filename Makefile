@@ -1,5 +1,5 @@
 
-default: build
+default: build protofiles
 	cd build && cmake ..
 
 build:
@@ -12,7 +12,7 @@ docs: $(FILES)
 clean:
 	rm -rf build *.pb
 
-protofiles: protoc
+protofiles: 
 	cd protobuf && ./build_proto_files
 
 protoc: build/protobuf
