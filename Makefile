@@ -1,5 +1,5 @@
 
-default: protofiles
+default: build
 	cd build && cmake ..
 
 build:
