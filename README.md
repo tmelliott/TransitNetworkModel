@@ -30,7 +30,7 @@ __OUT__: ETA to remaining stops along route
 
 ****
 ## Dependencies
-- CMake
+- `apt-get install build-essential cmake unzip libboost-all-dev libprotobuf-dev libsqlite3-dev cxxtest`
 - (optional) Doxygen (for making the Documentation)
 - (optional) Google protobuf compiler `protoc`: https://github.com/google/protobuf/blob/master/src/README.md (install with `make protoc`)
 
