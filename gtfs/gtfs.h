@@ -152,8 +152,8 @@ namespace gtfs {
 		// GTFS Realtime Fields
 		std::shared_ptr<Trip> trip;     /*!< the ID of the trip */
 		unsigned int stop_sequence;     /*!< the stop number of the last visited stop */
-		uint64_t arrival_time;   /*!< arrival time at last stop */
-		uint64_t departure_time; /*!< departure time at last stop */
+		boost::optional<uint64_t> arrival_time;   /*!< arrival time at last stop */
+		boost::optional<uint64_t> departure_time; /*!< departure time at last stop */
 		gps::Coord position;     /*!< last reported GPS position */
 		uint64_t first_obs;      /*!< the time of the first observation for that trip; used to pin down start time */
 
