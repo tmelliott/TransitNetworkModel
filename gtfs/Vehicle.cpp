@@ -88,6 +88,25 @@ namespace gtfs {
 	 * @param rng A random number generator
 	 */
 	void Vehicle::update ( sampling::RNG& rng ) {
+
+		// 1. resample
+		// 2. mutate
+		// 3. compute likelihood for the data that's there
+		//    - position
+		//    - arrival_time OR departure_time OR neither*
+		// 4. set particle weights
+
+		// 5. UNSET* arrival/departure time (so it's not reused!)
+
+		
+		// *perhaps only if arrival/departure_time < timestamp;
+		//  just in case a position update is not quite recieved yet ...
+
+
+		// THEN save travel times + dwell times for any segments completed
+		//      or stops serviced since the last update
+
+
 		// std::clog << "\nVehicle ID: " << id
 		// 	<< " " << position
 		// 	<< " - ts = " << timestamp;
@@ -97,97 +116,97 @@ namespace gtfs {
 		// if (initialized)
 		// 	std::clog << " (" << delta << " seconds since last observation)";
 
-		std::ofstream histf; // file for particles
-		std::string fn = "HISTORY/" + id + ".csv";
-		std::ifstream checkf (fn.c_str ());
-		bool exists = checkf.good ();
-		checkf.close ();
-		histf.open (fn.c_str (), std::ios::app);
-		if (!exists)
-			histf << "particle_id,trip_id,timestamp,distance,event,parent,lh,wt\n";
-		if (newtrip || !initialized) {
-			// std::clog << "\n * Initializing particles: ";
-
-			// Detect initial range of vehicle's "distance into trip"
-			// -- just rough, so find points on the route within 100m of the GPS position
-			std::vector<double> init_range {100000.0, 0.0};
-			auto shape = trip->get_route ()->get_shape ();
-			for (auto& p: shape->get_path ()) {
-				if (p.pt.distanceTo(this->position) < 100.0) {
-					double ds (p.dist_traveled);
-					if (ds < init_range[0]) init_range[0] = ds;
-					if (ds > init_range[1]) init_range[1] = ds;
-				}
-			}
-			// printf("between %*.2f and %*.2f m", 8, init_range[0], 8, init_range[1]);
-
-			if (this->position.distanceTo (shape->get_path ()[0].pt) < 50) {
-				init_range[0] = 0;
-				init_range[1] = 1;
-			} else if (init_range[0] > init_range[1]) {
-				// std::cout << "\n   -> unable to locate vehicle on route -> cannot initialize.";
-				return;
-			} else if (init_range[0] == init_range[1]) {
-				init_range[0] = init_range[0] - 100;
-				init_range[1] = init_range[1] + 100;
-			}
-			sampling::uniform udist (init_range[0], init_range[1]);
-			sampling::uniform uspeed (2, 30);
-			for (auto& p: particles) {
-				p.initialize (udist, uspeed, rng);
-				p.set_weight (1.0 / particles.size ());
-
-				histf << p.get_id () << "," << trip->get_id () << ","
-					<< timestamp << "," << p.get_distance () << ","
-					<< "init" << ",,," << p.get_weight () << "\n";
-			}
-
-			initialized = true;
-			return;
-		}
-
-		if (delta == 0) return;
-		for (auto& p: particles) p.transition (rng, &histf);
-
-		histf.close ();
-
-		return;
-
-		// No particles near? Oh ...
-		// std::vector<double> lh;
-		double lhsum = 0;
-		// lh.reserve (particles.size ());
-		for (auto& p: particles) {
-			lhsum += exp(p.get_likelihood ());
-			// lh.push_back (p.get_likelihood ());
-		}
-		// std::cout << "\n Lhoods: ";
-		// for (auto& p: particles) std::cout << exp(p.get_likelihood ()) << ", ";
-		std::cout << "\n Sum(lhoods): " << lhsum;
-		// weights
-		if (lhsum == 0) return;
-		double sumwt2 = 0;
-		for (auto& p: particles) {
-			p.set_weight (exp(p.get_likelihood ()) / lhsum);
-			sumwt2 += pow(p.get_weight (), 2);
-		}
-		// std::cout << "\nWeights: ";
-		// for (auto& p: particles) std::cout << p.get_weight () << ", ";
-		// std::cout << "\n---------------";
-		std::cout << "\nSum Wt^2: " << sumwt2;
-		float Nth = 2 * particles.size () / 3;
-		std::cout << " -> " << (1 / sumwt2) << " (Nth = " << Nth << "): ";
-		if (1 / sumwt2 < Nth) {
-			std::cout << "resample\n>particle weights:";
-			for (auto& p: particles) std::cout << p.get_weight () << ", ";
-			// std::sort (particles.begin (), particles.end ());
-			std::cout << " - sorted - ";
-			resample (rng);
-			std::cout << "resample done.";
-			for (auto& p: particles) p.set_weight (1.0 / particles.size ());
-			std::cout << " (reweighted)";
-		}
-		std::cout << "\n---";
+		// std::ofstream histf; // file for particles
+		// std::string fn = "HISTORY/" + id + ".csv";
+		// std::ifstream checkf (fn.c_str ());
+		// bool exists = checkf.good ();
+		// checkf.close ();
+		// histf.open (fn.c_str (), std::ios::app);
+		// if (!exists)
+		// 	histf << "particle_id,trip_id,timestamp,distance,event,parent,lh,wt\n";
+		// if (newtrip || !initialized) {
+		// 	// std::clog << "\n * Initializing particles: ";
+		//
+		// 	// Detect initial range of vehicle's "distance into trip"
+		// 	// -- just rough, so find points on the route within 100m of the GPS position
+		// 	std::vector<double> init_range {100000.0, 0.0};
+		// 	auto shape = trip->get_route ()->get_shape ();
+		// 	for (auto& p: shape->get_path ()) {
+		// 		if (p.pt.distanceTo(this->position) < 100.0) {
+		// 			double ds (p.dist_traveled);
+		// 			if (ds < init_range[0]) init_range[0] = ds;
+		// 			if (ds > init_range[1]) init_range[1] = ds;
+		// 		}
+		// 	}
+		// 	// printf("between %*.2f and %*.2f m", 8, init_range[0], 8, init_range[1]);
+		//
+		// 	if (this->position.distanceTo (shape->get_path ()[0].pt) < 50) {
+		// 		init_range[0] = 0;
+		// 		init_range[1] = 1;
+		// 	} else if (init_range[0] > init_range[1]) {
+		// 		// std::cout << "\n   -> unable to locate vehicle on route -> cannot initialize.";
+		// 		return;
+		// 	} else if (init_range[0] == init_range[1]) {
+		// 		init_range[0] = init_range[0] - 100;
+		// 		init_range[1] = init_range[1] + 100;
+		// 	}
+		// 	sampling::uniform udist (init_range[0], init_range[1]);
+		// 	sampling::uniform uspeed (2, 30);
+		// 	for (auto& p: particles) {
+		// 		p.initialize (udist, uspeed, rng);
+		// 		p.set_weight (1.0 / particles.size ());
+		//
+		// 		histf << p.get_id () << "," << trip->get_id () << ","
+		// 			<< timestamp << "," << p.get_distance () << ","
+		// 			<< "init" << ",,," << p.get_weight () << "\n";
+		// 	}
+		//
+		// 	initialized = true;
+		// 	return;
+		// }
+		//
+		// if (delta == 0) return;
+		// for (auto& p: particles) p.transition (rng, &histf);
+		//
+		// histf.close ();
+		//
+		// return;
+		//
+		// // No particles near? Oh ...
+		// // std::vector<double> lh;
+		// double lhsum = 0;
+		// // lh.reserve (particles.size ());
+		// for (auto& p: particles) {
+		// 	lhsum += exp(p.get_likelihood ());
+		// 	// lh.push_back (p.get_likelihood ());
+		// }
+		// // std::cout << "\n Lhoods: ";
+		// // for (auto& p: particles) std::cout << exp(p.get_likelihood ()) << ", ";
+		// std::cout << "\n Sum(lhoods): " << lhsum;
+		// // weights
+		// if (lhsum == 0) return;
+		// double sumwt2 = 0;
+		// for (auto& p: particles) {
+		// 	p.set_weight (exp(p.get_likelihood ()) / lhsum);
+		// 	sumwt2 += pow(p.get_weight (), 2);
+		// }
+		// // std::cout << "\nWeights: ";
+		// // for (auto& p: particles) std::cout << p.get_weight () << ", ";
+		// // std::cout << "\n---------------";
+		// std::cout << "\nSum Wt^2: " << sumwt2;
+		// float Nth = 2 * particles.size () / 3;
+		// std::cout << " -> " << (1 / sumwt2) << " (Nth = " << Nth << "): ";
+		// if (1 / sumwt2 < Nth) {
+		// 	std::cout << "resample\n>particle weights:";
+		// 	for (auto& p: particles) std::cout << p.get_weight () << ", ";
+		// 	// std::sort (particles.begin (), particles.end ());
+		// 	std::cout << " - sorted - ";
+		// 	resample (rng);
+		// 	std::cout << "resample done.";
+		// 	for (auto& p: particles) p.set_weight (1.0 / particles.size ());
+		// 	std::cout << " (reweighted)";
+		// }
+		// std::cout << "\n---";
 	}
 
 	/**
