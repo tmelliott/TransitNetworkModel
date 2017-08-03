@@ -151,18 +151,18 @@ namespace gtfs {
 
 		// GTFS Realtime Fields
 		std::shared_ptr<Trip> trip;     /*!< the ID of the trip */
-		unsigned int stop_sequence;     /*!< the stop number of the last visited stop */
+		boost::optional<unsigned> stop_sequence;     /*!< the stop number of the last visited stop */
 		boost::optional<uint64_t> arrival_time;   /*!< arrival time at last stop */
 		boost::optional<uint64_t> departure_time; /*!< departure time at last stop */
 		gps::Coord position;     /*!< last reported GPS position */
-		uint64_t first_obs;      /*!< the time of the first observation for that trip; used to pin down start time */
-
 		uint64_t timestamp;      /*!< time of last (position) observation */
-		int delta;               /*!< time since previous observation */
-		bool initialized;        /*!< logical; set to TRUE once particles have successfully been initialized */
+		uint64_t first_obs;      /*!< the time of the first observation for that trip; used to pin down start time */
+		double approx_distance; /*!< approximate distance to determine if traveling correct direction */
 
-        std::vector<DwellTime> dwell_times;  /*!< vehicle's dwell times at stops */
-        std::vector<vTravelTime> travel_times; /*!< vehicle's travel times through segments */
+		int status = -1;    /*!< 0 = traveling normally; 1-3 = initializing stage; -1 = uninitialized; */
+
+        // std::vector<DwellTime> dwell_times;  /*!< vehicle's dwell times at stops */
+        // std::vector<vTravelTime> travel_times; /*!< vehicle's travel times through segments */
 	public:
 		unsigned int n_particles; /*!< the number of particles that will be created in the next sample */
 		unsigned long next_id;    /*!< the ID of the next particle to be created */
@@ -170,52 +170,33 @@ namespace gtfs {
 		// Constructors, destructors
 		Vehicle (std::string id);
 		Vehicle (std::string id, unsigned int n);
-		~Vehicle();
+		~Vehicle(void);
 
 		// Setters
 		void set_trip (std::shared_ptr<Trip> tp, uint64_t t);
 
 		// Getters
-		std::string get_id () const;
-		std::vector<Particle>& get_particles ();
-		const std::shared_ptr<Trip>& get_trip () const;
-		/** Return the vehicle's position */
-		const gps::Coord& get_position () const { return position; };
+		std::string get_id (void) const;
+		std::vector<Particle>& get_particles (void);
+		const std::shared_ptr<Trip>& get_trip (void) const;
+		boost::optional<unsigned> get_stop_sequence (void) const;
+		boost::optional<uint64_t> get_arrival_time (void) const;
+		boost::optional<uint64_t> get_departure_time (void) const;
+		const gps::Coord& get_position (void) const;
+		uint64_t get_timestamp (void) const;
 
-		/** @return stop sequence of the vehicle */
-		unsigned int get_stop_sequence (void) { return stop_sequence; };
-		/** @return arrival time at last stop */
-		uint64_t get_arrival_time (void) { return arrival_time; };
-		/** @return departure time at last stop */
-		uint64_t get_departure_time (void) { return departure_time; };
 
-		/** @return the time the observation was last taken */
-		const uint64_t& get_timestamp () const { return timestamp; };
-		int get_delta () const;
-		/** @return logical, if FALSE it means the vehicle needs to be initialized */
-		bool is_initialized () const { return initialized; };
-
-		/** @return the vehicle's dwell times at all stops */
-		const std::vector<DwellTime>& get_dwell_times () const { return dwell_times; };
-		/** @return the vehicle's dwell time at stop i */
-		const DwellTime* get_dwell_time (unsigned i) const {
-			if (i >= dwell_times.size ()) return nullptr;
-			return &dwell_times[i];
-		};
-		/** @return the vehicle's travel times along all segments */
-		const std::vector<vTravelTime>& get_travel_times () const { return travel_times; };
-		/** @return the vehicle's travel time along segment i */
-		const vTravelTime* get_travel_time (unsigned i) const {
-			if (i >= travel_times.size ()) return nullptr;
-			return &travel_times[i];
-		};
+		// const std::vector<DwellTime>& get_dwell_times () const;
+		// const DwellTime* get_dwell_time (unsigned i) const;
+		// const std::vector<vTravelTime>& get_travel_times () const;
+		// const vTravelTime* get_travel_time (unsigned i) const;
 
 
 		// Methods
 		void update ( sampling::RNG& rng );
 		void update (const transit_realtime::VehiclePosition &vp, GTFS &gtfs);
 		void update (const transit_realtime::TripUpdate &tu, GTFS &gtfs);
-		unsigned long allocate_id ();
+		unsigned long allocate_id (void);
 		void resample (sampling::RNG &rng);
 		void reset (void);
 	};
@@ -230,39 +211,16 @@ namespace gtfs {
 	class Particle {
 	private:
 		unsigned long id;         /*!< a unique particle identifier */
-		unsigned long parent_id;  /*!< unique identifier of the particle that spawned this one */
+		boost::optional<unsigned long> parent_id;  /*!< unique identifier of the particle that spawned this one */
 
-		uint64_t start;                    /*!< start time; trajector indices are seconds after this */
+		uint64_t start;                    /*!< start time; trajectory indices are seconds after this */
 		int latest = 0;                    /*!< index of the latest position update; only adjust trajectory after this */
-        std::vector<double[2]> trajectory; /*!< particle's trajectory, from 0 seconds into trip until end */
-        std::vector<int[2]> tstops;        /*!< [arrival,dwell] time at each stop along route */
-        std::vector<int[2]> tsegments;     /*!< [queue,travel] time at each intersection/segment along route */
+        std::vector<std::tuple<double,double> > trajectory; /*!< particle's trajectory, from 0 seconds into trip until end */
+        std::vector<std::tuple<int,int>> stops;        /*!< [arrival,dwell] time at each stop along route */
+        std::vector<std::tuple<int,int>> segments;     /*!< [queue,travel] time at each intersection/segment along route */
 
 		double log_likelihood = 0;  /*!< the likelihood of the particle, given the data */
 		double weight;              /*!< the weight of this particle (reset to null after resample) */
-
-
-
-        // old stuff ..
-		double distance;          /*!< distance into trip */
-		double velocity;          /*!< velocity (m/s) */
-		bool finished;            /*!< set to TRUE once particle reaches end of route */
-
-        bool at_stop = false;     /*!< logical, only TRUE when particle known to be at a stop */
-		int stop_index;           /*!< stop index (1-based to match GTFS feed, {1, ..., M}) */
-		uint64_t arrival_time;    /*!< arrival time at stop `stop_index` */
-		int dwell_time;           /*!< dwell time at stop `stop_index`*/
-		                          // departure_time = arrival_time + dwell_time
-
-        bool at_intersection = false; /*!< logical, only TRUE when particle known to be at an intersection */
-		int segment_index;        /*!< segment index (0-based, {0, ..., L-1}) */
-		int queue_time;           /*!< cumulative time spent queuing at intersction `segment_index` */
-		uint64_t begin_time;      /*!< time at which bus started along segment `segment_index` */
-		std::vector<TravelTime> travel_times; /*!< time taken to travel each segment */
-
-		int delta_t;              /*!< time this particular particle has left to travel */
-		std::vector<uint64_t> etas; /*!< ETA at all future stops. Previous stops are simply 0. */
-
 
 	public:
 		Vehicle* vehicle;  /*!< pointer to the vehicle that owns this particle */
@@ -274,68 +232,38 @@ namespace gtfs {
 		~Particle ();
 
 		// Getters
-		unsigned long get_id () const;
-		unsigned long get_parent_id () const;
+		unsigned long get_id (void) const;
+		bool has_parent (void) const;
+		unsigned long get_parent_id (void) const;
 
+		std::vector<std::tuple<double,double> > get_trajectory (void) const;
 		double get_distance (int t) const;
 		double get_velocity (int t) const;
+		std::vector<std::tuple<int,int>> get_stops (void) const;
+		std::vector<std::tuple<int,int>> get_segments (void) const;
 
-		/// OLD
-
-		/** @return the particle's distance into trip */
-		const double& get_distance () const { return distance; };
-		/** @return the particle's velocity */
-		const double& get_velocity () const { return velocity; };
-		/** @return true if the particle is at end of route; false otherwise */
-		bool is_finished () const { return finished; };
-
-		/** @return whether or not particle is at a stop */
-		bool is_at_stop () const { return at_stop; };
-		/** @return the particle's stop index */
-		int get_stop_index () const { return stop_index; };
-		/** @return the particle's arrival time at stop `stop_index` */
-		const uint64_t& get_arrival_time () const { return arrival_time; };
-		/** @return the particle's dwell time at stop `stop_index` */
-		int get_dwell_time () const { return dwell_time; };
-		/** @return whether or not particle is at an intersection */
-		bool is_at_intersection () const { return at_intersection; };
-		/** @return the particle's segment index */
-		int get_segment_index () const {return segment_index; };
-		/** @return the particle's queue time at segment `segment_index` */
-		int get_queue_time () const {return queue_time; };
-		/** @return the particle's begin time at segment `segment_index` */
-		const uint64_t& get_begin_time () const { return begin_time; };
-		/** @return the particle's travel times along previous segments */
-		const std::vector<TravelTime>& get_travel_times () const { return travel_times; };
-		/** @return the particle's travel time along segment i */
-		const TravelTime* get_travel_time (unsigned i) const {
-			if (i >= travel_times.size ()) return nullptr;
-			return &travel_times[i];
-		};
-
-		/** @return the particle's remaining travel time */
-		int get_delta_t () const { return delta_t; };
 		/** @return the particle's likelihood */
 		const double& get_likelihood () const { return log_likelihood; };
 		double get_weight () { return weight; };
 
-		/** @return ETAs for all future stops */
-		const std::vector<uint64_t>& get_etas (void) const { return etas; };
-		/** @return ETA for stop `i` */
-		const uint64_t& get_eta (int i) const { return etas[i]; };
+		// /** @return ETAs for all future stops */
+		// const std::vector<uint64_t>& get_etas (void) const { return etas; };
+		// /** @return ETA for stop `i` */
+		// const uint64_t& get_eta (int i) const { return etas[i]; };
 
 		// Methods
-		void initialize (sampling::uniform& unif, sampling::uniform& speed, sampling::RNG& rng);
-		void transition (sampling::RNG& rng, std::ofstream* f);
-		void transition_phase1 (sampling::RNG& rng, std::ofstream* f);
-		void transition_phase2 (sampling::RNG& rng);
-		void transition_phase3 (sampling::RNG& rng, std::ofstream* f);
+		// void initialize (sampling::RNG& rng);
+		void initialize (double dist, sampling::RNG& rng);
+		void mutate (sampling::RNG& rng, std::ofstream* f);
 		void calculate_likelihood (void);
 		void set_weight (double wt) { weight = wt; };
 
-		void reset_travel_time (unsigned i);
-
-		void calculate_etas (void);
+		// void transition (sampling::RNG& rng, std::ofstream* f);
+		// void transition_phase1 (sampling::RNG& rng, std::ofstream* f);
+		// void transition_phase2 (sampling::RNG& rng);
+		// void transition_phase3 (sampling::RNG& rng, std::ofstream* f);
+		// void reset_travel_time (unsigned i);
+		// void calculate_etas (void);
 
         // Operators
         bool operator<(const Particle &p2) const {
@@ -351,10 +279,10 @@ namespace gtfs {
 	 */
 	inline std::ostream& operator<< (std::ostream& os, const Particle& p) {
 		char buff [200];
-		sprintf(buff, "[%*.0f, %*.1f | %*d, %*" PRIu64 ", %*d | %*d, %*d, %*" PRIu64 "]",
-				8, p.get_distance (),  4, p.get_velocity (),
-				2, p.get_stop_index (), 13, p.get_arrival_time (), 4, p.get_dwell_time (),
-				2, p.get_segment_index (), 4, p.get_queue_time (), 13, p.get_begin_time ());
+		// sprintf(buff, "[%*.0f, %*.1f | %*d, %*" PRIu64 ", %*d | %*d, %*d, %*" PRIu64 "]",
+		// 		8, p.get_distance (),  4, p.get_velocity (),
+		// 		2, p.get_stop_index (), 13, p.get_arrival_time (), 4, p.get_dwell_time (),
+		// 		2, p.get_segment_index (), 4, p.get_queue_time (), 13, p.get_begin_time ());
 
 		return os << buff;
 	};

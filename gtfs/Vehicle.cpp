@@ -21,9 +21,7 @@ namespace gtfs {
 	 *           the vehicle with
 	 */
 	Vehicle::Vehicle (std::string id, unsigned int n) :
-	id (id), initialized (false), n_particles (n), next_id (1) {
-		// std::clog << " ++ Created vehicle " << id << std::endl;
-
+	id (id), n_particles (n), next_id (1) {
 		particles.reserve(n_particles);
 		for (unsigned int i=0; i<n_particles; i++) {
 			particles.emplace_back(this);
@@ -33,9 +31,7 @@ namespace gtfs {
 	/**
 	* Desctructor for a vehicle object, ensuring all particles are deleted too.
 	*/
-	Vehicle::~Vehicle() {
-		// std::clog << " -- Vehicle " << id << " deleted!!" << std::endl;
-	};
+	Vehicle::~Vehicle(void) {};
 
 
 	// --- SETTERS
@@ -46,33 +42,77 @@ namespace gtfs {
 	 * @param t  Time of the first observation
 	 */
 	void Vehicle::set_trip (std::shared_ptr<Trip> tp, uint64_t t) {
+		if (trip) {
+			// step 1: finish off previous trip!
+
+		}
+
+		// step 2: set new trip and reset all of the particles ...
 		trip = tp;
 		first_obs = t;
+		status = -1;
 	};
 
 	// --- GETTERS
 
 	/** @return ID of vehicle */
-	std::string Vehicle::get_id () const {
+	std::string Vehicle::get_id (void) const {
 		return id;
 	};
 
 	/** @return vector of particle references (so they can be mofidied ...) */
-	std::vector<gtfs::Particle>& Vehicle::get_particles () {
+	std::vector<gtfs::Particle>& Vehicle::get_particles (void) {
 		return particles;
 	};
 
 	/** @return a pointer to the vehicle's trip object */
-	const std::shared_ptr<Trip>& Vehicle::get_trip () const {
+	const std::shared_ptr<Trip>& Vehicle::get_trip (void) const {
 		return trip;
 	}
 
-	/** @return time in seconds since the previous observation */
-	int Vehicle::get_delta () const {
-		return delta;
+	/** @return the vehicle's position */
+	const gps::Coord& Vehicle::get_position (void) const {
+		return position;
 	};
 
+	/** @return stop sequence of the vehicle */
+	boost::optional<unsigned> Vehicle::get_stop_sequence (void) const {
+		return stop_sequence;
+	}
+	/** @return arrival time at last stop */
+	boost::optional<uint64_t> Vehicle::get_arrival_time (void) const {
+		return arrival_time;
+	};
+	/** @return departure time at last stop */
+	boost::optional<uint64_t> Vehicle::get_departure_time (void) const {
+		return departure_time;
+	};
 
+	/** @return the time the observation was last taken */
+	uint64_t Vehicle::get_timestamp (void) const {
+		return timestamp;
+	};
+
+	// /** @return the vehicle's dwell times at all stops */
+	// const std::vector<DwellTime>& get_dwell_times () const {
+	// 	return dwell_times;
+	// };
+	//
+	// /** @return the vehicle's dwell time at stop i */
+	// const DwellTime* get_dwell_time (unsigned i) const {
+	// 	if (i >= dwell_times.size ()) return nullptr;
+	// 	return &dwell_times[i];
+	// };
+	// /** @return the vehicle's travel times along all segments */
+	// const std::vector<vTravelTime>& get_travel_times () const {
+	// 	return travel_times;
+	// };
+	//
+	// /** @return the vehicle's travel time along segment i */
+	// const vTravelTime* get_travel_time (unsigned i) const {
+	// 	if (i >= travel_times.size ()) return nullptr;
+	// 	return &travel_times[i];
+	// };
 
 	// --- METHODS
 
@@ -88,6 +128,84 @@ namespace gtfs {
 	 * @param rng A random number generator
 	 */
 	void Vehicle::update ( sampling::RNG& rng ) {
+		std::cout << "\n - Updating vehicle " << id << ":";
+		switch (status) {
+			case 0:
+			{
+				// just rolling along nicely - mutate + update
+				std::cout << "\n + In progress";
+				break;
+			}
+			case 1:
+			case 2:
+			case 3:
+			{
+				// just started a new trip, unsure whether its started or not
+				// - if vehicle appears to be approaching stop, readjust t0's to match new distance
+				// - else mutate + update; decrease state=2
+				std::cout << "\n + Case " << status;
+				bool allok = false;
+				// do checking
+				if (allok) {
+					status--;
+					break; // otherwise it'll initialize
+				}
+			}
+			case -1:
+			{
+				// we are uninitialized - set up particles so they pass through the right place
+				// - if arrival available, then start = arrival
+				// - else if departure available, then start = departure - dwell[i] - noise
+				// - else if bus is AT stop, then set t0 = timestamp - noise
+				// > then set state = 0
+				// - if none of these, then set t0's to match observed position...set state=3
+				std::cout << "\n + Initializing particles";
+
+				if (stop_sequence) {
+					if (arrival_time) {
+						// know approximately when the vehicle arrived at stop[0]
+						first_obs = arrival_time.get ();
+					} else if (departure_time) {
+						// know approximately when the vehicle departed
+						first_obs = departure_time.get ();
+					} else {
+						first_obs = timestamp;
+					}
+
+					// go head and init particles
+					for (auto& p: particles) p.initialize (0.0, rng);
+
+					status = 0;
+				} else if (position.distanceTo (trip->get_stoptimes ()[0].stop->get_pos ()) < 20) {
+					// we're close enough to be considered at the stop
+					first_obs = timestamp;
+					status = 1;
+					for (auto& p: particles) p.initialize (0, rng);
+				} else {
+					std::vector<double> init_range {100000.0, 0.0};
+					auto shape = trip->get_route ()->get_shape ();
+					for (auto& p: shape->get_path ()) {
+						if (p.pt.distanceTo(this->position) < 100.0) {
+							double ds (p.dist_traveled);
+							if (ds < init_range[0]) init_range[0] = ds;
+							if (ds > init_range[1]) init_range[1] = ds;
+						}
+					}
+					printf("between %*.2f and %*.2f m", 8, init_range[0], 8, init_range[1]);
+					if (init_range[0] > init_range[1]) {
+						std::cout << "\n   -> unable to locate vehicle on route -> cannot initialize.";
+						return;
+					} else if (init_range[0] == init_range[1]) {
+						init_range[0] = init_range[0] - 100;
+						init_range[1] = init_range[1] + 100;
+					}
+					sampling::uniform udist (init_range[0], init_range[1]);
+					for (auto& p: particles) p.initialize (udist.rand (rng), rng);
+					status = 3;
+				}
+				break;
+			}
+		}
 
 		// 1. resample
 		// 2. mutate
@@ -98,7 +216,7 @@ namespace gtfs {
 
 		// 5. UNSET* arrival/departure time (so it's not reused!)
 
-		
+
 		// *perhaps only if arrival/departure_time < timestamp;
 		//  just in case a position update is not quite recieved yet ...
 
@@ -222,7 +340,7 @@ namespace gtfs {
 	void Vehicle::update (const transit_realtime::VehiclePosition &vp, GTFS &gtfs) {
 		// std::clog << "Updating vehicle location!\n";
 
-		newtrip = true; // always assume a new trip unless we know otherwise
+		newtrip = false;
 		if (vp.has_trip ()) { // TripDescriptor -> (trip_id, route_id)
 		  	if (vp.trip ().has_trip_id () && trip != nullptr)
 				newtrip = vp.trip ().trip_id () != trip->get_id ();
@@ -232,17 +350,11 @@ namespace gtfs {
 				if (ti != nullptr) set_trip (ti, vp.timestamp ());
 			}
 		}
-		if (newtrip) initialized = false;
-		if (vp.has_position ()) { // VehiclePosition -> (lat, lon)
+		if (vp.has_position ()) {
 			position = gps::Coord(vp.position ().latitude (),
 								  vp.position ().longitude ());
 		}
 		if (vp.has_timestamp () && timestamp != vp.timestamp ()) {
-			if (initialized && timestamp > 0 && timestamp < vp.timestamp ()) {
-				delta = vp.timestamp () - timestamp;
-			} else {
-				delta = 0;
-			}
 			timestamp = vp.timestamp ();
 		}
 	};
@@ -266,12 +378,12 @@ namespace gtfs {
 				return;
 			}
 		}
-		// reset stop sequence if starting a new trip
-		if (newtrip) {
-			stop_sequence = 0;
-			arrival_time = 0;
-			departure_time = 0;
-		}
+		// // reset stop sequence if starting a new trip
+		// if (newtrip) {
+		// 	stop_sequence = 0;
+		// 	arrival_time = 0;
+		// 	departure_time = 0;
+		// }
 		if (vp.stop_time_update_size () > 0) { // TripUpdate -> StopTimeUpdates -> arrival/departure time
 			for (int i=0; i<vp.stop_time_update_size (); i++) {
 				auto& stu = vp.stop_time_update (i);
@@ -300,7 +412,7 @@ namespace gtfs {
 	 *
 	 * @return the ID for the next particle.
 	 */
-	unsigned long Vehicle::allocate_id () {
+	unsigned long Vehicle::allocate_id (void) {
 		return next_id++;
 	};
 
@@ -312,37 +424,37 @@ namespace gtfs {
 	 */
 	void Vehicle::resample (sampling::RNG &rng) {
 		// Re-sampler based on computed weights:
-		std::vector<double> lh;
-		lh.reserve (particles.size ());
-		for (auto& p: particles) lh.push_back (exp(p.get_likelihood ()));
-		// std::cout << " > Max likelihood: " << *std::max_element (lh.begin (), lh.end ());
-		// if (*std::max_element (lh.begin (), lh.end ()) < exp(-10)) return;
-
-		sampling::sample smp (lh);
-		std::vector<int> pkeep (smp.get (n_particles, rng));
-
-		// Move old particles into temporary holding vector
-		std::vector<gtfs::Particle> old_particles = std::move(particles);
-
-		// Copy new particles, incrementing their IDs (copy constructor does this)
-		particles.reserve(n_particles);
-		for (auto& i: pkeep) {
-			particles.push_back(old_particles[i]);
-		}
+		// std::vector<double> lh;
+		// lh.reserve (particles.size ());
+		// for (auto& p: particles) lh.push_back (exp(p.get_likelihood ()));
+		// // std::cout << " > Max likelihood: " << *std::max_element (lh.begin (), lh.end ());
+		// // if (*std::max_element (lh.begin (), lh.end ()) < exp(-10)) return;
+		//
+		// sampling::sample smp (lh);
+		// std::vector<int> pkeep (smp.get (n_particles, rng));
+		//
+		// // Move old particles into temporary holding vector
+		// std::vector<gtfs::Particle> old_particles = std::move(particles);
+		//
+		// // Copy new particles, incrementing their IDs (copy constructor does this)
+		// particles.reserve(n_particles);
+		// for (auto& i: pkeep) {
+		// 	particles.push_back(old_particles[i]);
+		// }
 	};
 
 	/**
 	 * Reset vehicle's particles to zero-state.
 	 */
-	void Vehicle::reset () {
-		delta = 0;
-		timestamp = 0;
-		initialized = false;
-		particles.clear ();
-		particles.reserve(n_particles);
-		for (unsigned int i=0; i<n_particles; i++) {
-			particles.emplace_back(this);
-		}
+	void Vehicle::reset (void) {
+		// delta = 0;
+		// timestamp = 0;
+		// initialized = false;
+		// particles.clear ();
+		// particles.reserve(n_particles);
+		// for (unsigned int i=0; i<n_particles; i++) {
+		// 	particles.emplace_back(this);
+		// }
 	};
 
 }; // end namespace gtfs

@@ -186,8 +186,8 @@ int main (int argc, char* argv[]) {
 			std::cout.flush ();
 			#pragma omp parallel for schedule(static) num_threads(numcore)
 			for (unsigned i=0; i<vehicles.bucket_count (); i++) {
-				// std::cout << "\n - vehicle " << i;
 				for (auto v = vehicles.begin (i); v != vehicles.end (i); v++) {
+					std::cout << "\n - vehicle " << i;
 					if (v->second->get_trip () &&
 						v->second->get_trip ()->get_route ()) {
 						// std::cout << "\n ++++++++++++++++++++++++++++++++++++++++ Route "
@@ -202,215 +202,215 @@ int main (int argc, char* argv[]) {
 
 		// Update road segments -> Kalman filter
 		{
-			time_start (clockstart, wallstart);
-			std::cout << "\n * Updating road network with latest travel times ...";
-			// loop over VEHICLES that were updated this iteration (?)
-			for (auto& v: vehicles) {
-				// std::cout << "\n - Vehicle " << v.second->get_id () << " travel times ("
-				// 	<< v.second->get_particles()[0].get_travel_times ().size ()
-				// 	<< v.second->get_trip ()->get_route ()->get_shape ()->get_segments ().size ()
-				// 	<< ")";
-				if (!v.second->is_initialized ()) {
-					// std::cout << " -- not init";
-					continue;
-				}
-				// only use segments that are LESS than MIN segment index
-				int minSeg = v.second->get_trip ()->get_route ()->get_shape ()->get_segments ().size ();
-				for (auto& p: v.second->get_particles ()) {
-					if (p.get_segment_index () < minSeg) minSeg = p.get_segment_index ();
-				}
-				// std::cout << " - " << minSeg;
-				std::vector<int> tts;
-				std::vector<double> wts;
-				tts.reserve (v.second->get_particles ().size ());
-				for (int i=0; i<minSeg; i++) {
-					tts.clear ();
-					wts.clear ();
-					std::shared_ptr<gtfs::Segment> segi;
-					for (auto& p: v.second->get_particles ()) {
-						// if COMPLETE && INITIALIZED then append travel time to segment's data
-						// AND uninitialize the particle's travel time for that segment
-						// so it doesn't get reused next time
-						auto tt = p.get_travel_time (i);
-						if (!tt) continue;
-						if (!tt->initialized || !tt->complete) continue; // if any aren't, skip anyway!
-						// if (!tt->initialized) continue; // if any aren't, skip anyway!
-						if (!segi) segi = tt->segment;
-						tts.push_back (tt->time);
-						wts.push_back (p.get_weight ());
-					}
-					// std::cout << " (" << tts.size () << " vs "
-					// 	<< v.second->get_particles ().size () << ")?";
-					if (tts.size () != v.second->get_particles ().size ()) continue;
-					// if (tts.size () < 10) continue;
-					double ttmean = 0;
-					for (unsigned j=0; j<tts.size (); j++) ttmean += tts[j] * wts[j];
-					if (ttmean == 0) continue;
-					double ttvar = 0;
-					for (unsigned j=0; j<tts.size (); j++) ttvar += wts[j] * pow(tts[j] - ttmean, 2);
-					// double ttmean = std::accumulate(tts.begin (), tts.end (), 0.0) / tts.size ();
-					// double sqdiff = 0;
-					// for (auto& t: tts) sqdiff += pow(t - ttmean, 2);
-					// double var = sqdiff / tts.size ();
-					// std::cout << "\n + Segment " << i << ": " << ttmean << " (" << sqrt(var) << ")";
-					segi->add_data (ttmean, ttvar);
-					// give data to segment
-					for (auto& p: v.second->get_particles ()) p.reset_travel_time (i);
-				}
-			}
-
-			// Update segments and write to protocol buffer
-			transit_network::Feed feed;
-			// std::cout << "\n ~~~~~~~~~~~~~~~~~~~ \n";
-			for (auto& s: gtfs.get_segments ()) {
-				if (s.second->has_data ()) {
-					// std::cout << "\n + Update segment " << s.first << ": ";
-					s.second->update (curtime);
-				}
-				transit_network::Segment* seg = feed.add_segments ();
-				seg->set_segment_id (s.second->get_id ());
-				if (s.second->is_initialized ()) {
-					seg->set_travel_time (s.second->get_travel_time ());
-					seg->set_travel_time_var (s.second->get_travel_time_var ());
-					seg->set_timestamp (s.second->get_timestamp ());
-				}
-			}
-
-			std::fstream output ("gtfs_network.pb",
-								 std::ios::out | std::ios::trunc | std::ios::binary);
-			if (!feed.SerializeToOstream (&output)) {
-				std::cerr << "\n x Failed to write ETA feed.\n";
-			}
-
-			google::protobuf::ShutdownProtobufLibrary ();
-
-			std::cout << "\n";
-			time_end (clockstart, wallstart);
+			// time_start (clockstart, wallstart);
+			// std::cout << "\n * Updating road network with latest travel times ...";
+			// // loop over VEHICLES that were updated this iteration (?)
+			// for (auto& v: vehicles) {
+			// 	// std::cout << "\n - Vehicle " << v.second->get_id () << " travel times ("
+			// 	// 	<< v.second->get_particles()[0].get_travel_times ().size ()
+			// 	// 	<< v.second->get_trip ()->get_route ()->get_shape ()->get_segments ().size ()
+			// 	// 	<< ")";
+			// 	if (!v.second->is_initialized ()) {
+			// 		// std::cout << " -- not init";
+			// 		continue;
+			// 	}
+			// 	// only use segments that are LESS than MIN segment index
+			// 	int minSeg = v.second->get_trip ()->get_route ()->get_shape ()->get_segments ().size ();
+			// 	for (auto& p: v.second->get_particles ()) {
+			// 		if (p.get_segment_index () < minSeg) minSeg = p.get_segment_index ();
+			// 	}
+			// 	// std::cout << " - " << minSeg;
+			// 	std::vector<int> tts;
+			// 	std::vector<double> wts;
+			// 	tts.reserve (v.second->get_particles ().size ());
+			// 	for (int i=0; i<minSeg; i++) {
+			// 		tts.clear ();
+			// 		wts.clear ();
+			// 		std::shared_ptr<gtfs::Segment> segi;
+			// 		for (auto& p: v.second->get_particles ()) {
+			// 			// if COMPLETE && INITIALIZED then append travel time to segment's data
+			// 			// AND uninitialize the particle's travel time for that segment
+			// 			// so it doesn't get reused next time
+			// 			auto tt = p.get_travel_time (i);
+			// 			if (!tt) continue;
+			// 			if (!tt->initialized || !tt->complete) continue; // if any aren't, skip anyway!
+			// 			// if (!tt->initialized) continue; // if any aren't, skip anyway!
+			// 			if (!segi) segi = tt->segment;
+			// 			tts.push_back (tt->time);
+			// 			wts.push_back (p.get_weight ());
+			// 		}
+			// 		// std::cout << " (" << tts.size () << " vs "
+			// 		// 	<< v.second->get_particles ().size () << ")?";
+			// 		if (tts.size () != v.second->get_particles ().size ()) continue;
+			// 		// if (tts.size () < 10) continue;
+			// 		double ttmean = 0;
+			// 		for (unsigned j=0; j<tts.size (); j++) ttmean += tts[j] * wts[j];
+			// 		if (ttmean == 0) continue;
+			// 		double ttvar = 0;
+			// 		for (unsigned j=0; j<tts.size (); j++) ttvar += wts[j] * pow(tts[j] - ttmean, 2);
+			// 		// double ttmean = std::accumulate(tts.begin (), tts.end (), 0.0) / tts.size ();
+			// 		// double sqdiff = 0;
+			// 		// for (auto& t: tts) sqdiff += pow(t - ttmean, 2);
+			// 		// double var = sqdiff / tts.size ();
+			// 		// std::cout << "\n + Segment " << i << ": " << ttmean << " (" << sqrt(var) << ")";
+			// 		segi->add_data (ttmean, ttvar);
+			// 		// give data to segment
+			// 		for (auto& p: v.second->get_particles ()) p.reset_travel_time (i);
+			// 	}
+			// }
+			//
+			// // Update segments and write to protocol buffer
+			// transit_network::Feed feed;
+			// // std::cout << "\n ~~~~~~~~~~~~~~~~~~~ \n";
+			// for (auto& s: gtfs.get_segments ()) {
+			// 	if (s.second->has_data ()) {
+			// 		// std::cout << "\n + Update segment " << s.first << ": ";
+			// 		s.second->update (curtime);
+			// 	}
+			// 	transit_network::Segment* seg = feed.add_segments ();
+			// 	seg->set_segment_id (s.second->get_id ());
+			// 	if (s.second->is_initialized ()) {
+			// 		seg->set_travel_time (s.second->get_travel_time ());
+			// 		seg->set_travel_time_var (s.second->get_travel_time_var ());
+			// 		seg->set_timestamp (s.second->get_timestamp ());
+			// 	}
+			// }
+			//
+			// std::fstream output ("gtfs_network.pb",
+			// 					 std::ios::out | std::ios::trunc | std::ios::binary);
+			// if (!feed.SerializeToOstream (&output)) {
+			// 	std::cerr << "\n x Failed to write ETA feed.\n";
+			// }
+			//
+			// google::protobuf::ShutdownProtobufLibrary ();
+			//
+			// std::cout << "\n";
+			// time_end (clockstart, wallstart);
 		}
 
 		// Update ETA predictions
 		{
-			time_start (clockstart, wallstart);
-			std::cout << "\n * Calculating ETAs ...";
-			std::cout.flush ();
-			for (auto& v: vehicles) {
-				if (!v.second->get_trip () || !v.second->is_initialized ()) continue;
-				// std::cout << "\n - Vehicle: " << v.second->get_id ()
-				// 	<< " - Time: " << v.second->get_timestamp ();
-				for (auto& p: v.second->get_particles ()) p.calculate_etas ();
-			}
-			std::cout << "\n";
-			time_end (clockstart, wallstart);
+			// time_start (clockstart, wallstart);
+			// std::cout << "\n * Calculating ETAs ...";
+			// std::cout.flush ();
+			// for (auto& v: vehicles) {
+			// 	if (!v.second->get_trip () || !v.second->is_initialized ()) continue;
+			// 	// std::cout << "\n - Vehicle: " << v.second->get_id ()
+			// 	// 	<< " - Time: " << v.second->get_timestamp ();
+			// 	for (auto& p: v.second->get_particles ()) p.calculate_etas ();
+			// }
+			// std::cout << "\n";
+			// time_end (clockstart, wallstart);
 		}
 
 		// Write ETAs to buffers
 		{
-			time_start (clockstart, wallstart);
-			std::cout << "\n * Writing ETAs to protocol buffer ...";
-			std::cout.flush ();
-
-			transit_etas::Feed feed;
-
-			for (auto& v: vehicles) {
-				if (!v.second->get_trip () || !v.second->is_initialized ()) continue;
-				transit_etas::Trip* trip = feed.add_trips ();
-				trip->set_vehicle_id (v.second->get_id ().c_str ());
-				trip->set_trip_id (v.second->get_trip ()->get_id ().c_str ());
-				trip->set_route_id (v.second->get_trip ()->get_route ()->get_id ().c_str ());
-				double dist = 0, speed = 0;
-				for (auto& p: v.second->get_particles ()) {
-					dist += p.get_distance ();
-					speed += p.get_velocity ();
-				}
-				trip->set_distance_into_trip (dist / v.second->get_particles ().size ());
-				trip->set_velocity (speed / v.second->get_particles ().size ());
-
-				// Initialize a vector of ETAs for each particles; stop by stop
-				unsigned Np (v.second->get_particles ().size ());
-				std::vector<uint64_t> etas;
-				etas.reserve (Np);
-
-				auto stops = v.second->get_trip ()->get_stoptimes ();
-				for (unsigned j=1; j<stops.size (); j++) {
-					// For each stop, fetch ETAs for that stop
-					for (auto& p: v.second->get_particles ()) {
-						if (p.get_eta (j) == 0 || p.is_finished ()) continue;
-						etas.push_back (p.get_eta (j));
-					}
-					if (etas.size () == 0) continue;
-					// order them to get percentiles: 0.025, 0.5, 0.975
-					std::sort (etas.begin (), etas.end ());
-
-					// append to tripetas
-					transit_etas::Trip::ETA* tripetas = trip->add_etas ();
-					tripetas->set_stop_sequence (j+1);
-					tripetas->set_stop_id (stops[j].stop->get_id ().c_str ());
-					tripetas->set_arrival_min (etas[(int)(etas.size () * 0.025)]);
-					tripetas->set_arrival_max (etas[(int)(etas.size () * 0.975)]);
-					tripetas->set_arrival_eta (etas[(int)(etas.size () * 0.5)]);
-
-					// clear for next stop
-					etas.clear ();
-				}
-			}
-
-			std::fstream output ("gtfs_etas.pb",
-								 std::ios::out | std::ios::trunc | std::ios::binary);
-			if (!feed.SerializeToOstream (&output)) {
-				std::cerr << "\n x Failed to write ETA feed.\n";
-			}
-
-			google::protobuf::ShutdownProtobufLibrary ();
-
-			std::cout << "\n";
-			time_end (clockstart, wallstart);
+			// time_start (clockstart, wallstart);
+			// std::cout << "\n * Writing ETAs to protocol buffer ...";
+			// std::cout.flush ();
+			//
+			// transit_etas::Feed feed;
+			//
+			// for (auto& v: vehicles) {
+			// 	if (!v.second->get_trip () || !v.second->is_initialized ()) continue;
+			// 	transit_etas::Trip* trip = feed.add_trips ();
+			// 	trip->set_vehicle_id (v.second->get_id ().c_str ());
+			// 	trip->set_trip_id (v.second->get_trip ()->get_id ().c_str ());
+			// 	trip->set_route_id (v.second->get_trip ()->get_route ()->get_id ().c_str ());
+			// 	double dist = 0, speed = 0;
+			// 	for (auto& p: v.second->get_particles ()) {
+			// 		dist += p.get_distance ();
+			// 		speed += p.get_velocity ();
+			// 	}
+			// 	trip->set_distance_into_trip (dist / v.second->get_particles ().size ());
+			// 	trip->set_velocity (speed / v.second->get_particles ().size ());
+			//
+			// 	// Initialize a vector of ETAs for each particles; stop by stop
+			// 	unsigned Np (v.second->get_particles ().size ());
+			// 	std::vector<uint64_t> etas;
+			// 	etas.reserve (Np);
+			//
+			// 	auto stops = v.second->get_trip ()->get_stoptimes ();
+			// 	for (unsigned j=1; j<stops.size (); j++) {
+			// 		// For each stop, fetch ETAs for that stop
+			// 		for (auto& p: v.second->get_particles ()) {
+			// 			if (p.get_eta (j) == 0 || p.is_finished ()) continue;
+			// 			etas.push_back (p.get_eta (j));
+			// 		}
+			// 		if (etas.size () == 0) continue;
+			// 		// order them to get percentiles: 0.025, 0.5, 0.975
+			// 		std::sort (etas.begin (), etas.end ());
+			//
+			// 		// append to tripetas
+			// 		transit_etas::Trip::ETA* tripetas = trip->add_etas ();
+			// 		tripetas->set_stop_sequence (j+1);
+			// 		tripetas->set_stop_id (stops[j].stop->get_id ().c_str ());
+			// 		tripetas->set_arrival_min (etas[(int)(etas.size () * 0.025)]);
+			// 		tripetas->set_arrival_max (etas[(int)(etas.size () * 0.975)]);
+			// 		tripetas->set_arrival_eta (etas[(int)(etas.size () * 0.5)]);
+			//
+			// 		// clear for next stop
+			// 		etas.clear ();
+			// 	}
+			// }
+			//
+			// std::fstream output ("gtfs_etas.pb",
+			// 					 std::ios::out | std::ios::trunc | std::ios::binary);
+			// if (!feed.SerializeToOstream (&output)) {
+			// 	std::cerr << "\n x Failed to write ETA feed.\n";
+			// }
+			//
+			// google::protobuf::ShutdownProtobufLibrary ();
+			//
+			// std::cout << "\n";
+			// time_end (clockstart, wallstart);
 		}
 
 		// Write results to CSV files
 		if (csvout > 0) {
-			time_start (clockstart, wallstart);
-			std::cout << "\n * Writing particles to CSV ...";
-			std::cout.flush ();
-			std::ofstream particlefile; // file for particles
-			std::ofstream etafile;      // file for particles/stop ETAs
-			if (csvout == 1) {
-				system("rm -f PARTICLES.csv ETAS.csv");
-				particlefile.open ("PARTICLES.csv");
-				particlefile << "vehicle_id,particle_id,timestamp,trip_id,route_id,distance,velocity,parent_id,lat,lng,lh,wt,init\n";
-				etafile.open ("ETAS.csv");
-				etafile << "vehicle_id,particle_id,stop_sequence,eta\n";
-			} else {
-				particlefile.open ("PARTICLES.csv", std::ofstream::app);
-				etafile.open ("ETAS.csv", std::ofstream::app);
-			}
-			for (auto& v: vehicles) {
-				if (!v.second->get_trip ()) continue;
-				auto shape = v.second->get_trip ()->get_route ()->get_shape ();
-				for (auto& p: v.second->get_particles ()) {
-					auto pos = gtfs::get_coords (p.get_distance (), shape);
-					particlefile << std::setprecision(8)
-						<< v.second->get_id () << "," << p.get_id () << ","
-					 	<< v.second->get_timestamp () << "," << v.second->get_trip ()->get_id () << ","
-						<< v.second->get_trip ()->get_route ()->get_id () << ","
-						<< p.get_distance () << "," << p.get_velocity () << ","
-						<< p.get_parent_id () << "," << pos.lat << "," << pos.lng << ","
-						<< p.get_likelihood ()  << "," << p.get_weight () << ","
-						<< v.second->is_initialized () << "\n";
-					if (p.get_etas ().size () > 0) {
-						for (unsigned int i=0; i<p.get_etas ().size (); i++) {
-							if (p.get_eta (i) && p.get_eta (i) > 0) {
-								etafile
-									<< v.second->get_id () << "," << p.get_id () << ","
-									<< (i+1) << "," << p.get_eta (i) << "\n";
-							}
-						}
-					}
-				}
-			}
-			particlefile.close ();
-			etafile.close ();
-			std::cout << "\n";
-			time_end (clockstart, wallstart);
+			// time_start (clockstart, wallstart);
+			// std::cout << "\n * Writing particles to CSV ...";
+			// std::cout.flush ();
+			// std::ofstream particlefile; // file for particles
+			// std::ofstream etafile;      // file for particles/stop ETAs
+			// if (csvout == 1) {
+			// 	system("rm -f PARTICLES.csv ETAS.csv");
+			// 	particlefile.open ("PARTICLES.csv");
+			// 	particlefile << "vehicle_id,particle_id,timestamp,trip_id,route_id,distance,velocity,parent_id,lat,lng,lh,wt,init\n";
+			// 	etafile.open ("ETAS.csv");
+			// 	etafile << "vehicle_id,particle_id,stop_sequence,eta\n";
+			// } else {
+			// 	particlefile.open ("PARTICLES.csv", std::ofstream::app);
+			// 	etafile.open ("ETAS.csv", std::ofstream::app);
+			// }
+			// for (auto& v: vehicles) {
+			// 	if (!v.second->get_trip ()) continue;
+			// 	auto shape = v.second->get_trip ()->get_route ()->get_shape ();
+			// 	for (auto& p: v.second->get_particles ()) {
+			// 		auto pos = gtfs::get_coords (p.get_distance (), shape);
+			// 		particlefile << std::setprecision(8)
+			// 			<< v.second->get_id () << "," << p.get_id () << ","
+			// 		 	<< v.second->get_timestamp () << "," << v.second->get_trip ()->get_id () << ","
+			// 			<< v.second->get_trip ()->get_route ()->get_id () << ","
+			// 			<< p.get_distance () << "," << p.get_velocity () << ","
+			// 			<< p.get_parent_id () << "," << pos.lat << "," << pos.lng << ","
+			// 			<< p.get_likelihood ()  << "," << p.get_weight () << ","
+			// 			<< v.second->is_initialized () << "\n";
+			// 		if (p.get_etas ().size () > 0) {
+			// 			for (unsigned int i=0; i<p.get_etas ().size (); i++) {
+			// 				if (p.get_eta (i) && p.get_eta (i) > 0) {
+			// 					etafile
+			// 						<< v.second->get_id () << "," << p.get_id () << ","
+			// 						<< (i+1) << "," << p.get_eta (i) << "\n";
+			// 				}
+			// 			}
+			// 		}
+			// 	}
+			// }
+			// particlefile.close ();
+			// etafile.close ();
+			// std::cout << "\n";
+			// time_end (clockstart, wallstart);
 		}
 
 		if (forever) std::this_thread::sleep_for (std::chrono::milliseconds (10 * 1000));
