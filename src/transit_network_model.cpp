@@ -140,17 +140,17 @@ int main (int argc, char* argv[]) {
 
 	// std::clock_t clockend;
 
-	system("rm -f PARTICLES.csv ETAS.csv HISTORY/*.csv");
-	if (csvout == 2) {
-		std::ofstream particlefile; // file for particles
-		particlefile.open ("PARTICLES.csv");
-		particlefile << "vehicle_id,particle_id,timestamp,trip_id,route_id,distance,velocity,parent_id,lat,lng,lh,wt,init\n";
-		particlefile.close ();
-		std::ofstream etafile;      // file for particles/stop ETAs
-		etafile.open ("ETAS.csv");
-		etafile << "vehicle_id,particle_id,stop_sequence,eta\n";
-		etafile.close ();
-	}
+	// system("rm -f PARTICLES.csv ETAS.csv HISTORY/*.csv");
+	// if (csvout == 2) {
+	// 	std::ofstream particlefile; // file for particles
+	// 	particlefile.open ("PARTICLES.csv");
+	// 	particlefile << "vehicle_id,particle_id,timestamp,trip_id,route_id,distance,velocity,parent_id,lat,lng,lh,wt,init\n";
+	// 	particlefile.close ();
+	// 	std::ofstream etafile;      // file for particles/stop ETAs
+	// 	etafile.open ("ETAS.csv");
+	// 	etafile << "vehicle_id,particle_id,stop_sequence,eta\n";
+	// 	etafile.close ();
+	// }
 
 	time_t curtime;
 	while (forever) {
@@ -187,15 +187,38 @@ int main (int argc, char* argv[]) {
 			#pragma omp parallel for schedule(static) num_threads(numcore)
 			for (unsigned i=0; i<vehicles.bucket_count (); i++) {
 				for (auto v = vehicles.begin (i); v != vehicles.end (i); v++) {
-					std::cout << "\n - vehicle " << i;
+					// std::cout << "\n - vehicle " << v->second->get_id ();
 					if (v->second->get_trip () &&
 						v->second->get_trip ()->get_route ()) {
-						// std::cout << "\n ++++++++++++++++++++++++++++++++++++++++ Route "
-						// << v->second->get_trip ()->get_route ()->get_short_name () << "\n";
+						std::cout << "\n\n +------------------------------- Route ---+"
+							<< v->second->get_trip ()->get_route ()->get_short_name ();
 						v->second->update (rng);
 					}
 				}
 			}
+			std::cout << "\n";
+			time_end (clockstart, wallstart);
+		}
+
+		{
+			time_start (clockstart, wallstart);
+			std::cout << "\n * Writing particles to CSV";
+			std::cout.flush ();
+			std::ofstream f; // file for particles
+			f.open ("particles.csv");
+			f << "vehicle_id,particle_id,t,d,v\n";
+			for (auto& v: vehicles) {
+				for (auto& p: v.second->get_particles ()) {
+					for (unsigned k=0; k<p.get_trajectory ().size (); k++) {
+						f << v.second->get_id () << ","
+							<< p.get_id () << ","
+							<< k << ","
+							<< p.get_distance (k) << ","
+							<< p.get_velocity (k) << "\n";
+					}
+				}
+			}
+			f.close ();
 			std::cout << "\n";
 			time_end (clockstart, wallstart);
 		}

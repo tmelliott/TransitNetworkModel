@@ -340,7 +340,7 @@ namespace gtfs {
 	void Vehicle::update (const transit_realtime::VehiclePosition &vp, GTFS &gtfs) {
 		// std::clog << "Updating vehicle location!\n";
 
-		newtrip = false;
+		newtrip = true;
 		if (vp.has_trip ()) { // TripDescriptor -> (trip_id, route_id)
 		  	if (vp.trip ().has_trip_id () && trip != nullptr)
 				newtrip = vp.trip ().trip_id () != trip->get_id ();

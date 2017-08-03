@@ -237,8 +237,10 @@ namespace gtfs {
 		unsigned long get_parent_id (void) const;
 
 		std::vector<std::tuple<double,double> > get_trajectory (void) const;
-		double get_distance (int t) const;
-		double get_velocity (int t) const;
+		double get_distance (uint64_t& t) const;
+		double get_distance (int k) const;
+		double get_velocity (uint64_t& t) const;
+		double get_velocity (int k) const;
 		std::vector<std::tuple<int,int>> get_stops (void) const;
 		std::vector<std::tuple<int,int>> get_segments (void) const;
 

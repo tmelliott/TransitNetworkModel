@@ -126,10 +126,16 @@ namespace gtfs {
 	 * @param  t time (since start)
 	 * @return   the distance into trip (meters)
 	 */
-	double Particle::get_distance (int t) const {
-		if (t < 0) t = 0;
-		if (t >= trajectory.size ()) t = trajectory.size () - 1;
-		return std::get<0> (trajectory[t]);
+	double Particle::get_distance (uint64_t& t) const {
+		unsigned k = std::max(0, (int)(t - start));
+		if (k >= trajectory.size ()) k = trajectory.size () - 1;
+		return std::get<0> (trajectory[k]);
+	};
+
+	double Particle::get_distance (int k) const {
+		if (k < 0) k = 0;
+		if (k > trajectory.size ()) k = trajectory.size () - 1;
+		return std::get<0> (trajectory[k]);
 	};
 
 	/**
@@ -137,10 +143,16 @@ namespace gtfs {
 	 * @param  t time (since start)
 	 * @return   the velocity (meters per second)
 	 */
-	double Particle::get_velocity (int t) const {
-		if (t < 0) t = 0;
-		if (t >= trajectory.size ()) t = trajectory.size () - 1;
-		return std::get<1> (trajectory[t]);
+	double Particle::get_velocity (uint64_t& t) const {
+		unsigned k = std::max(0, (int)(t - start));
+		if (k >= trajectory.size ()) k = trajectory.size () - 1;
+		return std::get<1> (trajectory[k]);
+	};
+
+	double Particle::get_velocity (int k) const {
+		if (k < 0) k = 0;
+		if (k > trajectory.size ()) k = trajectory.size () - 1;
+		return std::get<1> (trajectory[k]);
 	};
 
 	/** @return the stops (arrival and dwell times) */
@@ -172,7 +184,36 @@ namespace gtfs {
 	void Particle::initialize (double dist, sampling::RNG& rng) {
 
 		// create trajectories
+		double d (0.0), v (0.0);
+		double Dmax (vehicle->get_trip ()->get_route ()->get_stops ().back ().shape_dist_traveled);
 
+		double sigmav (1.0);
+		double amin (-2.0);
+		double Vmax (20.0);
+		trajectory.clear ();
+		trajectory.emplace_back (0, 0);
+		while (std::get<0> (trajectory.back ()) < Dmax) {
+
+			double vmax, vmin = 0;
+			vmax = (Dmax - d) / (sqrt ((Dmax - d) / -amin));
+			if (vmax < Vmax) {
+				v = sampling::uniform (vmin, vmax).rand (rng);
+			} else {
+				double vel = INFINITY;
+				auto rnorm = sampling::normal (v, sigmav);
+				v = rnorm.rand (rng);
+				while (v < vmin || v > Vmax)
+					v = rnorm.rand (rng);
+			}
+			d += v; // dt = 1 second every time
+
+			if (d >= Dmax) {
+				d = Dmax;
+				v = 0;
+			}
+			trajectory.emplace_back (d, v);
+
+		}
 
 		// set start so that get_distance (ts-start) = dist.rand (rng);
 
