@@ -195,7 +195,8 @@ namespace gtfs {
 		while (std::get<0> (trajectory.back ()) < Dmax) {
 
 			double vmax, vmin = 0;
-			vmax = (Dmax - d) / (sqrt ((Dmax - d) / -amin));
+			double dmax = Dmax;
+			vmax = (dmax - d) / (sqrt ((dmax - d) / -amin));
 			if (vmax < Vmax) {
 				v = sampling::uniform (vmin, vmax).rand (rng);
 			} else {
@@ -207,9 +208,9 @@ namespace gtfs {
 			}
 			d += v; // dt = 1 second every time
 
-			if (d >= Dmax) {
-				d = Dmax;
-				v = 0;
+			if (d >= dmax) {
+				d = dmax;
+				v = 0; // only 0 if particle decides to stop
 			}
 			trajectory.emplace_back (d, v);
 
