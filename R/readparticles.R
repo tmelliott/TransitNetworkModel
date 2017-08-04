@@ -1,22 +1,57 @@
+library(RSQLite)
 library(ggplot2)
 
-p <- read.csv("../build/particles.csv")
-p$id <- as.factor(paste(p$vehicle_id, p$particle_id, sep = ":"))
+csv2db <- function(f, db = tempfile(fileext = ".db")) {
+    ## write the csv file f to a database, and return connection
+    t <- tempfile(fileext = ".sql")
+    cat(file = t, sep = "",
+        ".mode csv\n",
+        ".import ", f, " particles")
+    system(sprintf("cat %s | sqlite3 %s", t, db))
+    unlink(t)
+    
+    dbConnect(SQLite(), db)
+}
 
-vs = levels(p$vehicle_id)
+plotVehicle <- function(vid, db, obs, wait = FALSE, ...) {
+    pq <- dbSendQuery(db, "SELECT particle_id, timestamp, t, CAST(d AS REAL) AS d FROM particles WHERE vehicle_id=? ORDER BY particle_id, t")
+    dbBind(pq, list(vid))
+    p <- dbFetch(pq)
+    dbClearResult(pq)
+    mode(p$particle_id) <- "factor"
+    p$timestamp <- as.POSIXct(as.numeric(p$timestamp), origin = "1970-01-01")
+    p$t <- as.POSIXct(as.numeric(p$t), origin = "1970-01-01")
+    x <- ggplot(p[p$t > p$timestamp, ]) +
+        geom_line(aes(t, d, group = particle_id, colour = timestamp), alpha = 0.4) +
+        labs(x = "Time", y = "Distance (m)") +
+        geom_hline(yintercept = max(p$d), linetype = 2, colour = "#cccccc") +
+    ggtitle(vid)
+    if (!missing(obs)) {
+        x <- x + geom_point(aes(obs$t, obs$d), col = "#bb0000", size = 0.5)
+    }
+    if (wait) grid::grid.locator()
+    dev.hold()
+    on.exit(dev.flush())
+    try( print(x) )
+    dev.flush()
+    invisible(p)
+}
 
-p1 = p[p$vehicle_id == vs[1], ]
+pdb <- csv2db("../build/particles.csv")
+vids <- dbGetQuery(pdb, "SELECT DISTINCT vehicle_id FROM particles")$vehicle_id
 
-x <- ggplot(p1) +
-    geom_line(aes(t, d, group = id)) +
-    labs(x = "Time (s)", y = "Distance (m)") +
-    geom_hline(yintercept = max(p1$d), linetype = 2, colour = "#cccccc")
-x
+invisible(sapply(vids, plotVehicle, db = pdb, wait = TRUE))
 
-obs = list(t = 120, d = 1000)
+p <- plotVehicle(vids[3], pdb)
+
+
+
+
+
+
 x + geom_point(aes(obs$t, obs$d), col = "#bb0000")
 
-p1$tadj <- numeric(nrow(p1))
+p1$tadj <- numeric(nrow(p))
 n <- tapply(seq_along(p1$id), p1$id, function(i) {
     di <- runif(1, max(0, obs$d - 50), min(max(p1$d), obs$d + 50))
     p1$tadj[i] <<- p1$t[i] - p1$t[which.min(abs(p1$d[i] - di))] + obs$t
@@ -24,8 +59,8 @@ n <- tapply(seq_along(p1$id), p1$id, function(i) {
 })
 
 
-ggplot(p1) +
-    geom_line(aes(tadj, d, group = id)) +
+ggplot(p) +
+    geom_line(aes(t, d, group = particle_id)) +
     labs(x = "Time (s)", y = "Distance (m)") +
-    geom_hline(yintercept = max(p1$d), linetype = 2, colour = "#cccccc") +
+    geom_hline(yintercept = max(p$d), linetype = 2, colour = "#cccccc") +
     geom_point(aes(obs$t, obs$d), col = "#bb0000", size = 0.5)

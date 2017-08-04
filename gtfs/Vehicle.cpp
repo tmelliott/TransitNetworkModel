@@ -93,6 +93,11 @@ namespace gtfs {
 		return timestamp;
 	};
 
+	/** @return the timestamp of the first observation (of trip beginning...) */
+	uint64_t Vehicle::get_first_obs (void) const {
+		return first_obs;
+	};
+
 	// /** @return the vehicle's dwell times at all stops */
 	// const std::vector<DwellTime>& get_dwell_times () const {
 	// 	return dwell_times;
@@ -129,11 +134,17 @@ namespace gtfs {
 	 */
 	void Vehicle::update ( sampling::RNG& rng ) {
 		std::cout << "\n - Updating vehicle " << id << ":";
+		if (!updated) return;
 		switch (status) {
 			case 0:
 			{
-				// just rolling along nicely - mutate + update
+				// just rolling along nicely - update + mutate
 				std::cout << "\n + In progress";
+
+				for (auto& p: particles) p.calculate_likelihood ();
+				resample (rng);
+				for (auto& p: particles) p.mutate (rng);
+
 				break;
 			}
 			case 1:
@@ -144,7 +155,12 @@ namespace gtfs {
 				// - if vehicle appears to be approaching stop, readjust t0's to match new distance
 				// - else mutate + update; decrease state=2
 				std::cout << "\n + Case " << status;
-				bool allok = false;
+
+				for (auto& p: particles) p.calculate_likelihood ();
+				resample (rng);
+				for (auto& p: particles) p.mutate (rng);
+
+				bool allok = true;
 				// do checking
 				if (allok) {
 					status--;
@@ -161,27 +177,29 @@ namespace gtfs {
 				// - if none of these, then set t0's to match observed position...set state=3
 				std::cout << "\n + Initializing particles";
 
-				if (stop_sequence) {
+				first_obs = timestamp;
+				if (stop_sequence && stop_sequence.get () == 1) {
+					std::cout << " (case 1) - " << first_obs;
 					if (arrival_time) {
 						// know approximately when the vehicle arrived at stop[0]
 						first_obs = arrival_time.get ();
+						std::cout << " (arr)";
 					} else if (departure_time) {
 						// know approximately when the vehicle departed
 						first_obs = departure_time.get ();
-					} else {
-						first_obs = timestamp;
+						std::cout << " (dep)";
 					}
-
 					// go head and init particles
 					for (auto& p: particles) p.initialize (0.0, rng);
 
 					status = 0;
 				} else if (position.distanceTo (trip->get_stoptimes ()[0].stop->get_pos ()) < 20) {
 					// we're close enough to be considered at the stop
-					first_obs = timestamp;
+					std::cout << " (case 2)";
 					status = 1;
-					for (auto& p: particles) p.initialize (0, rng);
+					for (auto& p: particles) p.initialize (0.0, rng);
 				} else {
+					std::cout << " (case 3)";
 					std::vector<double> init_range {100000.0, 0.0};
 					auto shape = trip->get_route ()->get_shape ();
 					for (auto& p: shape->get_path ()) {
@@ -225,70 +243,6 @@ namespace gtfs {
 		//      or stops serviced since the last update
 
 
-		// std::clog << "\nVehicle ID: " << id
-		// 	<< " " << position
-		// 	<< " - ts = " << timestamp;
-		// if (stop_sequence > 0) std::clog << " - at stop " << stop_sequence;
-		// if (newtrip) std::clog << " - newtrip";
-		// if (!initialized) std::clog << " - initialization required";
-		// if (initialized)
-		// 	std::clog << " (" << delta << " seconds since last observation)";
-
-		// std::ofstream histf; // file for particles
-		// std::string fn = "HISTORY/" + id + ".csv";
-		// std::ifstream checkf (fn.c_str ());
-		// bool exists = checkf.good ();
-		// checkf.close ();
-		// histf.open (fn.c_str (), std::ios::app);
-		// if (!exists)
-		// 	histf << "particle_id,trip_id,timestamp,distance,event,parent,lh,wt\n";
-		// if (newtrip || !initialized) {
-		// 	// std::clog << "\n * Initializing particles: ";
-		//
-		// 	// Detect initial range of vehicle's "distance into trip"
-		// 	// -- just rough, so find points on the route within 100m of the GPS position
-		// 	std::vector<double> init_range {100000.0, 0.0};
-		// 	auto shape = trip->get_route ()->get_shape ();
-		// 	for (auto& p: shape->get_path ()) {
-		// 		if (p.pt.distanceTo(this->position) < 100.0) {
-		// 			double ds (p.dist_traveled);
-		// 			if (ds < init_range[0]) init_range[0] = ds;
-		// 			if (ds > init_range[1]) init_range[1] = ds;
-		// 		}
-		// 	}
-		// 	// printf("between %*.2f and %*.2f m", 8, init_range[0], 8, init_range[1]);
-		//
-		// 	if (this->position.distanceTo (shape->get_path ()[0].pt) < 50) {
-		// 		init_range[0] = 0;
-		// 		init_range[1] = 1;
-		// 	} else if (init_range[0] > init_range[1]) {
-		// 		// std::cout << "\n   -> unable to locate vehicle on route -> cannot initialize.";
-		// 		return;
-		// 	} else if (init_range[0] == init_range[1]) {
-		// 		init_range[0] = init_range[0] - 100;
-		// 		init_range[1] = init_range[1] + 100;
-		// 	}
-		// 	sampling::uniform udist (init_range[0], init_range[1]);
-		// 	sampling::uniform uspeed (2, 30);
-		// 	for (auto& p: particles) {
-		// 		p.initialize (udist, uspeed, rng);
-		// 		p.set_weight (1.0 / particles.size ());
-		//
-		// 		histf << p.get_id () << "," << trip->get_id () << ","
-		// 			<< timestamp << "," << p.get_distance () << ","
-		// 			<< "init" << ",,," << p.get_weight () << "\n";
-		// 	}
-		//
-		// 	initialized = true;
-		// 	return;
-		// }
-		//
-		// if (delta == 0) return;
-		// for (auto& p: particles) p.transition (rng, &histf);
-		//
-		// histf.close ();
-		//
-		// return;
 		//
 		// // No particles near? Oh ...
 		// // std::vector<double> lh;
@@ -324,6 +278,7 @@ namespace gtfs {
 		// 	for (auto& p: particles) p.set_weight (1.0 / particles.size ());
 		// 	std::cout << " (reweighted)";
 		// }
+
 		// std::cout << "\n---";
 	}
 
@@ -341,6 +296,7 @@ namespace gtfs {
 		// std::clog << "Updating vehicle location!\n";
 
 		newtrip = true;
+		updated = false;
 		if (vp.has_trip ()) { // TripDescriptor -> (trip_id, route_id)
 		  	if (vp.trip ().has_trip_id () && trip != nullptr)
 				newtrip = vp.trip ().trip_id () != trip->get_id ();
@@ -356,6 +312,7 @@ namespace gtfs {
 		}
 		if (vp.has_timestamp () && timestamp != vp.timestamp ()) {
 			timestamp = vp.timestamp ();
+			updated = true;
 		}
 	};
 
@@ -391,8 +348,8 @@ namespace gtfs {
 				if (stu.has_stop_sequence () && stu.stop_sequence () >= stop_sequence) {
 					if (stu.stop_sequence () > stop_sequence) {
 						// necessary to reset arrival/departure time if stop sequence is increased
-						arrival_time = 0;
-						departure_time = 0;
+						arrival_time = boost::none;
+						departure_time = boost::none;
 					}
 					stop_sequence = stu.stop_sequence ();
 					if (stu.has_arrival () && stu.arrival ().has_time ()) {
@@ -424,23 +381,21 @@ namespace gtfs {
 	 */
 	void Vehicle::resample (sampling::RNG &rng) {
 		// Re-sampler based on computed weights:
-		// std::vector<double> lh;
-		// lh.reserve (particles.size ());
-		// for (auto& p: particles) lh.push_back (exp(p.get_likelihood ()));
-		// // std::cout << " > Max likelihood: " << *std::max_element (lh.begin (), lh.end ());
-		// // if (*std::max_element (lh.begin (), lh.end ()) < exp(-10)) return;
-		//
-		// sampling::sample smp (lh);
-		// std::vector<int> pkeep (smp.get (n_particles, rng));
-		//
-		// // Move old particles into temporary holding vector
-		// std::vector<gtfs::Particle> old_particles = std::move(particles);
-		//
-		// // Copy new particles, incrementing their IDs (copy constructor does this)
-		// particles.reserve(n_particles);
-		// for (auto& i: pkeep) {
-		// 	particles.push_back(old_particles[i]);
-		// }
+		std::vector<double> lh;
+		lh.reserve (particles.size ());
+		for (auto& p: particles) lh.push_back (exp(p.get_likelihood ()));
+
+		sampling::sample smp (lh);
+		std::vector<int> pkeep (smp.get (n_particles, rng));
+
+		// Move old particles into temporary holding vector
+		std::vector<gtfs::Particle> old_particles = std::move(particles);
+
+		// Copy new particles, incrementing their IDs (copy constructor does this)
+		particles.reserve(n_particles);
+		for (auto& i: pkeep) {
+			particles.push_back(old_particles[i]);
+		}
 	};
 
 	/**
@@ -450,11 +405,12 @@ namespace gtfs {
 		// delta = 0;
 		// timestamp = 0;
 		// initialized = false;
-		// particles.clear ();
-		// particles.reserve(n_particles);
-		// for (unsigned int i=0; i<n_particles; i++) {
-		// 	particles.emplace_back(this);
-		// }
+		particles.clear ();
+		particles.reserve(n_particles);
+		for (unsigned int i=0; i<n_particles; i++) {
+			particles.emplace_back(this);
+		}
+		status = -1;
 	};
 
 }; // end namespace gtfs

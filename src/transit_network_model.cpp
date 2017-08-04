@@ -152,6 +152,11 @@ int main (int argc, char* argv[]) {
 	// 	etafile.close ();
 	// }
 
+	std::ofstream f; // file for particles
+	f.open ("particles.csv");
+	f << "vehicle_id,timestamp,particle_id,t,d,v\n";
+	f.close ();
+
 	time_t curtime;
 	while (forever) {
 		curtime = time (NULL);
@@ -202,17 +207,21 @@ int main (int argc, char* argv[]) {
 
 		{
 			time_start (clockstart, wallstart);
-			std::cout << "\n * Writing particles to CSV";
+			std::cout << "\n * Writing particles to CSV\n";
 			std::cout.flush ();
-			std::ofstream f; // file for particles
-			f.open ("particles.csv");
-			f << "vehicle_id,particle_id,t,d,v\n";
+			f.open ("particles.csv", std::ofstream::app);
+			int i=1;
 			for (auto& v: vehicles) {
+				printf("\rVehicle %*d of %d", 3, i, vehicles.bucket_count ());
+				std::cout.flush ();
+				i++;
 				for (auto& p: v.second->get_particles ()) {
+					if (rng.runif () < 0.9) continue;
 					for (unsigned k=0; k<p.get_trajectory ().size (); k++) {
 						f << v.second->get_id () << ","
+							<< v.second->get_timestamp () << ","
 							<< p.get_id () << ","
-							<< k << ","
+							<< p.get_start () + k << ","
 							<< p.get_distance (k) << ","
 							<< p.get_velocity (k) << "\n";
 					}
@@ -476,8 +485,8 @@ bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> >
 	sqlite3_stmt* tripskeep;
 	std::string qry = "SELECT trip_id FROM trips WHERE route_id IN "
 		"(SELECT route_id FROM routes WHERE route_short_name IN "
-		// "('274','277','224','222','258','NEX','129'))";
-		"('274'))";
+		"('274','277','224','222','258','NEX','129'))";
+		// "('274'))";
 	if (sqlite3_open (gtfs.get_dbname ().c_str (), &db)) {
 		std::cerr << "\n x oops...";
 	} else if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &tripskeep, 0) != SQLITE_OK) {

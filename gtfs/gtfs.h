@@ -160,6 +160,7 @@ namespace gtfs {
 		double approx_distance; /*!< approximate distance to determine if traveling correct direction */
 
 		int status = -1;    /*!< 0 = traveling normally; 1-3 = initializing stage; -1 = uninitialized; */
+		bool updated;  /*!< if true, need to run update/mutate */
 
         // std::vector<DwellTime> dwell_times;  /*!< vehicle's dwell times at stops */
         // std::vector<vTravelTime> travel_times; /*!< vehicle's travel times through segments */
@@ -184,6 +185,7 @@ namespace gtfs {
 		boost::optional<uint64_t> get_departure_time (void) const;
 		const gps::Coord& get_position (void) const;
 		uint64_t get_timestamp (void) const;
+		uint64_t get_first_obs (void) const;
 
 
 		// const std::vector<DwellTime>& get_dwell_times () const;
@@ -236,6 +238,8 @@ namespace gtfs {
 		bool has_parent (void) const;
 		unsigned long get_parent_id (void) const;
 
+		uint64_t get_start (void) const;
+		int get_latest (void) const;
 		std::vector<std::tuple<double,double> > get_trajectory (void) const;
 		double get_distance (uint64_t& t) const;
 		double get_distance (int k) const;
@@ -256,7 +260,7 @@ namespace gtfs {
 		// Methods
 		// void initialize (sampling::RNG& rng);
 		void initialize (double dist, sampling::RNG& rng);
-		void mutate (sampling::RNG& rng, std::ofstream* f);
+		void mutate (sampling::RNG& rng);
 		void calculate_likelihood (void);
 		void set_weight (double wt) { weight = wt; };
 
