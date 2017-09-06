@@ -60,6 +60,8 @@ namespace gtfs {
 
 		start = p.get_start ();
 		latest = p.get_latest ();
+		// only copy up to latest
+		// for (int i=0; i<=latest; i++) trajectory.emplace_back (p.get_distance (i), p.get_velocity (i));
 		trajectory = p.get_trajectory ();
 		stops = p.get_stops ();
 		segments = p.get_segments ();
@@ -110,7 +112,7 @@ namespace gtfs {
 
 	/** @return index of latest time point */
 	int Particle::get_latest (void) const {
-		return start;
+		return latest;
 	};
 
 	/** @return the particle's trajectory */
@@ -252,15 +254,34 @@ namespace gtfs {
 		double theta (20);
 		auto rtheta = sampling::exponential (1 / theta);
 
+		// std::vector<std::tuple<double,double> > newtraj;
+		// for (int i=0; i<=latest; i++) newtraj.push_back (trajectory[i]);
+		// trajectory.clear ();
+		// for (auto tr: newtraj) trajectory.push_back (tr);
+		// trajectory = newtraj;
+		// newtraj.clear ();
+
 		double d (get_distance (latest)), v (get_velocity (latest));
 		int J (stops.size ());
 		int L (segments.size ());
 		int j = 1, l = 1;
 		// quickly find which segment the start location is in=
-		while (stops[j].shape_dist_traveled <= d) j++;
-		while (segments[l].shape_dist_traveled <= d) l++;
+		while (stops[j].shape_dist_traveled <= d && j < J) j++;
+		while (segments[l].shape_dist_traveled <= d && l < L) l++;
 
 		// std::cout << "\n - stop " << j << " of " << J << ", segment " << l << " of " << L;
+
+		// Delete indices after latest
+		// trajectory.erase (trajectory.begin () + latest + 1, trajectory.end ());
+		if (latest < trajectory.size () - 1) {
+			for (int i=trajectory.size()-1; i>latest; i--) trajectory.pop_back ();
+		}
+		// while (trajectory.size () > latest+1) {
+		// 	trajectory.pop_back ();
+		// }
+
+		// std::cout << "\nParticle - trajectory length: " << trajectory.size ()
+		// 	<< ", latest = " << latest;
 
 		double dmax;
 		int pstops (-1); // does the particle stop at the next stop/intersection?
@@ -308,6 +329,8 @@ namespace gtfs {
 			trajectory.emplace_back (d, v);
 		}
 
+		// std::cout << " - done: length now " << trajectory.size ();
+
 	};
 
 	// /**
@@ -350,9 +373,12 @@ namespace gtfs {
 		double nllhood = 0.0;
 		double sigy   = 10.0;
 
+		// std::cout << "\n Start: " << start << "; ts: " << vehicle->get_timestamp ()
+			// << " -> ";
 		latest = vehicle->get_timestamp () - start;
 		if (latest < 0) latest = 0;
 		if (latest >= trajectory.size ()) latest = trajectory.size () - 1;
+		// std::cout << "latest = " << latest;
 
 		gps::Coord x = get_coords (
 			get_distance (latest),

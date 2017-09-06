@@ -21,8 +21,8 @@ plotVehicle <- function(vid, db, obs, wait = FALSE, ...) {
     mode(p$particle_id) <- "factor"
     p$timestamp <- as.POSIXct(as.numeric(p$timestamp), origin = "1970-01-01")
     p$t <- as.POSIXct(as.numeric(p$t), origin = "1970-01-01")
-    x <- ggplot(p) + #[p$t > p$timestamp, ]) +
-        geom_line(aes(t, d, group = particle_id, colour = timestamp), alpha = 0.4) +
+    x <- ggplot(p[p$t <= p$timestamp | p$timestamp == max(p$timestamp), ]) +
+        geom_line(aes(t, d, group = particle_id, colour = timestamp), alpha=0.3) +
         labs(x = "Time", y = "Distance (m)") +
         geom_hline(yintercept = max(p$d), linetype = 2, colour = "#cccccc") +
     ggtitle(vid)
@@ -37,12 +37,12 @@ plotVehicle <- function(vid, db, obs, wait = FALSE, ...) {
     invisible(p)
 }
 
-# pdb <- csv2db("../build/particles.csv")
-# vids <- dbGetQuery(pdb, "SELECT DISTINCT vehicle_id FROM particles")$vehicle_id
-#
-# invisible(sapply(vids, plotVehicle, db = pdb, wait = TRUE))
-#
-# p <- plotVehicle(vids[3], pdb)
+##pdb <- csv2db("../build/particles.csv")
+##vids <- dbGetQuery(pdb, "SELECT DISTINCT vehicle_id FROM particles")$vehicle_id
+
+invisible(sapply(vids, plotVehicle, db = pdb, wait = TRUE))
+
+## p <- plotVehicle(vids[3], pdb)
 
 
 
