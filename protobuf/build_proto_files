@@ -1,5 +1,0 @@
-#!/bin/sh
-
-protoc -I=. --cpp_out=. gtfs-realtime.proto
-protoc -I=. --cpp_out=. gtfs-eta.proto
-protoc -I=. --cpp_out=. gtfs-network.proto

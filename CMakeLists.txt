@@ -17,6 +17,7 @@ include_directories(${Boost_INCLUDE_DIR})
 
 find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIRS})
+add_subdirectory (proto)
 
 find_package(SQLite3 REQUIRED)
 include_directories(${SQLITE3_INCLUDE_DIR})
@@ -28,8 +29,6 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 include_directories(include)
 include_directories(libs)
 
-include_directories ("${PROJECT_SOURCE_DIR}/protobuf")
-add_subdirectory (protobuf)
 
 include_directories ("${PROJECT_SOURCE_DIR}/gps")
 add_subdirectory (gps)
@@ -42,9 +41,9 @@ add_subdirectory (gtfs)
 
 add_executable(transit_network_model src/transit_network_model.cpp ${PROTO_SRCS} ${PROTO_HDRS})
 target_link_libraries(transit_network_model
-	gtfs
-	gtfs-realtime
 	${PROTOBUF_LIBRARIES}
+	proto
+	gtfs
 	sampling
 	gps
 	Boost::program_options
@@ -77,5 +76,5 @@ if(CXXTEST_FOUND)
 	target_link_libraries(unittest_sampling sampling)
 
 	CXXTEST_ADD_TEST(unittest_gtfs test_gtfs.cpp ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_gtfs.h)
-	target_link_libraries(unittest_gtfs gtfs gtfs-realtime ${PROTOBUF_LIBRARIES} sampling gps ${SQLITE3_LIBRARY})
+	target_link_libraries(unittest_gtfs gtfs proto ${PROTOBUF_LIBRARIES} sampling gps ${SQLITE3_LIBRARY})
 endif()

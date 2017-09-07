@@ -187,6 +187,8 @@ namespace gtfs {
 		uint64_t get_timestamp (void) const;
 		uint64_t get_first_obs (void) const;
 
+		int get_status (void) const { return status; };
+
 
 		// const std::vector<DwellTime>& get_dwell_times () const;
 		// const DwellTime* get_dwell_time (unsigned i) const;

@@ -205,32 +205,32 @@ int main (int argc, char* argv[]) {
 			time_end (clockstart, wallstart);
 		}
 
-		{
-			time_start (clockstart, wallstart);
-			std::cout << "\n * Writing particles to CSV\n";
-			std::cout.flush ();
-			f.open ("particles.csv", std::ofstream::app);
-			int i=1;
-			for (auto& v: vehicles) {
-				printf("\rVehicle %*d of %d", 3, i, vehicles.bucket_count ());
-				std::cout.flush ();
-				i++;
-				for (auto& p: v.second->get_particles ()) {
-					if (rng.runif () < 0.95) continue;
-					for (unsigned k=0; k<p.get_trajectory ().size (); k++) {
-						f << v.second->get_id () << ","
-							<< v.second->get_timestamp () << ","
-							<< p.get_id () << ","
-							<< p.get_start () + k << ","
-							<< p.get_distance (k) << ","
-							<< p.get_velocity (k) << "\n";
-					}
-				}
-			}
-			f.close ();
-			std::cout << "\n";
-			time_end (clockstart, wallstart);
-		}
+		// {
+		// 	time_start (clockstart, wallstart);
+		// 	std::cout << "\n * Writing particles to CSV\n";
+		// 	std::cout.flush ();
+		// 	f.open ("particles.csv", std::ofstream::app);
+		// 	int i=1;
+		// 	for (auto& v: vehicles) {
+		// 		printf("\rVehicle %*d of %d", 3, i, vehicles.bucket_count ());
+		// 		std::cout.flush ();
+		// 		i++;
+		// 		for (auto& p: v.second->get_particles ()) {
+		// 			if (rng.runif () < 0.95) continue;
+		// 			for (unsigned k=0; k<p.get_trajectory ().size (); k++) {
+		// 				f << v.second->get_id () << ","
+		// 					<< v.second->get_timestamp () << ","
+		// 					<< p.get_id () << ","
+		// 					<< p.get_start () + k << ","
+		// 					<< p.get_distance (k) << ","
+		// 					<< p.get_velocity (k) << "\n";
+		// 			}
+		// 		}
+		// 	}
+		// 	f.close ();
+		// 	std::cout << "\n";
+		// 	time_end (clockstart, wallstart);
+		// }
 
 		// Update road segments -> Kalman filter
 		{
@@ -335,6 +335,46 @@ int main (int argc, char* argv[]) {
 			// time_end (clockstart, wallstart);
 		}
 
+		// Write vehicle positions to protobuf
+		// + ETAs in future
+		{
+			time_start (clockstart, wallstart);
+			std::cout << "\n * Writing to buffer ...";
+			std::cout.flush ();
+
+
+			transit_network::Feed feed;
+			for (auto& v: vehicles) {
+				if (!v.second->get_trip () || !v.second->get_status () < 0) continue;
+				transit_network::Vehicle* vehicle = feed.add_vehicles ();
+				vehicle->set_id (v.second->get_id ().c_str ());
+				vehicle->set_trip_id (v.second->get_trip ()->get_id ().c_str ());
+				transit_network::Position* pos = vehicle->mutable_pos ();
+				pos->set_lat (v.second->get_position ().lat);
+				pos->set_lng (v.second->get_position ().lng);
+
+
+				double dist = 0.0, speed = 0.0;
+				// for (auto& p: v.second->get_particles ()) {
+				// 	dist += p.get_distance ();
+				// 	speed += p.get_velocity ();
+				// }
+				pos->set_distance (dist / v.second->get_particles ().size ());
+				pos->set_speed (speed / v.second->get_particles ().size ());
+			}
+
+			std::fstream output ("networkstate.pb",
+								 std::ios::out | std::ios::trunc | std::ios::binary);
+			if (!feed.SerializeToOstream (&output)) {
+				std::cerr << "\n x Failed to write ETA feed.\n";
+			}
+
+			google::protobuf::ShutdownProtobufLibrary ();
+
+			std::cout << "\n";
+			time_end (clockstart, wallstart);
+		}
+
 		// Write ETAs to buffers
 		{
 			// time_start (clockstart, wallstart);
@@ -398,52 +438,6 @@ int main (int argc, char* argv[]) {
 			// time_end (clockstart, wallstart);
 		}
 
-		// Write results to CSV files
-		if (csvout > 0) {
-			// time_start (clockstart, wallstart);
-			// std::cout << "\n * Writing particles to CSV ...";
-			// std::cout.flush ();
-			// std::ofstream particlefile; // file for particles
-			// std::ofstream etafile;      // file for particles/stop ETAs
-			// if (csvout == 1) {
-			// 	system("rm -f PARTICLES.csv ETAS.csv");
-			// 	particlefile.open ("PARTICLES.csv");
-			// 	particlefile << "vehicle_id,particle_id,timestamp,trip_id,route_id,distance,velocity,parent_id,lat,lng,lh,wt,init\n";
-			// 	etafile.open ("ETAS.csv");
-			// 	etafile << "vehicle_id,particle_id,stop_sequence,eta\n";
-			// } else {
-			// 	particlefile.open ("PARTICLES.csv", std::ofstream::app);
-			// 	etafile.open ("ETAS.csv", std::ofstream::app);
-			// }
-			// for (auto& v: vehicles) {
-			// 	if (!v.second->get_trip ()) continue;
-			// 	auto shape = v.second->get_trip ()->get_route ()->get_shape ();
-			// 	for (auto& p: v.second->get_particles ()) {
-			// 		auto pos = gtfs::get_coords (p.get_distance (), shape);
-			// 		particlefile << std::setprecision(8)
-			// 			<< v.second->get_id () << "," << p.get_id () << ","
-			// 		 	<< v.second->get_timestamp () << "," << v.second->get_trip ()->get_id () << ","
-			// 			<< v.second->get_trip ()->get_route ()->get_id () << ","
-			// 			<< p.get_distance () << "," << p.get_velocity () << ","
-			// 			<< p.get_parent_id () << "," << pos.lat << "," << pos.lng << ","
-			// 			<< p.get_likelihood ()  << "," << p.get_weight () << ","
-			// 			<< v.second->is_initialized () << "\n";
-			// 		if (p.get_etas ().size () > 0) {
-			// 			for (unsigned int i=0; i<p.get_etas ().size (); i++) {
-			// 				if (p.get_eta (i) && p.get_eta (i) > 0) {
-			// 					etafile
-			// 						<< v.second->get_id () << "," << p.get_id () << ","
-			// 						<< (i+1) << "," << p.get_eta (i) << "\n";
-			// 				}
-			// 			}
-			// 		}
-			// 	}
-			// }
-			// particlefile.close ();
-			// etafile.close ();
-			// std::cout << "\n";
-			// time_end (clockstart, wallstart);
-		}
 
 		if (forever) std::this_thread::sleep_for (std::chrono::milliseconds (10 * 1000));
 	}

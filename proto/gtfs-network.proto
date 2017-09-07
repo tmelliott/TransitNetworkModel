@@ -1,0 +1,93 @@
+// All the data for the display
+
+syntax = "proto2";
+
+package transit_network;
+
+message Feed {
+    // the state of the entire network
+    optional Status status = 1;
+
+    // vehicle locations + delays
+	repeated Vehicle vehicles = 2;
+
+    // history of network state
+    repeated State history = 3;
+    // smoothed history
+    repeated State trace = 4;
+}
+
+message Status {
+    // > 5min early
+    optional int32 earlier = 1;
+    // 1-5min early
+    optional int32 early = 2;
+    // 1min early - 5min late
+    optional int32 ontime = 3;
+    // 5-10 min late
+    optional int32 late = 4;
+    // 10-20 min late
+    optional int32 later = 5;
+    // 20-30 min late
+    optional int32 quitelate = 6;
+    // 30+ min late
+    optional int32 verylate = 7;
+    // no delay info
+    optional int32 missing = 8;
+}
+
+message Vehicle {
+    enum DelayType {
+        ARRIVAL = 0;
+        DEPARTURE = 1;
+    }
+
+    // vehicle ID for referencing it
+    required string id = 1;
+
+	// position of vehicle
+    optional Position pos = 2;
+
+	// current delay
+    optional int32 delay = 3;
+
+	// delay type
+    optional DelayType type = 4;
+
+	// timestamp
+    required uint64 timestamp = 5;
+
+	// ETA and route info
+	repeated ETA etas = 6;
+	optional string trip_id = 7;
+}
+
+message Position {
+	// The position of a bus, + estimated state (distance + speed)
+	required double lat = 1;
+	required double lng = 2;
+	optional double distance = 3;
+	optional double speed = 4;
+}
+
+message ETA {
+	// Info about upcoming ETAs
+	required uint32 stop_seq = 1;
+	required string stop_id = 2;
+	// Point estimate of arrial time
+	optional uint64 est = 3;
+	// Min/Max arrival times (in minutes!), as ETA = est + min/max
+	optional int32 min = 4;
+	optional int32 max = 5;
+}
+
+message State {
+    required uint64 timestamp = 1;
+    required double earlier = 2;
+    optional double early = 3;
+    optional double ontime = 4;
+    optional double late = 5;
+    optional double later = 6;
+    optional double quitelate = 7;
+    optional double verylate = 8;
+}

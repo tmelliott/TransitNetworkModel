@@ -1,5 +1,6 @@
 
-default: build protofiles
+default: build
+	# protofiles
 	cd build && cmake ..
 
 build:
@@ -12,8 +13,8 @@ docs: $(FILES)
 clean:
 	rm -rf build *.pb
 
-protofiles: 
-	cd protobuf && ./build_proto_files
+# protofiles:
+	# cd protobuf && ./build_proto_files
 
 protoc: build/protobuf
 	sudo apt-get install autoconf automake libtool curl make g++ unzip
