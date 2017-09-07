@@ -1,9 +1,9 @@
 library(RSQLite)
 library(ggplot2)
 
-csv2db <- function(f, db = tempfile(fileext = ".db")) {
+csv2db <- function(f, db = tempfile(fileext = ".db", tmpdir = "~/tmp")) {
     ## write the csv file f to a database, and return connection
-    t <- tempfile(fileext = ".sql")
+    t <- tempfile(fileext = ".sql", tmpdir = "~/tmp")
     cat(file = t, sep = "",
         ".mode csv\n",
         ".import ", f, " particles")
