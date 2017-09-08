@@ -122,7 +122,7 @@ namespace gtfs {
 
 	/**
 	 * Computes the particle's distance into trip at the given time point.
-	 * @param  t time (since start)
+	 * @param  t time
 	 * @return   the distance into trip (meters)
 	 */
 	double Particle::get_distance (uint64_t& t) const {
@@ -131,15 +131,25 @@ namespace gtfs {
 		return std::get<0> (trajectory[k]);
 	};
 
+	/**
+	* Computes the particle's distance into trip at the given time point.
+	* @param  k time (since start)
+	* @return   the distance into trip (meters)
+	*/
 	double Particle::get_distance (int k) const {
 		if (k < 0) k = 0;
 		if (k > trajectory.size ()) k = trajectory.size () - 1;
 		return std::get<0> (trajectory[k]);
 	};
 
+	// /** @return the distance into trip of particle at latest update */
+	// double Particle::get_distance (void) const {
+	// 	return get_distance (latest);
+	// };
+
 	/**
 	 * Computes the particle's velocity at the given time point.
-	 * @param  t time (since start)
+	 * @param  t time
 	 * @return   the velocity (meters per second)
 	 */
 	double Particle::get_velocity (uint64_t& t) const {
@@ -148,11 +158,21 @@ namespace gtfs {
 		return std::get<1> (trajectory[k]);
 	};
 
+	/**
+	* Computes the particle's velocity at the given time point.
+	* @param  k time (since start)
+	* @return   the velocity (meters per second)
+	*/
 	double Particle::get_velocity (int k) const {
 		if (k < 0) k = 0;
 		if (k > trajectory.size ()) k = trajectory.size () - 1;
 		return std::get<1> (trajectory[k]);
 	};
+
+	// /** @return the particle's speed at latest update */
+	// double Particle::get_velocity (void) const {
+	// 	return get_velocity (latest);
+	// };
 
 	/** @return the stops (arrival and dwell times) */
 	std::vector<std::tuple<int,int>> Particle::get_stops (void) const {

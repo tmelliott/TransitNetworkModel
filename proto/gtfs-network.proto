@@ -6,7 +6,7 @@ package transit_network;
 
 message Feed {
     // the state of the entire network
-    optional Status status = 1;
+    required Status status = 1;
 
     // vehicle locations + delays
 	repeated Vehicle vehicles = 2;

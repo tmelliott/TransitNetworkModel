@@ -154,6 +154,7 @@ namespace gtfs {
 		boost::optional<unsigned> stop_sequence;     /*!< the stop number of the last visited stop */
 		boost::optional<uint64_t> arrival_time;   /*!< arrival time at last stop */
 		boost::optional<uint64_t> departure_time; /*!< departure time at last stop */
+		boost::optional<int> delay; /*!< arrival/departure delay at most recent stop */
 		gps::Coord position;     /*!< last reported GPS position */
 		uint64_t timestamp;      /*!< time of last (position) observation */
 		uint64_t first_obs;      /*!< the time of the first observation for that trip; used to pin down start time */
@@ -183,6 +184,7 @@ namespace gtfs {
 		boost::optional<unsigned> get_stop_sequence (void) const;
 		boost::optional<uint64_t> get_arrival_time (void) const;
 		boost::optional<uint64_t> get_departure_time (void) const;
+		boost::optional<int> get_delay (void) const;
 		const gps::Coord& get_position (void) const;
 		uint64_t get_timestamp (void) const;
 		uint64_t get_first_obs (void) const;
@@ -245,8 +247,10 @@ namespace gtfs {
 		std::vector<std::tuple<double,double> > get_trajectory (void) const;
 		double get_distance (uint64_t& t) const;
 		double get_distance (int k) const;
+		// double get_distance (void) const;
 		double get_velocity (uint64_t& t) const;
 		double get_velocity (int k) const;
+		// double get_velocity (void) const;
 		std::vector<std::tuple<int,int>> get_stops (void) const;
 		std::vector<std::tuple<int,int>> get_segments (void) const;
 

@@ -87,6 +87,10 @@ namespace gtfs {
 	boost::optional<uint64_t> Vehicle::get_departure_time (void) const {
 		return departure_time;
 	};
+	/** @return delay at last stop */
+	boost::optional<int> Vehicle::get_delay (void) const {
+		return delay;
+	};
 
 	/** @return the time the observation was last taken */
 	uint64_t Vehicle::get_timestamp (void) const {
@@ -354,9 +358,11 @@ namespace gtfs {
 					stop_sequence = stu.stop_sequence ();
 					if (stu.has_arrival () && stu.arrival ().has_time ()) {
 						arrival_time = stu.arrival ().time ();
+						if (stu.arrival ().has_delay ()) delay = stu.arrival ().delay ();
 					}
 					if (stu.has_departure () && stu.departure ().has_time ()) {
 						departure_time = stu.departure ().time ();
+						if (stu.departure ().has_delay ()) delay = stu.departure ().delay ();
 					}
 				}
 			}

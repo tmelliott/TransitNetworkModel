@@ -342,25 +342,40 @@ int main (int argc, char* argv[]) {
 			std::cout << "\n * Writing to buffer ...";
 			std::cout.flush ();
 
-
 			transit_network::Feed feed;
+			transit_network::Status* nw = feed.mutable_status ();
+			nw->set_ontime (0);
+
 			for (auto& v: vehicles) {
-				if (!v.second->get_trip () || !v.second->get_status () < 0) continue;
+				if (!v.second->get_trip () || v.second->get_status () < 0) continue;
 				transit_network::Vehicle* vehicle = feed.add_vehicles ();
 				vehicle->set_id (v.second->get_id ().c_str ());
 				vehicle->set_trip_id (v.second->get_trip ()->get_id ().c_str ());
+				vehicle->set_timestamp (v.second->get_timestamp ());
+
+				if (v.second->get_delay ()) vehicle->set_delay (v.second->get_delay ().get ());
+
+
+
 				transit_network::Position* pos = vehicle->mutable_pos ();
 				pos->set_lat (v.second->get_position ().lat);
 				pos->set_lng (v.second->get_position ().lng);
 
-
-				double dist = 0.0, speed = 0.0;
-				// for (auto& p: v.second->get_particles ()) {
-				// 	dist += p.get_distance ();
-				// 	speed += p.get_velocity ();
-				// }
-				pos->set_distance (dist / v.second->get_particles ().size ());
-				pos->set_speed (speed / v.second->get_particles ().size ());
+				double dist = 0.0;//, speed = 0.0;
+				int Np = 0;
+				std::clog << "\n Vehicle " << v.second->get_id ()
+					<< ": ";
+				for (auto& p: v.second->get_particles ()) {
+					if (p.get_trajectory ().size () == 0) continue;
+					Np++;
+					dist += p.get_distance (p.get_latest ());
+					// speed += p.get_velocity (p.get_latest ());
+				}
+				if (Np > 0) {
+					std::clog << " d=" << dist/Np;// << ", v=" << speed/Np;
+					pos->set_distance (dist / Np);
+					// pos->set_speed (speed / Np);
+				}
 			}
 
 			std::fstream output ("networkstate.pb",
