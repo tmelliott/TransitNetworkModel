@@ -14,18 +14,24 @@ csv2db <- function(f, db = tempfile(fileext = ".db", tmpdir = "~/tmp")) {
 }
 
 plotVehicle <- function(vid, db, obs, wait = FALSE, ...) {
-    pq <- dbSendQuery(db, "SELECT particle_id, timestamp, t, CAST(d AS REAL) AS d FROM particles WHERE vehicle_id=? ORDER BY particle_id, t")
+    pq <- dbSendQuery(db, "SELECT particle_id, trip_id, timestamp, t, CAST(d AS REAL) AS d FROM particles WHERE vehicle_id=? ORDER BY particle_id, t")
     dbBind(pq, list(vid))
     p <- dbFetch(pq)
     dbClearResult(pq)
+    c2 <- dbConnect(SQLite(), "../gtfs.db")
+    stopq <- dbSendQuery(c2, "SELECT arrival_time, shape_dist_traveled FROM stop_times WHERE trip_id=? ORDER BY stop_sequence")
+    dbBind(stopq, list(p$trip_id[nrow(p)]))
+    stops <- dbFetch(stopq)
+    dbClearResult(stopq)
     mode(p$particle_id) <- "factor"
     p$timestamp <- as.POSIXct(as.numeric(p$timestamp), origin = "1970-01-01")
     p$t <- as.POSIXct(as.numeric(p$t), origin = "1970-01-01")
     x <- ggplot(p[p$t <= p$timestamp | p$timestamp == max(p$timestamp), ]) +
         geom_line(aes(t, d, group = particle_id, colour = timestamp), alpha=0.3) +
         labs(x = "Time", y = "Distance (m)") +
-        geom_hline(yintercept = max(p$d), linetype = 2, colour = "#cccccc") +
-    ggtitle(vid)
+        ylim(c(0, max(stops$shape_dist_traveled))) + 
+        geom_hline(yintercept = max(stops$shape_dist_traveled), linetype = 2, colour = "#cccccc") + 
+        ggtitle(vid)
     if (!missing(obs)) {
         x <- x + geom_point(aes(obs$t, obs$d), col = "#bb0000", size = 0.5)
     }

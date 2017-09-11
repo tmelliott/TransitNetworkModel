@@ -221,13 +221,13 @@ namespace gtfs {
 
 		uint64_t start;                    /*!< start time; trajectory indices are seconds after this */
 		int latest = 0;                    /*!< index of the latest position update; only adjust trajectory after this */
-        std::vector<double> trajectory;       /*!< particle's distance trajectory, from 0 seconds into trip until end */
+        std::vector<double> trajectory;    /*!< particle's distance trajectory, from 0 seconds into trip until end */
         std::vector<std::tuple<int,int>> stops;        /*!< [arrival,dwell] time at each stop along route */
         std::vector<std::tuple<int,int>> segments;     /*!< [queue,travel] time at each intersection/segment along route */
 
-		double velocity;            /*!< the particles velocity at latest time */
-		double log_likelihood = 0;  /*!< the likelihood of the particle, given the data */
-		double weight;              /*!< the weight of this particle (reset to null after resample) */
+		double velocity = 0.0;       /*!< the particles velocity at latest time */
+		double log_likelihood = 0.0; /*!< the likelihood of the particle, given the data */
+		double weight;               /*!< the weight of this particle (reset to null after resample) */
 
 	public:
 		Vehicle* vehicle;  /*!< pointer to the vehicle that owns this particle */
@@ -246,11 +246,9 @@ namespace gtfs {
 		uint64_t get_start (void) const;
 		int get_latest (void) const;
 		std::vector<double> get_trajectory (void) const;
-		double get_distance (uint64_t& t) const;
-		double get_distance (int k) const;
-		// double get_distance (void) const;
-		// double get_velocity (uint64_t& t) const;
-		// double get_velocity (int k) const;
+		// double get_distance (uint64_t& t) const;
+		// double get_distance (int k) const;
+		double get_distance (void) const;
 		double get_velocity (void) const;
 		std::vector<std::tuple<int,int>> get_stops (void) const;
 		std::vector<std::tuple<int,int>> get_segments (void) const;
@@ -267,7 +265,8 @@ namespace gtfs {
 		// Methods
 		// void initialize (sampling::RNG& rng);
 		void initialize (double dist, sampling::RNG& rng);
-		void mutate (sampling::RNG& rng);
+		void mutate ( sampling::RNG& rng );
+		void mutate ( sampling::RNG& rng, double );
 		void calculate_likelihood (void);
 		void set_weight (double wt) { weight = wt; };
 

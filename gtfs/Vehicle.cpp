@@ -145,9 +145,14 @@ namespace gtfs {
 				// just rolling along nicely - update + mutate
 				std::cout << "\n + In progress";
 
-				for (auto& p: particles) p.calculate_likelihood ();
-				resample (rng);
 				for (auto& p: particles) p.mutate (rng);
+				double lmax = -INFINITY;
+				for (auto& p: particles) {
+					p.calculate_likelihood ();
+					lmax = fmax(lmax, p.get_likelihood ());
+				}
+				std::cout << "\n > Max Likelihood = " << lmax;
+				resample (rng);
 
 				break;
 			}
@@ -160,9 +165,14 @@ namespace gtfs {
 				// - else mutate + update; decrease state=2
 				std::cout << "\n + Case " << status;
 
-				for (auto& p: particles) p.calculate_likelihood ();
-				resample (rng);
 				for (auto& p: particles) p.mutate (rng);
+				double lmax = -INFINITY;
+				for (auto& p: particles) {
+					p.calculate_likelihood ();
+					lmax = fmax(lmax, p.get_likelihood ());
+				}
+				std::cout << "\n > Max Likelihood = " << lmax;
+				resample (rng);
 
 				bool allok = true;
 				// do checking

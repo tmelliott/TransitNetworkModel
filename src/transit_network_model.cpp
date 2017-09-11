@@ -154,7 +154,7 @@ int main (int argc, char* argv[]) {
 
 	std::ofstream f; // file for particles
 	f.open ("particles.csv");
-	f << "vehicle_id,timestamp,particle_id,t,d,v\n";
+	f << "vehicle_id,trip_id,timestamp,particle_id,t,d\n";
 	f.close ();
 
 	time_t curtime;
@@ -205,32 +205,32 @@ int main (int argc, char* argv[]) {
 			time_end (clockstart, wallstart);
 		}
 
-		// {
-		// 	time_start (clockstart, wallstart);
-		// 	std::cout << "\n * Writing particles to CSV\n";
-		// 	std::cout.flush ();
-		// 	f.open ("particles.csv", std::ofstream::app);
-		// 	int i=1;
-		// 	for (auto& v: vehicles) {
-		// 		printf("\rVehicle %*d of %d", 3, i, vehicles.bucket_count ());
-		// 		std::cout.flush ();
-		// 		i++;
-		// 		for (auto& p: v.second->get_particles ()) {
-		// 			if (rng.runif () < 0.95) continue;
-		// 			for (unsigned k=0; k<p.get_trajectory ().size (); k++) {
-		// 				f << v.second->get_id () << ","
-		// 					<< v.second->get_timestamp () << ","
-		// 					<< p.get_id () << ","
-		// 					<< p.get_start () + k << ","
-		// 					<< p.get_distance (k) << ","
-		// 					<< p.get_velocity (k) << "\n";
-		// 			}
-		// 		}
-		// 	}
-		// 	f.close ();
-		// 	std::cout << "\n";
-		// 	time_end (clockstart, wallstart);
-		// }
+		{
+			time_start (clockstart, wallstart);
+			std::cout << "\n * Writing particles to CSV\n";
+			std::cout.flush ();
+			f.open ("particles.csv", std::ofstream::app);
+			int i=1;
+			for (auto& v: vehicles) {
+				printf("\rVehicle %*d of %d", 3, i, vehicles.bucket_count ());
+				std::cout.flush ();
+				i++;
+				for (auto& p: v.second->get_particles ()) {
+					if (rng.runif () < 0.95) continue;
+					for (unsigned k=0; k<p.get_trajectory ().size (); k++) {
+						f << v.second->get_id () << ","
+							<< v.second->get_trip ()->get_id () << ","
+							<< v.second->get_timestamp () << ","
+							<< p.get_id () << ","
+							<< p.get_start () + k << ","
+							<< p.get_trajectory ()[k] << "\n";
+					}
+				}
+			}
+			f.close ();
+			std::cout << "\n";
+			time_end (clockstart, wallstart);
+		}
 
 		// Update road segments -> Kalman filter
 		{
@@ -365,16 +365,16 @@ int main (int argc, char* argv[]) {
 
 				double dist = 0.0;//, speed = 0.0;
 				int Np = 0;
-				std::clog << "\n Vehicle " << v.second->get_id ()
-					<< ": ";
+				// std::clog << "\n Vehicle " << v.second->get_id ()
+				// 	<< ": ";
 				for (auto& p: v.second->get_particles ()) {
 					if (p.get_trajectory ().size () == 0) continue;
 					Np++;
-					dist += p.get_distance (p.get_latest ());
+					dist += p.get_distance ();
 					// speed += p.get_velocity (p.get_latest ());
 				}
 				if (Np > 0) {
-					std::clog << " d=" << dist/Np;// << ", v=" << speed/Np;
+					// std::clog << " d=" << dist/Np;// << ", v=" << speed/Np;
 					pos->set_distance (dist / Np);
 					// pos->set_speed (speed / Np);
 				}
