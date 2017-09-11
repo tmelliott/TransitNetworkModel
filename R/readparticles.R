@@ -43,9 +43,8 @@ plotVehicle <- function(vid, db, obs, wait = FALSE, ...) {
     invisible(p)
 }
 
-##pdb <- csv2db("../build/particles.csv")
-##vids <- dbGetQuery(pdb, "SELECT DISTINCT vehicle_id FROM particles")$vehicle_id
-
+pdb <- csv2db("../build/particles.csv")
+vids <- dbGetQuery(pdb, "SELECT DISTINCT vehicle_id FROM particles")$vehicle_id
 invisible(sapply(vids, plotVehicle, db = pdb, wait = TRUE))
 
 ## p <- plotVehicle(vids[3], pdb)

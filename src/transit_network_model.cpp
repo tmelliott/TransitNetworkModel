@@ -205,7 +205,7 @@ int main (int argc, char* argv[]) {
 			time_end (clockstart, wallstart);
 		}
 
-		{
+		if (false) {
 			time_start (clockstart, wallstart);
 			std::cout << "\n * Writing particles to CSV\n";
 			std::cout.flush ();
@@ -496,8 +496,8 @@ bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> >
 	sqlite3_stmt* tripskeep;
 	std::string qry = "SELECT trip_id FROM trips WHERE route_id IN "
 		"(SELECT route_id FROM routes WHERE route_short_name IN "
-		"('274','277','224','222','258','NEX','129'))";
-		// "('274'))";
+		// "('274','277','224','222','258','NEX','129'))";
+		"('274'))";
 	if (sqlite3_open (gtfs.get_dbname ().c_str (), &db)) {
 		std::cerr << "\n x oops...";
 	} else if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &tripskeep, 0) != SQLITE_OK) {
