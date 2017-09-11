@@ -225,6 +225,7 @@ namespace gtfs {
 					for (auto& p: particles) p.initialize (udist.rand (rng), rng);
 					status = 3;
 				}
+				for (auto& p: particles) p.calculate_likelihood ();
 				break;
 			}
 		}

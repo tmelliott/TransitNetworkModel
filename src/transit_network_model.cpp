@@ -282,7 +282,9 @@ int main (int argc, char* argv[]) {
 			// 		for (unsigned j=0; j<tts.size (); j++) ttvar += wts[j] * pow(tts[j] - ttmean, 2);
 			// 		// double ttmean = std::accumulate(tts.begin (), tts.end (), 0.0) / tts.size ();
 			// 		// double sqdiff = 0;
-			// 		// for (auto& t: tts) sqdiff += pow(t - ttmean, 2);
+			// 		// for (aut trajectory length: " << trajectory.size ()
+		// 	<< ", latest = " << latest << ", DMAX = " << Dmax
+		// 	<< " ==> distance = " <<o& t: tts) sqdiff += pow(t - ttmean, 2);
 			// 		// double var = sqdiff / tts.size ();
 			// 		// std::cout << "\n + Segment " << i << ": " << ttmean << " (" << sqrt(var) << ")";
 			// 		segi->add_data (ttmean, ttvar);

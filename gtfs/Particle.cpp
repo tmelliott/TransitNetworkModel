@@ -63,6 +63,7 @@ namespace gtfs {
 		// only copy up to latest
 		// for (int i=0; i<=latest; i++) trajectory.emplace_back (p.get_distance (i), p.get_velocity (i));
 		trajectory = p.get_trajectory ();
+		velocity = p.get_velocity ();
 		stops = p.get_stops ();
 		segments = p.get_segments ();
 		log_likelihood = p.get_likelihood ();
@@ -116,7 +117,7 @@ namespace gtfs {
 	};
 
 	/** @return the particle's trajectory */
-	std::vector<std::tuple<double,double>> Particle::get_trajectory (void) const {
+	std::vector<double> Particle::get_trajectory (void) const {
 		return trajectory;
 	};
 
@@ -128,7 +129,7 @@ namespace gtfs {
 	double Particle::get_distance (uint64_t& t) const {
 		unsigned k = std::max(0, (int)(t - start));
 		if (k >= trajectory.size ()) k = trajectory.size () - 1;
-		return std::get<0> (trajectory[k]);
+		return trajectory[k];
 	};
 
 	/**
@@ -139,7 +140,7 @@ namespace gtfs {
 	double Particle::get_distance (int k) const {
 		if (k < 0) k = 0;
 		if (k > trajectory.size ()) k = trajectory.size () - 1;
-		return std::get<0> (trajectory[k]);
+		return trajectory[k];
 	};
 
 	// /** @return the distance into trip of particle at latest update */
@@ -148,25 +149,14 @@ namespace gtfs {
 	// };
 
 	/**
-	 * Computes the particle's velocity at the given time point.
-	 * @param  t time
-	 * @return   the velocity (meters per second)
-	 */
-	double Particle::get_velocity (uint64_t& t) const {
-		unsigned k = std::max(0, (int)(t - start));
-		if (k >= trajectory.size ()) k = trajectory.size () - 1;
-		return std::get<1> (trajectory[k]);
-	};
-
-	/**
 	* Computes the particle's velocity at the given time point.
 	* @param  k time (since start)
 	* @return   the velocity (meters per second)
 	*/
-	double Particle::get_velocity (int k) const {
-		if (k < 0) k = 0;
-		if (k > trajectory.size ()) k = trajectory.size () - 1;
-		return std::get<1> (trajectory[k]);
+	double Particle::get_velocity (void) const {
+		// begining/end of trip, velocity is 0
+		if (latest <= 0 || latest >= trajectory.size ()-1) return 0.0;
+		return trajectory[latest] - trajectory[latest-1];
 	};
 
 	// /** @return the particle's speed at latest update */
@@ -205,7 +195,8 @@ namespace gtfs {
 	void Particle::initialize (double dist, sampling::RNG& rng) {
 
 		trajectory.clear ();
-		trajectory.emplace_back (0, 0);
+		trajectory.emplace_back (0);
+		// velocity = 0;
 		int wait (sampling::exponential (1.0 / 20.0).rand (rng));
 		if (dist == 0.0) {
 			if (vehicle->get_stop_sequence () &&
@@ -226,7 +217,7 @@ namespace gtfs {
 			}
 		}
 		while (wait > 0) {
-			trajectory.emplace_back (0, 0);
+			trajectory.emplace_back (0);
 			wait--;
 		}
 		latest = 0;
@@ -281,7 +272,7 @@ namespace gtfs {
 		// trajectory = newtraj;
 		// newtraj.clear ();
 
-		double d (get_distance (latest)), v (get_velocity (latest));
+		double d (get_distance (latest));
 		int J (stops.size ());
 		int L (segments.size ());
 		int j = 1, l = 1;
@@ -290,22 +281,21 @@ namespace gtfs {
 		while (segments[l].shape_dist_traveled <= d && l < L) l++;
 
 		// std::cout << "\n - stop " << j << " of " << J << ", segment " << l << " of " << L;
+		// for (auto s: stops) std::cout << "\n+ Stop is " << s.shape_dist_traveled << "m into trip";
 
 		// Delete indices after latest
-		// trajectory.erase (trajectory.begin () + latest + 1, trajectory.end ());
 		if (latest < trajectory.size () - 1) {
 			for (int i=trajectory.size()-1; i>latest; i--) trajectory.pop_back ();
 		}
-		// while (trajectory.size () > latest+1) {
-		// 	trajectory.pop_back ();
-		// }
 
 		// std::cout << "\nParticle - trajectory length: " << trajectory.size ()
-		// 	<< ", latest = " << latest;
+		// 	<< ", latest = " << latest << ", DMAX = " << Dmax
+		// 	<< " ==> distance = " << trajectory.back () << " , speed = " << velocity;
 
 		double dmax;
+		double v = get_velocity ();
 		int pstops (-1); // does the particle stop at the next stop/intersection?
-		while (std::get<0> (trajectory.back ()) < Dmax) {
+		while (trajectory.back () < Dmax) {
 			// figure out dmax at the start of each step
 			if (l < L && segments[l].shape_dist_traveled < stops[j].shape_dist_traveled) {
 				dmax = segments[l].shape_dist_traveled;
@@ -319,11 +309,12 @@ namespace gtfs {
 			if (pstops == 1 && vmax < Vmax) {
 				v = sampling::uniform (vmin, vmax).rand (rng);
 			} else {
-				double vel = INFINITY;
+				std::cout.flush ();
 				auto rnorm = sampling::normal (v, sigmav);
 				v = rnorm.rand (rng);
-				while (v < vmin || v > Vmax)
+				while (v < vmin || v > Vmax) {
 					v = rnorm.rand (rng);
+				}
 			}
 			d += v; // dt = 1 second every time
 
@@ -341,12 +332,12 @@ namespace gtfs {
 					wait += pstops * (gamma + rtau.rand (rng));
 				}
 				while (wait > 0) {
-					trajectory.emplace_back (d, v);
+					trajectory.push_back (d);
 					wait--;
 				}
 				pstops = -1;
 			}
-			trajectory.emplace_back (d, v);
+			trajectory.push_back (d);
 		}
 
 		// std::cout << " - done: length now " << trajectory.size ();
@@ -439,7 +430,9 @@ namespace gtfs {
 		// 		->get_segments ()[segment_index].segment->get_from ()->get_pos ();
 		// 	auto B2 = get_coords (dx - epsI,
 		// 						  vehicle->get_trip ()->get_route ()->get_shape ());
-		// 	double a12 = vehicle->get_position ().alongTrackDistance (B1, B2);
+		// 	double 		// while (trajectory.size () > latest+1) {
+		// 	trajectory.pop_back ();
+		// }a12 = vehicle->get_position ().alongTrackDistance (B1, B2);
 		// 	double a21 = vehicle->get_position ().alongTrackDistance (B2, B1);
 		// 	if (a12 <= epsI && a21 <= epsI &&
 		// 		vehicle->get_position ().crossTrackDistanceTo (B1, B2) <= epsI) {
