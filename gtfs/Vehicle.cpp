@@ -137,8 +137,9 @@ namespace gtfs {
 	 * @param rng A random number generator
 	 */
 	void Vehicle::update ( sampling::RNG& rng ) {
-		std::cout << "\n - Updating vehicle " << id << ":";
 		if (!updated) return;
+		std::cout << "\n - Updating vehicle " << id << ":";
+		updated = false;
 		if (newtrip) status = -1;
 		switch (status) {
 			case 0:
@@ -146,16 +147,35 @@ namespace gtfs {
 				// just rolling along nicely - update + mutate
 				std::cout << "\n + In progress";
 
+				double dbar = 0.0;
+				for (auto& p: particles) dbar += p.get_distance ();
+				dbar = dbar / particles.size ();
+				std::cout << " - from " << dbar;
+
 				for (auto& p: particles) p.mutate (rng);
+
+				dbar = 0.0;
+				for (auto& p: particles) dbar += p.get_distance ();
+				dbar = dbar / particles.size ();
+				std::cout << "m to " << dbar << "m";
+
 				double lmax = -INFINITY;
 				for (auto& p: particles) {
 					p.calculate_likelihood ();
 					lmax = fmax(lmax, p.get_likelihood ());
 				}
 				std::cout << "\n > Max Likelihood = " << lmax;
-				resample (rng);
-
-				break;
+				if (lmax < -20) {
+					status = -1;
+					reset ();
+				} else {
+					resample (rng);
+					dbar = 0.0;
+					for (auto& p: particles) dbar += p.get_distance ();
+					dbar = dbar / particles.size ();
+					std::cout << "m to " << dbar << "m";
+					break;
+				}
 			}
 			case 1:
 			case 2:
@@ -173,7 +193,12 @@ namespace gtfs {
 					lmax = fmax(lmax, p.get_likelihood ());
 				}
 				std::cout << "\n > Max Likelihood = " << lmax;
-				resample (rng);
+				if (lmax < -20) {
+					status = -1;
+					reset ();
+				} else {
+					resample (rng);
+				}
 
 				bool allok = true;
 				// do checking
