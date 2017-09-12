@@ -97,6 +97,11 @@ namespace gtfs {
 		return timestamp;
 	};
 
+	/** @return the time since the previous observation */
+	int Vehicle::get_delta (void) const {
+		return delta;
+	};
+
 	/** @return the timestamp of the first observation (of trip beginning...) */
 	uint64_t Vehicle::get_first_obs (void) const {
 		return first_obs;
@@ -167,13 +172,15 @@ namespace gtfs {
 				std::cout << "\n > Max Likelihood = " << lmax;
 				if (lmax < -20) {
 					status = -1;
+					std::cout << " -> RESET";
 					reset ();
 				} else {
+					std::cout << " -> RESAMPLE -> ";
 					resample (rng);
 					dbar = 0.0;
 					for (auto& p: particles) dbar += p.get_distance ();
 					dbar = dbar / particles.size ();
-					std::cout << "m to " << dbar << "m";
+					std::cout << " -> DISTANCE = " << dbar << "m";
 					break;
 				}
 			}
@@ -181,30 +188,32 @@ namespace gtfs {
 			case 2:
 			case 3:
 			{
-				// just started a new trip, unsure whether its started or not
-				// - if vehicle appears to be approaching stop, readjust t0's to match new distance
-				// - else mutate + update; decrease state=2
-				std::cout << "\n + Case " << status;
+				if (status > -1) {
+					// just started a new trip, unsure whether its started or not
+					// - if vehicle appears to be approaching stop, readjust t0's to match new distance
+					// - else mutate + update; decrease state=2
+					std::cout << "\n + Case " << status;
 
-				for (auto& p: particles) p.mutate (rng);
-				double lmax = -INFINITY;
-				for (auto& p: particles) {
-					p.calculate_likelihood ();
-					lmax = fmax(lmax, p.get_likelihood ());
-				}
-				std::cout << "\n > Max Likelihood = " << lmax;
-				if (lmax < -20) {
-					status = -1;
-					reset ();
-				} else {
-					resample (rng);
-				}
+					for (auto& p: particles) p.mutate (rng);
+					double lmax = -INFINITY;
+					for (auto& p: particles) {
+						p.calculate_likelihood ();
+						lmax = fmax(lmax, p.get_likelihood ());
+					}
+					std::cout << "\n > Max Likelihood = " << lmax;
+					if (lmax < -20) {
+						status = -1;
+						reset ();
+					} else {
+						resample (rng);
+					}
 
-				bool allok = true;
-				// do checking
-				if (allok) {
-					status--;
-					break; // otherwise it'll initialize
+					bool allok = true;
+					// do checking
+					if (allok) {
+						status--;
+						break; // otherwise it'll initialize
+					}
 				}
 			}
 			case -1:
@@ -236,7 +245,7 @@ namespace gtfs {
 				} else if (position.distanceTo (trip->get_stoptimes ()[0].stop->get_pos ()) < 20) {
 					// we're close enough to be considered at the stop
 					std::cout << " (case 2)";
-					status = 1;
+					status = 0;
 					for (auto& p: particles) p.initialize (0.0, rng);
 				} else {
 					std::cout << " (case 3)";
@@ -259,7 +268,7 @@ namespace gtfs {
 					}
 					sampling::uniform udist (init_range[0], init_range[1]);
 					for (auto& p: particles) p.initialize (udist.rand (rng), rng);
-					status = 3;
+					status = 0;
 				}
 				for (auto& p: particles) p.calculate_likelihood ();
 				break;
@@ -352,6 +361,7 @@ namespace gtfs {
 								  vp.position ().longitude ());
 		}
 		if (vp.has_timestamp () && timestamp != vp.timestamp ()) {
+			delta = vp.timestamp () - timestamp;
 			timestamp = vp.timestamp ();
 			updated = true;
 		}
@@ -455,6 +465,7 @@ namespace gtfs {
 			particles.emplace_back(this);
 		}
 		status = -1;
+		delta = 0;
 	};
 
 }; // end namespace gtfs

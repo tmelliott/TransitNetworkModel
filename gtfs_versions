@@ -1,0 +1,3 @@
+#!/bin/sh
+
+curl -q -X GET "https://api.at.govt.nz/v2/gtfs/versions" -H "Ocp-Apim-Subscription-Key: $AT_API_KEY" | jq

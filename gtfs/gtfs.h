@@ -157,6 +157,7 @@ namespace gtfs {
 		boost::optional<int> delay; /*!< arrival/departure delay at most recent stop */
 		gps::Coord position;     /*!< last reported GPS position */
 		uint64_t timestamp;      /*!< time of last (position) observation */
+        int delta = 0;           /*!< time since the last observation */
 		uint64_t first_obs;      /*!< the time of the first observation for that trip; used to pin down start time */
 		double approx_distance; /*!< approximate distance to determine if traveling correct direction */
 
@@ -187,6 +188,7 @@ namespace gtfs {
 		boost::optional<int> get_delay (void) const;
 		const gps::Coord& get_position (void) const;
 		uint64_t get_timestamp (void) const;
+		int get_delta (void) const;
 		uint64_t get_first_obs (void) const;
 
 		int get_status (void) const { return status; };

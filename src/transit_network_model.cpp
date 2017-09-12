@@ -205,7 +205,7 @@ int main (int argc, char* argv[]) {
 			time_end (clockstart, wallstart);
 		}
 
-		if (false) {
+		if (csvout) {
 			time_start (clockstart, wallstart);
 			std::cout << "\n * Writing particles to CSV\n";
 			std::cout.flush ();
@@ -216,8 +216,9 @@ int main (int argc, char* argv[]) {
 				std::cout.flush ();
 				i++;
 				for (auto& p: v.second->get_particles ()) {
-					if (rng.runif () < 0.95) continue;
-					for (unsigned k=0; k<p.get_trajectory ().size (); k++) {
+					if (rng.runif () < 0.995) continue;
+					int k0 = p.get_trajectory ().size () - v.second->get_delta ();
+					for (unsigned k=k0; k<p.get_trajectory ().size (); k++) {
 						f << v.second->get_id () << ","
 							<< v.second->get_trip ()->get_id () << ","
 							<< v.second->get_timestamp () << ","

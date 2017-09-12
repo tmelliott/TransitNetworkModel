@@ -18,27 +18,36 @@ plotVehicle <- function(vid, db, obs, wait = FALSE, ...) {
     dbBind(pq, list(vid))
     p <- dbFetch(pq)
     dbClearResult(pq)
+    mode(p$particle_id) <- "factor"
+    p$timestamp <- as.POSIXct(as.numeric(p$timestamp), origin = "1970-01-01")
+    p$t <- as.POSIXct(as.numeric(p$t), origin = "1970-01-01")
     c2 <- dbConnect(SQLite(), "../gtfs.db")
     stopq <- dbSendQuery(c2, "SELECT arrival_time, shape_dist_traveled FROM stop_times WHERE trip_id=? ORDER BY stop_sequence")
     dbBind(stopq, list(p$trip_id[nrow(p)]))
     stops <- dbFetch(stopq)
     dbClearResult(stopq)
-    mode(p$particle_id) <- "factor"
-    p$timestamp <- as.POSIXct(as.numeric(p$timestamp), origin = "1970-01-01")
-    p$t <- as.POSIXct(as.numeric(p$t), origin = "1970-01-01")
-    x <- ggplot(p[p$t <= p$timestamp | p$timestamp == max(p$timestamp), ]) +
-        geom_line(aes(t, d, group = particle_id, colour = timestamp), alpha=0.3) +
+    stops$arrival_time <- as.POSIXct(paste(Sys.Date(), stops$arrival_time), origin = "1970-01-01")
+    tripq <- dbSendQuery(c2, "SELECT route_short_name, route_long_name FROM routes, trips WHERE routes.route_id=trips.route_id AND trip_id=?")
+    dbBind(tripq, list(p$trip_id[nrow(p)]))
+    tripr <- dbFetch(tripq)
+    dbClearResult(tripq)
+    ps <- p[p$t <= p$timestamp | p$timestamp == max(p$timestamp), ]
+    xr <- range(stops$arrival_time, ps$t)
+    x <- ggplot(ps) +
+        geom_line(aes(t, d, group = particle_id), alpha=0.3) +
         labs(x = "Time", y = "Distance (m)") +
-        ylim(c(0, max(stops$shape_dist_traveled))) + 
+        xlim(xr) + ylim(c(0, max(stops$shape_dist_traveled))) + 
         geom_hline(yintercept = max(stops$shape_dist_traveled), linetype = 2, colour = "#cccccc") + 
-        ggtitle(vid)
+        ggtitle(sprintf("%s: %s (vehicle %s)", tripr$route_short_name, tripr$route_long_name, vid)) +
+        geom_point(aes(arrival_time, shape_dist_traveled), data = stops)
     if (!missing(obs)) {
         x <- x + geom_point(aes(obs$t, obs$d), col = "#bb0000", size = 0.5)
     }
+    x + geom_vline(xintercept = Sys.time(), colour = "#aa0000", linetype = 2)
     if (wait) grid::grid.locator()
     dev.hold()
     on.exit(dev.flush())
-    try( print(x) )
+    print(x) 
     dev.flush()
     invisible(p)
 }

@@ -271,7 +271,7 @@ namespace gtfs {
 
 		double sigmav (1.0);
 		double amin (-2.0);
-		double Vmax (20.0);
+		double Vmax (30.0);
 		double pi (0.5);
 		double gamma (6);
 		double tau (10);
