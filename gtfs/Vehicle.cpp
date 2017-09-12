@@ -139,6 +139,7 @@ namespace gtfs {
 	void Vehicle::update ( sampling::RNG& rng ) {
 		std::cout << "\n - Updating vehicle " << id << ":";
 		if (!updated) return;
+		if (newtrip) status = -1;
 		switch (status) {
 			case 0:
 			{
