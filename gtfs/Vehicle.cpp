@@ -170,10 +170,14 @@ namespace gtfs {
 					lmax = fmax(lmax, p.get_likelihood ());
 				}
 				std::cout << "\n > Max Likelihood = " << lmax;
-				if (lmax < -20) {
+				if (lmax < -100) {
 					status = -1;
-					std::cout << " -> RESET";
+					std::cout << " -> RESET?";
 					reset ();
+				} else if (lmax < -20) {
+					std::cout << " -> MAYBE RESET ...";
+					status = 3;
+					break;
 				} else {
 					std::cout << " -> RESAMPLE -> ";
 					resample (rng);

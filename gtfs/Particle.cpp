@@ -269,7 +269,7 @@ namespace gtfs {
 		double Dmax (vehicle->get_trip ()->get_route ()->get_stops ().back ().shape_dist_traveled);
 		if (dist >= 0) Dmax = fmin(Dmax, dist);
 
-		double sigmav (1.0);
+		double sigmav (2.0);
 		double amin (-2.0);
 		double Vmax (30.0);
 		double pi (0.5);
