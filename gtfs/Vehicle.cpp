@@ -330,6 +330,7 @@ namespace gtfs {
 			timestamp = vp.timestamp ();
 			updated = true;
 		}
+		if (newtrip) reset ();
 	};
 
 	/**
