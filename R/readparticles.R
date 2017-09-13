@@ -27,6 +27,10 @@ plotVehicle <- function(vid, db, obs, wait = FALSE, ...) {
     stops <- dbFetch(stopq)
     dbClearResult(stopq)
     stops$arrival_time <- as.POSIXct(paste(Sys.Date(), stops$arrival_time), origin = "1970-01-01")
+    intq <- dbSendQuery(c2, "SELECT shape_dist_traveled FROM shape_segments, routes, trips WHERE shape_segments.shape_id=routes.shape_id AND routes.route_id=trips.route_id AND trips.trip_id=? ORDER BY leg")
+    dbBind(intq, list(p$trip_id[nrow(p)]))
+    ints <- dbFetch(intq)
+    dbClearResult(intq)
     tripq <- dbSendQuery(c2, "SELECT route_short_name, route_long_name FROM routes, trips WHERE routes.route_id=trips.route_id AND trip_id=?")
     dbBind(tripq, list(p$trip_id[nrow(p)]))
     tripr <- dbFetch(tripq)
@@ -34,6 +38,7 @@ plotVehicle <- function(vid, db, obs, wait = FALSE, ...) {
     ps <- p[p$t <= p$timestamp | p$timestamp == max(p$timestamp), ]
     xr <- range(stops$arrival_time, ps$t)
     x <- ggplot(ps) +
+        geom_hline(yintercept = ints$shape_dist_traveled, linetype = 2, colour = "#cccccc") +
         geom_line(aes(t, d, group = particle_id), alpha=0.3) +
         labs(x = "Time", y = "Distance (m)") +
         xlim(xr) + ylim(c(0, max(stops$shape_dist_traveled))) + 
@@ -54,7 +59,9 @@ plotVehicle <- function(vid, db, obs, wait = FALSE, ...) {
 
 pdb <- csv2db("../build/particles.csv")
 vids <- dbGetQuery(pdb, "SELECT DISTINCT vehicle_id FROM particles")$vehicle_id
-invisible(sapply(vids, plotVehicle, db = pdb, wait = TRUE))
+pdf(file = "particles.pdf", width = 12, height = 8, onefile = TRUE)
+invisible(sapply(vids, plotVehicle, db = pdb, wait = FALSE))
+dev.off()
 
 ## p <- plotVehicle(vids[3], pdb)
 

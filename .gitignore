@@ -7,3 +7,4 @@ gtfs.zip
 *-journal
 protobuf/*.pb.*
 .Rhistory
+*.pdf

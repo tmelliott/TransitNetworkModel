@@ -66,7 +66,7 @@ namespace gtfs {
 		velocity = p.get_velocity ();
 		stops = p.get_stops ();
 		segments = p.get_segments ();
-		log_likelihood = p.get_likelihood ();
+		log_likelihood = 0;  // p.get_likelihood ();
 
 		// Copy vehicle pointer
 		vehicle = p.vehicle;
@@ -392,7 +392,7 @@ namespace gtfs {
 		nllhood += log (2 * M_PI * sigy);
 		nllhood += (pow(z[0], 2) + pow(z[1], 2)) / (2 * pow(sigy, 2));
 
-		log_likelihood = -nllhood;
+		log_likelihood -= nllhood;
 
 		// double epsS = 20.0;
 		// double epsI = 30.0;

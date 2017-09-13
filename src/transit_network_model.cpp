@@ -200,6 +200,7 @@ int main (int argc, char* argv[]) {
 							<< v->second->get_trip ()->get_route ()->get_short_name ();
 						v->second->update (rng);
 					}
+					std::clog.flush ();
 				}
 			}
 			std::cout << "\n";

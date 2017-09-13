@@ -147,203 +147,117 @@ namespace gtfs {
 	 * @param rng A random number generator
 	 */
 	void Vehicle::update ( sampling::RNG& rng ) {
-		if (!updated) return;
-		std::cout << "\n - Updating vehicle " << id << ":";
+		if (!updated || finished) return;
+		std::clog << "\n - Updating vehicle " << id << ":";
 		updated = false;
 		if (newtrip) status = -1;
-		switch (status) {
-			case 0:
-			{
-				// just rolling along nicely - update + mutate
-				std::cout << "\n + In progress";
+		if (status >= 0) {
+			std::clog << "\n + In progress";
+			for (auto& p: particles) p.mutate (rng);
 
-				double dbar = 0.0;
-				for (auto& p: particles) dbar += p.get_distance ();
-				dbar = dbar / particles.size ();
-				std::cout << " - from " << dbar;
+			double dbar = 0.0;
+			for (auto& p: particles) dbar += p.get_distance ();
+			dbar = dbar / particles.size ();
+			if (get_trip ()->get_route ()->get_shape ()->get_path ().back ().dist_traveled - dbar < 500) {
+				finished = true;
+				return;
+			}
 
-				for (auto& p: particles) p.mutate (rng);
+			bool allok = true;
 
-				dbar = 0.0;
-				for (auto& p: particles) dbar += p.get_distance ();
-				dbar = dbar / particles.size ();
-				std::cout << "m to " << dbar << "m";
-				if (get_trip ()->get_route ()->get_shape ()->get_path ().back ().dist_traveled - dbar < 500) {
-					finished = true;
-					break;
-				}
+			// Check likelihoods are decent
+			double lmax = -INFINITY, lsum = 0.0;
+			for (auto& p: particles) {
+				p.calculate_likelihood ();
+				lmax = fmax(lmax, p.get_likelihood ());
+				lsum += exp(p.get_likelihood ());
+			}
+			std::clog << "\n > Max Likelihood = " << lmax;
+			if (lmax < -100 || (status == 1 && lmax < -20)) {
+				std::clog << " -> RESET";
+				reset ();
+			} else if (lmax < -20) {
+				std::clog << " -> ANOTHER CHANCE";
+				status = 1;
+			}
 
-				double lmax = -INFINITY;
-				for (auto& p: particles) {
-					p.calculate_likelihood ();
-					lmax = fmax(lmax, p.get_likelihood ());
-				}
-				std::cout << "\n > Max Likelihood = " << lmax;
-				if (lmax < -100) {
-					status = -1;
-					std::cout << " -> RESET";
-					reset ();
-				} else if (lmax < -20) {
-					std::cout << " -> MAYBE RESET ...";
-					status = 3;
-					break;
-				} else {
-					std::cout << " -> RESAMPLE -> ";
+			// check that the variability of weights is sufficient ...
+			if (status == 0) {
+				double Neff = 0.0;
+				for (auto& p: particles) Neff += exp(2 * p.get_likelihood () - 2 * log(lsum));
+				Neff = pow(Neff, -1);
+				if (Neff < 2.0 * particles.size () / 3.0) {
+					std::clog << " -> RESAMPLE";
 					resample (rng);
-					dbar = 0.0;
-					for (auto& p: particles) dbar += p.get_distance ();
-					dbar = dbar / particles.size ();
-					std::cout << " -> DISTANCE = " << dbar << "m";
-					break;
-				}
-			}
-			case 1:
-			case 2:
-			case 3:
-			{
-				if (status > -1) {
-					// just started a new trip, unsure whether its started or not
-					// - if vehicle appears to be approaching stop, readjust t0's to match new distance
-					// - else mutate + update; decrease state=2
-					std::cout << "\n + Case " << status;
-
-					for (auto& p: particles) p.mutate (rng);
-					double lmax = -INFINITY;
-					for (auto& p: particles) {
-						p.calculate_likelihood ();
-						lmax = fmax(lmax, p.get_likelihood ());
-					}
-					std::cout << "\n > Max Likelihood = " << lmax;
-					if (lmax < -20) {
-						status = -1;
-						reset ();
-					} else {
-						resample (rng);
-					}
-
-					bool allok = true;
-					// do checking
-					if (allok) {
-						status--;
-						break; // otherwise it'll initialize
-					}
-				}
-			}
-			case -1:
-			{
-				// we are uninitialized - set up particles so they pass through the right place
-				// - if arrival available, then start = arrival
-				// - else if departure available, then start = departure - dwell[i] - noise
-				// - else if bus is AT stop, then set t0 = timestamp - noise
-				// > then set state = 0
-				// - if none of these, then set t0's to match observed position...set state=3
-				std::cout << "\n + Initializing particles";
-
-				first_obs = timestamp;
-				finished = false;
-				if (stop_sequence && stop_sequence.get () == 1) {
-					std::cout << " (case 1) - " << first_obs;
-					if (arrival_time) {
-						// know approximately when the vehicle arrived at stop[0]
-						first_obs = arrival_time.get ();
-						std::cout << " (arr)";
-					} else if (departure_time) {
-						// know approximately when the vehicle departed
-						first_obs = departure_time.get ();
-						std::cout << " (dep)";
-					}
-					// go head and init particles
-					for (auto& p: particles) p.initialize (0.0, rng);
-
-					status = 0;
-				} else if (position.distanceTo (trip->get_stoptimes ()[0].stop->get_pos ()) < 20) {
-					// we're close enough to be considered at the stop
-					std::cout << " (case 2)";
-					status = 0;
-					for (auto& p: particles) p.initialize (0.0, rng);
 				} else {
-					std::cout << " (case 3)";
-					std::vector<double> init_range {100000.0, 0.0};
-					auto shape = trip->get_route ()->get_shape ();
-					for (auto& p: shape->get_path ()) {
-						if (p.pt.distanceTo(this->position) < 100.0) {
-							double ds (p.dist_traveled);
-							if (ds < init_range[0]) init_range[0] = ds;
-							if (ds > init_range[1]) init_range[1] = ds;
-						}
-					}
-					printf("between %*.2f and %*.2f m", 8, init_range[0], 8, init_range[1]);
-					if (init_range[0] > init_range[1]) {
-						std::cout << "\n   -> unable to locate vehicle on route -> cannot initialize.";
-						return;
-					} else if (init_range[0] == init_range[1]) {
-						init_range[0] = init_range[0] - 100;
-						init_range[1] = init_range[1] + 100;
-					}
-					sampling::uniform udist (init_range[0], init_range[1]);
-					for (auto& p: particles) p.initialize (udist.rand (rng), rng);
-					status = 0;
+					std::clog << " -> ENOUGH VARIABLITY - NO NEED TO RESAMPLE";
 				}
-				for (auto& p: particles) p.calculate_likelihood ();
-				break;
+			}
+
+			// do checking
+			if (allok) {
+				status = 0;
 			}
 		}
 
-		// 1. resample
-		// 2. mutate
-		// 3. compute likelihood for the data that's there
-		//    - position
-		//    - arrival_time OR departure_time OR neither*
-		// 4. set particle weights
+		if (status == -1) {
+			// we are uninitialized - set up particles so they pass through the right place
+			// - if arrival available, then start = arrival
+			// - else if departure available, then start = departure - dwell[i] - noise
+			// - else if bus is AT stop, then set t0 = timestamp - noise
+			// > then set state = 0
+			// - if none of these, then set t0's to match observed position...set state=3
+			std::clog << "\n + Initializing particles";
 
-		// 5. UNSET* arrival/departure time (so it's not reused!)
+			first_obs = timestamp;
+			finished = false;
+			if (stop_sequence && stop_sequence.get () == 1) {
+				std::clog << " (case 1) - " << first_obs;
+				if (arrival_time) {
+					// know approximately when the vehicle arrived at stop[0]
+					first_obs = arrival_time.get ();
+					std::clog << " (arr)";
+				} else if (departure_time) {
+					// know approximately when the vehicle departed
+					first_obs = departure_time.get ();
+					std::clog << " (dep)";
+				}
+				// go head and init particles
+				for (auto& p: particles) p.initialize (0.0, rng);
 
-
-		// *perhaps only if arrival/departure_time < timestamp;
-		//  just in case a position update is not quite recieved yet ...
-
-
-		// THEN save travel times + dwell times for any segments completed
-		//      or stops serviced since the last update
-
-
-		//
-		// // No particles near? Oh ...
-		// // std::vector<double> lh;
-		// double lhsum = 0;
-		// // lh.reserve (particles.size ());
-		// for (auto& p: particles) {
-		// 	lhsum += exp(p.get_likelihood ());
-		// 	// lh.push_back (p.get_likelihood ());
-		// }
-		// // std::cout << "\n Lhoods: ";
-		// // for (auto& p: particles) std::cout << exp(p.get_likelihood ()) << ", ";
-		// std::cout << "\n Sum(lhoods): " << lhsum;
-		// // weights
-		// if (lhsum == 0) return;
-		// double sumwt2 = 0;
-		// for (auto& p: particles) {
-		// 	p.set_weight (exp(p.get_likelihood ()) / lhsum);
-		// 	sumwt2 += pow(p.get_weight (), 2);
-		// }
-		// // std::cout << "\nWeights: ";
-		// // for (auto& p: particles) std::cout << p.get_weight () << ", ";
-		// // std::cout << "\n---------------";
-		// std::cout << "\nSum Wt^2: " << sumwt2;
-		// float Nth = 2 * particles.size () / 3;
-		// std::cout << " -> " << (1 / sumwt2) << " (Nth = " << Nth << "): ";
-		// if (1 / sumwt2 < Nth) {
-		// 	std::cout << "resample\n>particle weights:";
-		// 	for (auto& p: particles) std::cout << p.get_weight () << ", ";
-		// 	// std::sort (particles.begin (), particles.end ());
-		// 	std::cout << " - sorted - ";
-		// 	resample (rng);
-		// 	std::cout << "resample done.";
-		// 	for (auto& p: particles) p.set_weight (1.0 / particles.size ());
-		// 	std::cout << " (reweighted)";
-		// }
-
-		// std::cout << "\n---";
+				status = 0;
+			} else if (position.distanceTo (trip->get_stoptimes ()[0].stop->get_pos ()) < 20) {
+				// we're close enough to be considered at the stop
+				std::clog << " (case 2)";
+				status = 0;
+				for (auto& p: particles) p.initialize (0.0, rng);
+			} else {
+				std::clog << " (case 3)";
+				std::vector<double> init_range {100000.0, 0.0};
+				auto shape = trip->get_route ()->get_shape ();
+				for (auto& p: shape->get_path ()) {
+					if (p.pt.distanceTo(this->position) < 100.0) {
+						double ds (p.dist_traveled);
+						if (ds < init_range[0]) init_range[0] = ds;
+						if (ds > init_range[1]) init_range[1] = ds;
+					}
+				}
+				char buff[200];
+				snprintf(buff, sizeof (buff), "between %*.2f and %*.2f m", 8, init_range[0], 8, init_range[1]);
+				std::clog << buff;
+				if (init_range[0] > init_range[1]) {
+					std::clog << "\n   -> unable to locate vehicle on route -> cannot initialize.";
+					return;
+				} else if (init_range[0] == init_range[1]) {
+					init_range[0] = init_range[0] - 100;
+					init_range[1] = init_range[1] + 100;
+				}
+				sampling::uniform udist (init_range[0], init_range[1]);
+				for (auto& p: particles) p.initialize (udist.rand (rng), rng);
+				status = 0;
+			}
+			for (auto& p: particles) p.calculate_likelihood ();
+		}
 	}
 
 	/**
@@ -477,9 +391,6 @@ namespace gtfs {
 	 * Reset vehicle's particles to zero-state.
 	 */
 	void Vehicle::reset (void) {
-		// delta = 0;
-		// timestamp = 0;
-		// initialized = false;
 		particles.clear ();
 		particles.reserve(n_particles);
 		for (unsigned int i=0; i<n_particles; i++) {
