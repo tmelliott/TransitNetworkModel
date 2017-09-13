@@ -192,6 +192,7 @@ int main (int argc, char* argv[]) {
 			#pragma omp parallel for schedule(static) num_threads(numcore)
 			for (unsigned i=0; i<vehicles.bucket_count (); i++) {
 				for (auto v = vehicles.begin (i); v != vehicles.end (i); v++) {
+					if (v->second->is_finished ()) continue;
 					// std::cout << "\n - vehicle " << v->second->get_id ();
 					if (v->second->get_trip () &&
 						v->second->get_trip ()->get_route ()) {
@@ -216,7 +217,7 @@ int main (int argc, char* argv[]) {
 				std::cout.flush ();
 				i++;
 				for (auto& p: v.second->get_particles ()) {
-					if (rng.runif () < 0.995) continue;
+					if (rng.runif () < 0.8) continue;
 					int k0 = p.get_trajectory ().size () - v.second->get_delta ();
 					for (unsigned k=k0; k<p.get_trajectory ().size (); k++) {
 						f << v.second->get_id () << ","

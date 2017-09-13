@@ -148,6 +148,7 @@ namespace gtfs {
 		std::vector<Particle> particles; /*!< the particles associated with the vehicle */
 
 		bool newtrip; /*!< if this is true, the next `update()` will reinitialise the particles AFTER finishing!!! */
+        bool finished;
 
 		// GTFS Realtime Fields
 		std::shared_ptr<Trip> trip;     /*!< the ID of the trip */
@@ -195,6 +196,7 @@ namespace gtfs {
 		double get_dmaxtraveled (void) const;
 
 		int get_status (void) const { return status; };
+		bool is_finished (void) const { return finished; };
 
 
 		// const std::vector<DwellTime>& get_dwell_times () const;

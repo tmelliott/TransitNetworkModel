@@ -306,7 +306,7 @@ namespace gtfs {
 		while (d < Dmax &&
 			   (latest == -1 || start + trajectory.size () < vehicle->get_timestamp ())) {
 			// initial wait time
-			if (v == 0 && vehicle->get_dmaxtraveled () >= 0) {
+			if (v == 0 || vehicle->get_dmaxtraveled () >= 0) {
 				if (rng.runif () < 0.8) {
 					trajectory.push_back (d);
 					continue;

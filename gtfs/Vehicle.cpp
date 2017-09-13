@@ -168,6 +168,10 @@ namespace gtfs {
 				for (auto& p: particles) dbar += p.get_distance ();
 				dbar = dbar / particles.size ();
 				std::cout << "m to " << dbar << "m";
+				if (get_trip ()->get_route ()->get_shape ()->get_path ().back ().dist_traveled - dbar < 500) {
+					finished = true;
+					break;
+				}
 
 				double lmax = -INFINITY;
 				for (auto& p: particles) {
@@ -236,6 +240,7 @@ namespace gtfs {
 				std::cout << "\n + Initializing particles";
 
 				first_obs = timestamp;
+				finished = false;
 				if (stop_sequence && stop_sequence.get () == 1) {
 					std::cout << " (case 1) - " << first_obs;
 					if (arrival_time) {
