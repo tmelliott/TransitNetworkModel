@@ -270,7 +270,7 @@ namespace gtfs {
 		if (dist >= 0) Dmax = fmin(Dmax, dist);
 
 		double sigmav (2.0);
-		double amin (-2.0);
+		double amin (-5.0);
 		double Vmax (30.0);
 		double pi (0.5);
 		double gamma (6);
@@ -305,6 +305,14 @@ namespace gtfs {
 		int pstops (-1); // does the particle stop at the next stop/intersection?
 		while (d < Dmax &&
 			   (latest == -1 || start + trajectory.size () < vehicle->get_timestamp ())) {
+			// initial wait time
+			if (v == 0 && vehicle->get_dmaxtraveled () >= 0) {
+				if (rng.runif () < 0.8) {
+					trajectory.push_back (d);
+					continue;
+				}
+			}
+
 			// figure out dmax at the start of each step
 			if (l < L && segments[l].shape_dist_traveled < stops[j].shape_dist_traveled) {
 				dmax = segments[l].shape_dist_traveled;
@@ -341,7 +349,8 @@ namespace gtfs {
 					j++;
 					wait += pstops * (gamma + rtau.rand (rng));
 				}
-				while (wait > 0) {
+				while (wait > 0 &&
+				 	   (latest == -1 || start + trajectory.size () < vehicle->get_timestamp ())) {
 					trajectory.push_back (d);
 					wait--;
 				}

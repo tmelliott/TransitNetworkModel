@@ -161,6 +161,8 @@ namespace gtfs {
 		uint64_t first_obs;      /*!< the time of the first observation for that trip; used to pin down start time */
 		double approx_distance; /*!< approximate distance to determine if traveling correct direction */
 
+		double dmaxtraveled = -1.0; /*!< max distance the bus has traveled if it hasn't traveled far */
+
 		int status = -1;    /*!< 0 = traveling normally; 1-3 = initializing stage; -1 = uninitialized; */
 		bool updated;  /*!< if true, need to run update/mutate */
 
@@ -190,6 +192,7 @@ namespace gtfs {
 		uint64_t get_timestamp (void) const;
 		int get_delta (void) const;
 		uint64_t get_first_obs (void) const;
+		double get_dmaxtraveled (void) const;
 
 		int get_status (void) const { return status; };
 

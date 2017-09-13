@@ -107,6 +107,11 @@ namespace gtfs {
 		return first_obs;
 	};
 
+	/** @return the max dist bus could have traveled */
+	double Vehicle::get_dmaxtraveled (void) const {
+		return dmaxtraveled;
+	};
+
 	// /** @return the vehicle's dwell times at all stops */
 	// const std::vector<DwellTime>& get_dwell_times () const {
 	// 	return dwell_times;
@@ -172,7 +177,7 @@ namespace gtfs {
 				std::cout << "\n > Max Likelihood = " << lmax;
 				if (lmax < -100) {
 					status = -1;
-					std::cout << " -> RESET?";
+					std::cout << " -> RESET";
 					reset ();
 				} else if (lmax < -20) {
 					std::cout << " -> MAYBE RESET ...";
@@ -361,8 +366,15 @@ namespace gtfs {
 			}
 		}
 		if (vp.has_position ()) {
-			position = gps::Coord(vp.position ().latitude (),
+			// first check if the bus has moved very far ...
+			auto newpos = gps::Coord(vp.position ().latitude (),
 								  vp.position ().longitude ());
+			dmaxtraveled = -1.0;
+  			if (position.distanceTo (newpos) < 50) {
+				// bus has traveled less than 50 metres ...
+				dmaxtraveled = position.distanceTo (newpos) < 50;
+			}
+			position = newpos;
 		}
 		if (vp.has_timestamp () && timestamp != vp.timestamp ()) {
 			delta = vp.timestamp () - timestamp;
