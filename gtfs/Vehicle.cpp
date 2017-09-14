@@ -51,6 +51,17 @@ namespace gtfs {
 		trip = tp;
 		first_obs = t;
 		status = -1;
+
+		// step 3: set all of the travel times
+		travel_times.clear ();
+		auto route = trip->get_route ();
+		if (!route) return;
+		auto shape = trip->get_route ()->get_shape ();
+		if (!shape) return;
+		auto segs = shape->get_segments ();
+		if (segs.size () == 0) return;
+		for (auto sg: segs) travel_times.emplace_back (sg.segment);
+
 	};
 
 	// --- GETTERS
@@ -148,7 +159,8 @@ namespace gtfs {
 	 */
 	void Vehicle::update ( sampling::RNG& rng ) {
 		if (!updated || finished) return;
-		std::clog << "\n - Updating vehicle " << id << ":";
+		std::clog << "\n - Updating vehicle " << id << ": ("
+			<< travel_times.size () << " segments)";
 		updated = false;
 		if (newtrip) status = -1;
 		if (status >= 0) {

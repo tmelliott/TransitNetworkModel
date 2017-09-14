@@ -17,7 +17,15 @@ namespace gtfs {
 	*
 	* @param v the vehicle object pointer to which the particle belongs
 	*/
-	Particle::Particle (Vehicle* v) : id (v->allocate_id ()), vehicle (v) {};
+	Particle::Particle (Vehicle* v) : id (v->allocate_id ()), vehicle (v) {
+		if (v->get_trip () && v->get_trip ()->get_route () &&
+			v->get_trip ()->get_route ()->get_shape () &&
+			v->get_trip ()->get_route ()->get_shape ()->get_segments ().size () > 0) {
+			for (int i=0; i<v->get_trip ()->get_route ()->get_shape ()->get_segments ().size (); i++)
+				travel_times.emplace_back ();
+		}
+
+	};
 
 	/**
 	 * Particle copy constructor.
@@ -108,7 +116,7 @@ namespace gtfs {
 	};
 
 	/** @return the segments (queue and travel times) */
-	std::vector<int> Particle::get_travel_times (void) const {
+	std::vector<pTravelTime> Particle::get_travel_times (void) const {
 		return travel_times;
 	};
 
@@ -252,10 +260,19 @@ namespace gtfs {
 
 				int wait = 0;
 				if (dmax == segments[l].shape_dist_traveled) {
+					if (travel_times[l].initialized) {
+						travel_times[l].complete = true;
+						std::clog << "\n +++ Particle finished traveling segment " << l
+							<< " of " << travel_times.size ()
+							<< " - " << travel_times[l].time << "s";
+						std::cout.flush ();
+					}
 					l++;
+					// stopping at INTERSECTION
 					wait += pstops * rtheta.rand (rng);
+					travel_times[l].initialized = true;
 				} else {
-					// stopping at intersection
+					// stopping at BUS STOP
 					j++;
 					wait += pstops * (gamma + rtau.rand (rng));
 				}
@@ -267,6 +284,8 @@ namespace gtfs {
 				pstops = -1;
 			}
 			trajectory.push_back (d);
+			if (travel_times[l].initialized && !travel_times[l].complete)
+				travel_times[l].time++;
 		}
 	};
 

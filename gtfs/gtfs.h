@@ -38,8 +38,8 @@ namespace gtfs {
 	struct StopTime;
 
     struct DwellTime;
-    struct vTravelTime;
     struct TravelTime;
+    struct pTravelTime;
 
 	// Some parameters
 
@@ -168,7 +168,7 @@ namespace gtfs {
 		bool updated;  /*!< if true, need to run update/mutate */
 
         // std::vector<DwellTime> dwell_times;  /*!< vehicle's dwell times at stops */
-        // std::vector<vTravelTime> travel_times; /*!< vehicle's travel times through segments */
+        std::vector<TravelTime> travel_times; /*!< vehicle's travel times through segments */
 	public:
 		unsigned int n_particles; /*!< the number of particles that will be created in the next sample */
 		unsigned long next_id;    /*!< the ID of the next particle to be created */
@@ -201,8 +201,8 @@ namespace gtfs {
 
 		// const std::vector<DwellTime>& get_dwell_times () const;
 		// const DwellTime* get_dwell_time (unsigned i) const;
-		// const std::vector<vTravelTime>& get_travel_times () const;
-		// const vTravelTime* get_travel_time (unsigned i) const;
+		const std::vector<TravelTime>& get_travel_times () const;
+		const TravelTime* get_travel_time (unsigned i) const;
 
 
 		// Methods
@@ -230,7 +230,7 @@ namespace gtfs {
 		int latest = 0;                    /*!< index of the latest position update; only adjust trajectory after this */
         std::vector<double> trajectory;    /*!< particle's distance trajectory, from 0 seconds into trip until end */
         std::vector<std::tuple<int,int> > stop_times; /*!< [arrival,dwell] time at each stop along route */
-        std::vector<int> travel_times;                 /*!< [queue,travel] time at each intersection/segment along route */
+        std::vector<pTravelTime> travel_times;                 /*!< [queue,travel] time at each intersection/segment along route */
 
 		double velocity = 0.0;       /*!< the particles velocity at latest time */
 		double log_likelihood = 0.0; /*!< the likelihood of the particle, given the data */
@@ -258,7 +258,7 @@ namespace gtfs {
 		double get_distance (void) const;
 		double get_velocity (void) const;
 		std::vector<std::tuple<int,int> > get_stop_times (void) const;
-		std::vector<int> get_travel_times (void) const;
+		std::vector<pTravelTime> get_travel_times (void) const;
 
 		/** @return the particle's likelihood */
 		const double& get_likelihood () const { return log_likelihood; };
@@ -726,7 +726,7 @@ namespace gtfs {
 		};
     };
 
-	struct vTravelTime {
+	struct TravelTime {
 		std::shared_ptr<Segment> segment; /*!< pointer to the segment */
 		int time = 0;                     /*!< the time spent traveling */
 		bool used = false;                /*!< true once model has used the value */
@@ -734,8 +734,8 @@ namespace gtfs {
 		int nparticle = 0;                /*!< the number of particles that have contributed */
 		float timesum = 0;                /*!< the sum of particle travel times */
 
-		vTravelTime () {};
-		vTravelTime (std::shared_ptr<Segment> seg) : segment (seg) {};
+		// TravelTime () {};
+		TravelTime (std::shared_ptr<Segment> seg) : segment (seg) {};
 
 		void set_time (void) { time = timesum / nparticle; };
 		int get_time (void) {
@@ -750,15 +750,14 @@ namespace gtfs {
      *
      * Only consider travel times that have been initialized AND completed.
      */
-    struct TravelTime {
-        std::shared_ptr<Segment> segment; /*!< pointer to the segment */
+    struct pTravelTime {
         int time;                         /*!< time, in seconds, taken to travel segment */
 		bool complete;                    /*!< true once particle has finished with the segment */
 		bool initialized;                 /*!< true once particle starts AT THE BEGINNING of segment */
 
-		TravelTime () : time (0), complete (false) , initialized (false) {};
-		TravelTime (std::shared_ptr<Segment> seg) :
-			segment (seg), time (0), complete (false), initialized (false) {};
+		pTravelTime () : time (0), complete (false) , initialized (false) {};
+		// pTravelTime (std::shared_ptr<Segment> seg) :
+		// 	segment (seg), time (0), complete (false), initialized (false) {};
     };
 
 
