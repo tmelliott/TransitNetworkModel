@@ -259,6 +259,7 @@ namespace gtfs {
 		double get_velocity (void) const;
 		std::vector<std::tuple<int,int> > get_stop_times (void) const;
 		std::vector<pTravelTime> get_travel_times (void) const;
+		const pTravelTime& get_travel_time (int i) const;
 
 		/** @return the particle's likelihood */
 		const double& get_likelihood () const { return log_likelihood; };
@@ -729,17 +730,23 @@ namespace gtfs {
 	struct TravelTime {
 		std::shared_ptr<Segment> segment; /*!< pointer to the segment */
 		int time = 0;                     /*!< the time spent traveling */
+		bool complete = false;            /*!< indicates the segment has been completed */
 		bool used = false;                /*!< true once model has used the value */
 
-		int nparticle = 0;                /*!< the number of particles that have contributed */
-		float timesum = 0;                /*!< the sum of particle travel times */
-
-		// TravelTime () {};
+		/**
+		 * Default constructor for a Vehicle Travel Time
+		 * @param seg the segment pointer
+		 */
 		TravelTime (std::shared_ptr<Segment> seg) : segment (seg) {};
 
-		void set_time (void) { time = timesum / nparticle; };
+		/** Set the travel time for the segment (and set complete) */
+		void set_time (int t) {
+			time = t;
+			complete = true;
+		};
+		/** Get the travel time for the segment (and set used) */
 		int get_time (void) {
-			set_time ();
+			// set_time ();
 			used = true;
 			return time;
 		};

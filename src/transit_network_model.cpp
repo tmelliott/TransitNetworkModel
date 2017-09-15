@@ -84,7 +84,7 @@ int main (int argc, char* argv[]) {
 	desc.add_options ()
 		("files", po::value<std::vector<std::string> >(&files)->multitoken (),
 			"GTFS Realtime protobuf feed files.")
-		("database", po::value<std::string>(&dbname), "Database Connection to use.")
+		("database", po::value<std::string>(&dbname)->default_value("../gtfs.db"), "Database Connection to use.")
 		// ("version", po::value<std::string>(&version), "Version number to pull subset from database.")
 		("N", po::value<int>(&N)->default_value(1000), "Number of particles to initialize each vehicle.")
 		("numcore", po::value<int>(&numcore)->default_value(1), "Number of cores to use.")
@@ -237,18 +237,23 @@ int main (int argc, char* argv[]) {
 
 		// Update road segments -> Kalman filter
 		{
-			// time_start (clockstart, wallstart);
-			// std::cout << "\n * Updating road network with latest travel times ...";
-			// // loop over VEHICLES that were updated this iteration (?)
-			// for (auto& v: vehicles) {
-			// 	// std::cout << "\n - Vehicle " << v.second->get_id () << " travel times ("
-			// 	// 	<< v.second->get_particles()[0].get_travel_times ().size ()
-			// 	// 	<< v.second->get_trip ()->get_route ()->get_shape ()->get_segments ().size ()
-			// 	// 	<< ")";
-			// 	if (!v.second->is_initialized ()) {
-			// 		// std::cout << " -- not init";
-			// 		continue;
-			// 	}
+			time_start (clockstart, wallstart);
+			std::cout << "\n * Updating road network with latest travel times ...";
+			// loop over VEHICLES that were updated this iteration (?)
+			for (auto& v: vehicles) {
+				std::cout << "\n - Vehicle " << v.second->get_id () << " travel times ("
+					<< v.second->get_trip ()->get_route ()->get_shape ()->get_segments ().size ()
+					<< ")";
+				int l = 0;
+				int L = v.second->get_travel_times ().size ();
+				for (auto tt: v.second->get_travel_times ()) {
+					l++;
+					std::cout << "\n > Segment " << l << " of " << L
+						<< ": " << tt.time << "s | "
+						<< (tt.complete ? "complete" : "not complete") << " | "
+						<< (tt.used ? "used" : "not used");
+				}
+
 			// 	// only use segments that are LESS than MIN segment index
 			// 	int minSeg = v.second->get_trip ()->get_route ()->get_shape ()->get_segments ().size ();
 			// 	for (auto& p: v.second->get_particles ()) {
@@ -294,8 +299,8 @@ int main (int argc, char* argv[]) {
 			// 		// give data to segment
 			// 		for (auto& p: v.second->get_particles ()) p.reset_travel_time (i);
 			// 	}
-			// }
-			//
+			}
+
 			// // Update segments and write to protocol buffer
 			// transit_network::Feed feed;
 			// // std::cout << "\n ~~~~~~~~~~~~~~~~~~~ \n";
@@ -320,9 +325,9 @@ int main (int argc, char* argv[]) {
 			// }
 			//
 			// google::protobuf::ShutdownProtobufLibrary ();
-			//
-			// std::cout << "\n";
-			// time_end (clockstart, wallstart);
+
+			std::cout << "\n";
+			time_end (clockstart, wallstart);
 		}
 
 		// Update ETA predictions

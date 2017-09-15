@@ -133,16 +133,17 @@ namespace gtfs {
 	// 	if (i >= dwell_times.size ()) return nullptr;
 	// 	return &dwell_times[i];
 	// };
-	// /** @return the vehicle's travel times along all segments */
-	// const std::vector<vTravelTime>& get_travel_times () const {
-	// 	return travel_times;
-	// };
-	//
-	// /** @return the vehicle's travel time along segment i */
-	// const vTravelTime* get_travel_time (unsigned i) const {
-	// 	if (i >= travel_times.size ()) return nullptr;
-	// 	return &travel_times[i];
-	// };
+
+	/** @return the vehicle's travel times along all segments */
+	const std::vector<TravelTime>& Vehicle::get_travel_times () const {
+		return travel_times;
+	};
+
+	/** @return the vehicle's travel time along segment i */
+	const TravelTime* Vehicle::get_travel_time (unsigned i) const {
+		if (i >= travel_times.size ()) return nullptr;
+		return &travel_times[i];
+	};
 
 	// --- METHODS
 
@@ -175,14 +176,13 @@ namespace gtfs {
 				return;
 			}
 
-			bool allok = true;
-
 			// Check likelihoods are decent
 			double lmax = -INFINITY, lsum = 0.0;
 			for (auto& p: particles) {
 				p.calculate_likelihood ();
 				lmax = fmax(lmax, p.get_likelihood ());
 				lsum += exp(p.get_likelihood ());
+				status = 0;
 			}
 			std::clog << "\n > Max Likelihood = " << lmax;
 			if (lmax < -100 || (status == 1 && lmax < -20)) {
@@ -195,21 +195,85 @@ namespace gtfs {
 
 			// check that the variability of weights is sufficient ...
 			if (status == 0) {
-				double Neff = 0.0;
-				for (auto& p: particles) Neff += exp(2 * p.get_likelihood () - 2 * log(lsum));
-				Neff = pow(Neff, -1);
-				if (Neff < 2.0 * particles.size () / 3.0) {
-					std::clog << " -> RESAMPLE";
-					resample (rng);
-				} else {
-					std::clog << " -> ENOUGH VARIABLITY - NO NEED TO RESAMPLE";
+				resample (rng);
+				// double Neff = 0.0;
+				// for (auto& p: particles) Neff += exp(2 * p.get_likelihood () - 2 * log(lsum));
+				// Neff = pow(Neff, -1);
+				// if (Neff < 2.0 * particles.size () / 3.0) {
+				// 	std::clog << " -> RESAMPLE";
+				// } else {
+				// 	std::clog << " -> ENOUGH VARIABLITY - NO NEED TO RESAMPLE";
+				// }
+
+				// Check for finished segments ...
+				int prevseg = 0;
+				for (unsigned i=0; i<travel_times.size (); i++) {
+					if (travel_times[i].complete) prevseg = i+1;
 				}
+
+				if (prevseg == 0) {
+					// Go through all the particles and find current segment ...
+					int curseg = travel_times.size ();
+					for (auto& p: particles) {
+						for (unsigned i=0; i<travel_times.size (); i++) {
+							if (p.get_travel_time (i).initialized &&
+								!p.get_travel_time (i).complete) {
+								curseg = std::min(curseg, (int) i);
+								break;
+							}
+						}
+					}
+					// set all prior segments to complete
+					for (int i=0; i<curseg; i++) travel_times[i].complete = true;
+
+					std::clog << "\n+ Vehicle is on segment " << curseg << " of "
+					<< travel_times.size ();
+
+				} else {
+					std::clog << "\n+ Vehicle was on segment " << prevseg << " of "
+							<< travel_times.size ();
+					int curseg = travel_times.size ();
+					for (auto& p: particles) {
+						for (unsigned i=0; i<travel_times.size (); i++) {
+							if (p.get_travel_time (i).initialized &&
+								!p.get_travel_time (i).complete) {
+								curseg = std::min(curseg, (int) i);
+								break;
+							}
+						}
+					}
+
+					if (curseg == prevseg) {
+						std::cout << " ... and still is!";
+					} else if (curseg < prevseg) {
+						// reset those travel times
+						for (int i=curseg; i<travel_times.size (); i++) travel_times[i].complete = false;
+					} else {
+						std::cout << " ... and is now on segment " << curseg;
+						for (int i=prevseg; i<curseg; i++) {
+							// get details for all intermediate segments
+							double tbar = 0.0;
+							int Np = 0;
+							for (auto& p: particles) {
+								auto tt = p.get_travel_time (i);
+								if (tt.initialized && tt.complete) {
+									tbar += tt.time;
+									Np++;
+								}
+							}
+							tbar /= Np;
+							travel_times[i].set_time (round (tbar));
+							std::cout << "\n -> Segment " << i << ": " << round (tbar) << "s";
+						}
+					}
+				}
+				// loop through
 			}
 
 			// do checking
-			if (allok) {
-				status = 0;
-			}
+			// if (allok) {
+			// 	status = 0;
+			// }
 		}
 
 		if (status == -1) {

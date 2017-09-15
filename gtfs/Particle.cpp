@@ -120,6 +120,10 @@ namespace gtfs {
 		return travel_times;
 	};
 
+	const pTravelTime& Particle::get_travel_time (int i) const {
+		return travel_times[i];
+	};
+
 
 
 
@@ -133,7 +137,7 @@ namespace gtfs {
 	void Particle::initialize (double dist, sampling::RNG& rng) {
 
 		trajectory.clear ();
-		trajectory.emplace_back (0);
+		trajectory.push_back (0);
 		// velocity = 0;
 		int wait (sampling::exponential (1.0 / 20.0).rand (rng));
 		if (dist == 0.0) {
@@ -155,7 +159,7 @@ namespace gtfs {
 			}
 		}
 		while (wait > 0) {
-			trajectory.emplace_back (0);
+			trajectory.push_back (0);
 			wait--;
 		}
 		latest = -1;
@@ -168,7 +172,7 @@ namespace gtfs {
 			double d = get_distance ();
 			velocity = get_velocity ();
 			trajectory.clear ();
-			trajectory.emplace_back (d);
+			trajectory.push_back (d);
 		}
 	}
 
@@ -284,6 +288,7 @@ namespace gtfs {
 				pstops = -1;
 			}
 			trajectory.push_back (d);
+			// std::clog << ".";
 			if (travel_times[l].initialized && !travel_times[l].complete)
 				travel_times[l].time++;
 		}
