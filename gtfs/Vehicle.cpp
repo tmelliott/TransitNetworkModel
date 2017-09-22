@@ -206,25 +206,25 @@ namespace gtfs {
 				// }
 
 				// Check for finished segments ...
-				int prevseg = 0;
+				unsigned prevseg = 0;
 				for (unsigned i=0; i<travel_times.size (); i++) {
 					if (travel_times[i].complete) prevseg = i+1;
 				}
 
 				if (prevseg == 0) {
 					// Go through all the particles and find current segment ...
-					int curseg = travel_times.size ();
+					unsigned curseg = travel_times.size ();
 					for (auto& p: particles) {
 						for (unsigned i=0; i<travel_times.size (); i++) {
 							if (p.get_travel_time (i).initialized &&
 								!p.get_travel_time (i).complete) {
-								curseg = std::min(curseg, (int) i);
+								curseg = std::min(curseg, i);
 								break;
 							}
 						}
 					}
 					// set all prior segments to complete
-					for (int i=0; i<curseg; i++) travel_times[i].complete = true;
+					for (unsigned i=0; i<curseg; i++) travel_times[i].complete = true;
 
 					std::clog << "\n+ Vehicle is on segment " << curseg << " of "
 					<< travel_times.size ();
@@ -232,12 +232,12 @@ namespace gtfs {
 				} else {
 					std::clog << "\n+ Vehicle was on segment " << prevseg << " of "
 							<< travel_times.size ();
-					int curseg = travel_times.size ();
+					unsigned curseg = travel_times.size ();
 					for (auto& p: particles) {
 						for (unsigned i=0; i<travel_times.size (); i++) {
 							if (p.get_travel_time (i).initialized &&
 								!p.get_travel_time (i).complete) {
-								curseg = std::min(curseg, (int) i);
+								curseg = std::min(curseg, i);
 								break;
 							}
 						}
@@ -247,10 +247,10 @@ namespace gtfs {
 						std::cout << " ... and still is!";
 					} else if (curseg < prevseg) {
 						// reset those travel times
-						for (int i=curseg; i<travel_times.size (); i++) travel_times[i].complete = false;
+						for (unsigned i=curseg; i<travel_times.size (); i++) travel_times[i].complete = false;
 					} else {
 						std::cout << " ... and is now on segment " << curseg;
-						for (int i=prevseg; i<curseg; i++) {
+						for (unsigned i=prevseg; i<curseg; i++) {
 							// get details for all intermediate segments
 							double tbar = 0.0;
 							int Np = 0;
@@ -318,9 +318,13 @@ namespace gtfs {
 						if (ds > init_range[1]) init_range[1] = ds;
 					}
 				}
-				char buff[200];
-				snprintf(buff, sizeof (buff), "between %*.2f and %*.2f m", 8, init_range[0], 8, init_range[1]);
-				std::clog << buff;
+				double r1 (round(init_range[0] * 100.0) / 100.0),
+					   r2 (round(init_range[1] * 100.0) / 100.0);
+				std::clog << " between "
+					<< r1 << " and " << r2 << " m";
+				// char buff[200];
+				// snprintf(buff, sizeof (buff), "between %*.2f and %*.2f m", 8, init_range[0], 8, init_range[1]);
+				// std::clog << buff;
 				if (init_range[0] > init_range[1]) {
 					std::clog << "\n   -> unable to locate vehicle on route -> cannot initialize.";
 					return;

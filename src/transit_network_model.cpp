@@ -214,7 +214,7 @@ int main (int argc, char* argv[]) {
 			f.open ("particles.csv", std::ofstream::app);
 			int i=1;
 			for (auto& v: vehicles) {
-				printf("\rVehicle %*d of %d", 3, i, vehicles.bucket_count ());
+				printf("\rVehicle %*d of %lu", 3, i, vehicles.bucket_count ());
 				std::cout.flush ();
 				i++;
 				for (auto& p: v.second->get_particles ()) {

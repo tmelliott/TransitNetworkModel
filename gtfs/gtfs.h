@@ -294,6 +294,7 @@ namespace gtfs {
 	 */
 	inline std::ostream& operator<< (std::ostream& os, const Particle& p) {
 		char buff [200];
+		sprintf(buff, "Particle %lu", p.get_id ());
 		// sprintf(buff, "[%*.0f, %*.1f | %*d, %*" PRIu64 ", %*d | %*d, %*d, %*" PRIu64 "]",
 		// 		8, p.get_distance (),  4, p.get_velocity (),
 		// 		2, p.get_stop_index (), 13, p.get_arrival_time (), 4, p.get_dwell_time (),

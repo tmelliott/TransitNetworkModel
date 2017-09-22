@@ -21,7 +21,7 @@ namespace gtfs {
 		if (v->get_trip () && v->get_trip ()->get_route () &&
 			v->get_trip ()->get_route ()->get_shape () &&
 			v->get_trip ()->get_route ()->get_shape ()->get_segments ().size () > 0) {
-			for (int i=0; i<v->get_trip ()->get_route ()->get_shape ()->get_segments ().size (); i++)
+			for (unsigned i=0; i<v->get_trip ()->get_route ()->get_shape ()->get_segments ().size (); i++)
 				travel_times.emplace_back ();
 		}
 
@@ -201,7 +201,7 @@ namespace gtfs {
 		if (segments.size () == 0) return;
 
 		// create trajectories
-		double Dmax (vehicle->get_trip ()->get_route ()->get_stops ().back ().shape_dist_traveled);
+		double Dmax ( stops.back ().shape_dist_traveled );
 		if (dist >= 0) Dmax = fmin(Dmax, dist);
 
 		double sigmav (2.0);
@@ -266,9 +266,9 @@ namespace gtfs {
 				if (dmax == segments[l].shape_dist_traveled) {
 					if (travel_times[l].initialized) {
 						travel_times[l].complete = true;
-						std::clog << "\n +++ Particle finished traveling segment " << l
-							<< " of " << travel_times.size ()
-							<< " - " << travel_times[l].time << "s";
+						// std::clog << "\n +++ Particle finished traveling segment " << l
+						// 	<< " of " << travel_times.size ()
+						// 	<< " - " << travel_times[l].time << "s";
 						std::cout.flush ();
 					}
 					l++;
@@ -305,6 +305,18 @@ namespace gtfs {
 		double nllhood = 0.0;
 		double sigy   = 10.0;
 
+		log_likelihood = -INFINITY;
+		auto trip = vehicle->get_trip ();
+		if (!trip) return;
+		auto route = trip->get_route ();
+		if (!route) return;
+		// auto stops = route->get_stops ();
+		// if (stops.size () == 0) return;
+		auto shape = route->get_shape ();
+		if (!shape) return;
+		// auto segments = shape->get_segments ();
+		// if (segments.size () == 0) return;
+
 		// std::cout << "\n Start: " << start << "; ts: " << vehicle->get_timestamp ()
 			// << " -> ";
 		latest = trajectory.size () - 1;
@@ -314,9 +326,7 @@ namespace gtfs {
 		// if (latest >= trajectory.size ()) latest = trajectory.size () - 1;
 		// std::cout << "latest = " << latest;
 
-		gps::Coord x = get_coords (
-			get_distance (),
-			vehicle->get_trip ()->get_route ()->get_shape () );
+		gps::Coord x = get_coords ( get_distance (), shape );
 		std::vector<double> z (x.projectFlat(vehicle->get_position ()));
 
 		nllhood += log (2 * M_PI * sigy);
