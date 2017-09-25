@@ -241,6 +241,10 @@ int main (int argc, char* argv[]) {
 			std::cout << "\n * Updating road network with latest travel times ...";
 			// loop over VEHICLES that were updated this iteration (?)
 			for (auto& v: vehicles) {
+				if (!v.second->get_trip ()) continue;
+				if (!v.second->get_trip ()->get_route ()) continue;
+				if (!v.second->get_trip ()->get_route ()->get_shape ()) continue;
+				if (v.second->get_trip ()->get_route ()->get_shape ()->get_segments ().size () == 0) continue;
 				std::cout << "\n - Vehicle " << v.second->get_id () << " travel times ("
 					<< v.second->get_trip ()->get_route ()->get_shape ()->get_segments ().size ()
 					<< ")";

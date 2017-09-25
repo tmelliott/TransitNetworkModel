@@ -227,7 +227,7 @@ namespace gtfs {
 					for (unsigned i=0; i<curseg; i++) travel_times[i].complete = true;
 
 					std::clog << "\n+ Vehicle is on segment " << curseg << " of "
-					<< travel_times.size ();
+						<< travel_times.size ();
 
 				} else {
 					std::clog << "\n+ Vehicle was on segment " << prevseg << " of "
@@ -261,9 +261,13 @@ namespace gtfs {
 									Np++;
 								}
 							}
-							tbar /= Np;
-							travel_times[i].set_time (round (tbar));
-							std::cout << "\n -> Segment " << i << ": " << round (tbar) << "s";
+							if (Np > 0) {
+								tbar /= Np;
+								travel_times[i].set_time (round (tbar));
+								std::cout << "\n -> Segment " << i << ": " << round (tbar) << "s";
+							} else {
+								std::cout << " ... no particles with travel time";
+							}
 						}
 					}
 				}

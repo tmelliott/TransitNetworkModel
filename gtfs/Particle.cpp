@@ -10,20 +10,23 @@ namespace gtfs {
 	/**
 	* Particle constructor.
 	*
-	* The ID is automatically selected from the parent vehicle.
-	* Values are computed based on the approximate location of the bus,
-	* allowing for noise.
-	* RNG required otherwise the particles would all be identical!
+	* The ID is automatically selected from the parent vehicle. Initialized later.
 	*
 	* @param v the vehicle object pointer to which the particle belongs
 	*/
 	Particle::Particle (Vehicle* v) : id (v->allocate_id ()), vehicle (v) {
-		if (v->get_trip () && v->get_trip ()->get_route () &&
-			v->get_trip ()->get_route ()->get_shape () &&
-			v->get_trip ()->get_route ()->get_shape ()->get_segments ().size () > 0) {
-			for (unsigned i=0; i<v->get_trip ()->get_route ()->get_shape ()->get_segments ().size (); i++)
-				travel_times.emplace_back ();
-		}
+
+		auto t = v->get_trip ();
+		if (!t) return;
+		auto r = t->get_route ();
+		if (!r) return;
+		auto s = r->get_shape ();
+		if (!s) return;
+		auto sg = s->get_segments ();
+		if (sg.size () == 0) return;
+
+		for (unsigned i=0; i<sg.size (); i++)
+			travel_times.emplace_back ();
 
 	};
 
@@ -305,17 +308,21 @@ namespace gtfs {
 		double nllhood = 0.0;
 		double sigy   = 10.0;
 
-		log_likelihood = -INFINITY;
 		auto trip = vehicle->get_trip ();
-		if (!trip) return;
+		if (!trip) {
+			log_likelihood = -INFINITY;
+			return;
+		};
 		auto route = trip->get_route ();
-		if (!route) return;
-		// auto stops = route->get_stops ();
-		// if (stops.size () == 0) return;
+		if (!route) {
+			log_likelihood = -INFINITY;
+			return;
+		};
 		auto shape = route->get_shape ();
-		if (!shape) return;
-		// auto segments = shape->get_segments ();
-		// if (segments.size () == 0) return;
+		if (!shape) {
+			log_likelihood = -INFINITY;
+			return;
+		};
 
 		// std::cout << "\n Start: " << start << "; ts: " << vehicle->get_timestamp ()
 			// << " -> ";
