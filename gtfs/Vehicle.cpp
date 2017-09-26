@@ -163,18 +163,32 @@ namespace gtfs {
 		std::clog << "\n - Updating vehicle " << id << ": ("
 			<< travel_times.size () << " segments)";
 		updated = false;
+
+		if (!trip) return;
+		auto route = trip->get_route ();
+		if (!route) return;
+		auto shape = route->get_shape ();
+		if (!shape) return;
+		auto path = shape->get_path ();
+		if (path.size () == 0) return;
+
 		if (newtrip) status = -1;
 		if (status >= 0) {
 			std::clog << "\n + In progress";
+
+			std::clog << "\n --- mutating particles ...";
+			std::cout.flush ();
 			for (auto& p: particles) p.mutate (rng);
+			std::clog << " done. Calculating position ...";
 
 			double dbar = 0.0;
 			for (auto& p: particles) dbar += p.get_distance ();
 			dbar = dbar / particles.size ();
-			if (get_trip ()->get_route ()->get_shape ()->get_path ().back ().dist_traveled - dbar < 500) {
+			if (path.back ().dist_traveled - dbar < 500) {
 				finished = true;
 				return;
 			}
+			std::clog << " done. Calculating likelihoods ...";
 
 			// Check likelihoods are decent
 			double lmax = -INFINITY, lsum = 0.0;
@@ -184,18 +198,23 @@ namespace gtfs {
 				lsum += exp(p.get_likelihood ());
 				status = 0;
 			}
-			std::clog << "\n > Max Likelihood = " << lmax;
+			std::clog << " > Max Likelihood = " << lmax;
 			if (lmax < -100 || (status == 1 && lmax < -20)) {
 				std::clog << " -> RESET";
 				reset ();
 			} else if (lmax < -20) {
 				std::clog << " -> ANOTHER CHANCE";
 				status = 1;
+			} else {
+				std::clog << " -> all ok";
 			}
 
 			// check that the variability of weights is sufficient ...
 			if (status == 0) {
+				std::clog << "\n -> Resampling ...";
+				std::cout.flush ();
 				resample (rng);
+				std::cout << " done.";
 				// double Neff = 0.0;
 				// for (auto& p: particles) Neff += exp(2 * p.get_likelihood () - 2 * log(lsum));
 				// Neff = pow(Neff, -1);
@@ -205,6 +224,7 @@ namespace gtfs {
 				// 	std::clog << " -> ENOUGH VARIABLITY - NO NEED TO RESAMPLE";
 				// }
 
+				std::cout << "\nDealing with segments ...";
 				// Check for finished segments ...
 				unsigned prevseg = 0;
 				for (unsigned i=0; i<travel_times.size (); i++) {
@@ -266,11 +286,13 @@ namespace gtfs {
 								travel_times[i].set_time (round (tbar));
 								std::cout << "\n -> Segment " << i << ": " << round (tbar) << "s";
 							} else {
+								travel_times[i].set_time (0.0);
 								std::cout << " ... no particles with travel time";
 							}
 						}
 					}
 				}
+				std::cout << "done.";
 				// loop through
 			}
 
@@ -475,11 +497,18 @@ namespace gtfs {
 	 * Reset vehicle's particles to zero-state.
 	 */
 	void Vehicle::reset (void) {
+		std::clog << "\nClearing " << particles.size () << " particles ...";
+		std::cout.flush ();
 		particles.clear ();
+		std::clog << " done.\nReserving memory for particles ...";
+		std::cout.flush ();
 		particles.reserve(n_particles);
+		std::clog << " done.\nInitializing new particles ...";
+		std::cout.flush ();
 		for (unsigned int i=0; i<n_particles; i++) {
 			particles.emplace_back(this);
 		}
+		std::clog << " done.";
 		status = -1;
 		delta = 0;
 	};

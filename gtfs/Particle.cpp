@@ -25,6 +25,7 @@ namespace gtfs {
 		auto sg = s->get_segments ();
 		if (sg.size () == 0) return;
 
+		// travel_times.resize (sg.size ());
 		for (unsigned i=0; i<sg.size (); i++)
 			travel_times.emplace_back ();
 
@@ -58,7 +59,9 @@ namespace gtfs {
 	/**
 	* Destructor for a particle.
 	*/
-	Particle::~Particle() {};
+	Particle::~Particle() {
+		std::clog << "\n ... deleting particle " << id;
+	};
 
 
 	// --- GETTERS

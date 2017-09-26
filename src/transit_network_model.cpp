@@ -196,7 +196,7 @@ int main (int argc, char* argv[]) {
 					// std::cout << "\n - vehicle " << v->second->get_id ();
 					if (v->second->get_trip () &&
 						v->second->get_trip ()->get_route ()) {
-						std::cout << "\n\n +------------------------------- Route ---+"
+						std::cout << "\n\n +------------------------------- Route ---+ "
 							<< v->second->get_trip ()->get_route ()->get_short_name ();
 						v->second->update (rng);
 					}
