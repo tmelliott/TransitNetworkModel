@@ -183,6 +183,8 @@ int main (int argc, char* argv[]) {
 			time_end (clockstart, wallstart);
 		}
 
+		std::cout.flush ();
+
 		// Update each vehicle's particles
 		{
 			// -> triggers particle transition -> resample
@@ -198,7 +200,9 @@ int main (int argc, char* argv[]) {
 						v->second->get_trip ()->get_route ()) {
 						std::cout << "\n\n +------------------------------- Route ---+ "
 							<< v->second->get_trip ()->get_route ()->get_short_name ();
+						std::cout.flush ();
 						v->second->update (rng);
+						std::cout.flush ();
 					}
 					std::clog.flush ();
 				}
@@ -552,6 +556,8 @@ bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> >
 		}
 		if (ent.has_vehicle ()) vs[vid]->update (ent.vehicle (), gtfs);
 		if (ent.has_trip_update ()) vs[vid]->update (ent.trip_update (), gtfs);
+		
+		std::cout.flush ();
 	}
 	std::cout << "\n";
 

@@ -60,7 +60,7 @@ namespace gtfs {
 	* Destructor for a particle.
 	*/
 	Particle::~Particle() {
-		std::clog << "\n ... deleting particle " << id;
+		// std::clog << "\n ... deleting particle " << id;
 	};
 
 

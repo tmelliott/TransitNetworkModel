@@ -393,9 +393,9 @@ namespace gtfs {
 		if (vp.has_position ()) {
 			// first check if the bus has moved very far ...
 			auto newpos = gps::Coord(vp.position ().latitude (),
-								  vp.position ().longitude ());
+								     vp.position ().longitude ());
 			dmaxtraveled = -1.0;
-  			if (position.distanceTo (newpos) < 50) {
+  			if (position.set () && position.distanceTo (newpos) < 50) {
 				// bus has traveled less than 50 metres ...
 				dmaxtraveled = position.distanceTo (newpos) < 50;
 			}

@@ -230,7 +230,7 @@ namespace gtfs {
 		int latest = 0;                    /*!< index of the latest position update; only adjust trajectory after this */
         std::vector<double> trajectory;    /*!< particle's distance trajectory, from 0 seconds into trip until end */
         std::vector<std::tuple<int,int> > stop_times; /*!< [arrival,dwell] time at each stop along route */
-        std::vector<pTravelTime> travel_times;                 /*!< [queue,travel] time at each intersection/segment along route */
+        std::vector<pTravelTime> travel_times;        /*!< [queue,travel] time at each intersection/segment along route */
 
 		double velocity = 0.0;       /*!< the particles velocity at latest time */
 		double log_likelihood = 0.0; /*!< the likelihood of the particle, given the data */
