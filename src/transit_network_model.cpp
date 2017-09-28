@@ -261,12 +261,14 @@ int main (int argc, char* argv[]) {
 				int L = v.second->get_travel_times ().size ();
 				for (auto tt: v.second->get_travel_times ()) {
 					l++;
-					double len = tt.segment->get_length ();
-					int spd = 0;
-					if (tt.time > 0)
-						spd = round (60.0 * 60.0 / 1000.0 * len / tt.time);
-					printf("\n > Segment %*d of %*d: %*d seconds (approx. %*d km/h) | %s",
-						2, l, 2, L, 3, tt.time, 3, spd, tt.complete ? "X" : " ");
+					// double len = tt.segment->get_length ();
+					// int spd = 0;
+					// if (tt.time > 0)
+					// 	spd = round (60.0 * 60.0 / 1000.0 * len / tt.time);
+					// printf("\n > Segment %*d of %*d: %*d m in %*d seconds (approx. %*d km/h) | %s",
+					// 	2, l, 2, L, 4, int (len + 0.5), 3, tt.time, 3, spd, tt.complete ? "X" : " ");
+					printf("\n > Segment %*d of %*d: %*d seconds | %s",
+						2, l, 2, L, 3, tt.time, tt.complete ? "X" : " ");
 						// << (tt.used ? "used" : "not used");
 				}
 
