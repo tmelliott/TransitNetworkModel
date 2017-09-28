@@ -10,8 +10,13 @@ namespace gps {
 	 * @param  Lng the longitude (-180, 180), degrees East/West from Greenwich, England
 	 */
 	Coord::Coord(double Lat, double Lng) {
+		if (fabs(Lat) > 90 || fabs(Lng) > 180) {
+			std::cerr << "Invalid latitude/longitude values.";
+			return;
+		}
 		lat = Lat;
 		lng = Lng;
+		isinitialized = true;
 	};
 
 	/**

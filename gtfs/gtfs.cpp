@@ -14,7 +14,7 @@ namespace gtfs {
 	GTFS::GTFS (std::string& dbname) : database_ (dbname), version_ ("") {
 		initialize ();
 	};
-	
+
 	/**
 	 * Constructor for the main GTFS object with a version number.
 	 *
@@ -432,7 +432,8 @@ namespace gtfs {
 	 */
 	gps::Coord get_coords (double distance, std::shared_ptr<Shape> shape) {
 		auto path = shape->get_path ();
-		for (unsigned int i=0; i<path.size (); i++) {
+		for (unsigned int i=0; i<path.size ()-1; i++) {
+			if (distance == path[i].dist_traveled) return path[i].pt;
 			if (path[i+1].dist_traveled > distance) {
 				return path[i].pt.destinationPoint (
 					distance - path[i].dist_traveled,
@@ -442,6 +443,6 @@ namespace gtfs {
 			}
 		}
 
-		return gps::Coord (0, 0);
+		return path.back ().pt;
 	};
 };

@@ -22,9 +22,12 @@ namespace gps {
 	 * Coordinate class represents lat/lng points on the Earth.
 	 */
   	class Coord {
+	private:
+		bool isinitialized = false;
+
 	public:
-      	double lat = 0.0; /*!< the latitude value (-90,90) (degrees North/South of the equator) */
-      	double lng = 0.0; /*!< the longitude value (-180,180) (degrees East/West of Greenwich) */
+      	double lat; /*!< the latitude value (-90,90) (degrees North/South of the equator) */
+      	double lng; /*!< the longitude value (-180,180) (degrees East/West of Greenwich) */
       	Coord() {};
       	Coord(double lat, double lng);
 
@@ -37,8 +40,8 @@ namespace gps {
 		std::vector<double> projectFlat(gps::Coord origin) const;
 		nearPt nearestPoint (std::vector<gps::Coord>& path);
 
-		bool set (void) const {
-			return lat != 0.0 && lng != 0.0;
+		bool initialized (void) const {
+			return isinitialized;
 		}
 
 		bool operator==(const Coord &p) const;

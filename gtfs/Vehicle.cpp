@@ -160,9 +160,10 @@ namespace gtfs {
 	 */
 	void Vehicle::update ( sampling::RNG& rng ) {
 		if (!updated || finished) return;
-		std::clog << "\n - Updating vehicle " << id << ": ("
-			<< travel_times.size () << " segments)";
+		// std::clog << "\n - Updating vehicle " << id << ": ("
+		// 	<< travel_times.size () << " segments)";
 		updated = false;
+
 
 		if (!trip) return;
 		auto route = trip->get_route ();
@@ -174,12 +175,12 @@ namespace gtfs {
 
 		if (newtrip) status = -1;
 		if (status >= 0) {
-			std::clog << "\n + In progress";
+			// std::clog << "\n + In progress";
 
-			std::clog << "\n --- mutating particles ...";
+			// std::clog << "\n --- mutating particles ...";
 			std::cout.flush ();
 			for (auto& p: particles) p.mutate (rng);
-			std::clog << " done. Calculating position ...";
+			// std::clog << " done. Calculating position ...";
 
 			double dbar = 0.0;
 			for (auto& p: particles) dbar += p.get_distance ();
@@ -188,7 +189,7 @@ namespace gtfs {
 				finished = true;
 				return;
 			}
-			std::clog << " done. Calculating likelihoods ...";
+			// std::clog << " done. Calculating likelihoods ...";
 
 			// Check likelihoods are decent
 			double lmax = -INFINITY, lsum = 0.0;
@@ -377,8 +378,6 @@ namespace gtfs {
 	 * @param gtfs a GTFS object containing the GTFS static data
 	 */
 	void Vehicle::update (const transit_realtime::VehiclePosition &vp, GTFS &gtfs) {
-		// std::clog << "Updating vehicle location!\n";
-
 		newtrip = true;
 		updated = false;
 		if (vp.has_trip ()) { // TripDescriptor -> (trip_id, route_id)
@@ -392,17 +391,19 @@ namespace gtfs {
 		}
 		if (vp.has_position ()) {
 			// first check if the bus has moved very far ...
-			auto newpos = gps::Coord(vp.position ().latitude (),
+			gps::Coord newpos;
+			newpos = gps::Coord(vp.position ().latitude (),
 								     vp.position ().longitude ());
 			dmaxtraveled = -1.0;
-  			if (position.set () && position.distanceTo (newpos) < 50) {
+  			if (position.initialized () && position.distanceTo (newpos) < 50) {
 				// bus has traveled less than 50 metres ...
 				dmaxtraveled = position.distanceTo (newpos) < 50;
 			}
 			position = newpos;
 		}
 		if (vp.has_timestamp () && timestamp != vp.timestamp ()) {
-			delta = vp.timestamp () - timestamp;
+			// only set delta if timestamp was set
+			delta = timestamp == 0 ? 0 : vp.timestamp () - timestamp;
 			timestamp = vp.timestamp ();
 			updated = true;
 		}
@@ -497,18 +498,18 @@ namespace gtfs {
 	 * Reset vehicle's particles to zero-state.
 	 */
 	void Vehicle::reset (void) {
-		std::clog << "\nClearing " << particles.size () << " particles ...";
-		std::cout.flush ();
+		// std::clog << "\nClearing " << particles.size () << " particles ...";
+		// std::cout.flush ();
 		particles.clear ();
-		std::clog << " done.\nReserving memory for particles ...";
-		std::cout.flush ();
+		// std::clog << " done.\nReserving memory for particles ...";
+		// std::cout.flush ();
 		particles.reserve(n_particles);
-		std::clog << " done.\nInitializing new particles ...";
-		std::cout.flush ();
+		// std::clog << " done.\nInitializing new particles ...";
+		// std::cout.flush ();
 		for (unsigned int i=0; i<n_particles; i++) {
 			particles.emplace_back(this);
 		}
-		std::clog << " done.";
+		// std::clog << " done.";
 		status = -1;
 		delta = 0;
 	};

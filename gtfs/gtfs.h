@@ -148,7 +148,7 @@ namespace gtfs {
 		std::vector<Particle> particles; /*!< the particles associated with the vehicle */
 
 		bool newtrip; /*!< if this is true, the next `update()` will reinitialise the particles AFTER finishing!!! */
-        bool finished;
+        bool finished = false;
 
 		// GTFS Realtime Fields
 		std::shared_ptr<Trip> trip;     /*!< the ID of the trip */
@@ -157,7 +157,7 @@ namespace gtfs {
 		boost::optional<uint64_t> departure_time; /*!< departure time at last stop */
 		boost::optional<int> delay; /*!< arrival/departure delay at most recent stop */
 		gps::Coord position;     /*!< last reported GPS position */
-		uint64_t timestamp;      /*!< time of last (position) observation */
+		uint64_t timestamp = 0;      /*!< time of last (position) observation */
         int delta = 0;           /*!< time since the last observation */
 		uint64_t first_obs;      /*!< the time of the first observation for that trip; used to pin down start time */
 		double approx_distance; /*!< approximate distance to determine if traveling correct direction */
@@ -487,9 +487,11 @@ namespace gtfs {
 		 * @param segment  the segment ID
 		 * @param distance how far into the overall shape this segment starts at
 		 */
-		ShapeSegment (std::shared_ptr<Segment> segment, double distance) : segment (segment), shape_dist_traveled (distance) {};
 		std::shared_ptr<Segment> segment; /*!< pointer to the segment */
 		double shape_dist_traveled;       /*!< distance along route shape at beginning of this segment */
+
+		ShapeSegment (std::shared_ptr<Segment> segment, double distance)
+			: segment (segment), shape_dist_traveled (distance) {};
 	};
 
 	/**
@@ -759,13 +761,11 @@ namespace gtfs {
      * Only consider travel times that have been initialized AND completed.
      */
     struct pTravelTime {
-        int time;                         /*!< time, in seconds, taken to travel segment */
-		bool complete;                    /*!< true once particle has finished with the segment */
-		bool initialized;                 /*!< true once particle starts AT THE BEGINNING of segment */
+        int time = 0;               /*!< time, in seconds, taken to travel segment */
+		bool complete = false;      /*!< true once particle has finished with the segment */
+		bool initialized = false;   /*!< true once particle starts AT THE BEGINNING of segment */
 
-		pTravelTime () : time (0), complete (false) , initialized (false) {};
-		// pTravelTime (std::shared_ptr<Segment> seg) :
-		// 	segment (seg), time (0), complete (false), initialized (false) {};
+		// pTravelTime () : time (0), complete (false) , initialized (false) {};
     };
 
 

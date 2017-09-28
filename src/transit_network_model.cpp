@@ -158,7 +158,9 @@ int main (int argc, char* argv[]) {
 	f.close ();
 
 	time_t curtime;
-	while (forever) {
+	int repi = 20;
+	while (forever && repi > 0) {
+		// repi--;
 		curtime = time (NULL);
 
 		// Load GTFS feed -> vehicles
@@ -245,21 +247,27 @@ int main (int argc, char* argv[]) {
 			std::cout << "\n * Updating road network with latest travel times ...";
 			// loop over VEHICLES that were updated this iteration (?)
 			for (auto& v: vehicles) {
-				if (!v.second->get_trip ()) continue;
-				if (!v.second->get_trip ()->get_route ()) continue;
-				if (!v.second->get_trip ()->get_route ()->get_shape ()) continue;
-				if (v.second->get_trip ()->get_route ()->get_shape ()->get_segments ().size () == 0) continue;
+				auto t = v.second->get_trip ();
+				if (!t) continue;
+				auto r = t->get_route ();
+				if (!r) continue;
+				auto sh = r->get_shape ();
+				if (!sh) continue;
+				auto sgs = sh->get_segments ();
+				if (sgs.size () == 0) continue;
 				std::cout << "\n - Vehicle " << v.second->get_id () << " travel times ("
-					<< v.second->get_trip ()->get_route ()->get_shape ()->get_segments ().size ()
-					<< ")";
+					<< sgs.size () << ")";
 				int l = 0;
 				int L = v.second->get_travel_times ().size ();
 				for (auto tt: v.second->get_travel_times ()) {
 					l++;
-					std::cout << "\n > Segment " << l << " of " << L
-						<< ": " << tt.time << "s | "
-						<< (tt.complete ? "complete" : "not complete") << " | "
-						<< (tt.used ? "used" : "not used");
+					double len = tt.segment->get_length ();
+					int spd = 0;
+					if (tt.time > 0)
+						spd = round (60.0 * 60.0 / 1000.0 * len / tt.time);
+					printf("\n > Segment %*d of %*d: %*d seconds (approx. %*d km/h) | %s",
+						2, l, 2, L, 3, tt.time, 3, spd, tt.complete ? "X" : " ");
+						// << (tt.used ? "used" : "not used");
 				}
 
 			// 	// only use segments that are LESS than MIN segment index
@@ -355,7 +363,7 @@ int main (int argc, char* argv[]) {
 
 		// Write vehicle positions to protobuf
 		// + ETAs in future
-		{
+		if (false) {
 			time_start (clockstart, wallstart);
 			std::cout << "\n * Writing to buffer ...";
 			std::cout.flush ();
@@ -512,8 +520,8 @@ bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> >
 	sqlite3_stmt* tripskeep;
 	std::string qry = "SELECT trip_id FROM trips WHERE route_id IN "
 		"(SELECT route_id FROM routes WHERE route_short_name IN "
-		"('274','277','224','222','258','NEX','129'))";
-		// "('274'))";
+		// "('274','277','224','222','258','NEX','129'))";
+		"('274', '277'))";
 	if (sqlite3_open (gtfs.get_dbname ().c_str (), &db)) {
 		std::cerr << "\n x oops...";
 	} else if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &tripskeep, 0) != SQLITE_OK) {
@@ -556,7 +564,7 @@ bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> >
 		}
 		if (ent.has_vehicle ()) vs[vid]->update (ent.vehicle (), gtfs);
 		if (ent.has_trip_update ()) vs[vid]->update (ent.trip_update (), gtfs);
-		
+
 		std::cout.flush ();
 	}
 	std::cout << "\n";
