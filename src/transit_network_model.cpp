@@ -291,6 +291,28 @@ int main (int argc, char* argv[]) {
 					seg->set_travel_time_var (s.second->get_travel_time_var ());
 					seg->set_timestamp (s.second->get_timestamp ());
 				}
+				gps::Coord pt1;
+				transit_network::Position* pstart = seg->mutable_start ();
+				if (s.second->fromInt ()) {
+					if (s.second->get_from ()) pt1 = s.second->get_from ()->get_pos ();
+				} else {
+					if (s.second->get_start ()) pt1 = s.second->get_start ()->get_pos ();
+				}
+				if (pt1.initialized ()) {
+					pstart->set_lat ( pt1.lat );
+					pstart->set_lng ( pt1.lng );
+				}
+				gps::Coord pt2;
+				transit_network::Position* pend = seg->mutable_end ();
+				if (s.second->toInt ()) {
+					if (s.second->get_to ()) pt2 = s.second->get_to ()->get_pos ();
+				} else {
+					if (s.second->get_end ()) pt2 = s.second->get_end ()->get_pos ();
+				}
+				if (pt2.initialized ()) {
+					pend->set_lat ( pt2.lat );
+					pend->set_lng ( pt2.lng );
+				}
 			}
 
 			std::fstream output ("gtfs_network.pb",

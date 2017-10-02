@@ -577,11 +577,11 @@ namespace gtfs {
 		/** @return the starting intersection */
 		std::shared_ptr<Intersection> get_from (void) { return from_id; };
 		/** @return the ending intersection */
-		std::shared_ptr<Intersection> get_to (void) { return from_id; };
+		std::shared_ptr<Intersection> get_to (void) { return to_id; };
 		/** @return the starting stop */
-		std::shared_ptr<Intersection> get_start (void) { return from_id; };
+		std::shared_ptr<Stop> get_start (void) { return start_at; };
 		/** @return the ending stop */
-		std::shared_ptr<Intersection> get_end (void) { return from_id; };
+		std::shared_ptr<Stop> get_end (void) { return end_at; };
 		/** @return the segment type (integer) */
 		int get_type (void) const { return type; };
 		/** @return logical, if the segment starts at an intersection */

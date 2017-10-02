@@ -100,4 +100,6 @@ message Segment {
 	required int64 travel_time = 2;
 	required int64 travel_time_var = 3;
 	required uint64 timestamp = 4;
+	optional Position start = 5;
+	optional Position end = 6;
 }

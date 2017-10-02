@@ -110,3 +110,52 @@ while (TRUE) {
     par(o)
     Sys.sleep(2)
 }
+
+
+
+
+## Plot the network map ...
+library(sp)
+library(magrittr)
+library(ggplot2)
+library(dplyr)
+library(ggmap)
+
+graph <- function() {
+    nw <- read(transit_network.Feed, "../build/gtfs_network.pb")
+    lines <- lapply(nw$segments, function(x) {
+        line <- Line(cbind(c(x$start$lng, x$end$lng),
+                           c(x$start$lat, x$end$lat)))
+        lines <- Lines(list(line), ID = x$segment_id)
+        lines
+    })
+    sl <- SpatialLines(lines, proj4string = CRS("+init=epsg:4326"))
+    lens <- sapply(lines, LinesLength, longlat = TRUE)
+    segs <- cbind(do.call(rbind, lapply(nw$segments, function(x) {
+        data.frame(id = as.character(x$segment_id),
+                   travel.time = ifelse(x$travel_time == 0, NA, x$travel_time),
+                   var = ifelse(x$travel_time_var == 0, NA, x$travel_time_var),
+                   timestamp = x$timestamp, row.names = x$segment_id)
+    })), length = lens)
+    segs$speed <- pmin(100, segs$length / segs$travel.time * 60 * 60)
+    
+    spdf <- SpatialLinesDataFrame(sl, segs)
+    segd <- fortify(spdf) %>%
+        left_join(segs, by = "id") %>%
+        filter(!is.na(travel.time))
+    xr <- extendrange(segd$long[!is.na(segd$travel.time)])
+    yr <- extendrange(segd$lat[!is.na(segd$travel.time)])
+    bbox <- c(xr[1], yr[1], xr[2], yr[2])
+    akl <- get_stamenmap(bbox, zoom = 12, maptype = "toner-background")
+    
+    p <- ggmap(akl, darken = 0.85) +
+        geom_path(aes(long, lat, group = group, colour = speed),
+                  data = segd, alpha = 0.7, lineend = "round") +
+        scale_colour_viridis(option = "plasma", begin = 0.2)
+    dev.hold()
+    print(p)
+    dev.flush()
+    invisible(p)
+}
+
+while (TRUE) { try(graph()); Sys.sleep(1) }
