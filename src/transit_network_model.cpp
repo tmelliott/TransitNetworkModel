@@ -257,10 +257,9 @@ int main (int argc, char* argv[]) {
 				if (sgs.size () == 0) continue;
 				std::cout << "\n - Vehicle " << v.second->get_id () << " travel times ("
 					<< sgs.size () << ")";
-				int l = 0;
 				int L = v.second->get_travel_times ().size ();
-				for (auto tt: v.second->get_travel_times ()) {
-					l++;
+				for (int l=0; l<L; l++) {
+					gtfs::TravelTime* tt = v.second->get_travel_time (l);
 					// double len = tt.segment->get_length ();
 					// int spd = 0;
 					// if (tt.time > 0)
@@ -268,80 +267,38 @@ int main (int argc, char* argv[]) {
 					// printf("\n > Segment %*d of %*d: %*d m in %*d seconds (approx. %*d km/h) | %s",
 					// 	2, l, 2, L, 4, int (len + 0.5), 3, tt.time, 3, spd, tt.complete ? "X" : " ");
 					printf("\n > Segment %*d of %*d: %*d seconds | %s",
-						2, l, 2, L, 3, tt.time, tt.complete ? "X" : " ");
-						// << (tt.used ? "used" : "not used");
+						2, l, 2, L, 3, tt->time, tt->used && tt->complete ? "X" : (tt->complete ? "o" : " "));
+					if (tt->time > 0 && tt->complete && !tt->used) {
+						std::cout << " -> adding ";
+						tt->use ();
+						// tt.used = true;
+					}
 				}
-
-			// 	// only use segments that are LESS than MIN segment index
-			// 	int minSeg = v.second->get_trip ()->get_route ()->get_shape ()->get_segments ().size ();
-			// 	for (auto& p: v.second->get_particles ()) {
-			// 		if (p.get_segment_index () < minSeg) minSeg = p.get_segment_index ();
-			// 	}
-			// 	// std::cout << " - " << minSeg;
-			// 	std::vector<int> tts;
-			// 	std::vector<double> wts;
-			// 	tts.reserve (v.second->get_particles ().size ());
-			// 	for (int i=0; i<minSeg; i++) {
-			// 		tts.clear ();
-			// 		wts.clear ();
-			// 		std::shared_ptr<gtfs::Segment> segi;
-			// 		for (auto& p: v.second->get_particles ()) {
-			// 			// if COMPLETE && INITIALIZED then append travel time to segment's data
-			// 			// AND uninitialize the particle's travel time for that segment
-			// 			// so it doesn't get reused next time
-			// 			auto tt = p.get_travel_time (i);
-			// 			if (!tt) continue;
-			// 			if (!tt->initialized || !tt->complete) continue; // if any aren't, skip anyway!
-			// 			// if (!tt->initialized) continue; // if any aren't, skip anyway!
-			// 			if (!segi) segi = tt->segment;
-			// 			tts.push_back (tt->time);
-			// 			wts.push_back (p.get_weight ());
-			// 		}
-			// 		// std::cout << " (" << tts.size () << " vs "
-			// 		// 	<< v.second->get_particles ().size () << ")?";
-			// 		if (tts.size () != v.second->get_particles ().size ()) continue;
-			// 		// if (tts.size () < 10) continue;
-			// 		double ttmean = 0;
-			// 		for (unsigned j=0; j<tts.size (); j++) ttmean += tts[j] * wts[j];
-			// 		if (ttmean == 0) continue;
-			// 		double ttvar = 0;
-			// 		for (unsigned j=0; j<tts.size (); j++) ttvar += wts[j] * pow(tts[j] - ttmean, 2);
-			// 		// double ttmean = std::accumulate(tts.begin (), tts.end (), 0.0) / tts.size ();
-			// 		// double sqdiff = 0;
-			// 		// for (aut trajectory length: " << trajectory.size ()
-		// 	<< ", latest = " << latest << ", DMAX = " << Dmax
-		// 	<< " ==> distance = " <<o& t: tts) sqdiff += pow(t - ttmean, 2);
-			// 		// double var = sqdiff / tts.size ();
-			// 		// std::cout << "\n + Segment " << i << ": " << ttmean << " (" << sqrt(var) << ")";
-			// 		segi->add_data (ttmean, ttvar);
-			// 		// give data to segment
-			// 		for (auto& p: v.second->get_particles ()) p.reset_travel_time (i);
-			// 	}
 			}
 
-			// // Update segments and write to protocol buffer
-			// transit_network::Feed feed;
-			// // std::cout << "\n ~~~~~~~~~~~~~~~~~~~ \n";
-			// for (auto& s: gtfs.get_segments ()) {
-			// 	if (s.second->has_data ()) {
-			// 		// std::cout << "\n + Update segment " << s.first << ": ";
-			// 		s.second->update (curtime);
-			// 	}
-			// 	transit_network::Segment* seg = feed.add_segments ();
-			// 	seg->set_segment_id (s.second->get_id ());
-			// 	if (s.second->is_initialized ()) {
-			// 		seg->set_travel_time (s.second->get_travel_time ());
-			// 		seg->set_travel_time_var (s.second->get_travel_time_var ());
-			// 		seg->set_timestamp (s.second->get_timestamp ());
-			// 	}
-			// }
-			//
-			// std::fstream output ("gtfs_network.pb",
-			// 					 std::ios::out | std::ios::trunc | std::ios::binary);
-			// if (!feed.SerializeToOstream (&output)) {
-			// 	std::cerr << "\n x Failed to write ETA feed.\n";
-			// }
-			//
+			// Update segments and write to protocol buffer
+			transit_network::Feed feed;
+			// std::cout << "\n ~~~~~~~~~~~~~~~~~~~ \n";
+			for (auto& s: gtfs.get_segments ()) {
+				if (s.second->has_data ()) {
+					std::cout << "\n + Update segment " << s.first << ": ";
+					s.second->update (curtime);
+				}
+				transit_network::Segment* seg = feed.add_segments ();
+				seg->set_segment_id (s.second->get_id ());
+				if (s.second->is_initialized ()) {
+					seg->set_travel_time (s.second->get_travel_time ());
+					seg->set_travel_time_var (s.second->get_travel_time_var ());
+					seg->set_timestamp (s.second->get_timestamp ());
+				}
+			}
+
+			std::fstream output ("gtfs_network.pb",
+								 std::ios::out | std::ios::trunc | std::ios::binary);
+			if (!feed.SerializeToOstream (&output)) {
+				std::cerr << "\n x Failed to write ETA feed.\n";
+			}
+
 			// google::protobuf::ShutdownProtobufLibrary ();
 
 			std::cout << "\n";
@@ -482,7 +439,7 @@ int main (int argc, char* argv[]) {
 		}
 
 
-		if (forever) std::this_thread::sleep_for (std::chrono::milliseconds (10 * 1000));
+		if (forever) std::this_thread::sleep_for (std::chrono::milliseconds (1 * 1000));
 	}
 
 	return 0;
@@ -522,8 +479,8 @@ bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> >
 	sqlite3_stmt* tripskeep;
 	std::string qry = "SELECT trip_id FROM trips WHERE route_id IN "
 		"(SELECT route_id FROM routes WHERE route_short_name IN "
-		// "('274','277','224','222','258','NEX','129'))";
-		"('274', '277'))";
+		"('274','277','224','222','258','NEX','129'))";
+		// "('274', '277'))";
 	if (sqlite3_open (gtfs.get_dbname ().c_str (), &db)) {
 		std::cerr << "\n x oops...";
 	} else if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &tripskeep, 0) != SQLITE_OK) {

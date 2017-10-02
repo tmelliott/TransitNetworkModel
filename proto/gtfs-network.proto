@@ -15,6 +15,9 @@ message Feed {
     repeated State history = 3;
     // smoothed history
     repeated State trace = 4;
+
+	// network state (segments)
+	repeated Segment segments = 5;
 }
 
 message Status {
@@ -90,4 +93,11 @@ message State {
     optional double later = 6;
     optional double quitelate = 7;
     optional double verylate = 8;
+}
+
+message Segment {
+	required int64 segment_id = 1;
+	required int64 travel_time = 2;
+	required int64 travel_time_var = 3;
+	required uint64 timestamp = 4;
 }

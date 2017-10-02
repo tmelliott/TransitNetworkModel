@@ -140,7 +140,7 @@ namespace gtfs {
 	};
 
 	/** @return the vehicle's travel time along segment i */
-	const TravelTime* Vehicle::get_travel_time (unsigned i) const {
+	TravelTime* Vehicle::get_travel_time (unsigned i) {
 		if (i >= travel_times.size ()) return nullptr;
 		return &travel_times[i];
 	};
@@ -273,6 +273,7 @@ namespace gtfs {
 						std::cout << " ... and is now on segment " << curseg;
 						for (unsigned i=prevseg; i<curseg; i++) {
 							// get details for all intermediate segments
+							if (travel_times[i].used) continue;
 							double tbar = 0.0;
 							int Np = 0;
 							for (auto& p: particles) {

@@ -8,7 +8,7 @@ print.gtfs.segment <- function(x, ...) {
                 x$id, x$mean, x$var, format(x$ts, "%T")))
 }
 
-readProtoFiles(dir="../protobuf")
+readProtoFiles(dir = "../proto")
 
 plotRoute <- function(routeid, maxSpeed = 100, .max = maxSpeed * 1000 / 60 / 60) {
     tt <- function(x) as.POSIXct(x, origin="1970-01-01")
@@ -20,13 +20,13 @@ plotRoute <- function(routeid, maxSpeed = 100, .max = maxSpeed * 1000 / 60 / 60)
                        ts   = tt(x$timestamp)), class = "gtfs.segment")  
     }); names(segments) <- sapply(segments, function(x) x$id)
 
-    vs <- read(transit_etas.Feed, "../build/gtfs_etas.pb")$trips
-    vs <- do.call(rbind, lapply(vs, function(x) {
-        data.frame(vehicle_id = x$vehicle_id, trip_id = x$trip_id,
-                   route_id = x$route_id,
-                   distance = x$distance_into_trip,
-                   velocity = x$velocity)
-    }))
+    ## vs <- read(transit_etas.Feed, "../build/gtfs_etas.pb")$trips
+    ## vs <- do.call(rbind, lapply(vs, function(x) {
+    ##     data.frame(vehicle_id = x$vehicle_id, trip_id = x$trip_id,
+    ##                route_id = x$route_id,
+    ##                distance = x$distance_into_trip,
+    ##                velocity = x$velocity)
+    ## }))
 
 
     ## Choose a route, fetch its shape and segments, and draw what's going on ...
@@ -108,5 +108,5 @@ while (TRUE) {
     ## points(pp, rep(0, length(pp)), col = ifelse(px == 0, "green", "magenta"), cex = 1, pch = 4)
     dev.flush()
     par(o)
-    Sys.sleep(10)
+    Sys.sleep(2)
 }

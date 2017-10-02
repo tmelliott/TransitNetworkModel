@@ -202,7 +202,7 @@ namespace gtfs {
 		// const std::vector<DwellTime>& get_dwell_times () const;
 		// const DwellTime* get_dwell_time (unsigned i) const;
 		const std::vector<TravelTime>& get_travel_times () const;
-		const TravelTime* get_travel_time (unsigned i) const;
+		TravelTime* get_travel_time (unsigned i);
 
 
 		// Methods
@@ -519,7 +519,7 @@ namespace gtfs {
 		double travel_time_var = 0;         /*!< the variance of speed along the segment */
 		uint64_t timestamp = 0;             /*!< updated at timestamp */
 
-		std::vector<std::tuple<double,double> > data; /*!< estimates of travel time for recent vehicles */
+		std::vector<int> data; /*!< estimates of travel time for recent vehicles */
 
 	public:
 		/**
@@ -596,7 +596,7 @@ namespace gtfs {
         const uint64_t& get_timestamp (void) const { return timestamp; };
 
 		// --- METHODS
-		void add_data (double mean, double variance);
+		void add_data (int mean);
 		void update (time_t t);
 	};
 
@@ -747,12 +747,17 @@ namespace gtfs {
 			time = t;
 			complete = true;
 		};
+
 		/** Get the travel time for the segment (and set used) */
 		int get_time (void) {
-			// set_time ();
 			used = true;
 			return time;
 		};
+
+		/** Give the data to the segment */
+		void use (void) {
+			segment->add_data (get_time ());
+		}
 	};
 
     /**
