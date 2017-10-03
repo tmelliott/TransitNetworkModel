@@ -122,39 +122,52 @@ library(dplyr)
 library(ggmap)
 
 graph <- function() {
-    nw <- read(transit_network.Feed, "../build/gtfs_network.pb")
-    lines <- lapply(nw$segments, function(x) {
+    nw <- read(transit_network.Feed, "~/Dropbox/gtfs/nws.pb")
+    ## lines <- lapply(nw$segments, function(x) {
+    ##     line <- Line(cbind(c(x$start$lng, x$end$lng),
+    ##                        c(x$start$lat, x$end$lat)))
+    ##     lines <- Lines(list(line), ID = x$segment_id)
+    ##     lines
+    ## })
+    ## sl <- SpatialLines(lines, proj4string = CRS("+init=epsg:4326"))
+    ## lens <- sapply(lines, LinesLength, longlat = TRUE)
+    segs <- do.call(rbind, lapply(nw$segments, function(x) {
         line <- Line(cbind(c(x$start$lng, x$end$lng),
                            c(x$start$lat, x$end$lat)))
         lines <- Lines(list(line), ID = x$segment_id)
-        lines
-    })
-    sl <- SpatialLines(lines, proj4string = CRS("+init=epsg:4326"))
-    lens <- sapply(lines, LinesLength, longlat = TRUE)
-    segs <- cbind(do.call(rbind, lapply(nw$segments, function(x) {
+        len <- LinesLength(lines, TRUE)
         data.frame(id = as.character(x$segment_id),
                    travel.time = ifelse(x$travel_time == 0, NA, x$travel_time),
                    var = ifelse(x$travel_time_var == 0, NA, x$travel_time_var),
-                   timestamp = x$timestamp, row.names = x$segment_id)
-    })), length = lens)
+                   timestamp = x$timestamp,
+                   x.start = x$start$lng, x.end = x$end$lng,
+                   y.start = x$start$lat, y.end = x$end$lat,
+                   length = len)
+    }))
     segs$speed <- pmin(100, segs$length / segs$travel.time * 60 * 60)
     
-    spdf <- SpatialLinesDataFrame(sl, segs)
-    segd <- fortify(spdf) %>%
-        left_join(segs, by = "id") %>%
-        filter(!is.na(travel.time))
-    xr <- extendrange(segd$long[!is.na(segd$travel.time)])
-    yr <- extendrange(segd$lat[!is.na(segd$travel.time)])
-    bbox <- c(xr[1], yr[1], xr[2], yr[2])
-    akl <- get_stamenmap(bbox, zoom = 12, maptype = "toner-background")
+    ## spdf <- SpatialLinesDataFrame(sl, segs)
+    ## segd <- fortify(spdf) %>%
+    ##     left_join(segs, by = "id") %>%
+    ##     filter(!is.na(travel.time))
+    segd <- segs %>%
+        filter(!is.na(travel.time)) %>%
+        filter(x.start != x.end) %>% filter(y.start != y.end)
+    ## xr <- extendrange(range(segd$x.start, segd$x.end))
+    ## yr <- extendrange(range(segd$y.start, segd$y.end))
+    ## bbox <- c(xr[1], yr[1]+0.2, xr[2], yr[2]-0.1)
+    ## akl <- get_stamenmap(bbox, zoom = 10, maptype = "toner-background")
     
     p <- ggmap(akl, darken = 0.85) +
-        geom_path(aes(long, lat, group = group, colour = speed),
-                  data = segd, alpha = 0.7, lineend = "round") +
+        coord_cartesian() +
+        geom_curve(aes(x.start, y.start, xend = x.end, yend = y.end,
+                       colour = speed),
+                   curvature = -0.1,
+                   data = segd, alpha = 0.5, lineend = "round") +
         scale_colour_viridis(option = "plasma", begin = 0.2)
-    dev.hold()
+    pdf("~/Dropbox/gtfs/nws.pdf", width = 10, height = 12)
     print(p)
-    dev.flush()
+    dev.off()
     invisible(p)
 }
 

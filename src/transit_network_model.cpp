@@ -193,7 +193,7 @@ int main (int argc, char* argv[]) {
 			time_start (clockstart, wallstart);
 			std::cout << "\n * Running particle filter ...\n";
 			std::cout.flush ();
-			#pragma omp parallel for schedule(static) num_threads(numcore)
+			#pragma omp parallel for schedule(dynamic, 20) num_threads(numcore)
 			for (unsigned i=0; i<vehicles.bucket_count (); i++) {
 				for (auto v = vehicles.begin (i); v != vehicles.end (i); v++) {
 					if (v->second->is_finished ()) continue;
