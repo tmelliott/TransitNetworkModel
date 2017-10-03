@@ -315,7 +315,7 @@ int main (int argc, char* argv[]) {
 				}
 			}
 
-			std::fstream output ("gtfs_network.pb",
+			std::fstream output ("networkstate.pb",
 								 std::ios::out | std::ios::trunc | std::ios::binary);
 			if (!feed.SerializeToOstream (&output)) {
 				std::cerr << "\n x Failed to write ETA feed.\n";
