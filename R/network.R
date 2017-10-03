@@ -171,4 +171,4 @@ graph <- function() {
     invisible(p)
 }
 
-while (TRUE) { try(graph()); Sys.sleep(1) }
+while (TRUE) { try(graph()); Sys.sleep(10) }
