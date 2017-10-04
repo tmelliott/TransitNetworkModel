@@ -87,29 +87,29 @@ plotRoute <- function(routeid, maxSpeed = 100, .max = maxSpeed * 1000 / 60 / 60)
     invisible(segs)
 }
 
-con <- dbConnect(SQLite(), "../gtfs.db")
-NEX <- dbGetQuery(con, "SELECT * FROM routes WHERE route_short_name='NEX'")
-r274 <- dbGetQuery(con, "SELECT * FROM routes WHERE route_short_name='274'")
-dbDisconnect(con)
+## con <- dbConnect(SQLite(), "../gtfs.db")
+## NEX <- dbGetQuery(con, "SELECT * FROM routes WHERE route_short_name='NEX'")
+## r274 <- dbGetQuery(con, "SELECT * FROM routes WHERE route_short_name='274'")
+## dbDisconnect(con)
 
-while (TRUE) {
-    ## ps <- read.csv("../build/PARTICLES.csv",
-    ##                colClasses = c("factor", "factor", "integer", "factor", "factor",
-    ##                               "numeric", "numeric", "integer", "numeric", "numeric", "numeric", "integer"))
-    o <- par(mfrow = c(2, 1), mar = c(5.1, 2.1, 2.1, 2.1))
-    dev.hold()
-    plotRoute(ri <- r274$route_id[2])
-    ## pp <- with(ps[ps$route_id == ri, ], tapply(distance, factor(vehicle_id), mean))
-    ## px <- with(ps[ps$route_id == ri, ], tapply(parent_id, factor(vehicle_id), mean))
-    ## points(pp, rep(0, length(pp)), col = ifelse(px == 0, "green", "magenta"), cex = 1, pch = 4)
-    plotRoute(ri <- r274$route_id[4])
-    ## pp <- with(ps[ps$route_id == ri, ], tapply(distance, factor(vehicle_id), mean))
-    ## px <- with(ps[ps$route_id == ri, ], tapply(parent_id, factor(vehicle_id), mean))
-    ## points(pp, rep(0, length(pp)), col = ifelse(px == 0, "green", "magenta"), cex = 1, pch = 4)
-    dev.flush()
-    par(o)
-    Sys.sleep(2)
-}
+## while (TRUE) {
+##     ## ps <- read.csv("../build/PARTICLES.csv",
+##     ##                colClasses = c("factor", "factor", "integer", "factor", "factor",
+##     ##                               "numeric", "numeric", "integer", "numeric", "numeric", "numeric", "integer"))
+##     o <- par(mfrow = c(2, 1), mar = c(5.1, 2.1, 2.1, 2.1))
+##     dev.hold()
+##     plotRoute(ri <- r274$route_id[2])
+##     ## pp <- with(ps[ps$route_id == ri, ], tapply(distance, factor(vehicle_id), mean))
+##     ## px <- with(ps[ps$route_id == ri, ], tapply(parent_id, factor(vehicle_id), mean))
+##     ## points(pp, rep(0, length(pp)), col = ifelse(px == 0, "green", "magenta"), cex = 1, pch = 4)
+##     plotRoute(ri <- r274$route_id[4])
+##     ## pp <- with(ps[ps$route_id == ri, ], tapply(distance, factor(vehicle_id), mean))
+##     ## px <- with(ps[ps$route_id == ri, ], tapply(parent_id, factor(vehicle_id), mean))
+##     ## points(pp, rep(0, length(pp)), col = ifelse(px == 0, "green", "magenta"), cex = 1, pch = 4)
+##     dev.flush()
+##     par(o)
+##     Sys.sleep(2)
+## }
 
 
 
@@ -153,10 +153,10 @@ graph <- function() {
     segd <- segs %>%
         filter(!is.na(travel.time)) %>%
         filter(x.start != x.end) %>% filter(y.start != y.end)
-    ## xr <- extendrange(range(segd$x.start, segd$x.end))
-    ## yr <- extendrange(range(segd$y.start, segd$y.end))
-    ## bbox <- c(xr[1], yr[1]+0.2, xr[2], yr[2]-0.1)
-    ## akl <- get_stamenmap(bbox, zoom = 10, maptype = "toner-background")
+    xr <- extendrange(range(segd$x.start, segd$x.end))
+    yr <- extendrange(range(segd$y.start, segd$y.end))
+    bbox <- c(xr[1], yr[1]+0.2, xr[2], yr[2]-0.1)
+    akl <- get_stamenmap(bbox, zoom = 10, maptype = "toner-background")
     
     p <- ggmap(akl, darken = 0.85) +
         coord_cartesian() +

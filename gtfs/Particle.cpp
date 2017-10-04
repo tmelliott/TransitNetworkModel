@@ -252,7 +252,7 @@ namespace gtfs {
 			   (latest == -1 || start + trajectory.size () < vehicle->get_timestamp ())) {
 			// initial wait time
 			if (v == 0 || vehicle->get_dmaxtraveled () >= 0) {
-				if (rng.runif () < 0.8) {
+				if (rng.runif () < 0.5) {
 					trajectory.push_back (d);
 					continue;
 				}
@@ -285,8 +285,6 @@ namespace gtfs {
 				if (pstops == 1) v = 0; // only 0 if particle decides to stop
 
 				int wait = 0;
-				// std::cout << "\n  > l = " << l << " and L = " << L;
-				// std::cout.flush ();
 				if (dmax == stops[j].shape_dist_traveled) {
 					// stopping at BUS STOP
 					j++;
@@ -294,9 +292,6 @@ namespace gtfs {
 				} else {
 					if (travel_times[l].initialized) {
 						travel_times[l].complete = true;
-						// std::clog << "\n +++ Particle finished traveling segment " << l
-						// 	<< " of " << travel_times.size ()
-						// 	<< " - " << travel_times[l].time << "s";
 						std::cout.flush ();
 					}
 					l++;
@@ -316,8 +311,6 @@ namespace gtfs {
 				pstops = -1;
 			}
 			trajectory.push_back (d);
-			// std::clog << ".";
-			// if (l < L && travel_times[l].initialized && !travel_times[l].complete)
 			if (travel_times[l].initialized && !travel_times[l].complete)
 				travel_times[l].time++;
 		}
