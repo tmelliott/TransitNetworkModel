@@ -131,6 +131,7 @@ graph <- function() {
     ## })
     ## sl <- SpatialLines(lines, proj4string = CRS("+init=epsg:4326"))
     ## lens <- sapply(lines, LinesLength, longlat = TRUE)
+    tnow <- as.numeric(Sys.time())
     segs <- do.call(rbind, lapply(nw$segments, function(x) {
         line <- Line(cbind(c(x$start$lng, x$end$lng),
                            c(x$start$lat, x$end$lat)))
@@ -140,19 +141,24 @@ graph <- function() {
                    travel.time = ifelse(x$travel_time == 0, NA, x$travel_time),
                    var = ifelse(x$travel_time_var == 0, NA, x$travel_time_var),
                    timestamp = x$timestamp,
+                   minago = floor((tnow - x$timestamp) / 60),
                    x.start = x$start$lng, x.end = x$end$lng,
                    y.start = x$start$lat, y.end = x$end$lat,
                    length = len)
     }))
-    segs$speed <- pmin(100, segs$length / segs$travel.time * 60 * 60)
-    
-    ## spdf <- SpatialLinesDataFrame(sl, segs)
-    ## segd <- fortify(spdf) %>%
-    ##     left_join(segs, by = "id") %>%
-    ##     filter(!is.na(travel.time))
+    ## segs %>%
+    ##     mutate(speed = pmin(100, length / travel.time * 60 * 60)) %>%
+    ##     #segs$speed <- pmin(100, segs$length / segs$travel.time * 60 * 60)
+    ##     mutate(age = cut(minago, breaks = c(0, 30, 60, 2*60, 5*60, Inf),
+    ##                      labels = c("< 30min", "30-60min", "1-2h", "2-5h", "5+h"),
+    ##                      include.lowest = TRUE, ordered_result = TRUE))
     segd <- segs %>%
         filter(!is.na(travel.time)) %>%
-        filter(x.start != x.end) %>% filter(y.start != y.end)
+        filter(x.start != x.end) %>% filter(y.start != y.end) %>%
+        mutate(speed = pmin(100, length / travel.time * 60 * 60)) %>%
+        mutate(age = cut(minago, breaks = c(0, 30, 60, 2*60, 5*60, Inf),
+                         labels = c("< 30min", "30-60min", "1-2h", "2-5h", "5+h"),
+                         include.lowest = TRUE, ordered_result = TRUE))
     xr <- extendrange(range(segd$x.start, segd$x.end))
     yr <- extendrange(range(segd$y.start, segd$y.end))
     bbox <- c(xr[1], yr[1]+0.2, xr[2], yr[2]-0.1)
@@ -161,11 +167,12 @@ graph <- function() {
     p <- ggmap(akl, darken = 0.85) +
         coord_cartesian() +
         geom_curve(aes(x.start, y.start, xend = x.end, yend = y.end,
-                       colour = speed),
+                       colour = speed, alpha = age),
                    curvature = -0.1,
-                   data = segd, alpha = 0.5, lineend = "round") +
-        scale_colour_viridis(option = "plasma", begin = 0.2)
-    pdf("~/Dropbox/gtfs/nws.pdf", width = 10, height = 12)
+                   data = segd, lineend = "round") +
+        scale_colour_viridis(option = "plasma", begin = 0.2) +
+        scale_alpha_discrete(range = c(1, 0.1))
+    pdf("~/Dropbox/gtfs/nws.pdf", width = 12, height = 12)
     print(p)
     dev.off()
     invisible(p)

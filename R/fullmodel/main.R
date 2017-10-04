@@ -1,5 +1,6 @@
 library(RProtoBuf)
 library(RSQLite)
+library(ggmap)
 
 ## 0. settings etc.
 DATE <- "2017-10-04"
@@ -10,6 +11,7 @@ PI.DIR <- "/mnt/storage/historical_data"
 
 ## 1. read protofiles from a day into a database; return connection
 readProtoFiles(dir = file.path(HOME, "proto"))
+
 pbToCSV <- function(pb) {
     ## converts protobuf GTFS file into a dataframe
     feed <- pb$entity
@@ -51,7 +53,6 @@ makeData <- function(date, ip, dir, db = "busdata.db") {
     pbar <- txtProgressBar(0, length(files), style = 3)
     for (file in files) {
         setTxtProgressBar(pbar, which(files == file))
-        file <- "/mnt/storage/historical_data/vehicle_locations_20171004054931.pb"
         ip <- PI.IP
         d <- read(transit_realtime.FeedMessage,
                   pipe(sprintf("ssh %s cat %s", ip, file)))
@@ -61,7 +62,7 @@ makeData <- function(date, ip, dir, db = "busdata.db") {
 
     ## remove duplicates
     cat("\n - Removing duplicates ... ")
-#    dbSendQuery(con, "DELETE FROM vehicle_positions WHERE rowid NOT IN (SELECT MIN(rowid) FROM vehicle_positions GROUP BY vehicle_id, timestamp)");
+    dbSendQuery(con, "DELETE FROM vehicle_positions WHERE rowid NOT IN (SELECT MIN(rowid) FROM vehicle_positions GROUP BY vehicle_id, timestamp)");
     cat("done")
     
     ## finish up
@@ -74,31 +75,121 @@ makeData <- function(date, ip, dir, db = "busdata.db") {
 
 
 ## 2. connect to database and, for a given route, fetch GTFS information
+getShape <- function(data, id = NULL) UseMethod("getShape")
+getShape.gtfs.data <- function(data, id) {
+    if (missing(id)) return(attr(data, "shapes"))
+    d <- attr(data, "shapes") %>%
+        filter(shape_id == id)
+    class(d) <- class(attr(data, "shapes"))
+    d
+}
+getStops <- function(data, id = NULL) UseMethod("getStops")
+getStops.gtfs.data <- function(data, id) {
+    if (missing(id)) return(attr(data, "stops"))
+    d <- attr(data, "stops") %>%
+        filter(trip_id == id)
+    class(d) <- class(attr(data, "stops"))
+    d
+}
+plot.gtfs.shape <- function(x, zoom = 12, colour = "orangered", ...) {
+    xr <- extendrange(x$lng)
+    yr <- extendrange(x$lat)
+    bbox <- c(xr[1], yr[1], xr[2], yr[2])
+    akl <- get_stamenmap(bbox, zoom = zoom, maptype = "toner-background")
+    
+    p <- ggmap(akl, darken = 0.85) +
+        geom_path(aes(lng, lat), data = x, colour = colour, lwd = 1)
+    print(p)
+    invisible(p)
+}
 getRouteData <- function(route, db, gtfs.db) {
     con <- dbConnect(SQLite(), gtfs.db)
-    q <- dbSendQuery(con, "SELECT route_id FROM routes WHERE route_short_name=?")
+    q <- dbSendQuery(con, "SELECT route_id, shape_id FROM routes WHERE route_short_name=?")
     dbBind(q, list(route))
-    rid <- dbFetch(q)$route_id
+    rid <- dbFetch(q)
     dbClearResult(q)
-    dbDisconnect(con)
 
-    print(rid)
+    shapes <- dbGetQuery(con, sprintf("SELECT * FROM shapes WHERE shape_id IN ('%s') ORDER BY shape_id, seq",
+                                      paste(rid$shape_id, collapse = "','")))
+    segs <- dbGetQuery(con, sprintf("SELECT * FROM shape_segments WHERE shape_id IN ('%s') ORDER BY shape_id, leg",
+                                    paste(rid$shape_id, collapse = "','")))
     
-    con <- dbConnect(SQLite(), db)
+    con2 <- dbConnect(SQLite(), db)
     dat <- dbGetQuery(
-        con,
+        con2,
         sprintf(
             "SELECT * FROM vehicle_positions WHERE route_id IN ('%s') ORDER BY timestamp, vehicle_id",
-            paste(rid, collapse = "','")
+            paste(rid$route_id, collapse = "','")
         ))
+    dbDisconnect(con2)
+
+    stops <- dbGetQuery(con, sprintf("SELECT stops.*, trip_id, stop_sequence, shape_dist_traveled FROM stops, stop_times WHERE stops.stop_id=stop_times.stop_id AND trip_id IN ('%s') ORDER BY trip_id, stop_sequence",
+                                     paste(unique(dat$trip_id), collapse = "','")))
     dbDisconnect(con)
+
+    dat <- dat %>% mutate(vehicle_id = as.factor(vehicle_id)) %>%
+        merge(rid, by = "route_id")
+
+    class(shapes) <- c("gtfs.shape", class(shapes))
+    attr(dat, "shapes") <- shapes
+    class(segments) <- c("gtfs.segments", class(segments))
+    attr(dat, "segments") <- segments
+    class(stops) <- c("gtfs.stops", class(stops))
+    attr(dat, "stops") <- stops
+    class(dat) <- c("gtfs.data", class(dat))
+
+    
 
     return(dat)
 }
 
-dd <- getRouteData("881", "busdata.db", file.path(HOME, "gtfs.db"))
-head(dd); dim(dd)
-plot(dd$timestamp)
+dd <- getRouteData("274", "busdata.db", file.path(HOME, "gtfs.db"))
+vstart <- tapply(1:nrow(dd), dd$vehicle_id, function(x) x[1])
+
+vi <- vstart[2]
+p <- plot(getShape(dd, id = dd$shape_id[vi]), zoom = 14)
+p <- p + geom_point(aes(lng, lat), data = getStops(dd, id = dd$trip_id[vi]),
+                    size = 2, colour = "orangered", pch = 21, fill = "black",
+                    stroke = 1.5)
+p
+
+R <- 6371e3
+dd1 <- dd %>% filter(vehicle_id == vehicle_id[vi], trip_id == trip_id[vi]) %>%
+    arrange(timestamp) %>%
+    ## compute times ...
+    mutate(x = (lng * pi / 180 - mean(lng * pi / 180)) * cos(lat * pi / 180) * R,
+           y = (lat - mean(lat)) * pi / 180 * R) %>%
+    mutate(dist = c(sqrt(diff(x)^2 + diff(y)^2), 0),
+           tdiff = c(diff(timestamp), 0)) %>%
+    mutate(speed = dist / tdiff)
+class(dd1) <- c("gtfs.data", class(dd1))
+
+p + geom_path(aes(lng, lat, colour = speed), data = dd1, lwd = 2) +
+    scale_colour_viridis()
+
+
 
 ## 3. implement a STAN model for n = 0, ..., N observations (estimating segment travel times!)
 
+flatX <- function(x, z) (x - z) * pi / 180 * sin(z * pi / 180 * R)
+flatY <- function(y, z) (y - z) * pi / 180 * R
+
+sh <- getShape(dd, id = dd$shape_id[vi])
+z <- c(mean(sh$lng), mean(sh$lat))
+dat <- list(N = nrow(dd1),
+            lng = flatX(dd1$lng, z[1]),
+            lat = flatY(dd1$lat, z[2]),
+            t = dd1$timestamp - min(dd1$timestamp) + 1,
+            Q = nrow(sh),
+            sx = flatX(sh$lng, z[1]),
+            sy = flatY(sh$lat, z[2]),
+            sdist = round(sh$dist_traveled),
+            pi = pi)
+dat$Nt = max(dat$t)
+
+fit <- stan(file = "model.stan", data = dat,
+            iter = 1000, chains = 4)
+
+print(fit)
+
+plot(fit, pars = "d")
