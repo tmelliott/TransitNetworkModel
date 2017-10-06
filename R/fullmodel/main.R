@@ -304,8 +304,8 @@ Sd <- getStops(dd, id = dd$trip_id[vi])$shape_dist_traveled
 Rd <- getSegments(dd, id = dd$shape_id[vi])$shape_dist_traveled
 p1 <- particle(Sd = Sd, Rd = Rd)
 
-ps <- fleet(50, Sd = Sd, Rd = Rd, rho = 0.2, pi = 0.5, theta = 20, tau = 3)
-plot(ps)
+ps <- fleet(1000, Sd = Sd, Rd = Rd, rho = 0.5, pi = 0.5, theta = 20, tau = 3, )
+plot(ps, col = "#33333330")
 points(dd1$timestamp - min(dd1$timestamp) + 1,
        rep(0, nrow(dd1)), col = "magenta")
 
