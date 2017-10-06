@@ -230,11 +230,11 @@ namespace gtfs {
 		double amin (-5.0);
 		double Vmax (30.0);
 		double pi (0.5);
-		double gamma (6);
+		double gamma (3);
 		double tau (10);
 		auto rtau = sampling::exponential (1 / tau);
 		double rho (0.5);
-		double theta (20);
+		double theta (30);
 		auto rtheta = sampling::exponential (1 / theta);
 
 		double d (get_distance ()), v (get_velocity ());
