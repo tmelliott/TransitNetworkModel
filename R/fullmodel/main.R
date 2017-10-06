@@ -1,6 +1,9 @@
 library(RProtoBuf)
 library(RSQLite)
 library(ggmap)
+library(tidyverse)
+library(viridis)
+library(truncnorm)
 
 ## 0. settings etc.
 DATE <- "2017-10-04"
@@ -91,6 +94,14 @@ getStops.gtfs.data <- function(data, id) {
     class(d) <- class(attr(data, "stops"))
     d
 }
+getSegments <- function(data, id = NULL) UseMethod("getSegments")
+getSegments.gtfs.data <- function(data, id) {
+    if (missing(id)) return(attr(data, "segments"))
+    d <- attr(data, "segments") %>%
+        filter(shape_id == id)
+    class(d) <- class(attr(data, "segments"))
+    d
+}
 plot.gtfs.shape <- function(x, zoom = 12, colour = "orangered", ...) {
     xr <- extendrange(x$lng)
     yr <- extendrange(x$lat)
@@ -132,8 +143,8 @@ getRouteData <- function(route, db, gtfs.db) {
 
     class(shapes) <- c("gtfs.shape", class(shapes))
     attr(dat, "shapes") <- shapes
-    class(segments) <- c("gtfs.segments", class(segments))
-    attr(dat, "segments") <- segments
+    class(segs) <- c("gtfs.segments", class(segs))
+    attr(dat, "segments") <- segs
     class(stops) <- c("gtfs.stops", class(stops))
     attr(dat, "stops") <- stops
     class(dat) <- c("gtfs.data", class(dat))
@@ -148,9 +159,10 @@ vstart <- tapply(1:nrow(dd), dd$vehicle_id, function(x) x[1])
 
 vi <- vstart[2]
 p <- plot(getShape(dd, id = dd$shape_id[vi]), zoom = 14)
-p <- p + geom_point(aes(lng, lat), data = getStops(dd, id = dd$trip_id[vi]),
-                    size = 2, colour = "orangered", pch = 21, fill = "black",
-                    stroke = 1.5)
+p <- p +
+    geom_point(aes(lng, lat), data = getStops(dd, id = dd$trip_id[vi]),
+               size = 2, colour = "orangered", pch = 21, fill = "black",
+               stroke = 1.5)
 p
 
 R <- 6371e3
@@ -169,7 +181,135 @@ p + geom_path(aes(lng, lat, colour = speed), data = dd1, lwd = 2) +
 
 
 
-## 3. implement a STAN model for n = 0, ..., N observations (estimating segment travel times!)
+## 3a. implement particle filter EXACTLY as it is in C++ ... (some how)
+
+particle <- function(x, ...) {
+    if (missing(x))
+        x <- initializeParticle(...)
+    t0 <- 0
+    if (!is.null(attr(x, "t0"))) t0 <- attr(x, "t0")
+    if (any(diff(x) < 0))
+        stop("Invalid particle: trajectory must be non-decreasing")
+    atts <- attributes(x)
+    attributes(x) <- NULL
+    structure(list("distance" = x, "t0" = t0,
+                   "Rd" = atts$Rd, "Sd" = atts$Sd),
+              class = "particle")
+}
+print.particle <- function(x, ...)
+    print(x$distance)
+plot.particle <- function(x, ...)
+    plot(startTime(x) + seq_along(x$distance) - 1, x$distance,
+         xlab = "Time (s)", ylab = "Distance Traveled (m)",
+         type = "l", ...)
+lines.particle <- function(x, ...)
+    lines(startTime(x) + seq_along(x$distance) - 1, x$distance, ...)
+size <- function(x) length(x$distance)
+startTime <- function(x) x$t0
+
+collect <- function(...)
+    structure(list(...), class = "particle.list")
+fleet <- function(N, ...) {
+    x <- do.call(collect, lapply(1:N, function(x) particle(...)))
+    attr(x, "Rd") <- x[[1]]$Rd
+    attr(x, "Sd") <- x[[1]]$Sd
+    x
+}
+print.particle.list <- function(x, ...)
+    cat("A collection of", length(x), "particles.\n")
+plot.particle.list <- function(x, ...) {
+    xlim <- c(min(sapply(x, startTime)),
+              max(sapply(x, size)))
+    ylim <- c(0, max(sapply(x, function(y) max(y$d))))
+    plot(NA, xlim = xlim, ylim = ylim,
+         xlab = "Time (min)", ylab = "Distance Traveled (km)",
+         xaxt = "n", yaxt = "n")
+    axis(1, at = pretty(xlim / 60) * 60, labels = pretty(xlim / 60))
+    axis(2, at = pretty(ylim / 1000) * 1000, labels = pretty(ylim / 1000),
+         las = 1)
+    if (!is.null(attr(x, "Rd")))
+        abline(h = attr(x, "Rd"), lty = 2, col = "orangered")
+    if (!is.null(attr(x, "Sd")))
+        abline(h = attr(x, "Sd"), lty = 3, col = "cyan")
+    sapply(x, lines, ...)
+    invisible(NULL)
+}
+
+initializeParticle <- function(dmax, Sd, Rd, ...) {
+    if (missing(dmax)) dmax = max(Sd)
+    d <- 0
+    v <- 0
+    x <- d
+    structure(mutate(x, Sd, Rd, D = dmax, ...),
+              "t0" = 0, "Sd" = Sd, "Rd" = Rd)
+}
+
+mutate <- function(x, sd, rd, Dmax,
+                   amin = -5, Vmax = 30, vmin = 0, sigv = 2,
+                   pi = 0.5, rho = 0.5, gamma = 3, tau = 6, theta = 20) {
+    d <- x[length(x)]
+    v <- 0
+    if (length(x) > 1)
+        v <- diff(x)[length(x)-1]
+    j <- 1; J <- 1
+    if (!missing(sd)) {
+        J <- length(sd)
+        j <- which(sd >= d)[1]
+    }
+    l <- 1; L <- 1
+    if (!missing(rd)) {
+        L <- length(rd)
+        l <- tail(which(rd <= d), 1)
+    }
+    ## amin <- 
+    ## Vmax <- 30
+    ## vmin <- 0
+    ## sigv <- 2
+    ## gamma <- 3
+    ## tau <- 6
+    ## theta <- 20
+    pstops <- -1
+    while (d < Dmax) {
+        if (v == 0) while(runif(1) < 0.9) x <- c(x, d)
+        if (l < L && rd[l+1] < sd[j+1]) {
+            dmax <- rd[l+1]
+            if (pstops == -1) pstops <- rbinom(1, 1, rho)
+        } else {
+            dmax <- sd[j+1]
+            if (pstops == -1) pstops <- rbinom(1, 1, pi)
+        }
+        vmax <- (dmax - d) / sqrt((dmax - d) / -amin)
+        if (pstops == 1 && vmax < Vmax) v <- runif(1, vmin, vmax)
+        else v <- rtruncnorm(1, vmin, vmax, v, sigv)
+        d <- d + v
+        if (d >= dmax) {
+            d <- dmax
+            if (pstops == 1) v <- 0
+            if (dmax == sd[j+1]) {
+                j <- j + 1
+                wait <- round(gamma * rexp(1, 1 / tau))
+            } else {
+                l <- l + 1
+                wait <- round(rexp(1, 1 / theta))
+            }
+            x <- c(x, rep(d, wait))
+            pstops <- -1
+        }
+        x <- c(x, d)
+    }
+    x
+}
+
+Sd <- getStops(dd, id = dd$trip_id[vi])$shape_dist_traveled
+Rd <- getSegments(dd, id = dd$shape_id[vi])$shape_dist_traveled
+p1 <- particle(Sd = Sd, Rd = Rd)
+
+ps <- fleet(50, Sd = Sd, Rd = Rd, rho = 0.2, pi = 0.5, theta = 20, tau = 3)
+plot(ps)
+points(dd1$timestamp - min(dd1$timestamp) + 1,
+       rep(0, nrow(dd1)), col = "magenta")
+
+## 3b. implement a STAN model for n = 0, ..., N observations (estimating segment travel times!)
 
 flatX <- function(x, z) (x - z) * pi / 180 * sin(z * pi / 180 * R)
 flatY <- function(y, z) (y - z) * pi / 180 * R
