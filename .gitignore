@@ -8,3 +8,4 @@ gtfs.zip
 protobuf/*.pb.*
 .Rhistory
 *.pdf
+*.out
