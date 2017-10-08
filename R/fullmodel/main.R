@@ -186,6 +186,9 @@ p + geom_path(aes(lng, lat, colour = speed), data = dd1, lwd = 2) +
 particle <- function(x, ...) {
     if (missing(x))
         x <- initializeParticle(...)
+    else
+        x <- structure(mutate(x, sd = Sd, rd = Rd, Dmax = max(Sd), ...),
+                       "t0" = 0, "Sd" = Sd, "Rd" = Rd)
     t0 <- 0
     if (!is.null(attr(x, "t0"))) t0 <- attr(x, "t0")
     if (any(diff(x) < 0))
@@ -217,10 +220,10 @@ fleet <- function(N, ...) {
 }
 print.particle.list <- function(x, ...)
     cat("A collection of", length(x), "particles.\n")
-plot.particle.list <- function(x, ...) {
-    xlim <- c(min(sapply(x, startTime)),
-              max(sapply(x, size)))
-    ylim <- c(0, max(sapply(x, function(y) max(y$d))))
+plot.particle.list <- function(x, ...,
+                               xlim = c(min(sapply(x, startTime)),
+                                        max(sapply(x, size))),
+                               ylim = c(0, max(sapply(x, function(y) max(y$d))))) {
     plot(NA, xlim = xlim, ylim = ylim,
          xlab = "Time (min)", ylab = "Distance Traveled (km)",
          xaxt = "n", yaxt = "n")
@@ -234,6 +237,8 @@ plot.particle.list <- function(x, ...) {
     sapply(x, lines, ...)
     invisible(NULL)
 }
+lines.particle.list <- function(x, ...)
+    sapply(x, lines, ...)
 
 initializeParticle <- function(dmax, Sd, Rd, ...) {
     if (missing(dmax)) dmax = max(Sd)
@@ -246,7 +251,7 @@ initializeParticle <- function(dmax, Sd, Rd, ...) {
 
 mutate <- function(x, sd, rd, Dmax,
                    amin = -5, Vmax = 30, vmin = 0, sigv = 2,
-                   pi = 0.5, rho = 0.5, gamma = 3, tau = 6, theta = 20) {
+                   pi = 0.5, rho = 0.5, gamma = 3, tau = 6, theta = 20, ...) {
     d <- x[length(x)]
     v <- 0
     if (length(x) > 1)
@@ -254,20 +259,13 @@ mutate <- function(x, sd, rd, Dmax,
     j <- 1; J <- 1
     if (!missing(sd)) {
         J <- length(sd)
-        j <- which(sd >= d)[1]
+        j <- which(sd > d)[1] - 1
     }
     l <- 1; L <- 1
     if (!missing(rd)) {
         L <- length(rd)
         l <- tail(which(rd <= d), 1)
     }
-    ## amin <- 
-    ## Vmax <- 30
-    ## vmin <- 0
-    ## sigv <- 2
-    ## gamma <- 3
-    ## tau <- 6
-    ## theta <- 20
     pstops <- -1
     while (d < Dmax) {
         if (v == 0) while(runif(1) < 0.9) x <- c(x, d)
@@ -299,15 +297,72 @@ mutate <- function(x, sd, rd, Dmax,
     }
     x
 }
+loglh <- function(p, t, pos, shape, sigma = 5, R = 6371e3) {
+    ## get particle distance at time t
+    if (length(p$distance) >= t+1) {
+        d <- p$distance[t+1] ## because t is 0-based
+        y <- h(d, shape)
+    } else y <- h(max(p$distance), shape)
+    ## c(x, y):
+    z <- c((y$lng - pos$lng) * pi / 180 * sin(pos$lat * pi / 180),
+           (y$lat - pos$lat) * pi / 180) * R
+    - log(2 * pi * sigma) - sum(z^2) / (2 * sigma^2)
+}
+h <- function(d, shp) {
+    LL <- shp[, c("lat", "lng")]
+    dt <- shp$dist_traveled
+    if (d == 0) return(LL[1,])
+    if (d >= max(dt)) return(LL[nrow(LL),])
+    i <- max(which(dt < d)) + 1
+    ## distance along line here ...
+    return(LL[i, ])
+}
 
 Sd <- getStops(dd, id = dd$trip_id[vi])$shape_dist_traveled
 Rd <- getSegments(dd, id = dd$shape_id[vi])$shape_dist_traveled
-p1 <- particle(Sd = Sd, Rd = Rd)
+p1 <- particle(1:10, Sd = Sd, Rd = Rd)
 
-ps <- fleet(1000, Sd = Sd, Rd = Rd, rho = 0.5, pi = 0.5, theta = 20, tau = 3, )
-plot(ps, col = "#33333330")
-points(dd1$timestamp - min(dd1$timestamp) + 1,
-       rep(0, nrow(dd1)), col = "magenta")
+rho = 0.2; pi = 0.8; theta = 10; tau = 3; gamma = 3;
+ps <- fleet(50, Sd = Sd, Rd = Rd,
+            rho = rho, pi = pi, theta = theta, tau = tau, gamma = gamma)
+dhat <- rep(0, nrow(dd1))
+plot(ps, col = "#33333330", xlim = c(0, 40 * 60))
+points(dd1$timestamp - min(dd1$timestamp), dhat,
+       col = "magenta", pch = 19, cex = 0.5)
+
+ts <- dd1$timestamp - min(dd1$timestamp)
+Y <- dd1[, c("lat", "lng")]
+shp <- getShape(dd, dd$shape_id[vi])[, 3:5]
+jpeg("journeyRT%03d.jpeg", width = 900, height = 500)
+for (i in seq_along(ts)) {
+    llh <- sapply(ps, loglh, t = ts[i], pos = Y[i, ], shape = shp)
+    lh <- exp(llh)
+    lh[!is.finite(lh)] <- 0
+    wt <- if (sum(lh) == 0) rep(1, length(lh)) else lh / sum(lh)
+    ii <- sample(length(wt), replace = TRUE, prob = wt)
+    #dev.hold()
+    plot(ps, col = "#cccccc30", xlim = c(0, 60*40))
+    ps <- do.call(collect, lapply(ii, function(j) {
+        particle(ps[[j]]$distance[1:(min(ts[i]+1, length(ps[[j]]$distance)))],
+                 Sd = Sd, Rd = Rd,
+                 rho = rho, pi = pi, theta = theta, tau = tau, gamma = gamma)
+    }))
+    attr(ps, "Rd") <- Rd
+    attr(ps, "Sd") <- Sd
+    lines(ps, col = "#99000030")
+    dhat[i] <- mean(sapply(ps, function(p) p$distance[ts[i]+1]))
+    points(dd1$timestamp - min(dd1$timestamp), dhat,
+           col = "magenta", pch = 19, cex = 0.5)
+    #dev.flush()
+}
+dev.off()
+## make movie
+system("rm journey274.gif && convert -delay 50 -loop 0 journey*.jpeg journey274.gif && rm journey*jpeg")
+
+
+
+
+
 
 ## 3b. implement a STAN model for n = 0, ..., N observations (estimating segment travel times!)
 
