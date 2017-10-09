@@ -323,7 +323,7 @@ Rd <- getSegments(dd, id = dd$shape_id[vi])$shape_dist_traveled
 p1 <- particle(1:10, Sd = Sd, Rd = Rd)
 
 rho = 0.2; pi = 0.8; theta = 10; tau = 3; gamma = 3;
-ps <- fleet(50, Sd = Sd, Rd = Rd,
+ps <- fleet(100, Sd = Sd, Rd = Rd,
             rho = rho, pi = pi, theta = theta, tau = tau, gamma = gamma)
 dhat <- rep(0, nrow(dd1))
 plot(ps, col = "#33333330", xlim = c(0, 40 * 60))
@@ -333,14 +333,14 @@ points(dd1$timestamp - min(dd1$timestamp), dhat,
 ts <- dd1$timestamp - min(dd1$timestamp)
 Y <- dd1[, c("lat", "lng")]
 shp <- getShape(dd, dd$shape_id[vi])[, 3:5]
-jpeg("journeyRT%03d.jpeg", width = 900, height = 500)
+#jpeg("journeyRT%03d.jpeg", width = 900, height = 500)
 for (i in seq_along(ts)) {
     llh <- sapply(ps, loglh, t = ts[i], pos = Y[i, ], shape = shp)
     lh <- exp(llh)
     lh[!is.finite(lh)] <- 0
     wt <- if (sum(lh) == 0) rep(1, length(lh)) else lh / sum(lh)
     ii <- sample(length(wt), replace = TRUE, prob = wt)
-    #dev.hold()
+    dev.hold()
     plot(ps, col = "#cccccc30", xlim = c(0, 60*40))
     ps <- do.call(collect, lapply(ii, function(j) {
         particle(ps[[j]]$distance[1:(min(ts[i]+1, length(ps[[j]]$distance)))],
@@ -353,9 +353,12 @@ for (i in seq_along(ts)) {
     dhat[i] <- mean(sapply(ps, function(p) p$distance[ts[i]+1]))
     points(dd1$timestamp - min(dd1$timestamp), dhat,
            col = "magenta", pch = 19, cex = 0.5)
-    #dev.flush()
+    dev.flush()
+    locator(1)
 }
-dev.off()
+
+#dev.off()
+
 ## make movie
 system("rm journey274.gif && convert -delay 50 -loop 0 journey*.jpeg journey274.gif && rm journey*jpeg")
 
