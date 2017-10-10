@@ -57,7 +57,7 @@ p1 <- particle(Sd = Sd, Rd = Rd)
 
 source("fns.R")
 rho = 0.4; Pi = 0.5; theta = 20; tau = 6; gamma = 3; sigv = 5;
-ps <- fleet(2000, Sd = Sd, Rd = Rd,
+ps <- fleet(500, Sd = Sd, Rd = Rd,
             rho = rho, pi = Pi, theta = theta, tau = tau, gamma = gamma,
             sigv = sigv)
 dhat <- rep(0, nrow(dd1))
@@ -68,7 +68,7 @@ dhat <- rep(0, nrow(dd1))
 ts <- dd1$timestamp - min(dd1$timestamp)
 Y <- dd1[, c("lat", "lng")]
 shp <- getShape(dd, dd$shape_id[vi])[, 3:5]
-jpeg("journeyRT%03d.jpeg", width = 1600, height = 900)
+#jpeg("journeyRT%03d.jpeg", width = 1600, height = 900)
 for (i in seq_along(ts)) {
     lh <- 0
     li <- 1
