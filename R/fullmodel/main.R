@@ -5,6 +5,8 @@ library(tidyverse)
 library(viridis)
 library(truncnorm)
 
+source("fns.R")
+
 ## 0. settings etc.
 DATE <- "2017-10-04"
 HOME <- path.expand("~/Documents/uni/TransitNetworkModel")
@@ -15,144 +17,10 @@ PI.DIR <- "/mnt/storage/historical_data"
 ## 1. read protofiles from a day into a database; return connection
 readProtoFiles(dir = file.path(HOME, "proto"))
 
-pbToCSV <- function(pb) {
-    ## converts protobuf GTFS file into a dataframe
-    feed <- pb$entity
-    do.call(rbind, lapply(feed, function(x) {
-        data.frame(vehicle_id = as.character(x$vehicle$vehicle$id),
-                   route_id = x$vehicle$trip$route_id,
-                   trip_id = x$vehicle$trip$trip_id,
-                   lat = x$vehicle$position$latitude,
-                   lng = x$vehicle$position$longitude,
-                   timestamp = x$vehicle$timestamp,
-                   stringsAsFactors = FALSE)
-    }))
-}
-makeData <- function(date, ip, dir, db = "busdata.db") {
-    ## get a list of files for the chosen day
-    datef <- gsub("-", "", date)
-    cmd <- sprintf("ssh %s find %s -type f -name 'vehicle_locations_%s*.pb'", ip, dir, datef)
-    cat(" - Generating list of files ... ")
-    files <- system(cmd, intern = TRUE)
-    files <- sort(files)
-    cat(sprintf("done (%s)", length(files)))
-
-    ## create the database
-    cat("\n - Creating database table")
-    con <- dbConnect(SQLite(), db)
-    if ("vehicle_positions" %in% dbListTables(con)) dbRemoveTable(con, "vehicle_positions")
-    dbSendQuery(con, paste(sep="\n",
-                          "CREATE TABLE vehicle_positions (",
-                          " vehicle_id TEXT,",
-                          " route_id TEXT,",
-                          " trip_id TEXT,",
-                          " lat REAL,",
-                          " lng REAL,",
-                          " timestamp INTEGER",
-                          ")"))
-    
-    ## read the files one-by-one into a database
-    cat("\n - Writing files to database ...\n")
-    pbar <- txtProgressBar(0, length(files), style = 3)
-    for (file in files) {
-        setTxtProgressBar(pbar, which(files == file))
-        ip <- PI.IP
-        d <- read(transit_realtime.FeedMessage,
-                  pipe(sprintf("ssh %s cat %s", ip, file)))
-        dbWriteTable(con, "vehicle_positions", pbToCSV(d), append = TRUE)
-    }
-    close(pbar)
-
-    ## remove duplicates
-    cat("\n - Removing duplicates ... ")
-    dbSendQuery(con, "DELETE FROM vehicle_positions WHERE rowid NOT IN (SELECT MIN(rowid) FROM vehicle_positions GROUP BY vehicle_id, timestamp)");
-    cat("done")
-    
-    ## finish up
-    dbDisconnect(con)
-    cat(sprintf("\n\nFinished. Data written to %s\n", db))
-    invisible(NULL)
-}
-
 #makeData(DATE, PI.IP, PI.DIR)
 
 
 ## 2. connect to database and, for a given route, fetch GTFS information
-getShape <- function(data, id = NULL) UseMethod("getShape")
-getShape.gtfs.data <- function(data, id) {
-    if (missing(id)) return(attr(data, "shapes"))
-    d <- attr(data, "shapes") %>%
-        filter(shape_id == id)
-    class(d) <- class(attr(data, "shapes"))
-    d
-}
-getStops <- function(data, id = NULL) UseMethod("getStops")
-getStops.gtfs.data <- function(data, id) {
-    if (missing(id)) return(attr(data, "stops"))
-    d <- attr(data, "stops") %>%
-        filter(trip_id == id)
-    class(d) <- class(attr(data, "stops"))
-    d
-}
-getSegments <- function(data, id = NULL) UseMethod("getSegments")
-getSegments.gtfs.data <- function(data, id) {
-    if (missing(id)) return(attr(data, "segments"))
-    d <- attr(data, "segments") %>%
-        filter(shape_id == id)
-    class(d) <- class(attr(data, "segments"))
-    d
-}
-plot.gtfs.shape <- function(x, zoom = 12, colour = "orangered", ...) {
-    xr <- extendrange(x$lng)
-    yr <- extendrange(x$lat)
-    bbox <- c(xr[1], yr[1], xr[2], yr[2])
-    akl <- get_stamenmap(bbox, zoom = zoom, maptype = "toner-background")
-    
-    p <- ggmap(akl, darken = 0.85) +
-        geom_path(aes(lng, lat), data = x, colour = colour, lwd = 1)
-    print(p)
-    invisible(p)
-}
-getRouteData <- function(route, db, gtfs.db) {
-    con <- dbConnect(SQLite(), gtfs.db)
-    q <- dbSendQuery(con, "SELECT route_id, shape_id FROM routes WHERE route_short_name=?")
-    dbBind(q, list(route))
-    rid <- dbFetch(q)
-    dbClearResult(q)
-
-    shapes <- dbGetQuery(con, sprintf("SELECT * FROM shapes WHERE shape_id IN ('%s') ORDER BY shape_id, seq",
-                                      paste(rid$shape_id, collapse = "','")))
-    segs <- dbGetQuery(con, sprintf("SELECT * FROM shape_segments WHERE shape_id IN ('%s') ORDER BY shape_id, leg",
-                                    paste(rid$shape_id, collapse = "','")))
-    
-    con2 <- dbConnect(SQLite(), db)
-    dat <- dbGetQuery(
-        con2,
-        sprintf(
-            "SELECT * FROM vehicle_positions WHERE route_id IN ('%s') ORDER BY timestamp, vehicle_id",
-            paste(rid$route_id, collapse = "','")
-        ))
-    dbDisconnect(con2)
-
-    stops <- dbGetQuery(con, sprintf("SELECT stops.*, trip_id, stop_sequence, shape_dist_traveled FROM stops, stop_times WHERE stops.stop_id=stop_times.stop_id AND trip_id IN ('%s') ORDER BY trip_id, stop_sequence",
-                                     paste(unique(dat$trip_id), collapse = "','")))
-    dbDisconnect(con)
-
-    dat <- dat %>% mutate(vehicle_id = as.factor(vehicle_id)) %>%
-        merge(rid, by = "route_id")
-
-    class(shapes) <- c("gtfs.shape", class(shapes))
-    attr(dat, "shapes") <- shapes
-    class(segs) <- c("gtfs.segments", class(segs))
-    attr(dat, "segments") <- segs
-    class(stops) <- c("gtfs.stops", class(stops))
-    attr(dat, "stops") <- stops
-    class(dat) <- c("gtfs.data", class(dat))
-
-    
-
-    return(dat)
-}
 
 dd <- getRouteData("274", "busdata.db", file.path(HOME, "gtfs.db"))
 vstart <- tapply(1:nrow(dd), dd$vehicle_id, function(x) x[1])
@@ -169,11 +37,11 @@ R <- 6371e3
 dd1 <- dd %>% filter(vehicle_id == vehicle_id[vi], trip_id == trip_id[vi]) %>%
     arrange(timestamp) %>%
     ## compute times ...
-    mutate(x = (lng * pi / 180 - mean(lng * pi / 180)) * cos(lat * pi / 180) * R,
-           y = (lat - mean(lat)) * pi / 180 * R) %>%
-    mutate(dist = c(sqrt(diff(x)^2 + diff(y)^2), 0),
-           tdiff = c(diff(timestamp), 0)) %>%
-    mutate(speed = dist / tdiff)
+    dplyr::mutate(x = (lng * pi / 180 - mean(lng * pi / 180)) * cos(lat * pi / 180) * R,
+                  y = (lat - mean(lat)) * pi / 180 * R) %>%
+    dplyr::mutate(dist = c(sqrt(diff(x)^2 + diff(y)^2), 0),
+                  tdiff = c(diff(timestamp), 0)) %>%
+    dplyr::mutate(speed = dist / tdiff)
 class(dd1) <- c("gtfs.data", class(dd1))
 
 p + geom_path(aes(lng, lat, colour = speed), data = dd1, lwd = 2) +
@@ -183,169 +51,44 @@ p + geom_path(aes(lng, lat, colour = speed), data = dd1, lwd = 2) +
 
 ## 3a. implement particle filter EXACTLY as it is in C++ ... (some how)
 
-particle <- function(x, ...) {
-    if (missing(x))
-        x <- initializeParticle(...)
-    else
-        x <- structure(mutate(x, sd = Sd, rd = Rd, Dmax = max(Sd), ...),
-                       "t0" = 0, "Sd" = Sd, "Rd" = Rd)
-    t0 <- 0
-    if (!is.null(attr(x, "t0"))) t0 <- attr(x, "t0")
-    if (any(diff(x) < 0))
-        stop("Invalid particle: trajectory must be non-decreasing")
-    atts <- attributes(x)
-    attributes(x) <- NULL
-    structure(list("distance" = x, "t0" = t0,
-                   "Rd" = atts$Rd, "Sd" = atts$Sd),
-              class = "particle")
-}
-print.particle <- function(x, ...)
-    print(x$distance)
-plot.particle <- function(x, ...)
-    plot(startTime(x) + seq_along(x$distance) - 1, x$distance,
-         xlab = "Time (s)", ylab = "Distance Traveled (m)",
-         type = "l", ...)
-lines.particle <- function(x, ...)
-    lines(startTime(x) + seq_along(x$distance) - 1, x$distance, ...)
-size <- function(x) length(x$distance)
-startTime <- function(x) x$t0
-
-collect <- function(...)
-    structure(list(...), class = "particle.list")
-fleet <- function(N, ...) {
-    x <- do.call(collect, lapply(1:N, function(x) particle(...)))
-    attr(x, "Rd") <- x[[1]]$Rd
-    attr(x, "Sd") <- x[[1]]$Sd
-    x
-}
-print.particle.list <- function(x, ...)
-    cat("A collection of", length(x), "particles.\n")
-plot.particle.list <- function(x, ...,
-                               xlim = c(min(sapply(x, startTime)),
-                                        max(sapply(x, size))),
-                               ylim = c(0, max(sapply(x, function(y) max(y$d))))) {
-    plot(NA, xlim = xlim, ylim = ylim,
-         xlab = "Time (min)", ylab = "Distance Traveled (km)",
-         xaxt = "n", yaxt = "n")
-    axis(1, at = pretty(xlim / 60) * 60, labels = pretty(xlim / 60))
-    axis(2, at = pretty(ylim / 1000) * 1000, labels = pretty(ylim / 1000),
-         las = 1)
-    if (!is.null(attr(x, "Rd")))
-        abline(h = attr(x, "Rd"), lty = 2, col = "orangered")
-    if (!is.null(attr(x, "Sd")))
-        abline(h = attr(x, "Sd"), lty = 3, col = "cyan")
-    sapply(x, lines, ...)
-    invisible(NULL)
-}
-lines.particle.list <- function(x, ...)
-    sapply(x, lines, ...)
-
-initializeParticle <- function(dmax, Sd, Rd, ...) {
-    if (missing(dmax)) dmax = max(Sd)
-    d <- 0
-    v <- 0
-    x <- d
-    structure(mutate(x, Sd, Rd, D = dmax, ...),
-              "t0" = 0, "Sd" = Sd, "Rd" = Rd)
-}
-
-mutate <- function(x, sd, rd, Dmax,
-                   amin = -5, Vmax = 30, vmin = 0, sigv = 2,
-                   pi = 0.5, rho = 0.5, gamma = 3, tau = 6, theta = 20, ...) {
-    d <- x[length(x)]
-    v <- 0
-    if (length(x) > 1)
-        v <- diff(x)[length(x)-1]
-    j <- 1; J <- 1
-    if (!missing(sd)) {
-        J <- length(sd)
-        j <- which(sd > d)[1] - 1
-    }
-    l <- 1; L <- 1
-    if (!missing(rd)) {
-        L <- length(rd)
-        l <- tail(which(rd <= d), 1)
-    }
-    pstops <- -1
-    while (d < Dmax) {
-        if (v == 0) while(runif(1) < 0.9) x <- c(x, d)
-        if (l < L && rd[l+1] < sd[j+1]) {
-            dmax <- rd[l+1]
-            if (pstops == -1) pstops <- rbinom(1, 1, rho)
-        } else {
-            dmax <- sd[j+1]
-            if (pstops == -1) pstops <- rbinom(1, 1, pi)
-        }
-        vmax <- (dmax - d) / sqrt((dmax - d) / -amin)
-        if (pstops == 1 && vmax < Vmax) v <- runif(1, vmin, vmax)
-        else v <- rtruncnorm(1, vmin, vmax, v, sigv)
-        d <- d + v
-        if (d >= dmax) {
-            d <- dmax
-            if (pstops == 1) v <- 0
-            if (dmax == sd[j+1]) {
-                j <- j + 1
-                wait <- round(gamma * rexp(1, 1 / tau))
-            } else {
-                l <- l + 1
-                wait <- round(rexp(1, 1 / theta))
-            }
-            x <- c(x, rep(d, wait))
-            pstops <- -1
-        }
-        x <- c(x, d)
-    }
-    x
-}
-loglh <- function(p, t, pos, shape, sigma = 5, R = 6371e3) {
-    ## get particle distance at time t
-    if (length(p$distance) >= t+1) {
-        d <- p$distance[t+1] ## because t is 0-based
-        y <- h(d, shape)
-    } else y <- h(max(p$distance), shape)
-    ## c(x, y):
-    z <- c((y$lng - pos$lng) * pi / 180 * sin(pos$lat * pi / 180),
-           (y$lat - pos$lat) * pi / 180) * R
-    - log(2 * pi * sigma) - sum(z^2) / (2 * sigma^2)
-}
-h <- function(d, shp) {
-    LL <- shp[, c("lat", "lng")]
-    dt <- shp$dist_traveled
-    if (d == 0) return(LL[1,])
-    if (d >= max(dt)) return(LL[nrow(LL),])
-    i <- max(which(dt < d)) + 1
-    ## distance along line here ...
-    return(LL[i, ])
-}
-
 Sd <- getStops(dd, id = dd$trip_id[vi])$shape_dist_traveled
 Rd <- getSegments(dd, id = dd$shape_id[vi])$shape_dist_traveled
-p1 <- particle(1:10, Sd = Sd, Rd = Rd)
+p1 <- particle(Sd = Sd, Rd = Rd)
 
-rho = 0.2; pi = 0.8; theta = 10; tau = 3; gamma = 3;
-ps <- fleet(100, Sd = Sd, Rd = Rd,
-            rho = rho, pi = pi, theta = theta, tau = tau, gamma = gamma)
+source("fns.R")
+rho = 0.4; Pi = 0.5; theta = 20; tau = 6; gamma = 3; sigv = 5;
+ps <- fleet(2000, Sd = Sd, Rd = Rd,
+            rho = rho, pi = Pi, theta = theta, tau = tau, gamma = gamma,
+            sigv = sigv)
 dhat <- rep(0, nrow(dd1))
-plot(ps, col = "#33333330", xlim = c(0, 40 * 60))
-points(dd1$timestamp - min(dd1$timestamp), dhat,
-       col = "magenta", pch = 19, cex = 0.5)
+#plot(ps, col = "#33333330", xlim = c(0, 40 * 60))
+#points(dd1$timestamp - min(dd1$timestamp), dhat,
+#       col = "magenta", pch = 19, cex = 0.5)
 
 ts <- dd1$timestamp - min(dd1$timestamp)
 Y <- dd1[, c("lat", "lng")]
 shp <- getShape(dd, dd$shape_id[vi])[, 3:5]
-#jpeg("journeyRT%03d.jpeg", width = 900, height = 500)
+jpeg("journeyRT%03d.jpeg", width = 1600, height = 900)
 for (i in seq_along(ts)) {
-    llh <- sapply(ps, loglh, t = ts[i], pos = Y[i, ], shape = shp)
-    lh <- exp(llh)
-    lh[!is.finite(lh)] <- 0
-    wt <- if (sum(lh) == 0) rep(1, length(lh)) else lh / sum(lh)
+    lh <- 0
+    li <- 1
+    while (sum(lh) == 0) {
+        llh <- sapply(ps, loglh, t = ts[i], pos = Y[i, ], shape = shp, sigma = li * 5)
+        lh <- exp(llh)
+        wt <- lh / sum(lh)
+        li <- li + 1
+    }
+    if (li > 2) print(paste("li =", li-1))
     ii <- sample(length(wt), replace = TRUE, prob = wt)
     dev.hold()
+    layout(rbind(c(1, 1, 1, 2)))
     plot(ps, col = "#cccccc30", xlim = c(0, 60*40))
+    pold <- ps
     ps <- do.call(collect, lapply(ii, function(j) {
         particle(ps[[j]]$distance[1:(min(ts[i]+1, length(ps[[j]]$distance)))],
                  Sd = Sd, Rd = Rd,
-                 rho = rho, pi = pi, theta = theta, tau = tau, gamma = gamma)
+                 rho = rho, pi = Pi, theta = theta, tau = tau, gamma = gamma,
+                 sigv = sigv)
     }))
     attr(ps, "Rd") <- Rd
     attr(ps, "Sd") <- Sd
@@ -353,14 +96,25 @@ for (i in seq_along(ts)) {
     dhat[i] <- mean(sapply(ps, function(p) p$distance[ts[i]+1]))
     points(dd1$timestamp - min(dd1$timestamp), dhat,
            col = "magenta", pch = 19, cex = 0.5)
+    drx <- diff(range(shp$lng))
+    dry <- diff(range(shp$lat))
+    with(shp, plot(lng, lat, asp = 1.6, type = "l", lwd = 2,
+                   xlim = dd1[i, "lng"] + c(-0.1, 0.1) * drx,
+                   ylim = dd1[i, "lat"] + c(-0.1, 0.1) * dry))
+    with(dd1[i, ], points(lng, lat, pch = 19, cex = 4, col = "#ef560040"))
+    points(t(sapply(pold, function(p) {
+        if (size(p) > ts[i]) h(p$distance[ts[i]+1], shp = shp) else shp[nrow(shp), 1:2]
+    }))[, 2:1], cex = 2, col = "#cccccc30", pch = 19)
+    points(t(sapply(ps, function(p) {
+        if (size(p) > ts[i]) h(p$distance[ts[i]+1], shp = shp) else shp[nrow(shp), 1:2]
+    }))[, 2:1], cex = 1.5, col = "#990000", pch = 19)
     dev.flush()
-    locator(1)
+    #locator(1)
 }
 
-#dev.off()
-
+dev.off()
 ## make movie
-system("rm journey274.gif && convert -delay 50 -loop 0 journey*.jpeg journey274.gif && rm journey*jpeg")
+system("rm journey274.gif && convert -delay 50 -loop 0 journey*.jpeg ~/Dropbox/journey274.gif && rm journey*jpeg")
 
 
 
