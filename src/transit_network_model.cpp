@@ -255,8 +255,8 @@ int main (int argc, char* argv[]) {
 				if (!sh) continue;
 				auto sgs = sh->get_segments ();
 				if (sgs.size () == 0) continue;
-				std::cout << "\n - Vehicle " << v.second->get_id () << " travel times ("
-					<< sgs.size () << ")";
+				// std::cout << "\n - Vehicle " << v.second->get_id () << " travel times ("
+					// << sgs.size () << ")";
 				int L = v.second->get_travel_times ().size ();
 				for (int l=0; l<L; l++) {
 					gtfs::TravelTime* tt = v.second->get_travel_time (l);
@@ -266,10 +266,10 @@ int main (int argc, char* argv[]) {
 					// 	spd = round (60.0 * 60.0 / 1000.0 * len / tt.time);
 					// printf("\n > Segment %*d of %*d: %*d m in %*d seconds (approx. %*d km/h) | %s",
 					// 	2, l, 2, L, 4, int (len + 0.5), 3, tt.time, 3, spd, tt.complete ? "X" : " ");
-					printf("\n > Segment %*d of %*d: %*d seconds | %s",
-						2, l, 2, L, 3, tt->time, tt->used && tt->complete ? "X" : (tt->complete ? "o" : " "));
+					// printf("\n > Segment %*d of %*d: %*d seconds | %s",
+						// 2, l, 2, L, 3, tt->time, tt->used && tt->complete ? "X" : (tt->complete ? "o" : " "));
 					if (tt->time > 0 && tt->complete && !tt->used) {
-						std::cout << " -> adding ";
+						// std::cout << " -> adding ";
 						tt->use ();
 						// tt.used = true;
 					}

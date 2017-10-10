@@ -275,6 +275,7 @@ namespace gtfs {
 		void mutate ( sampling::RNG& rng );
 		void mutate ( sampling::RNG& rng, double );
 		void calculate_likelihood (void);
+        void calculate_likelihood (int mult);
 		void set_weight (double wt) { weight = wt; };
 
 		// void reset_travel_time (unsigned i);

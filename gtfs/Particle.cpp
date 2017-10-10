@@ -226,15 +226,15 @@ namespace gtfs {
 		double Dmax ( stops.back ().shape_dist_traveled );
 		if (dist >= 0) Dmax = fmin(Dmax, dist);
 
-		double sigmav (2.0);
+		double sigmav (5.0);
 		double amin (-5.0);
 		double Vmax (30.0);
-		double pi (0.5);
-		double gamma (3);
-		double tau (10);
+		double pi (0.6);
+		double gamma (3.0);
+		double tau (6.0);
 		auto rtau = sampling::exponential (1 / tau);
-		double rho (0.5);
-		double theta (30);
+		double rho (0.4);
+		double theta (20);
 		auto rtheta = sampling::exponential (1 / theta);
 
 		double d (get_distance ()), v (get_velocity ());
@@ -252,7 +252,7 @@ namespace gtfs {
 			   (latest == -1 || start + trajectory.size () < vehicle->get_timestamp ())) {
 			// initial wait time
 			if (v == 0 || vehicle->get_dmaxtraveled () >= 0) {
-				if (rng.runif () < 0.5) {
+				if (rng.runif () < 0.9) {
 					trajectory.push_back (d);
 					continue;
 				}
@@ -322,10 +322,16 @@ namespace gtfs {
 	 * given the bus's reported location
 	 * and stop updates.
 	 */
-	void Particle::calculate_likelihood (void) {
+	void Particle::calculate_likelihood (void) { calculate_likelihood (1); };
+
+	/**
+	 * Compuate likelihood.
+	 * @param mult GPS error multiplier
+	 */
+	void Particle::calculate_likelihood (int mult) {
 
 		double nllhood = 0.0;
-		double sigy   = 10.0;
+		double sigy   = 5.0 * mult;
 
 		auto trip = vehicle->get_trip ();
 		if (!trip) {

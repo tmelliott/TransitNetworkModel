@@ -193,22 +193,32 @@ namespace gtfs {
 
 			// Check likelihoods are decent
 			double lmax = -INFINITY, lsum = 0.0;
-			for (auto& p: particles) {
-				p.calculate_likelihood ();
-				lmax = fmax(lmax, p.get_likelihood ());
-				lsum += exp(p.get_likelihood ());
-				status = 0;
+			int mult = 1;
+			// max 10 iterations (that's, like, as sd of 10*5 = 50m!!)
+			while (lsum == 0) {
+				lsum = 0.0; // reset each time
+				for (auto& p: particles) {
+					p.calculate_likelihood (mult);
+					lmax = fmax(lmax, p.get_likelihood ());
+					lsum += exp(p.get_likelihood ());
+					status = 0;
+				}
+				mult++;
+				if (mult == 10) {
+					status = 0;
+					break;
+				}
 			}
 			std::clog << " > Max Likelihood = " << lmax;
-			if (lmax < -100 || (status == 1 && lmax < -20)) {
-				std::clog << " -> RESET";
-				reset ();
-			} else if (lmax < -20) {
-				std::clog << " -> ANOTHER CHANCE";
-				status = 1;
-			} else {
-				std::clog << " -> all ok";
-			}
+			// if (lmax < -100 || (status == 1 && lmax < -20)) {
+			// 	std::clog << " -> RESET";
+			// 	reset ();
+			// } else if (lmax < -20) {
+			// 	std::clog << " -> ANOTHER CHANCE";
+			// 	status = 1;
+			// } else {
+			// 	std::clog << " -> all ok";
+			// }
 
 			// check that the variability of weights is sufficient ...
 			if (status == 0) {
