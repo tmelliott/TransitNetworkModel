@@ -220,6 +220,9 @@ namespace gtfs {
 			// 	std::clog << " -> all ok";
 			// }
 
+			// Possibly something about here that removes arrival/departure times
+			// once they've been used in the likelihood ...
+
 			// check that the variability of weights is sufficient ...
 			if (status == 0) {
 				std::clog << "\n -> Resampling ...";

@@ -25,7 +25,7 @@ namespace gtfs {
 		// auto sg = s->get_segments ();
 		// if (sg.size () == 0) return;
 
-		// travel_times.resize (sg.size (), pTravelTime());
+		// stop_times.resize (sg.size (), {0, 0});
 		// for (unsigned i=0; i<sg.size (); i++)
 		// 	travel_times.emplace_back ();
 
@@ -150,11 +150,16 @@ namespace gtfs {
 		if (!s) return;
 		auto sg = s->get_segments ();
 		if (sg.size () == 0) return;
+		auto st = r->get_stops ();
+		if (st.size () == 0) return;
 
 		trajectory.clear ();
 		trajectory.push_back (0);
 		travel_times.clear ();
 		travel_times.resize (sg.size ());
+		stop_times.clear ();
+		stop_times.resize (st.size ());
+		for (unsigned i=0; i<st.size (); i++) stop_times.emplace_back (0, 0);
 		// velocity = 0;
 		int wait (sampling::exponential (1.0 / 20.0).rand (rng));
 		if (dist == 0.0) {
@@ -254,6 +259,8 @@ namespace gtfs {
 			if (v == 0 || vehicle->get_dmaxtraveled () >= 0) {
 				if (rng.runif () < 0.9) {
 					trajectory.push_back (d);
+					if (d == stops[j-1].shape_dist_traveled)
+						std::get<1> (stop_times[j])++;
 					continue;
 				}
 			}
@@ -289,6 +296,8 @@ namespace gtfs {
 					// stopping at BUS STOP
 					j++;
 					wait += pstops * (gamma + rtau.rand (rng));
+					std::get<0> (stop_times[j]) = trajectory.size ();
+					std::get<1> (stop_times[j]) = wait;
 				} else {
 					if (travel_times[l].initialized) {
 						travel_times[l].complete = true;
@@ -331,7 +340,8 @@ namespace gtfs {
 	void Particle::calculate_likelihood (int mult) {
 
 		double nllhood = 0.0;
-		double sigy   = 5.0 * mult;
+		double sigy = 5.0 * mult;
+		double sigx = 10.0;
 
 		auto trip = vehicle->get_trip ();
 		if (!trip) {
@@ -358,6 +368,33 @@ namespace gtfs {
 
 			nllhood += log (2 * M_PI * sigy);
 			nllhood += (pow(z[0], 2) + pow(z[1], 2)) / (2 * pow(sigy, 2));
+		}
+
+		// arrival/departure times ...
+		if (vehicle->get_stop_sequence ()) {
+			auto sj = vehicle->get_stop_sequence ().get ();
+			unsigned parr = std::get<0> (stop_times[sj]);
+			unsigned pdep = parr + std::get<1> (stop_times[sj]);
+			if (parr > 0 && pdep > 0) {
+				if (vehicle->get_arrival_time () &&
+					vehicle->get_timestamp () >= vehicle->get_arrival_time ().get ()) {
+					int tdiff (parr - (vehicle->get_arrival_time ().get () - start));
+					// std::cout << "\n- Arrival difference = " << tdiff << "seconds";
+					nllhood += 0.5 * log (2 * M_PI) + log(sigx);
+					nllhood += pow (tdiff, 2) / (2 * pow(sigx, 2));
+				}
+				if (vehicle->get_departure_time () &&
+					vehicle->get_timestamp () >= vehicle->get_departure_time ().get ()) {
+					int tdiff (pdep - (vehicle->get_departure_time ().get () - start));
+					// std::cout << "\n- Departure difference "
+					// 	// << " = " << pdep << " - (" << vehicle->get_departure_time ().get ()
+					// 	// << " - " << start << ") = "
+					// 	// << pdep << " - " << (vehicle->get_departure_time ().get () - start)
+					// 	<< " = " << tdiff << "seconds";
+					nllhood += 0.5 * log (2 * M_PI) + log(sigx);
+					nllhood += pow (tdiff, 2) / (2 * pow(sigx, 2));
+				}
+			}
 		}
 
 		log_likelihood -= nllhood;
