@@ -461,7 +461,7 @@ int main (int argc, char* argv[]) {
 		}
 
 
-		if (forever) std::this_thread::sleep_for (std::chrono::milliseconds (1 * 1000));
+		if (forever) std::this_thread::sleep_for (std::chrono::milliseconds (5 * 1000));
 	}
 
 	return 0;

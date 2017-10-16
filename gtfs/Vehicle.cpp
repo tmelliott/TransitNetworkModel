@@ -220,8 +220,12 @@ namespace gtfs {
 			// 	std::clog << " -> all ok";
 			// }
 
-			// Possibly something about here that removes arrival/departure times
+			// Remove arrival/departure times
 			// once they've been used in the likelihood ...
+			if (arrival_time && arrival_time.get () <= timestamp)
+				arrival_time.reset ();
+			if (departure_time && departure_time.get () <= timestamp)
+				departure_time.reset ();
 
 			// check that the variability of weights is sufficient ...
 			if (status == 0) {
