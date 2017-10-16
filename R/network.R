@@ -178,4 +178,12 @@ graph <- function() {
     invisible(p)
 }
 
-while (TRUE) { try(graph()); Sys.sleep(60) }
+while (TRUE) {
+    try(graph())
+    sleep <- 60
+    while (sleep > 0) {
+        sleep <- sleep - 1
+        cat("\rReload in", sleep, "  ")
+        Sys.sleep(1)
+    }
+}
