@@ -377,11 +377,16 @@ namespace gtfs {
 					init_range[0] = init_range[0] - 100;
 					init_range[1] = init_range[1] + 100;
 				}
+				std::clog << " -> done.";
 				sampling::uniform udist (init_range[0], init_range[1]);
 				for (auto& p: particles) p.initialize (udist.rand (rng), rng);
+				std::cout << " -> particles ready.";
 				status = 0;
 			}
+			std::clog << "\n Loading particles ...";
+			std::cout.flush ();
 			for (auto& p: particles) p.calculate_likelihood ();
+			std::clog << " loaded." << std::endl;
 		}
 	}
 
