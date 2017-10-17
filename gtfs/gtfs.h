@@ -226,7 +226,7 @@ namespace gtfs {
 		unsigned long id;         /*!< a unique particle identifier */
 		boost::optional<unsigned long> parent_id;  /*!< unique identifier of the particle that spawned this one */
 
-		uint64_t start;                    /*!< start time; trajectory indices are seconds after this */
+		uint64_t start = 0;                /*!< start time; trajectory indices are seconds after this */
 		int latest = 0;                    /*!< index of the latest position update; only adjust trajectory after this */
         std::vector<double> trajectory;    /*!< particle's distance trajectory, from 0 seconds into trip until end */
         std::vector<std::tuple<int,int> > stop_times; /*!< [arrival,dwell] time at each stop along route */

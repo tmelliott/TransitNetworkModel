@@ -189,8 +189,9 @@ namespace gtfs {
 		mutate (rng, dist);
 
 		// set start so that get_distance (ts-start) = dist.rand (rng);
-		start = vehicle->get_timestamp ();
-		latest = 0;
+		if (start == 0)
+			start = vehicle->get_timestamp ();
+		// latest = 0;
 		if (dist > 0) {
 			double d = get_distance ();
 			velocity = get_velocity ();
@@ -372,7 +373,7 @@ namespace gtfs {
 
 		// arrival/departure times ...
 		if (vehicle->get_stop_sequence ()) {
-			// indexing in PB is 1-based; 
+			// indexing in PB is 1-based;
 			auto sj = vehicle->get_stop_sequence ().get () - 1;
 			unsigned parr = std::get<0> (stop_times[sj]);
 			unsigned pdep = parr + std::get<1> (stop_times[sj]);
