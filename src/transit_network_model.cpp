@@ -290,6 +290,8 @@ int main (int argc, char* argv[]) {
 					seg->set_travel_time (s.second->get_travel_time ());
 					seg->set_travel_time_var (s.second->get_travel_time_var ());
 					seg->set_timestamp (s.second->get_timestamp ());
+					// and then set the LENGTH of each segment!
+					seg->set_length (s.second->get_length ());
 				}
 				gps::Coord pt1;
 				transit_network::Position* pstart = seg->mutable_start ();

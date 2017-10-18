@@ -72,7 +72,7 @@ namespace gtfs {
 
 		// --- Load all segments
 		sqlite3_stmt* select_segs;
-		if (sqlite3_prepare_v2 (db, "SELECT segment_id, from_id, to_id, start_at, end_at FROM segments",
+		if (sqlite3_prepare_v2 (db, "SELECT segment_id, from_id, to_id, start_at, end_at, length FROM segments",
 								-1, &select_segs, 0) != SQLITE_OK) {
 			std::cerr << " * Can't prepare query: " << sqlite3_errmsg (db) << "\n";
 			throw std::runtime_error ("Can't prepare query.");
@@ -80,6 +80,8 @@ namespace gtfs {
 		std::clog << "\n * Prepared query: SELECT segments";
 		while (sqlite3_step (select_segs) == SQLITE_ROW) {
 			unsigned long seg_id = sqlite3_column_int (select_segs, 0);
+			// returns 0.0 if result is NULL
+			double len = sqlite3_column_double (select_segs, 5);
 			if (sqlite3_column_type (select_segs, 1) == SQLITE_INTEGER &&
 				sqlite3_column_type (select_segs, 3) == SQLITE_NULL) {
 				// FROM intersection
@@ -88,14 +90,14 @@ namespace gtfs {
 					sqlite3_column_type (select_segs, 4) == SQLITE_NULL) {
 					// INTERSECTION -> INTERSECTION
 					auto to = get_intersection (sqlite3_column_int (select_segs, 2));
-					std::shared_ptr<Segment> seg (new Segment(seg_id, from, to, 0));
+					std::shared_ptr<Segment> seg (new Segment(seg_id, from, to, len));
 					segments.emplace (seg_id, seg);
 				} else if (sqlite3_column_type (select_segs, 2) == SQLITE_NULL &&
 						   sqlite3_column_type (select_segs, 4) == SQLITE_TEXT) {
 				    // INTERSECTION -> STOP
 				    std::string stop_id = (char*)sqlite3_column_text (select_segs, 4);
 					auto to = get_stop (stop_id);
-					std::shared_ptr<Segment> seg (new Segment(seg_id, from, to, 0));
+					std::shared_ptr<Segment> seg (new Segment(seg_id, from, to, len));
 					segments.emplace (seg_id, seg);
 			    } else {
 					// std::cout << "[1]";
@@ -109,14 +111,14 @@ namespace gtfs {
 					sqlite3_column_type (select_segs, 4) == SQLITE_NULL) {
 					// STOP -> INTERSECTION
 					auto to = get_intersection (sqlite3_column_int (select_segs, 2));
-					std::shared_ptr<Segment> seg (new Segment(seg_id, from, to, 0));
+					std::shared_ptr<Segment> seg (new Segment(seg_id, from, to, len));
 					segments.emplace (seg_id, seg);
 				} else if (sqlite3_column_type (select_segs, 2) == SQLITE_NULL &&
 						   sqlite3_column_type (select_segs, 4) == SQLITE_TEXT) {
 				    // STOP -> STOP
 					std::string stop_id = (char*)sqlite3_column_text (select_segs, 4);
 					auto to = get_stop (stop_id);
-					std::shared_ptr<Segment> seg (new Segment(seg_id, from, to, 0));
+					std::shared_ptr<Segment> seg (new Segment(seg_id, from, to, len));
 					segments.emplace (seg_id, seg);
 			    } else {
 					// std::cout << "[2: " << seg_id << "]";

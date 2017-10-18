@@ -102,4 +102,5 @@ message Segment {
 	required uint64 timestamp = 4;
 	optional Position start = 5;
 	optional Position end = 6;
+	optional double length = 7;
 }

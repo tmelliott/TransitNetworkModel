@@ -44,6 +44,11 @@ namespace gtfs {
 		}
 		data.clear ();
 		std::cout << " ==> " << travel_time << " (" << travel_time_var << ")";
+		if (length > 0 && travel_time > 0) {
+			double speed = length / travel_time;
+			std::cout << " - approx " << speed << "m/s";
+
+		}
 	};
 
 }; // end namespace gtfs

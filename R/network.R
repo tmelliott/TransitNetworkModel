@@ -17,7 +17,7 @@ plotRoute <- function(routeid, maxSpeed = 100, .max = maxSpeed * 1000 / 60 / 60)
     segments <- lapply(segments, function(x) {
         structure(list(id = x$segment_id,
                        mean = x$travel_time, var = x$travel_time_var,
-                       ts   = tt(x$timestamp)), class = "gtfs.segment")  
+                       ts   = tt(x$timestamp)), class = "gtfs.segment")
     }); names(segments) <- sapply(segments, function(x) x$id)
 
     ## vs <- read(transit_etas.Feed, "../build/gtfs_etas.pb")$trips
@@ -31,23 +31,23 @@ plotRoute <- function(routeid, maxSpeed = 100, .max = maxSpeed * 1000 / 60 / 60)
 
     ## Choose a route, fetch its shape and segments, and draw what's going on ...
     con <- dbConnect(SQLite(), "../gtfs.db")
-    
+
     routeq <- dbSendQuery(con, "SELECT * FROM routes WHERE route_id=?")
     dbBind(routeq, list(routeid))
     route <- dbFetch(routeq)
     dbClearResult(routeq)
-    
+
     shapeq <- dbSendQuery(con, "SELECT * FROM shapes WHERE shape_id=? ORDER BY seq")
     dbBind(shapeq, list(route$shape_id))
     shape <- dbFetch(shapeq)
     dbClearResult(shapeq)
-    
+
     segq <- dbSendQuery(con, "SELECT segments.segment_id, shape_segments.leg, shape_segments.shape_dist_traveled FROM segments, shape_segments WHERE segments.segment_id=shape_segments.segment_id AND shape_segments.shape_id=? ORDER BY leg")
     dbBind(segq, list(route$shape_id))
     segs <- dbFetch(segq)
     dbClearResult(segq)
     dbDisconnect(con)
-    
+
     segs$tt <- sapply(as.character(segs$segment_id), function(id)
         ifelse(is.null(segments[[id]]$mean), NA, segments[[id]]$mean))
     segs$ttvar <- sapply(as.character(segs$segment_id), function(id)
@@ -72,12 +72,12 @@ plotRoute <- function(routeid, maxSpeed = 100, .max = maxSpeed * 1000 / 60 / 60)
     })
     #with(vs[vs$route_id == routeid, ],
     #     abline(v = distance, col = "#990000", lty = 2))
-    
+
     ## xr = extendrange(shape$lng)
     ## yr = extendrange(shape$lat)
     ## bbox = c(xr[1], yr[1], xr[2], yr[2])
     ## akl = get_stamenmap(bbox, zoom = 14, maptype = "toner-lite")
-    
+
     ## pl <- ggmap(akl) +
     ##     geom_path(aes(lng, lat, color = speed), data = shape, lwd = 2) +
     ##     ggtitle(sprintf("Updated %s", format(Sys.time(), "%T"))) +
@@ -121,8 +121,8 @@ library(ggplot2)
 library(dplyr)
 library(ggmap)
 
-graph <- function() {
-    nw <- read(transit_network.Feed, "~/Dropbox/gtfs/nws.pb")
+graph <- function(file) {
+    nw <- read(transit_network.Feed, file)
     ## lines <- lapply(nw$segments, function(x) {
     ##     line <- Line(cbind(c(x$start$lng, x$end$lng),
     ##                        c(x$start$lat, x$end$lat)))
@@ -136,7 +136,7 @@ graph <- function() {
         line <- Line(cbind(c(x$start$lng, x$end$lng),
                            c(x$start$lat, x$end$lat)))
         lines <- Lines(list(line), ID = x$segment_id)
-        len <- LinesLength(lines, TRUE)
+        len <- ifelse(is.null(x$length), LinesLength(lines, TRUE), x$length)
         data.frame(id = as.character(x$segment_id),
                    travel.time = ifelse(x$travel_time == 0, NA, x$travel_time),
                    var = ifelse(x$travel_time_var == 0, NA, x$travel_time_var),
@@ -155,15 +155,16 @@ graph <- function() {
     segd <- segs %>%
         filter(!is.na(travel.time)) %>%
         filter(x.start != x.end) %>% filter(y.start != y.end) %>%
-        mutate(speed = pmin(100, length / travel.time * 60 * 60)) %>%
+        mutate(speed = pmin(100, length / travel.time * 60 * 60  / 1000)) %>%
         mutate(age = cut(minago, breaks = c(0, 30, 60, 2*60, 5*60, Inf),
                          labels = c("< 30min", "30-60min", "1-2h", "2-5h", "5+h"),
                          include.lowest = TRUE, ordered_result = TRUE))
+    if (nrow(segd) == 0) return()
     xr <- extendrange(range(segd$x.start, segd$x.end))
     yr <- extendrange(range(segd$y.start, segd$y.end))
     bbox <- c(xr[1], yr[1]+0.2, xr[2], yr[2]-0.1)
     akl <- get_stamenmap(bbox, zoom = 10, maptype = "toner-background")
-    
+
     p <- ggmap(akl, darken = 0.85) +
         coord_cartesian() +
         geom_curve(aes(x.start, y.start, xend = x.end, yend = y.end,
@@ -178,8 +179,10 @@ graph <- function() {
     invisible(p)
 }
 
+ca <- commandArgs(TRUE)
+f <- ifelse(length(ca) == 1, ca[1], "~/Dropbox/gtfs/nws.pb")
 while (TRUE) {
-    try(graph())
+    try(graph(f))
     sleep <- 60
     while (sleep > 0) {
         sleep <- sleep - 1
