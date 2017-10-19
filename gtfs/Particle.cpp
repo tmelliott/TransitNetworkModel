@@ -372,11 +372,18 @@ namespace gtfs {
 		}
 
 		// arrival/departure times ...
-		if (vehicle->get_stop_sequence ()) {
+		if (stop_times.size () > 0 &&
+			vehicle->get_stop_sequence ()) {
 			// indexing in PB is 1-based;
-			auto sj = vehicle->get_stop_sequence ().get () - 1;
-			unsigned parr = std::get<0> (stop_times[sj]);
-			unsigned pdep = parr + std::get<1> (stop_times[sj]);
+			unsigned parr = 0, pdep = 0, sj = 0;
+			if (vehicle->get_stop_sequence ().get () > 0 && sj < stop_times.size ()) {
+				sj = vehicle->get_stop_sequence ().get () - 1;
+				parr = std::get<0> (stop_times[sj]);
+				pdep = parr + std::get<1> (stop_times[sj]);
+			} else {
+				std::clog << "\n .. hmmm -> sj = " << sj << ", but only "
+					<< stop_times.size () << " stops ...";
+			}
 			if (parr > 0 && pdep > 0) {
 				if (vehicle->get_arrival_time () &&
 					vehicle->get_timestamp () >= vehicle->get_arrival_time ().get ()) {
