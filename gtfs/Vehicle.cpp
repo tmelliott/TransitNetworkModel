@@ -210,15 +210,15 @@ namespace gtfs {
 				}
 			}
 			std::clog << " > Max Likelihood = " << lmax;
-			// if (lmax < -100 || (status == 1 && lmax < -20)) {
-			// 	std::clog << " -> RESET";
-			// 	reset ();
-			// } else if (lmax < -20) {
-			// 	std::clog << " -> ANOTHER CHANCE";
-			// 	status = 1;
-			// } else {
-			// 	std::clog << " -> all ok";
-			// }
+			if (status == 1 && lmax < -1000) {
+				std::clog << " -> RESET";
+				reset ();
+			} else if (lmax < -1000) {
+				std::clog << " -> ANOTHER CHANCE";
+				status = 1;
+			} else {
+				std::clog << " -> all ok";
+			}
 
 			// Remove arrival/departure times
 			// once they've been used in the likelihood ...
