@@ -116,6 +116,7 @@ plotRoute <- function(routeid, maxSpeed = 100, .max = maxSpeed * 1000 / 60 / 60)
 
 ## Plot the network map ...
 library(sp)
+library(geosphere)
 library(magrittr)
 library(ggplot2)
 library(dplyr)
@@ -133,10 +134,13 @@ graph <- function(file) {
     ## lens <- sapply(lines, LinesLength, longlat = TRUE)
     tnow <- as.numeric(Sys.time())
     segs <- do.call(rbind, lapply(nw$segments, function(x) {
-        line <- Line(cbind(c(x$start$lng, x$end$lng),
-                           c(x$start$lat, x$end$lat)))
-        lines <- Lines(list(line), ID = x$segment_id)
-        len <- ifelse(is.null(x$length), LinesLength(lines, TRUE), x$length)
+        # line <- Line(cbind(c(x$start$lng, x$end$lng),
+        #                    c(x$start$lat, x$end$lat)))
+        # lines <- Lines(list(line), ID = x$segment_id)
+        len <- ifelse(is.null(x$length) || x$length == 0,
+					#   LinesLength(lines, TRUE),
+					  distHaversine(c(x$start$lng, x$start$lat), c(x$end$lng, x$end$lat)),
+					  x$length)
         data.frame(id = as.character(x$segment_id),
                    travel.time = ifelse(x$travel_time == 0, NA, x$travel_time),
                    var = ifelse(x$travel_time_var == 0, NA, x$travel_time_var),
@@ -155,7 +159,7 @@ graph <- function(file) {
     segd <- segs %>%
         filter(!is.na(travel.time)) %>%
         filter(x.start != x.end) %>% filter(y.start != y.end) %>%
-        mutate(speed = pmin(100, length / travel.time * 60 * 60  / 1000)) %>%
+        mutate(speed = pmin(100, (length / 1000) / (travel.time / 60 / 60))) %>%
         mutate(age = cut(minago, breaks = c(0, 30, 60, 2*60, 5*60, Inf),
                          labels = c("< 30min", "30-60min", "1-2h", "2-5h", "5+h"),
                          include.lowest = TRUE, ordered_result = TRUE))
