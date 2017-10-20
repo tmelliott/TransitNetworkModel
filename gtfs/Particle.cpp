@@ -262,9 +262,18 @@ namespace gtfs {
 					trajectory.push_back (d);
 					if (d == stops[j-1].shape_dist_traveled)
 						std::get<1> (stop_times[j])++;
+
+					if (d != stops[j-1].shape_dist_traveled &&
+						d != segments[l].shape_dist_traveled &&
+						// travel_times[l].initialized && !travel_times[l].complete)
+						// travel_times[l].time++;
 					continue;
 				}
 			}
+
+			// ------------------------------------------ TO DO: (Fix issue #4)
+			// the internal `while ()` loops need to exit when
+			// particle reaches current time!
 
 			// figure out dmax at the start of each step
 			if (l < L-1 && segments[l].shape_dist_traveled < stops[j].shape_dist_traveled) {
@@ -299,8 +308,10 @@ namespace gtfs {
 					wait += pstops * (gamma + rtau.rand (rng));
 					std::get<0> (stop_times[j]) = trajectory.size ();
 					std::get<1> (stop_times[j]) = wait;
+
 				} else {
 					if (travel_times[l].initialized) {
+						travel_times[l].time++;
 						travel_times[l].complete = true;
 						std::cout.flush ();
 					}
