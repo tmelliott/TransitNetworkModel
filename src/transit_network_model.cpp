@@ -66,7 +66,7 @@ int main (int argc, char* argv[]) {
 
 	GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-	// PROGRAM COMMAND LINE ARGUMNETS
+	// PROGRAM COMMAND LINE ARGUMENTS
 	po::options_description desc ("Allowed options");
 
 	/** vehicle positions file */

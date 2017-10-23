@@ -265,15 +265,12 @@ namespace gtfs {
 
 					if (d != stops[j-1].shape_dist_traveled &&
 						d != segments[l].shape_dist_traveled &&
-						// travel_times[l].initialized && !travel_times[l].complete)
-						// travel_times[l].time++;
+						travel_times[l].initialized && !travel_times[l].complete)
+						travel_times[l].time++;
 					continue;
 				}
 			}
 
-			// ------------------------------------------ TO DO: (Fix issue #4)
-			// the internal `while ()` loops need to exit when
-			// particle reaches current time!
 
 			// figure out dmax at the start of each step
 			if (l < L-1 && segments[l].shape_dist_traveled < stops[j].shape_dist_traveled) {
@@ -283,18 +280,24 @@ namespace gtfs {
 				dmax = stops[j].shape_dist_traveled;
 				if (pstops == -1) pstops = rng.runif () < pi;
 			}
-			double vmax, vmin = 0;
-			vmax = (dmax - d) / (sqrt ((dmax - d) / -amin));
-			if (pstops == 1 && vmax < Vmax) {
-				velocity = sampling::uniform (vmin, vmax).rand (rng);
-			} else {
+			double vmax = Vmax, vmin = 2;
+			if (pstops) {
+				// if particle going to stop, then restricted by either
+				//   a, max speed OR max speed to slow down in time, whichever is lower
+				vmax = std::fmin ( Vmax, (dmax - d) / sqrt ((dmax - d) / -amin) );
+				// AND min speed is now 0
+				vmin = 0;
+			}
+			// if (pstops == 1 && vmax < Vmax) {
+			// 	velocity = sampling::uniform (vmin, vmax).rand (rng);
+			// } else {
 				std::cout.flush ();
 				auto rnorm = sampling::normal (v, sigmav);
 				velocity = rnorm.rand (rng);
-				while (velocity < vmin || velocity > Vmax) {
+				while (velocity < vmin || velocity > vmax) {
 					velocity = rnorm.rand (rng);
 				}
-			}
+			// }
 			d += velocity; // dt = 1 second every time
 
 			if (d >= dmax) {
