@@ -7,20 +7,33 @@ date <- if (length(ca) == 0) Sys.Date() - 1 else as.Date(ca)
 
 getFiles <- function(date) {
 	datef <- gsub("-", "", date)
-	cmd <- sprintf("ssh tom@130.216.51.230 find /mnt/storage/historical_data -type f -name 'vehicle_locations_%s*.pb'", datef)
+	cmd <- sprintf("ssh tom@130.216.51.230 find /mnt/storage/historical_data -type f -name '*_*_%s*.pb'", datef)
 	files <- system(cmd, intern = TRUE)
 
-	files <- sort(files)
+	times <- as.factor(sapply(strsplit(files, ":"), function(f) {
+		x <- strsplit(as.character(as.POSIXct(strsplit(f, "_|[.]")[[1]][4], format="%Y%m%d%H%M%S")), ":")[[1]]
+		x[3] = 30 * (as.numeric(x[3]) %/% 30)
+		x = as.POSIXct(paste(x, collapse = ":"))
+		format(x, "%H:%M:%S")
+	}))
+	file.list <- tapply(files, times, c)
 
 	i <- 1
-	N <- length(files)
-	while (length(files) > 0) {
-		file <- files[1]
-		files <- files[-1]
+	N <- length(file.list)
+	while (length(file.list) > 0) {
+		fs <- file.list[[i]]
 		cat(sprintf("\rLoaded file %s of %s", i, N))
 		i <- i+1
-		cmd <- sprintf("scp -q tom@130.216.51.230:%s build/vp.pb", file)
-		system(cmd)
+		whichvp <- grep("vehicle_locations", fs)
+		whichtu <- grep("trip_updates", fs)
+		if (length(whichvp) == 1) {
+			cmd <- sprintf("scp -q tom@130.216.51.230:%s build/vp.pb", fs[whichvp])
+			system(cmd)
+		}
+		if (length(whichvp) == 1) {
+			cmd <- sprintf("scp -q tom@130.216.51.230:%s build/tu.pb", fs[whichtu])
+			system(cmd)
+		}
 		while (file.exists("build/vp.pb")) {
 			Sys.sleep(1)
 		}

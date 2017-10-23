@@ -205,7 +205,7 @@ namespace gtfs {
 				}
 				mult++;
 				if (mult == 10) {
-					status = 0;
+					status = 1;
 					break;
 				}
 			}

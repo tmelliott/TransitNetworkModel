@@ -232,7 +232,7 @@ namespace gtfs {
 		double Dmax ( stops.back ().shape_dist_traveled );
 		if (dist >= 0) Dmax = fmin(Dmax, dist);
 
-		double sigmav (5.0);
+		double sigmav (3.0);
 		double amin (-5.0);
 		double Vmax (30.0);
 		double pi (0.6);
@@ -292,11 +292,19 @@ namespace gtfs {
 			// 	velocity = sampling::uniform (vmin, vmax).rand (rng);
 			// } else {
 				std::cout.flush ();
-				auto rnorm = sampling::normal (v, sigmav);
+				auto rnorm = sampling::normal (0, sigmav);
 				velocity = rnorm.rand (rng);
+				// std::cout << "\n - [" << v << "] sampling speed between " << vmin << " and " << vmax;
+				int nattempt = 0;
 				while (velocity < vmin || velocity > vmax) {
-					velocity = rnorm.rand (rng);
+					if (nattempt > 20) {
+						velocity = sampling::uniform (vmin, vmax).rand (rng);
+					} else {
+						velocity = v + rnorm.rand (rng) * nattempt / 10;
+						nattempt++;
+					}
 				}
+				// std::cout << " -> " << velocity << " (after " << nattempt << " samples)";
 			// }
 			d += velocity; // dt = 1 second every time
 
@@ -386,8 +394,8 @@ namespace gtfs {
 		}
 
 		// arrival/departure times ...
-		if (stop_times.size () > 0 &&
-			vehicle->get_stop_sequence ()) {
+		if (stop_times.size () > 0 && vehicle->get_stop_sequence ()) {
+
 			// indexing in PB is 1-based;
 			unsigned parr = 0, pdep = 0, sj = 0;
 			if (vehicle->get_stop_sequence ().get () > 0 && sj < stop_times.size ()) {
@@ -398,26 +406,52 @@ namespace gtfs {
 				std::clog << "\n .. hmmm -> sj = " << sj << ", but only "
 					<< stop_times.size () << " stops ...";
 			}
-			if (parr > 0 && pdep > 0) {
-				if (vehicle->get_arrival_time () &&
-					vehicle->get_timestamp () >= vehicle->get_arrival_time ().get ()) {
-					int tdiff (parr - (vehicle->get_arrival_time ().get () - start));
-					// std::cout << "\n- Arrival difference = " << tdiff << "seconds";
-					nllhood += 0.5 * log (2 * M_PI) + log(sigx);
-					nllhood += pow (tdiff, 2) / (2 * pow(sigx, 2));
-				}
-				if (vehicle->get_departure_time () &&
-					vehicle->get_timestamp () >= vehicle->get_departure_time ().get ()) {
-					int tdiff (pdep - (vehicle->get_departure_time ().get () - start));
-					// std::cout << "\n- Departure difference "
-					// 	// << " = " << pdep << " - (" << vehicle->get_departure_time ().get ()
-					// 	// << " - " << start << ") = "
-					// 	// << pdep << " - " << (vehicle->get_departure_time ().get () - start)
-					// 	<< " = " << tdiff << "seconds";
-					nllhood += 0.5 * log (2 * M_PI) + log(sigx);
-					nllhood += pow (tdiff, 2) / (2 * pow(sigx, 2));
-				}
+
+			int varr = 0, vdep = 0;
+			if (vehicle->get_arrival_time () && 
+				vehicle->get_timestamp () >= vehicle->get_arrival_time ().get ()) {
+				varr = vehicle->get_arrival_time () - start;
 			}
+			if (vehicle->get_departure_time () && 
+				vehicle->get_timestamp () >= vehicle->get_departure_time ().get ()) {
+				vdep = vehicle->get_departure_time () - start;
+			}
+
+			// Currently no way of dealing with intermediate stops that were
+			// arrived at BETWEEN observations ... :( 
+
+			if (varr > 0 && vdep > 0) {
+				// vehicle has arrived & departed that stop ...
+				
+			} else if (varr > 0) {
+				// vehicle has arrived, hasn't necessarily departed ...
+
+			} else if (varr > 0) {
+				// vehicle has departed, don't know its arrival time ...
+				
+			}
+
+
+			// if (parr > 0 && pdep > 0) {
+			// 	if (parr > 0 && vehicle->get_arrival_time () &&
+			// 		vehicle->get_timestamp () >= vehicle->get_arrival_time ().get ()) {
+			// 		int tdiff (parr - (vehicle->get_arrival_time ().get () - start));
+			// 		// std::cout << "\n- Arrival difference = " << tdiff << "seconds";
+			// 		nllhood += 0.5 * log (2 * M_PI) + log(sigx);
+			// 		nllhood += pow (tdiff, 2) / (2 * pow(sigx, 2));
+			// 	}
+			// 	if (pdep > 0 && vehicle->get_departure_time () &&
+			// 		vehicle->get_timestamp () >= vehicle->get_departure_time ().get ()) {
+			// 		int tdiff (pdep - (vehicle->get_departure_time ().get () - start));
+			// 		// std::cout << "\n- Departure difference "
+			// 		// 	// << " = " << pdep << " - (" << vehicle->get_departure_time ().get ()
+			// 		// 	// << " - " << start << ") = "
+			// 		// 	// << pdep << " - " << (vehicle->get_departure_time ().get () - start)
+			// 		// 	<< " = " << tdiff << "seconds";
+			// 		nllhood += 0.5 * log (2 * M_PI) + log(sigx);
+			// 		nllhood += pow (tdiff, 2) / (2 * pow(sigx, 2));
+			// 	}
+			// }
 		}
 
 		log_likelihood -= nllhood;
