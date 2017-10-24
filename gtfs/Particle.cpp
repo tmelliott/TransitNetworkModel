@@ -42,8 +42,9 @@ namespace gtfs {
 	Particle::Particle (const Particle &p) {
 		start = p.get_start ();
 		latest = p.get_latest ();
-		for (int k=0; k<latest; k++)
-			trajectory.push_back (p.get_distance (k));
+		trajectory = p.get_trajectory ();
+		// for (int k=0; k<latest; k++)
+		// 	trajectory.push_back (p.get_distance (k));
 		velocity = p.get_velocity ();
 		stop_times = p.get_stop_times ();
 		travel_times = p.get_travel_times ();
@@ -94,7 +95,8 @@ namespace gtfs {
 
 	/** @return index of latest time point */
 	int Particle::get_latest (void) const {
-		return latest;
+		if (vehicle->get_timestamp () < start) return 0;
+		return vehicle->get_timestamp () - start;
 	};
 
 	/** @return the particle's trajectory */
@@ -104,8 +106,8 @@ namespace gtfs {
 
 	/** @return   the distance into trip (meters) */
 	double Particle::get_distance ( void ) const {
-		if ((int)trajectory.size () <= latest) return 0.0;
-		return trajectory[latest];
+		if ((int)trajectory.size () <= get_latest () || get_latest () < 0) return 0.0;
+		return trajectory[get_latest ()];
 	}
 
 	/** @return distance at time start+k */
@@ -118,8 +120,8 @@ namespace gtfs {
 	double Particle::get_velocity (void) const {
 		// begining/end of trip, velocity is 0
 		// if (latest <= 0 || latest >= trajectory.size ()-1) return 0.0;
-		if (latest < 1 || (int)trajectory.size () <= latest) return velocity;
-		return trajectory[latest] - trajectory[latest - 1];
+		if (get_latest () < 1 || (int)trajectory.size () <= get_latest ()) return velocity;
+		return trajectory[get_latest ()] - trajectory[get_latest () - 1];
 	};
 
 	/** @return the stops (arrival and dwell times) */
@@ -160,13 +162,13 @@ namespace gtfs {
 		if (st.size () == 0) return;
 
 		trajectory.clear ();
-		trajectory.push_back (0);
+		trajectory.push_back (0.0);
 		travel_times.clear ();
 		travel_times.resize (sg.size ());
 		stop_times.clear ();
 		stop_times.resize (st.size ());
 		for (unsigned i=0; i<st.size (); i++) stop_times.emplace_back (0, 0);
-		// velocity = 0;
+		velocity = 0;
 		int wait (sampling::exponential (1.0 / 20.0).rand (rng));
 		if (dist == 0.0) {
 			if (vehicle->get_stop_sequence () &&
@@ -176,13 +178,13 @@ namespace gtfs {
 					// allow waiting (+- 10seconds)
 					// we hope the bus will depart around the scheduled departure time
 					// (if > start AND not more than 20min away ...)
-					start = vehicle->get_arrival_time ().get ();
+					// start = vehicle->get_arrival_time ().get ();
 				} else if (vehicle->get_departure_time ()) {
-					start = vehicle->get_departure_time ().get () - 30;
+					// start = vehicle->get_departure_time ().get () - 30;
 					wait = std::max(0.0, 30 + rng.rnorm () * 5);
 				}
 			} else {
-				start = vehicle->get_first_obs () - wait;
+				// start = vehicle->get_first_obs () - wait;
 				wait += sampling::exponential (1.0 / 20.0).rand (rng);
 			}
 		}
@@ -190,19 +192,26 @@ namespace gtfs {
 			trajectory.push_back (0);
 			wait--;
 		}
-		latest = -1;
+		// latest = -1;
 
+		// generate a (full) path, up to dist ...
 		mutate (rng, dist);
 
+		// then figure out which point is closest to that dist,
+		// and set `k = ts - start`
+		unsigned k = 0;
+		while (trajectory[k] < dist) k++;
+		start = vehicle->get_timestamp () - k;
+
 		// set start so that get_distance (ts-start) = dist.rand (rng);
-		if (start == 0)
-			start = vehicle->get_timestamp ();
+		// if (start == 0)
+		// 	start = vehicle->get_timestamp ();
 		// latest = 0;
 		if (dist > 0) {
 			double d = get_distance ();
 			velocity = get_velocity ();
-			trajectory.clear ();
-			trajectory.push_back (d);
+			// trajectory.clear ();
+			// trajectory.push_back (d);
 		}
 	}
 
@@ -238,7 +247,7 @@ namespace gtfs {
 		double Dmax ( stops.back ().shape_dist_traveled );
 		if (dist >= 0) Dmax = fmin(Dmax, dist);
 
-		double sigmav (3.0);
+		double sigmav (5.0);
 		double amin (-5.0);
 		double Vmax (30.0);
 		double pi (0.6);
@@ -261,7 +270,7 @@ namespace gtfs {
 		double dmax;
 		int pstops (-1); // does the particle stop at the next stop/intersection?
 		while (d < Dmax &&
-			   (latest == -1 || start + trajectory.size () < vehicle->get_timestamp () + 60)) {
+			   (get_latest () == -1 || start + trajectory.size () < vehicle->get_timestamp () + 60)) {
 			// initial wait time
 			if (v == 0 || vehicle->get_dmaxtraveled () >= 0) {
 				if (rng.runif () < 0.9) {
@@ -342,7 +351,7 @@ namespace gtfs {
 					travel_times[l].initialized = true;
 				}
 				while (wait > 0 &&
-				 	   (latest == -1 || start + trajectory.size () < vehicle->get_timestamp () + 60)) {
+				 	   (get_latest () == -1 || start + trajectory.size () < vehicle->get_timestamp () + 60)) {
 					trajectory.push_back (d);
 					wait--;
 				}
@@ -389,13 +398,14 @@ namespace gtfs {
 		};
 
 		// i.e., if ts == start, then latest = 0 which makes perfect sense <(o.o)>
-		latest = vehicle->get_timestamp () - start;
+		// latest = vehicle->get_timestamp () - start;
 		// if (trajectory.size () == 0) latest = -1;
-		if ((int)trajectory.size () <= latest) {
-			std::cout << "\n x Something is wrong ... not enough values.";
+		if ((int)trajectory.size () <= get_latest ()) {
+			std::cout << "\n x Something is wrong ... not enough values - " 
+				<< trajectory.size () << " vs " << get_latest ();
 		}
 
-		if (latest >= 0 && latest < (int)trajectory.size ()) {
+		if (get_latest () >= 0 && get_latest () < (int)trajectory.size ()) {
 			gps::Coord x = get_coords ( get_distance (), shape );
 			std::vector<double> z (x.projectFlat(vehicle->get_position ()));
 
@@ -404,7 +414,7 @@ namespace gtfs {
 		}
 
 		// arrival/departure times ...
-		if (stop_times.size () > 0 && vehicle->get_stop_sequence ()) {
+		if (false && stop_times.size () > 0 && vehicle->get_stop_sequence ()) {
 
 			// indexing in PB is 1-based;
 			unsigned parr = 0, pdep = 0, sj = 0;
@@ -419,17 +429,16 @@ namespace gtfs {
 
 			int varr = 0, vdep = 0;
 			if (vehicle->get_arrival_time () && 
-				vehicle->get_timestamp () >= vehicle->get_arrival_time (sj).get ()) {
-				varr = vehicle->get_arrival_time ().get () - start;
+				vehicle->get_timestamp () >= vehicle->get_arrival_time (sj)) {
+				varr = vehicle->get_arrival_time (sj) - start;
 			}
 			if (vehicle->get_departure_time () && 
-				vehicle->get_timestamp () >= vehicle->get_departure_time (sj).get ()) {
-				vdep = vehicle->get_departure_time ().get () - start;
+				vehicle->get_timestamp () >= vehicle->get_departure_time (sj)) {
+				vdep = vehicle->get_departure_time (sj) - start;
 			}
 
 			// Currently no way of dealing with intermediate stops that were
 			// arrived at BETWEEN observations ... :( 
-
 			if (varr > 0 && vdep > 0) {
 				// vehicle has arrived & departed that stop ...
 				if (parr > 0 && pdep > 0) {

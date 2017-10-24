@@ -46,7 +46,7 @@ namespace gtfs {
 		std::cout << " ==> " << travel_time << " (" << travel_time_var << ")";
 		if (length > 0 && travel_time > 0) {
 			double speed = (length / 1000) / (travel_time / 60 / 60);
-			std::cout << " - approx " << speed << "km/h";
+			std::cout << " - " << length << "m - approx " << speed << "km/h";
 
 		}
 	};

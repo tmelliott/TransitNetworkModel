@@ -64,10 +64,13 @@ namespace gtfs {
 
 		auto stops = route->get_stops ();
 		if (stops.size () == 0) return;
-		arrival_times.clear ();
-		departure_times.clear ();
+
 		arrival_times.resize (stops.size ());
 		departure_times.resize (stops.size ());
+		for (unsigned i=0; i<stops.size (); i++) {
+			arrival_times[i] = 0;
+			departure_times[i] = 0;
+		}
 	};
 
 	// --- GETTERS
@@ -104,7 +107,7 @@ namespace gtfs {
 	 * @param k index of stop
 	 * @return the arrival time at stop k
 	 */
-	boost::optional<uint64_t> Vehicle::get_arrival_time (unsigned k) const {
+	uint64_t Vehicle::get_arrival_time (unsigned k) const {
 		return arrival_times[k];
 	};
 	/** @return departure time at last stop */
@@ -115,7 +118,7 @@ namespace gtfs {
 	 * @param k index of stop
 	 * @return the departure time at stop k
 	 */
-	boost::optional<uint64_t> Vehicle::get_departure_time (unsigned k) const {
+	uint64_t Vehicle::get_departure_time (unsigned k) const {
 		return departure_times[k];
 	};
 	/** @return delay at last stop */
@@ -229,9 +232,29 @@ namespace gtfs {
 					break;
 				}
 			}
-			std::clog << " > Max Likelihood = " << lmax;
+			double maxl = - log(2 * M_PI * 5 * mult);
+			std::clog << "\n > The max possible likelihood is: " << maxl;
+			std::clog << "\n > Max Likelihood = " << lmax
+				<< " (mult = " << mult << ")";
 			if (status == 1 && lmax < -1000) {
 				std::clog << " -> RESET";
+
+				double dmean = 0.0, dmaxwt = 0.0;
+				for (auto& p: particles) {
+					if (p.get_likelihood () == lmax) dmaxwt = p.get_distance ();
+					dmean += p.get_distance ();
+
+					std::clog << "\n++ ";
+					for (auto d: p.get_trajectory ()) std::clog << d << ", ";
+					std::clog << "\n -> ts=" << get_timestamp () << ", start=" << p.get_start ()
+						<< ", trajectory size = " << p.get_trajectory ().size ()
+						<< ", distance[" << p.get_latest () << "] = " << p.get_distance ();
+
+				}
+				dmean /= particles.size ();
+				std::clog << " - Distance of MaxWt pt = " << dmaxwt
+					<< ", mean dist = " << dmean;
+
 				reset ();
 			} else if (lmax < -1000) {
 				std::clog << " -> ANOTHER CHANCE";
@@ -406,8 +429,8 @@ namespace gtfs {
 				std::cout << " -> particles ready.";
 				status = 0;
 			}
+			
 			std::clog << "\n Loading particles ...";
-			std::cout.flush ();
 			for (auto& p: particles) p.calculate_likelihood ();
 			std::clog << " loaded." << std::endl;
 		}
@@ -474,6 +497,9 @@ namespace gtfs {
 				// If the TRIP UPDATE trip doesn't match vehicle position, ignore it.
 				return;
 			}
+		} else {
+			// doesn't have a trip ... ermmmmmmm
+			return;
 		}
 		// // reset stop sequence if starting a new trip
 		// if (newtrip) {
@@ -481,6 +507,11 @@ namespace gtfs {
 		// 	arrival_time = 0;
 		// 	departure_time = 0;
 		// }
+		
+		if (arrival_times.size () == 0 || departure_times.size () == 0) {
+			std::cout << "\n x This vehicle has no arrival/departure times ... ?";
+			return;
+		}
 		if (vp.stop_time_update_size () > 0) { // TripUpdate -> StopTimeUpdates -> arrival/departure time
 			for (int i=0; i<vp.stop_time_update_size (); i++) {
 				auto& stu = vp.stop_time_update (i);
@@ -494,6 +525,9 @@ namespace gtfs {
 					// }
 					stop_sequence = stu.stop_sequence ();
 					if (stu.has_arrival () && stu.arrival ().has_time ()) {
+						std::cout << "- there are " << arrival_times.size () << "slots; placing in slot "
+							<< sseq << std::endl;
+
 						arrival_times[sseq] = stu.arrival ().time ();
 						if (stu.arrival ().has_delay ()) delay = stu.arrival ().delay ();
 					}

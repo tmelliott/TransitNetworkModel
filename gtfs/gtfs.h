@@ -154,9 +154,9 @@ namespace gtfs {
 		std::shared_ptr<Trip> trip;                /*!< the ID of the trip */
 		boost::optional<unsigned> stop_sequence;   /*!< the stop number of the last visited stop */
 		boost::optional<uint64_t> arrival_time;    /*!< arrival time at last stop */
-		std::vector<boost::optional<uint64_t> > arrival_times;
+		std::vector<uint64_t> arrival_times;
 		boost::optional<uint64_t> departure_time;  /*!< departure time at last stop */
-		std::vector<boost::optional<uint64_t> > departure_times;
+		std::vector<uint64_t> departure_times;
 		boost::optional<int> delay;                /*!< arrival/departure delay at most recent stop */
 
 		gps::Coord position;                       /*!< last reported GPS position */
@@ -193,9 +193,9 @@ namespace gtfs {
 		const std::shared_ptr<Trip>& get_trip (void) const;
 		boost::optional<unsigned> get_stop_sequence (void) const;
 		boost::optional<uint64_t> get_arrival_time (void) const;
-		boost::optional<uint64_t> get_arrival_time (unsigned k) const;
+		uint64_t get_arrival_time (unsigned k) const;
 		boost::optional<uint64_t> get_departure_time (void) const;
-		boost::optional<uint64_t> get_departure_time (unsigned k) const;
+		uint64_t get_departure_time (unsigned k) const;
 		boost::optional<int> get_delay (void) const;
 		const gps::Coord& get_position (void) const;
 		uint64_t get_timestamp (void) const;
