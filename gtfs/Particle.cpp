@@ -42,7 +42,8 @@ namespace gtfs {
 	Particle::Particle (const Particle &p) {
 		start = p.get_start ();
 		latest = p.get_latest ();
-		trajectory = p.get_trajectory ();
+		for (int k=0; k<latest; k++)
+			trajectory.push_back (p.get_distance (k));
 		velocity = p.get_velocity ();
 		stop_times = p.get_stop_times ();
 		travel_times = p.get_travel_times ();
@@ -103,17 +104,22 @@ namespace gtfs {
 
 	/** @return   the distance into trip (meters) */
 	double Particle::get_distance ( void ) const {
-		if (trajectory.size () == 0) return 0.0;
-		return trajectory.back ();
+		if ((int)trajectory.size () <= latest) return 0.0;
+		return trajectory[latest];
 	}
+
+	/** @return distance at time start+k */
+	double Particle::get_distance (unsigned k) const {
+		if (k < trajectory.size ()) return trajectory[k];
+		return (trajectory.back ());
+	};
 
 	/**@return   the velocity (meters per second) */
 	double Particle::get_velocity (void) const {
 		// begining/end of trip, velocity is 0
 		// if (latest <= 0 || latest >= trajectory.size ()-1) return 0.0;
-		int k = trajectory.size ()-1;
-		if (k <= 0) return velocity;
-		return trajectory[k] - trajectory[k-1];
+		if (latest < 1 || (int)trajectory.size () <= latest) return velocity;
+		return trajectory[latest] - trajectory[latest - 1];
 	};
 
 	/** @return the stops (arrival and dwell times) */
@@ -255,7 +261,7 @@ namespace gtfs {
 		double dmax;
 		int pstops (-1); // does the particle stop at the next stop/intersection?
 		while (d < Dmax &&
-			   (latest == -1 || start + trajectory.size () < vehicle->get_timestamp ())) {
+			   (latest == -1 || start + trajectory.size () < vehicle->get_timestamp () + 60)) {
 			// initial wait time
 			if (v == 0 || vehicle->get_dmaxtraveled () >= 0) {
 				if (rng.runif () < 0.9) {
@@ -336,7 +342,7 @@ namespace gtfs {
 					travel_times[l].initialized = true;
 				}
 				while (wait > 0 &&
-				 	   (latest == -1 || start + trajectory.size () < vehicle->get_timestamp ())) {
+				 	   (latest == -1 || start + trajectory.size () < vehicle->get_timestamp () + 60)) {
 					trajectory.push_back (d);
 					wait--;
 				}
@@ -382,10 +388,14 @@ namespace gtfs {
 			return;
 		};
 
-		latest = trajectory.size () - 1;
-		if (trajectory.size () == 0) latest = -1;
+		// i.e., if ts == start, then latest = 0 which makes perfect sense <(o.o)>
+		latest = vehicle->get_timestamp () - start;
+		// if (trajectory.size () == 0) latest = -1;
+		if ((int)trajectory.size () <= latest) {
+			std::cout << "\n x Something is wrong ... not enough values.";
+		}
 
-		if (latest >= 0) {
+		if (latest >= 0 && latest < (int)trajectory.size ()) {
 			gps::Coord x = get_coords ( get_distance (), shape );
 			std::vector<double> z (x.projectFlat(vehicle->get_position ()));
 
@@ -409,12 +419,12 @@ namespace gtfs {
 
 			int varr = 0, vdep = 0;
 			if (vehicle->get_arrival_time () && 
-				vehicle->get_timestamp () >= vehicle->get_arrival_time ().get ()) {
-				varr = vehicle->get_arrival_time () - start;
+				vehicle->get_timestamp () >= vehicle->get_arrival_time (sj).get ()) {
+				varr = vehicle->get_arrival_time ().get () - start;
 			}
 			if (vehicle->get_departure_time () && 
-				vehicle->get_timestamp () >= vehicle->get_departure_time ().get ()) {
-				vdep = vehicle->get_departure_time () - start;
+				vehicle->get_timestamp () >= vehicle->get_departure_time (sj).get ()) {
+				vdep = vehicle->get_departure_time ().get () - start;
 			}
 
 			// Currently no way of dealing with intermediate stops that were
@@ -422,39 +432,42 @@ namespace gtfs {
 
 			if (varr > 0 && vdep > 0) {
 				// vehicle has arrived & departed that stop ...
-				
+				if (parr > 0 && pdep > 0) {
+					unsigned pdwell = pdep - parr,
+					         vdwell = vdep - varr;
+					int tdiff (parr - varr);
+					// x | mu, sigma ~ N(mu, sigma)
+					nllhood += 0.5 * log (2 * M_PI) + log (sigx);
+					nllhood += pow (tdiff, 2) / (2 * pow (sigx, 2));
+					// x | lambda ~ Exp(lambda), lambda = parameter (i.e., particle dwell time)
+					nllhood += log (pdwell) + vdwell / pdwell;
+				} else {
+					nllhood = INFINITY;
+				}
 			} else if (varr > 0) {
 				// vehicle has arrived, hasn't necessarily departed ...
-
-			} else if (varr > 0) {
+				if (parr > 0) {
+					int tdiff (parr - varr);
+					// x | mu, sigma ~ N(mu, sigma)
+					nllhood += 0.5 * log (2 * M_PI) + log (sigx);
+					nllhood += pow (tdiff, 2) / (2 * pow (sigx, 2));
+				} else {
+					nllhood = INFINITY;
+				}
+			} else if (vdep > 0) {
 				// vehicle has departed, don't know its arrival time ...
-				
+				if (pdep > 0) {
+					int tdiff (pdep - vdep);
+					// x | mu, sigma ~ N(mu, sigma)
+					nllhood += 0.5 * log (2 * M_PI) + log (sigx);
+					nllhood += pow (tdiff, 2) / (2 * pow (sigx, 2));
+				} else {
+					nllhood = INFINITY;
+				}
 			}
-
-
-			// if (parr > 0 && pdep > 0) {
-			// 	if (parr > 0 && vehicle->get_arrival_time () &&
-			// 		vehicle->get_timestamp () >= vehicle->get_arrival_time ().get ()) {
-			// 		int tdiff (parr - (vehicle->get_arrival_time ().get () - start));
-			// 		// std::cout << "\n- Arrival difference = " << tdiff << "seconds";
-			// 		nllhood += 0.5 * log (2 * M_PI) + log(sigx);
-			// 		nllhood += pow (tdiff, 2) / (2 * pow(sigx, 2));
-			// 	}
-			// 	if (pdep > 0 && vehicle->get_departure_time () &&
-			// 		vehicle->get_timestamp () >= vehicle->get_departure_time ().get ()) {
-			// 		int tdiff (pdep - (vehicle->get_departure_time ().get () - start));
-			// 		// std::cout << "\n- Departure difference "
-			// 		// 	// << " = " << pdep << " - (" << vehicle->get_departure_time ().get ()
-			// 		// 	// << " - " << start << ") = "
-			// 		// 	// << pdep << " - " << (vehicle->get_departure_time ().get () - start)
-			// 		// 	<< " = " << tdiff << "seconds";
-			// 		nllhood += 0.5 * log (2 * M_PI) + log(sigx);
-			// 		nllhood += pow (tdiff, 2) / (2 * pow(sigx, 2));
-			// 	}
-			// }
 		}
 
-		log_likelihood -= nllhood;
+		log_likelihood = -nllhood;
 
 	};
 

@@ -62,6 +62,12 @@ namespace gtfs {
 		if (segs.size () == 0) return;
 		for (auto sg: segs) travel_times.emplace_back (sg.segment);
 
+		auto stops = route->get_stops ();
+		if (stops.size () == 0) return;
+		arrival_times.clear ();
+		departure_times.clear ();
+		arrival_times.resize (stops.size ());
+		departure_times.resize (stops.size ());
 	};
 
 	// --- GETTERS
@@ -93,10 +99,24 @@ namespace gtfs {
 	/** @return arrival time at last stop */
 	boost::optional<uint64_t> Vehicle::get_arrival_time (void) const {
 		return arrival_time;
+	};	
+	/**
+	 * @param k index of stop
+	 * @return the arrival time at stop k
+	 */
+	boost::optional<uint64_t> Vehicle::get_arrival_time (unsigned k) const {
+		return arrival_times[k];
 	};
 	/** @return departure time at last stop */
 	boost::optional<uint64_t> Vehicle::get_departure_time (void) const {
 		return departure_time;
+	};	
+	/**
+	 * @param k index of stop
+	 * @return the departure time at stop k
+	 */
+	boost::optional<uint64_t> Vehicle::get_departure_time (unsigned k) const {
+		return departure_times[k];
 	};
 	/** @return delay at last stop */
 	boost::optional<int> Vehicle::get_delay (void) const {
@@ -222,10 +242,13 @@ namespace gtfs {
 
 			// Remove arrival/departure times
 			// once they've been used in the likelihood ...
-			if (arrival_time && arrival_time.get () <= timestamp)
-				arrival_time.reset ();
-			if (departure_time && departure_time.get () <= timestamp)
-				departure_time.reset ();
+			// if (arrival_time && arrival_time.get () <= timestamp)
+			// 	arrival_time.reset ();
+			// if (departure_time && departure_time.get () <= timestamp)
+			// 	departure_time.reset ();
+
+			// RESET travel times (at some point ...? but only the ones that have been used ...)
+			
 
 			// check that the variability of weights is sufficient ...
 			if (status == 0) {
@@ -463,18 +486,19 @@ namespace gtfs {
 				auto& stu = vp.stop_time_update (i);
 				// only update stop sequence if it's greater than existing one
 				if (stu.has_stop_sequence () && stu.stop_sequence () >= stop_sequence) {
-					if (stu.stop_sequence () > stop_sequence) {
-						// necessary to reset arrival/departure time if stop sequence is increased
-						arrival_time = boost::none;
-						departure_time = boost::none;
-					}
+					auto sseq = stu.stop_sequence () - 1;
+					// if (sseq > stop_sequence) {
+					// 	// necessary to reset arrival/departure time if stop sequence is increased
+					// 	arrival_times[] = boost::none;
+					// 	departure_time = boost::none;
+					// }
 					stop_sequence = stu.stop_sequence ();
 					if (stu.has_arrival () && stu.arrival ().has_time ()) {
-						arrival_time = stu.arrival ().time ();
+						arrival_times[sseq] = stu.arrival ().time ();
 						if (stu.arrival ().has_delay ()) delay = stu.arrival ().delay ();
 					}
 					if (stu.has_departure () && stu.departure ().has_time ()) {
-						departure_time = stu.departure ().time ();
+						departure_times[sseq] = stu.departure ().time ();
 						if (stu.departure ().has_delay ()) delay = stu.departure ().delay ();
 					}
 				}

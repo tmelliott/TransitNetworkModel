@@ -147,28 +147,34 @@ namespace gtfs {
 		std::string id; /*!< ID of vehicle, as per GTFS feed */
 		std::vector<Particle> particles; /*!< the particles associated with the vehicle */
 
-		bool newtrip; /*!< if this is true, the next `update()` will reinitialise the particles AFTER finishing!!! */
-        bool finished = false;
+		bool newtrip;            /*!< if this is true, the next `update()` will reinitialise the particles AFTER finishing!!! */
+        bool finished = false;   /*!< set to true once the vehicle has finished the trip */
 
 		// GTFS Realtime Fields
-		std::shared_ptr<Trip> trip;     /*!< the ID of the trip */
-		boost::optional<unsigned> stop_sequence;     /*!< the stop number of the last visited stop */
-		boost::optional<uint64_t> arrival_time;   /*!< arrival time at last stop */
-		boost::optional<uint64_t> departure_time; /*!< departure time at last stop */
-		boost::optional<int> delay; /*!< arrival/departure delay at most recent stop */
-		gps::Coord position;     /*!< last reported GPS position */
-		uint64_t timestamp = 0;      /*!< time of last (position) observation */
-        int delta = 0;           /*!< time since the last observation */
-		uint64_t first_obs;      /*!< the time of the first observation for that trip; used to pin down start time */
-		double approx_distance; /*!< approximate distance to determine if traveling correct direction */
+		std::shared_ptr<Trip> trip;                /*!< the ID of the trip */
+		boost::optional<unsigned> stop_sequence;   /*!< the stop number of the last visited stop */
+		boost::optional<uint64_t> arrival_time;    /*!< arrival time at last stop */
+		std::vector<boost::optional<uint64_t> > arrival_times;
+		boost::optional<uint64_t> departure_time;  /*!< departure time at last stop */
+		std::vector<boost::optional<uint64_t> > departure_times;
+		boost::optional<int> delay;                /*!< arrival/departure delay at most recent stop */
 
-		double dmaxtraveled = -1.0; /*!< max distance the bus has traveled if it hasn't traveled far */
+		gps::Coord position;                       /*!< last reported GPS position */
+		uint64_t timestamp = 0;                    /*!< time of last (position) observation */
+        int delta = 0;                             /*!< time since the last observation */
+		
+		uint64_t first_obs;                        /*!< the time of the first observation for that trip; 
+														used to pin down start time */
+		double approx_distance;                    /*!< approximate distance to determine if traveling correct direction */
 
-		int status = -1;    /*!< 0 = traveling normally; 1-3 = initializing stage; -1 = uninitialized; */
-		bool updated;  /*!< if true, need to run update/mutate */
+		double dmaxtraveled = -1.0;                /*!< max distance the bus has traveled if it hasn't traveled far */
 
-        // std::vector<DwellTime> dwell_times;  /*!< vehicle's dwell times at stops */
-        std::vector<TravelTime> travel_times; /*!< vehicle's travel times through segments */
+		int status = -1;                           /*!< 0 = traveling normally; 1 = poor performance; -1 = uninitialized; */
+		bool updated;                              /*!< if true, need to run update/mutate */
+
+        // std::vector<DwellTime> dwell_times;     /*!< vehicle's dwell times at stops */
+        std::vector<TravelTime> travel_times;      /*!< vehicle's travel times through segments */
+
 	public:
 		unsigned int n_particles; /*!< the number of particles that will be created in the next sample */
 		unsigned long next_id;    /*!< the ID of the next particle to be created */
@@ -187,7 +193,9 @@ namespace gtfs {
 		const std::shared_ptr<Trip>& get_trip (void) const;
 		boost::optional<unsigned> get_stop_sequence (void) const;
 		boost::optional<uint64_t> get_arrival_time (void) const;
+		boost::optional<uint64_t> get_arrival_time (unsigned k) const;
 		boost::optional<uint64_t> get_departure_time (void) const;
+		boost::optional<uint64_t> get_departure_time (unsigned k) const;
 		boost::optional<int> get_delay (void) const;
 		const gps::Coord& get_position (void) const;
 		uint64_t get_timestamp (void) const;
@@ -254,7 +262,7 @@ namespace gtfs {
 		int get_latest (void) const;
 		std::vector<double> get_trajectory (void) const;
 		// double get_distance (uint64_t& t) const;
-		// double get_distance (int k) const;
+		double get_distance (unsigned k) const;
 		double get_distance (void) const;
 		double get_velocity (void) const;
 		std::vector<std::tuple<int,int> > get_stop_times (void) const;
