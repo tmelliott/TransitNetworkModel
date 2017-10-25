@@ -244,11 +244,11 @@ namespace gtfs {
 					if (p.get_likelihood () == lmax) dmaxwt = p.get_distance ();
 					dmean += p.get_distance ();
 
-					std::clog << "\n++ ";
-					for (auto d: p.get_trajectory ()) std::clog << d << ", ";
-					std::clog << "\n -> ts=" << get_timestamp () << ", start=" << p.get_start ()
-						<< ", trajectory size = " << p.get_trajectory ().size ()
-						<< ", distance[" << p.get_latest () << "] = " << p.get_distance ();
+					// std::clog << "\n++ ";
+					// for (auto d: p.get_trajectory ()) std::clog << d << ", ";
+					// std::clog << "\n -> ts=" << get_timestamp () << ", start=" << p.get_start ()
+					// 	<< ", trajectory size = " << p.get_trajectory ().size ()
+					// 	<< ", distance[" << p.get_latest () << "] = " << p.get_distance ();
 
 				}
 				dmean /= particles.size ();
@@ -431,8 +431,13 @@ namespace gtfs {
 			}
 			
 			std::clog << "\n Loading particles ...";
-			for (auto& p: particles) p.calculate_likelihood ();
-			std::clog << " loaded." << std::endl;
+			double dmean = 0.0;
+			for (auto& p: particles) {
+				p.calculate_likelihood ();
+				dmean += p.get_distance ();
+			}
+			dmean /= particles.size ();
+			std::clog << " loaded; Dbar = " << dmean << std::endl;
 		}
 	}
 
