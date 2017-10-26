@@ -195,20 +195,44 @@ namespace gtfs {
 		if (!shape) return;
 		auto path = shape->get_path ();
 		if (path.size () == 0) return;
+		auto stops = route->get_stops ();
+		if (stops.size () == 0) return;
+				
 
 		if (newtrip) status = -1;
 		if (status >= 0) {
-			// std::clog << "\n + In progress";
+			std::clog << "\n + In progress, " << particles.size () << " particles... ";
+			
+			double dbar = 0.0;
+			for (auto& p: particles) {
+				// std::clog << "\n  >> ";
+				// // for (auto d: p.get_trajectory ()) std::clog << d << ", ";
+				// std::clog << " >> k = " << p.get_latest () << " = " << p.get_distance ();
+				// if (p.get_latest () < 0) std::clog << " -> something wrong?";
+				// else
+				// 	std::clog << " -> trajectory.size = " << p.get_trajectory ().size ()
+				// 		<< " -> trajectory[k] = " << p.get_trajectory ()[p.get_latest ()];
+
+				dbar += p.get_distance ();
+			}
+			dbar = dbar / particles.size ();
+			std::clog << "\n + Start distance = " << dbar << "m";
 
 			// std::clog << "\n --- mutating particles ...";
 			std::cout.flush ();
 			for (auto& p: particles) p.mutate (rng);
 			// std::clog << " done. Calculating position ...";
 
-			double dbar = 0.0;
-			for (auto& p: particles) dbar += p.get_distance ();
+			dbar = 0.0;
+			double dmax = 0.0, dmin = INFINITY;
+			for (auto& p: particles) {
+				dbar += p.get_distance ();
+				dmax = fmax(dmax, p.get_distance ());
+				dmin = fmin(dmin, p.get_distance ());
+			}
 			dbar = dbar / particles.size ();
-			if (path.back ().dist_traveled - dbar < 500) {
+			std::clog << "-> mutation -> " << dbar << "m";
+			if (path.back ().dist_traveled - dbar < 50) {
 				finished = true;
 				return;
 			}
@@ -220,11 +244,13 @@ namespace gtfs {
 			// max 10 iterations (that's, like, as sd of 10*5 = 50m!!)
 			while (lsum == 0) {
 				lsum = 0.0; // reset each time
+				// std::clog << "\n > [" << mult << "]: ";
 				for (auto& p: particles) {
 					p.calculate_likelihood (mult);
 					lmax = fmax(lmax, p.get_likelihood ());
 					lsum += exp(p.get_likelihood ());
 					status = 0;
+					// std::clog << "(" << p.get_likelihood () << ", " << p.get_distance () << ") | ";
 				}
 				mult++;
 				if (mult == 10) {
@@ -236,6 +262,19 @@ namespace gtfs {
 			std::clog << "\n > The max possible likelihood is: " << maxl;
 			std::clog << "\n > Max Likelihood = " << lmax
 				<< " (mult = " << mult << ")";
+
+			for (auto& p: particles) {
+				if (p.get_likelihood () == lmax) {
+					if (dmax == p.get_distance ())
+						std::clog << "\n >> WARNING: max likelihood belongs to max distance ... (" << dmax << ")";
+					else if (dmin == p.get_distance ()) 
+						std::clog << "\n >> WARNING: max likelihood belongs to min distance ...(" << dmin << ")";
+					break;
+				}
+			}
+
+			
+
 			if (status == 1 && lmax < -1000) {
 				std::clog << " -> RESET";
 
@@ -276,9 +315,8 @@ namespace gtfs {
 			// check that the variability of weights is sufficient ...
 			if (status == 0) {
 				std::clog << "\n -> Resampling ...";
-				std::cout.flush ();
 				resample (rng);
-				std::cout << " done.";
+				std::clog << " done.";
 				// double Neff = 0.0;
 				// for (auto& p: particles) Neff += exp(2 * p.get_likelihood () - 2 * log(lsum));
 				// Neff = pow(Neff, -1);
@@ -288,7 +326,7 @@ namespace gtfs {
 				// 	std::clog << " -> ENOUGH VARIABLITY - NO NEED TO RESAMPLE";
 				// }
 
-				std::cout << "\nDealing with segments ...";
+				std::clog << "\nDealing with segments ...";
 				// Check for finished segments ...
 				unsigned prevseg = 0;
 				for (unsigned i=0; i<travel_times.size (); i++) {
@@ -328,12 +366,12 @@ namespace gtfs {
 					}
 
 					if (curseg == prevseg) {
-						std::cout << " ... and still is!";
+						std::clog << " ... and still is!";
 					} else if (curseg < prevseg) {
 						// reset those travel times
 						for (unsigned i=curseg; i<travel_times.size (); i++) travel_times[i].complete = false;
 					} else {
-						std::cout << " ... and is now on segment " << curseg;
+						std::clog << " ... and is now on segment " << curseg;
 						for (unsigned i=prevseg; i<curseg; i++) {
 							// get details for all intermediate segments
 							if (travel_times[i].used) continue;
@@ -349,15 +387,15 @@ namespace gtfs {
 							if (Np > 0) {
 								tbar /= Np;
 								travel_times[i].set_time (round (tbar));
-								std::cout << "\n -> Segment " << i << ": " << round (tbar) << "s";
+								std::clog << "\n -> Segment " << i << ": " << round (tbar) << "s";
 							} else {
 								travel_times[i].set_time (0.0);
-								std::cout << " ... no particles with travel time";
+								std::clog << " ... no particles with travel time";
 							}
 						}
 					}
 				}
-				std::cout << "done.";
+				std::clog << "done.";
 				// loop through
 			}
 
@@ -393,11 +431,13 @@ namespace gtfs {
 				for (auto& p: particles) p.initialize (0.0, rng);
 
 				status = 0;
-			} else if (position.distanceTo (trip->get_stoptimes ()[0].stop->get_pos ()) < 20) {
+			} else if (position.distanceTo (trip->get_stoptimes ()[0].stop->get_pos ()) < 20 &&
+					   stop_sequence) {
 				// we're close enough to be considered at the stop
 				std::clog << " (case 2)";
 				status = 0;
-				for (auto& p: particles) p.initialize (0.0, rng);
+				double dz = stops[stop_sequence.get () - 1].shape_dist_traveled;
+				for (auto& p: particles) p.initialize (dz, rng);
 			} else {
 				std::clog << " (case 3)";
 				std::vector<double> init_range {100000.0, 0.0};
@@ -426,7 +466,7 @@ namespace gtfs {
 				std::clog << " -> done.";
 				sampling::uniform udist (init_range[0], init_range[1]);
 				for (auto& p: particles) p.initialize (udist.rand (rng), rng);
-				std::cout << " -> particles ready.";
+				std::clog << "\n ++ particles ready";
 				status = 0;
 			}
 			

@@ -41,10 +41,11 @@ namespace gtfs {
 	 */
 	Particle::Particle (const Particle &p) {
 		start = p.get_start ();
-		latest = p.get_latest ();
-		trajectory = p.get_trajectory ();
-		// for (int k=0; k<latest; k++)
-		// 	trajectory.push_back (p.get_distance (k));
+		latest = p.get_latest ();		
+		// std::clog << "\n ** Copying particle ... k = " << p.get_latest ();
+		for (int k=0; k<=latest; k++)
+			trajectory.push_back (p.get_distance (k));
+		// std::clog << " -> trajectory length = " << trajectory.size ();
 		velocity = p.get_velocity ();
 		stop_times = p.get_stop_times ();
 		travel_times = p.get_travel_times ();
@@ -95,8 +96,14 @@ namespace gtfs {
 
 	/** @return index of latest time point */
 	int Particle::get_latest (void) const {
-		if (start == 0 || vehicle->get_timestamp () < start) return 0;
-		return vehicle->get_timestamp () - start;
+		return latest;
+		// if (latest < 0) {
+		// 	return std::max (0, (int)trajectory.size () - 1);
+		// 	// return trajectory.size ();
+		// 	// if (start == 0) return 0;
+		// 	// return std::max(0, (int)(vehicle->get_timestamp () - start));
+		// } else {
+		// }
 	};
 
 	/** @return the particle's trajectory */
@@ -106,8 +113,18 @@ namespace gtfs {
 
 	/** @return   the distance into trip (meters) */
 	double Particle::get_distance ( void ) const {
-		if ((int)trajectory.size () <= get_latest () || get_latest () < 0) return 0.0;
-		return trajectory[get_latest ()];
+		if (latest < 0) {
+			if (trajectory.size () == 0) return 0.0;
+			return trajectory.back ();
+		}
+		return trajectory[latest];
+		// if (trajectory.size () == 0) return 0.0;
+		// unsigned k = get_latest ();
+		// // if requesting distance not far enough into the future, 
+		// // grab the most recent one ...
+		// if (k >= trajectory.size ()) return trajectory.back ();
+		// // if ((int)trajectory.size () <= get_latest () || get_latest () < 0) return 0.0;
+		// return trajectory[get_latest ()];
 	}
 
 	/** @return distance at time start+k */
@@ -162,8 +179,9 @@ namespace gtfs {
 		if (st.size () == 0) return;
 
 		trajectory.clear ();
-		trajectory.push_back (0.0);
+		// trajectory.push_back (0.0);
 		start = 0;
+		latest = -1;
 		// std::clog << "\n * START: ";
 		travel_times.clear ();
 		travel_times.resize (sg.size ());
@@ -191,7 +209,7 @@ namespace gtfs {
 				// start = vehicle->get_first_obs () - wait;
 				wait += sampling::exponential (1.0 / 20.0).rand (rng);
 			}
-			trajectory.push_back (0);
+			trajectory.push_back (0.0);
 			// std::clog << "0.0, ";
 		} else if (dist > 300) {
 			dx = dist - 300;
@@ -204,32 +222,31 @@ namespace gtfs {
 			// std::clog << dx << ", ";
 			wait--;
 		}
-		// latest = -1;
 
 		// generate a (full) path, up to dist ...
 		mutate (rng, dist);
 
-		// std::clog << "\n** ";
-		// for (auto d: trajectory) std::clog << d << ", ";
-
 		// then figure out which point is closest to that dist,
 		// and set `k = ts - start`
-		unsigned k = 0;
-		while (trajectory[k] < dist) k++;
-		start = vehicle->get_timestamp () - k;
+		// while (latest < trajectory.size () && trajectory[latest] <= dist) latest++;
+		latest = trajectory.size () - 1;
+		start = vehicle->get_timestamp () - latest;
 
-		// std::clog << " -> CURRENT = " << k << " = " << trajectory[k];
+		// std::clog << "\n -> CURRENT = " << latest << " = " << trajectory[latest]
+		// 	<< " -> get_distance () = " << get_distance ();
+
+		// trajectory.resize (k+1);
 
 		// set start so that get_distance (ts-start) = dist.rand (rng);
 		// if (start == 0)
 		// 	start = vehicle->get_timestamp ();
 		// latest = 0;
-		if (dist > 0) {
-			double d = get_distance ();
-			velocity = get_velocity ();
-			// trajectory.clear ();
-			// trajectory.push_back (d);
-		}
+		// if (dist > 0) {
+		// 	double d = get_distance ();
+		// 	velocity = get_velocity ();
+		// 	// trajectory.clear ();
+		// 	// trajectory.push_back (d);
+		// }
 	}
 
 	void Particle::mutate ( sampling::RNG& rng ) {
@@ -245,7 +262,7 @@ namespace gtfs {
 		// start from point (d[latest], v[latest]), and project a /new/ path to
 		// the end of the route
 
-		// std::clog << "(-mutate-to-" << dist << "-) ";
+		// std::clog << "\n ** start at " << get_distance () << ", (-mutate-to-" << dist << "-) ";
 
 		auto trip = vehicle->get_trip ();
 		if (!trip) return;
@@ -261,24 +278,29 @@ namespace gtfs {
 		// std::cout.flush ();
 		if (segments.size () == 0) return;
 
+		// trip trajectory
+		if (latest >= 0 && (int)trajectory.size () - 1 > get_latest ()) {
+			// std::clog << "\n -> resizing trajectory from " << trajectory.size ();
+			trajectory.resize (get_latest () + 1);
+			// std::clog << " -> to " << trajectory.size ();
+		}
+
 		// create trajectories
 		double Dmax ( stops.back ().shape_dist_traveled );
 		if (dist >= 0) Dmax = fmin(Dmax, dist);
 
-		double sigmav (5.0);
+		double sigmav (12.0);
 		double amin (-5.0);
 		double Vmax (30.0);
-		double pi (0.6);
+		double pi (0.5);
 		double gamma (3.0);
 		double tau (6.0);
 		auto rtau = sampling::exponential (1 / tau);
-		double rho (0.4);
-		double theta (20);
+		double rho (0.3);
+		double theta (15);
 		auto rtheta = sampling::exponential (1 / theta);
 
 		double d (get_distance ()), v (get_velocity ());
-		// std::clog << " [size=" << trajectory.size () << ", k=" << get_latest () << "] ";
-		// if (dist > 300) d = dist - 300.0; // so we're not generating so much useless stuff
 		int J (stops.size ());
 		int L (segments.size ());
 		int j = 1, l = 1;
@@ -289,7 +311,7 @@ namespace gtfs {
 		double dmax;
 		int pstops (-1); // does the particle stop at the next stop/intersection?
 		while (d < Dmax &&
-			   (get_latest () == -1 || start + trajectory.size () < vehicle->get_timestamp () + 60)) {
+			   (latest == -1 || start + trajectory.size () < vehicle->get_timestamp () + 60)) {
 			// initial wait time
 			if (v == 0 || vehicle->get_dmaxtraveled () >= 0) {
 				if (rng.runif () < 0.9) {
@@ -351,8 +373,15 @@ namespace gtfs {
 				if (dmax == stops[j].shape_dist_traveled) {
 					// stopping at BUS STOP
 					j++;
-					wait += pstops * (gamma + rtau.rand (rng));
 					std::get<0> (stop_times[j]) = trajectory.size ();
+					if (j >= J) {
+						while (start + trajectory.size () < vehicle->get_timestamp ())
+							trajectory.push_back (d);
+						// finished = true;
+						break;
+					}
+
+					wait += pstops * (gamma + rtau.rand (rng));
 					std::get<1> (stop_times[j]) = wait;
 
 				} else {
@@ -363,16 +392,18 @@ namespace gtfs {
 					}
 					l++;
 					if (l >= L) {
-						trajectory.push_back (d);
+						while (start + trajectory.size () < vehicle->get_timestamp ())
+							trajectory.push_back (d);
+						// finished = true;
 						// std::clog << d << ", ";
-						return;
+						break;
 					}
 					// stopping at INTERSECTION
 					wait += pstops * rtheta.rand (rng);
 					travel_times[l].initialized = true;
 				}
 				while (wait > 0 &&
-				 	   (get_latest () == -1 || start + trajectory.size () < vehicle->get_timestamp () + 60)) {
+				 	   (latest == -1 || start + trajectory.size () < vehicle->get_timestamp () + 60)) {
 					trajectory.push_back (d);
 					// std::clog << d << ", ";
 					wait--;
@@ -383,6 +414,13 @@ namespace gtfs {
 			// std::clog << d << ", ";
 			if (travel_times[l].initialized && !travel_times[l].complete)
 				travel_times[l].time++;
+		}
+
+
+		// then update latest
+		if (start > 0) {
+			latest = vehicle->get_timestamp () - start;
+			// std::clog << " -> k = " << latest << ", length = " << trajectory.size ();
 		}
 	};
 
@@ -423,8 +461,8 @@ namespace gtfs {
 		// i.e., if ts == start, then latest = 0 which makes perfect sense <(o.o)>
 		// latest = vehicle->get_timestamp () - start;
 		// if (trajectory.size () == 0) latest = -1;
-		if ((int)trajectory.size () <= get_latest ()) {
-			std::cout << "\n x Something is wrong ... not enough values - " 
+		if ((int)trajectory.size () <= latest) {
+			std::clog << "\n x Something is wrong ... not enough values - " 
 				<< trajectory.size () << " vs " << get_latest ();
 		}
 

@@ -4,3 +4,6 @@
    This should ensure particles *about* to reach the stop get the correct likelihood
 4. implement the likelihood that depends on available data
    (in the case of multiple stops, just loop over them ...)
+
+
+- handle situation where bus doesn't actually move
