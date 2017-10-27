@@ -137,7 +137,7 @@ graph <- function(file) {
         # line <- Line(cbind(c(x$start$lng, x$end$lng),
         #                    c(x$start$lat, x$end$lat)))
         # lines <- Lines(list(line), ID = x$segment_id)
-        len <- ifelse(is.null(x$length) || x$length == 0,
+        len <- ifelse(TRUE, #is.null(x$length) || x$length == 0,
 					#   LinesLength(lines, TRUE),
 					  distHaversine(c(x$start$lng, x$start$lat), c(x$end$lng, x$end$lat)),
 					  x$length)
@@ -150,6 +150,7 @@ graph <- function(file) {
                    y.start = x$start$lat, y.end = x$end$lat,
                    length = len)
     }))
+
     ## segs %>%
     ##     mutate(speed = pmin(100, length / travel.time * 60 * 60)) %>%
     ##     #segs$speed <- pmin(100, segs$length / segs$travel.time * 60 * 60)
@@ -159,24 +160,26 @@ graph <- function(file) {
     segd <- segs %>%
         filter(!is.na(travel.time)) %>%
         filter(x.start != x.end) %>% filter(y.start != y.end) %>%
-        mutate(speed = pmin(100, (length / 1000) / (travel.time / 60 / 60))) %>%
+        mutate(speed = pmin(120, (length / 1000) / (travel.time / 60 / 60))) %>%
         mutate(age = cut(minago, breaks = c(0, 30, 60, 2*60, 5*60, Inf),
                          labels = c("< 30min", "30-60min", "1-2h", "2-5h", "5+h"),
                          include.lowest = TRUE, ordered_result = TRUE))
+
     if (nrow(segd) == 0) return()
     xr <- extendrange(range(segd$x.start, segd$x.end))
     yr <- extendrange(range(segd$y.start, segd$y.end))
     bbox <- c(xr[1], yr[1]+0.2, xr[2], yr[2]-0.1)
+    bbox <- c(174.514601, -37.052927, 174.938625, -36.591491)
     akl <- get_stamenmap(bbox, zoom = 10, maptype = "toner-background")
 
-    p <- ggmap(akl, darken = 0.85) +
-        coord_cartesian() +
-        geom_curve(aes(x.start, y.start, xend = x.end, yend = y.end,
+    p <- ggmap(akl, darken = 0.85)
+    p <- p + coord_cartesian()
+    p <- p + geom_curve(aes(x.start, y.start, xend = x.end, yend = y.end,
                        colour = speed, alpha = age),
                    curvature = -0.1,
-                   data = segd, lineend = "round") +
-        scale_colour_viridis(option = "plasma", begin = 0.2) +
-        scale_alpha_discrete(range = c(1, 0.1))
+                   data = segd, lineend = "round")
+    p <- p + scale_colour_viridis(option = "plasma", begin = 0.2)
+    p <- p + scale_alpha_discrete(range = c(1, 0.1))
     pdf("~/Dropbox/gtfs/nws.pdf", width = 12, height = 12)
     print(p)
     dev.off()

@@ -47,7 +47,7 @@ namespace po = boost::program_options;
 
 bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> > &vs,
 				std::string &feed_file, int N, sampling::RNG &rng,
-				gtfs::GTFS &gtfs);
+				gtfs::GTFS &gtfs, time_t *filetime);
 // bool write_etas (std::unique_ptr<gtfs::Vehicle>& v, std::string &eta_file);
 void time_start (std::clock_t& clock, std::chrono::high_resolution_clock::time_point& wall);
 void time_end (std::clock_t& clock, std::chrono::high_resolution_clock::time_point& wall);
@@ -129,33 +129,10 @@ int main (int argc, char* argv[]) {
 	sampling::RNG rng;
 	bool forever = true;
 
-	// std::cout << " * Loaded " << gtfs.get_stops ().size () << " stops\n";
-	// std::cout << " * Loaded " << gtfs.get_intersections ().size () << " intersections\n";
-	// std::cout << " * Loaded " << gtfs.get_segments ().size () << " segments\n\n";
-	//
-	// std::cout << " * Loaded " << gtfs.get_trips ().size () << " trips\n";
-	// std::cout << " * Loaded " << gtfs.get_routes ().size () << " routes\n";
-	// std::cout << " * Loaded " << gtfs.get_shapes ().size () << " shapes\n";
-
-
-	// std::clock_t clockend;
-
-	// system("rm -f PARTICLES.csv ETAS.csv HISTORY/*.csv");
-	// if (csvout == 2) {
-	// 	std::ofstream particlefile; // file for particles
-	// 	particlefile.open ("PARTICLES.csv");
-	// 	particlefile << "vehicle_id,particle_id,timestamp,trip_id,route_id,distance,velocity,parent_id,lat,lng,lh,wt,init\n";
-	// 	particlefile.close ();
-	// 	std::ofstream etafile;      // file for particles/stop ETAs
-	// 	etafile.open ("ETAS.csv");
-	// 	etafile << "vehicle_id,particle_id,stop_sequence,eta\n";
-	// 	etafile.close ();
-	// }
-
-	std::ofstream f; // file for particles
-	f.open ("particles.csv");
-	f << "vehicle_id,trip_id,timestamp,particle_id,t,d\n";
-	f.close ();
+	// std::ofstream f; // file for particles
+	// f.open ("particles.csv");
+	// f << "vehicle_id,trip_id,timestamp,particle_id,t,d\n";
+	// f.close ();
 
 	time_t curtime;
 	int repi = 20;
@@ -165,13 +142,10 @@ int main (int argc, char* argv[]) {
 
 		// Load GTFS feed -> vehicles
 		{
-            // auto wallstart = std::chrono::high_resolution_clock::now();
-            // auto wallend = std::chrono::high_resolution_clock::now();
-
 			time_start (clockstart, wallstart);
 			for (auto file: files) {
 				try {
-					if ( ! load_feed (vehicles, file, N, rng, gtfs) ) {
+					if ( ! load_feed (vehicles, file, N, rng, gtfs, &curtime) ) {
 						std::cerr << "Unable to read file.\n";
 						continue;
 					}
@@ -191,7 +165,13 @@ int main (int argc, char* argv[]) {
 		{
 			// -> triggers particle transition -> resample
 			time_start (clockstart, wallstart);
-			std::cout << "\n * Running particle filter ...\n";
+			std::cout << "\n * Running particle filter ";
+			struct tm * timeinfo;
+			timeinfo = std::localtime (&curtime);
+			char buff[20];
+			strftime (buff, sizeof (buff), "%H:%M:%S", timeinfo);
+			printf("at %s ...", buff);
+			std::cout << "\n";
 			std::cout.flush ();
 			#pragma omp parallel for schedule(dynamic, 20) num_threads(numcore)
 			for (unsigned i=0; i<vehicles.bucket_count (); i++) {
@@ -214,33 +194,33 @@ int main (int argc, char* argv[]) {
 			time_end (clockstart, wallstart);
 		}
 
-		if (csvout) {
-			time_start (clockstart, wallstart);
-			std::cout << "\n * Writing particles to CSV\n";
-			std::cout.flush ();
-			f.open ("particles.csv", std::ofstream::app);
-			int i=1;
-			for (auto& v: vehicles) {
-				printf("\rVehicle %*d of %lu", 3, i, vehicles.bucket_count ());
-				std::cout.flush ();
-				i++;
-				for (auto& p: v.second->get_particles ()) {
-					if (rng.runif () < 0.8) continue;
-					int k0 = p.get_trajectory ().size () - v.second->get_delta ();
-					for (unsigned k=k0; k<p.get_trajectory ().size (); k++) {
-						f << v.second->get_id () << ","
-							<< v.second->get_trip ()->get_id () << ","
-							<< v.second->get_timestamp () << ","
-							<< p.get_id () << ","
-							<< p.get_start () + k << ","
-							<< p.get_trajectory ()[k] << "\n";
-					}
-				}
-			}
-			f.close ();
-			std::cout << "\n";
-			time_end (clockstart, wallstart);
-		}
+		// if (csvout) {
+		// 	time_start (clockstart, wallstart);
+		// 	std::cout << "\n * Writing particles to CSV\n";
+		// 	std::cout.flush ();
+		// 	f.open ("particles.csv", std::ofstream::app);
+		// 	int i=1;
+		// 	for (auto& v: vehicles) {
+		// 		printf("\rVehicle %*d of %lu", 3, i, vehicles.bucket_count ());
+		// 		std::cout.flush ();
+		// 		i++;
+		// 		for (auto& p: v.second->get_particles ()) {
+		// 			if (rng.runif () < 0.8) continue;
+		// 			int k0 = p.get_trajectory ().size () - v.second->get_delta ();
+		// 			for (unsigned k=k0; k<p.get_trajectory ().size (); k++) {
+		// 				f << v.second->get_id () << ","
+		// 					<< v.second->get_trip ()->get_id () << ","
+		// 					<< v.second->get_timestamp () << ","
+		// 					<< p.get_id () << ","
+		// 					<< p.get_start () + k << ","
+		// 					<< p.get_trajectory ()[k] << "\n";
+		// 			}
+		// 		}
+		// 	}
+		// 	f.close ();
+		// 	std::cout << "\n";
+		// 	time_end (clockstart, wallstart);
+		// }
 
 		// Update road segments -> Kalman filter
 		{
@@ -479,11 +459,12 @@ int main (int argc, char* argv[]) {
  * @param N         the number of particle to initialze new vehicles with
  * @param rng       reference to a random number generator
  * @param gtfs      A GTFS object containing the static data
+ * @param t         pointer to the "current" time ...
  * @return          true if the feed is loaded correctly, false if it is not
  */
 bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> > &vs,
 				std::string &feed_file, int N, sampling::RNG &rng,
-				gtfs::GTFS &gtfs) {
+				gtfs::GTFS &gtfs, time_t *filetime) {
 	transit_realtime::FeedMessage feed;
 	std::cout << "Checking for vehicle updates in feed: " << feed_file << " ... ";
 	std::fstream feed_in (feed_file, std::ios::in | std::ios::binary);
@@ -495,6 +476,10 @@ bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> >
 		return false;
 	} else {
 		std::cout << "done -> " << feed.entity_size () << " updates loaded.\n";
+		if (feed.header ().has_timestamp ()) {
+			*filetime = feed.header ().timestamp ();
+			// std::cout << " [ time = " << feed.header ().timestamp () << "]\n";
+		}
 	}
 
 	// Cycle through feed entities and update associated vehicles, or create a new one.
@@ -505,7 +490,7 @@ bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> >
 	std::string qry = "SELECT trip_id FROM trips WHERE route_id IN "
 		"(SELECT route_id FROM routes WHERE route_short_name IN "
 		// "('274','277','224','222','258','NEX','129'))";
-		"('277'))";
+		"('277', '274'))";
 	if (sqlite3_open (gtfs.get_dbname ().c_str (), &db)) {
 		std::cerr << "\n x oops...";
 	} else if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &tripskeep, 0) != SQLITE_OK) {

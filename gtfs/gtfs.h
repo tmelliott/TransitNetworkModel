@@ -754,6 +754,12 @@ namespace gtfs {
 		 */
 		TravelTime (std::shared_ptr<Segment> seg) : segment (seg) {};
 
+		void reset (void) {
+			time = 0;
+			complete = false;
+			used = false;
+		}
+
 		/** Set the travel time for the segment (and set complete) */
 		void set_time (int t) {
 			time = t;
@@ -782,6 +788,11 @@ namespace gtfs {
 		bool complete = false;      /*!< true once particle has finished with the segment */
 		bool initialized = false;   /*!< true once particle starts AT THE BEGINNING of segment */
 
+    	void reset (void) {
+    		time = 0;
+    		complete = 0;
+    		initialized = 0;
+    	}
 		// pTravelTime () : time (0), complete (false) , initialized (false) {};
     };
 

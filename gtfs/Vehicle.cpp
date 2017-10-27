@@ -218,9 +218,23 @@ namespace gtfs {
 			dbar = dbar / particles.size ();
 			std::clog << "\n + Start distance = " << dbar << "m";
 
+			auto sg = shape->get_segments ();
+
 			// std::clog << "\n --- mutating particles ...";
 			std::cout.flush ();
-			for (auto& p: particles) p.mutate (rng);
+			for (auto& p: particles) {
+				// std::clog << "\n Particle starting at " << p.get_distance () << "m ...";
+				p.mutate (rng);
+				// std::clog << " and ending at " << p.get_distance () << "m ...";
+				// for (unsigned ti=0; ti<p.get_travel_times ().size (); ti++) {
+					// std::clog << "\n  [" << ti << ", "
+						// << sg[ti].shape_dist_traveled
+						// << "m] - initialized: "
+						// << (p.get_travel_time (ti).initialized ? "1" : "0")
+						// << ", completed: " << (p.get_travel_time (ti).complete ? "1" : "0")
+						// << ", time = " << p.get_travel_time (ti).time;
+				// }
+			}
 			// std::clog << " done. Calculating position ...";
 
 			dbar = 0.0;
@@ -231,7 +245,7 @@ namespace gtfs {
 				dmin = fmin(dmin, p.get_distance ());
 			}
 			dbar = dbar / particles.size ();
-			std::clog << "-> mutation -> " << dbar << "m";
+			std::clog << " -> mutation -> " << dbar << "m";
 			if (path.back ().dist_traveled - dbar < 50) {
 				finished = true;
 				return;
@@ -369,7 +383,7 @@ namespace gtfs {
 						std::clog << " ... and still is!";
 					} else if (curseg < prevseg) {
 						// reset those travel times
-						for (unsigned i=curseg; i<travel_times.size (); i++) travel_times[i].complete = false;
+						for (unsigned i=curseg; i<travel_times.size (); i++) travel_times[i].reset ();
 					} else {
 						std::clog << " ... and is now on segment " << curseg;
 						for (unsigned i=prevseg; i<curseg; i++) {
@@ -377,13 +391,19 @@ namespace gtfs {
 							if (travel_times[i].used) continue;
 							double tbar = 0.0;
 							int Np = 0;
+							double tmin = INFINITY, tmax = 0.0;
 							for (auto& p: particles) {
 								auto tt = p.get_travel_time (i);
 								if (tt.initialized && tt.complete) {
+									if (tt.time == 0) std::clog << "ZERO ";
 									tbar += tt.time;
 									Np++;
+									if (tt.time > tmax) tmax = tt.time;
+									if (tt.time < tmin) tmin = tt.time;
 								}
 							}
+							std::clog << "; tsum = " << tbar << ", N = " << Np
+								<< "; range: [" << tmin << ", " << tmax << "]";
 							if (Np > 0) {
 								tbar /= Np;
 								travel_times[i].set_time (round (tbar));
@@ -395,7 +415,7 @@ namespace gtfs {
 						}
 					}
 				}
-				std::clog << "done.";
+				std::clog << "\n + Vehicle modeling complete.";
 				// loop through
 			}
 
@@ -570,8 +590,8 @@ namespace gtfs {
 					// }
 					stop_sequence = stu.stop_sequence ();
 					if (stu.has_arrival () && stu.arrival ().has_time ()) {
-						std::cout << "- there are " << arrival_times.size () << "slots; placing in slot "
-							<< sseq << std::endl;
+						// std::cout << "- there are " << arrival_times.size () << "slots; placing in slot "
+						// 	<< sseq << std::endl;
 
 						arrival_times[sseq] = stu.arrival ().time ();
 						if (stu.arrival ().has_delay ()) delay = stu.arrival ().delay ();

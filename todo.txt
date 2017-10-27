@@ -7,3 +7,6 @@
 
 
 - handle situation where bus doesn't actually move
+
+- initialize segments using information in `networkstate.pb` file (if its ~recent)
+  to aid recovery from crashes
