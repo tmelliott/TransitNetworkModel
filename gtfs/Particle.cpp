@@ -113,6 +113,7 @@ namespace gtfs {
 
 	/** @return distance at time start+k */
 	double Particle::get_distance (unsigned k) const {
+		if (trajectory.size () == 0) return 0.0;
 		if (k < trajectory.size ()) return trajectory[k];
 		std::clog << "\n *** NOTE: requesting " << k << " of " << trajectory.size ();
 		return (trajectory.back ());
