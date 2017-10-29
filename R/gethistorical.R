@@ -39,7 +39,7 @@ getFiles <- function(date) {
 			cmd <- sprintf("scp -q tom@130.216.51.230:%s build/tu.pb", fs[whichtu])
 			system(cmd)
 		}
-		while (file.exists("build/vp.pb")) {
+		while (file.exists("build/vp.pb") && file.exists("build/tu.pb")) {
 			Sys.sleep(1)
 		}
 	}
