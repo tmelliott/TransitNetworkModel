@@ -239,16 +239,25 @@ namespace gtfs {
 
 			dbar = 0.0;
 			double dmax = 0.0, dmin = INFINITY;
+			// std::clog << "\n Particle distances: ";
 			for (auto& p: particles) {
+				// std::clog << "[" << p.get_trajectory ().size () << "/"
+				// 	<< p.get_latest () << "] ";
+				// std::clog << p.get_distance () << ", ";
 				dbar += p.get_distance ();
 				dmax = fmax(dmax, p.get_distance ());
 				dmin = fmin(dmin, p.get_distance ());
 			}
-			dbar = dbar / particles.size ();
-			std::clog << " -> mutation -> " << dbar << "m";
-			if (path.back ().dist_traveled - dbar < 50) {
-				finished = true;
-				return;
+			// std::clog << "\n";
+			if (particles.size () > 0) {
+				dbar = dbar / particles.size ();
+				std::clog << " -> mutation -> " << dbar << "m";
+				if (path.back ().dist_traveled - dbar < 50) {
+					finished = true;
+					return;
+				}
+			} else {
+				std::clog << " -> mutation ... ummm no particles :(";
 			}
 			// std::clog << " done. Calculating likelihoods ...";
 
@@ -456,8 +465,9 @@ namespace gtfs {
 				// we're close enough to be considered at the stop
 				std::clog << " (case 2)";
 				status = 0;
-				double dz = stops[stop_sequence.get () - 1].shape_dist_traveled;
-				for (auto& p: particles) p.initialize (dz, rng);
+				// std::clog << "\n -> Fetching stop " << stop_sequence.get () << " of " << stops.size ();
+				// double dz = stops[stop_sequence.get () - 1].shape_dist_traveled;
+				for (auto& p: particles) p.initialize (0, rng);
 			} else {
 				std::clog << " (case 3)";
 				std::vector<double> init_range {100000.0, 0.0};

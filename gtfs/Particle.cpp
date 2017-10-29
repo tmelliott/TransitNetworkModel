@@ -107,12 +107,14 @@ namespace gtfs {
 			if (trajectory.size () == 0) return 0.0;
 			return trajectory.back ();
 		}
-		return trajectory[latest];
+		// unsigned k = latest;
+		return get_distance (latest);
 	}
 
 	/** @return distance at time start+k */
 	double Particle::get_distance (unsigned k) const {
 		if (k < trajectory.size ()) return trajectory[k];
+		std::clog << "\n *** NOTE: requesting " << k << " of " << trajectory.size ();
 		return (trajectory.back ());
 	};
 
@@ -261,7 +263,9 @@ namespace gtfs {
 
 		// trip trajectory
 		if (latest >= 0 && (int)trajectory.size () - 1 > get_latest ()) {
+			// std::clog << "\n -> Resizing from " << trajectory.size ();
 			trajectory.resize (get_latest () + 1);
+			// std::clog << " to " << trajectory.size ();
 		}
 
 		// create trajectories
@@ -398,11 +402,13 @@ namespace gtfs {
 
         if (start > 0) {
     		// make sure the trajectory is long enough!
-    		while (start + trajectory.size () < vehicle->get_timestamp ())
+			latest = vehicle->get_timestamp () - start;
+    		// while (start + trajectory.size () < vehicle->get_timestamp ())
+    		while (trajectory.size () <= latest)
     			trajectory.push_back (d);
 
     		// then update latest
-			latest = vehicle->get_timestamp () - start;
+			// std::clog << "\n -> Latest = " << latest << ", length = " << trajectory.size ();
 		}
 	};
 
