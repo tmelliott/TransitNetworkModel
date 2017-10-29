@@ -10,3 +10,7 @@
 
 - initialize segments using information in `networkstate.pb` file (if its ~recent)
   to aid recovery from crashes
+
+
+- remove excess trajectory tail; i.e., only keep the last ~5 minutes worth? (and update `start` time accordingly)
+ -> reduce memory demand!!

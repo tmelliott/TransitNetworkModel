@@ -160,7 +160,7 @@ graph <- function(file) {
     segd <- segs %>%
         filter(!is.na(travel.time)) %>%
         filter(x.start != x.end) %>% filter(y.start != y.end) %>%
-        mutate(speed = pmin(120, (length / 1000) / (travel.time / 60 / 60))) %>%
+        mutate(speed = pmin(110, (length / 1000) / (travel.time / 60 / 60))) %>%
         mutate(age = cut(minago, breaks = c(0, 30, 60, 2*60, 5*60, Inf),
                          labels = c("< 30min", "30-60min", "1-2h", "2-5h", "5+h"),
                          include.lowest = TRUE, ordered_result = TRUE))
@@ -178,7 +178,7 @@ graph <- function(file) {
                        colour = speed, alpha = age),
                    curvature = -0.1,
                    data = segd, lineend = "round")
-    p <- p + scale_colour_viridis(option = "plasma", begin = 0.2)
+    p <- p + scale_colour_viridis(option = "plasma", begin = 0.2, limits = c(0, 110))
     p <- p + scale_alpha_discrete(range = c(1, 0.1))
     pdf("~/Dropbox/gtfs/nws.pdf", width = 12, height = 12)
     print(p)
@@ -190,7 +190,7 @@ ca <- commandArgs(TRUE)
 f <- ifelse(length(ca) == 1, ca[1], "~/Dropbox/gtfs/nws.pb")
 while (TRUE) {
     try(graph(f))
-    sleep <- 60
+    sleep <- 30
     while (sleep > 0) {
         sleep <- sleep - 1
         cat("\rReload in", sleep, "  ")

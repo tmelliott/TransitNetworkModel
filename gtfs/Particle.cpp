@@ -40,9 +40,10 @@ namespace gtfs {
 	 * @param p the parent particle to be copied
 	 */
 	Particle::Particle (const Particle &p) {
-		start = p.get_start ();
-		latest = p.get_latest ();		
-		for (int k=0; k<=latest; k++) trajectory.push_back (p.get_distance (k));
+		start = p.get_start () + p.get_latest (); // p.get_start ();
+		latest = 0; // -- start from the end of the trajectory - the other stuff doesn't matter!! p.get_latest ();
+		// for (int k=0; k<=latest; k++) trajectory.push_back (p.get_distance (k));
+		trajectory.push_back (p.get_distance ());
 		velocity = p.get_velocity ();
 		stop_times = p.get_stop_times ();
 		travel_times = p.get_travel_times ();
