@@ -1,6 +1,6 @@
-1. store all arrival/departure times for a vehicle in `std::vector<boost::optional<uint64_T> >`s
+[x] store all arrival/departure times for a vehicle in `std::vector<boost::optional<uint64_T> >`s
 2. clear once used in the likelihood 
-3. project particles FORWARD until `t_k + 60` (i.e., a minute into the future).
+[x] project particles FORWARD until `t_k + 60` (i.e., a minute into the future).
    This should ensure particles *about* to reach the stop get the correct likelihood
 4. implement the likelihood that depends on available data
    (in the case of multiple stops, just loop over them ...)
@@ -12,5 +12,6 @@
   to aid recovery from crashes
 
 
+[done]
 - remove excess trajectory tail; i.e., only keep the last ~5 minutes worth? (and update `start` time accordingly)
- -> reduce memory demand!!
+ -> reduce memory demand!! 
