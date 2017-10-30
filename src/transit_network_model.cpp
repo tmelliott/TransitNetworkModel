@@ -188,6 +188,14 @@ int main (int argc, char* argv[]) {
 							v->second->update (rng);
 						} catch (const std::bad_alloc& e) {
 							std::clog << "\n *** ERROR: " << e.what () << " - out of memory?\n";
+							std::clog << "\n - Delta = " << v->second->get_delta ()
+								<< "\n - particle trajectory length max: ";
+							int Plen = 0;
+							for (auto& p: v->second->get_particles ()) 
+								Plen = std::max(Plen, (int)p.get_trajectory ().size());
+							std::clog << Plen;
+							std::clog << "\n >> resetting :(\n\n";
+							v->second->reset ();
 						}
 						std::cout.flush ();
 					}
