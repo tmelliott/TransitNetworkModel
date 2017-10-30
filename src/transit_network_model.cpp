@@ -184,7 +184,11 @@ int main (int argc, char* argv[]) {
 							<< v->second->get_trip ()->get_route ()->get_short_name ()
 							<< " [" << v->second->get_id () << "]";
 						std::cout.flush ();
-						v->second->update (rng);
+						try {
+							v->second->update (rng);
+						} catch (const std::bad_alloc& e) {
+							std::clog << "\n *** ERROR: " << e.what () << " - out of memory?\n";
+						}
 						std::cout.flush ();
 					}
 					std::clog.flush ();
