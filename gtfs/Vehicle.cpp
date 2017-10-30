@@ -550,6 +550,7 @@ namespace gtfs {
 			delta = timestamp == 0 ? 0 : vp.timestamp () - timestamp;
 			timestamp = vp.timestamp ();
 			updated = true;
+			if (delta > 60 * 10) newtrip = true; // if it has been more than 10 minutes, reset.
 		}
 		if (newtrip) reset ();
 	};
