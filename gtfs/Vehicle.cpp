@@ -549,7 +549,12 @@ namespace gtfs {
 			// only set delta if timestamp was set
 			if (vp.timestamp () < timestamp) {
 				std::clog << "\n *** Weird... new observation is EARLIER than the last one ...\n";
+				std::clog << " - CURRENT: " << timestamp
+					<< "\n - NEW: " << vp.timestamp ()
+					<< "\n - DIFFERENCE = " << vp.timestamp () - timestamp << "\n";
 				newtrip = true;
+				timestamp = vp.timestamp ();
+				delta = 0;
 			} else {
 				delta = timestamp == 0 ? 0 : vp.timestamp () - timestamp;
 				timestamp = vp.timestamp ();
