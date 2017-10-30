@@ -547,10 +547,15 @@ namespace gtfs {
 		}
 		if (vp.has_timestamp () && timestamp != vp.timestamp ()) {
 			// only set delta if timestamp was set
-			delta = timestamp == 0 ? 0 : vp.timestamp () - timestamp;
-			timestamp = vp.timestamp ();
-			updated = true;
-			if (delta > 60 * 10) newtrip = true; // if it has been more than 10 minutes, reset.
+			if (vp.timestamp () < timestamp) {
+				std::clog << "\n *** Weird... new observation is EARLIER than the last one ...\n";
+				newtrip = true;
+			} else {
+				delta = timestamp == 0 ? 0 : vp.timestamp () - timestamp;
+				timestamp = vp.timestamp ();
+				updated = true;
+				if (delta > 60 * 10) newtrip = true; // if it has been more than 10 minutes, reset.
+			}
 		}
 		if (newtrip) reset ();
 	};
