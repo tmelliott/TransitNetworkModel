@@ -240,6 +240,7 @@ namespace gtfs {
         std::vector<std::tuple<int,int> > stop_times; /*!< [arrival,dwell] time at each stop along route */
         std::vector<pTravelTime> travel_times;        /*!< [queue,travel] time at each intersection/segment along route */
 
+		std::vector<uint64_t> etas;        /*!< ETAs for the particle */
 
 		bool finished;
 
@@ -290,7 +291,7 @@ namespace gtfs {
 		void set_weight (double wt) { weight = wt; };
 
 		// void reset_travel_time (unsigned i);
-		// void calculate_etas (void);
+		void calculate_etas (void);
 
         // Operators
         bool operator<(const Particle &p2) const {

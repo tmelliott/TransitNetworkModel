@@ -542,37 +542,55 @@ namespace gtfs {
 	// 	// }
 	// };
 
-	// /**
-	//  * Calculate the expected time until arrival (ETA) for each future stop
-	//  * along the route.
-	//  */
-	// void Particle::calculate_etas (void) {
-	// 	// if (etas.size () > 0) {
-	// 	// 	// std::cerr << "Particle already has ETAs; something went wrong!\n";
-	// 	// 	return;
-	// 	// }
-	// 	//
-	// 	// if (!vehicle->get_trip () || !vehicle->get_trip ()->get_route () ||
-	// 	// 	vehicle->get_trip ()->get_route ()->get_stops ().size () == 0) {
-	// 	// 	std::cerr << "Particle's vehicle doesn't has trip/route/stops. Cannot predict!\n";
-	// 	// 	return;
-	// 	// }
-	// 	// // Seems OK - lets go!
-	// 	// auto stops = vehicle->get_trip ()->get_route ()->get_stops ();
-	// 	// if (stops.back ().shape_dist_traveled == 0) return;
-	// 	//
-	// 	// // only M-1 stops to predict (can't do the first one)
-	// 	// etas.reserve (stops.size ());
-	// 	// etas.emplace_back (0); // first one is always 0
-	// 	// for (unsigned int i=1; i<stops.size (); i++) {
-	// 	// 	// STOP INDEX is 1-based; stop 0-index of CURRENT is stop_index-1.
-	// 	// 	if (stops[i].shape_dist_traveled <= distance) {
-	// 	// 		etas.emplace_back (0);
-	// 	// 	} else {
-	// 	// 		etas.emplace_back (vehicle->get_timestamp () +
-	// 	// 			(int)round((1 / velocity) * (stops[i].shape_dist_traveled - distance)));
-	// 	// 	}
-	// 	// }
-	// };
+	/**
+	 * Calculate the expected time until arrival (ETA) for each future stop
+	 * along the route.
+	 */
+	void Particle::calculate_etas (void) {
+		if (etas.size () > 0) {
+			std::cerr << "Particle already has ETAs; something went wrong!\n";
+			return;
+		}
+		
+		if (!vehicle->get_trip () || !vehicle->get_trip ()->get_route () ||
+			vehicle->get_trip ()->get_route ()->get_stops ().size () == 0) {
+			std::cerr << "Particle's vehicle doesn't has trip/route/stops. Cannot predict!\n";
+			return;
+		}
+		// Seems OK - lets go!
+		auto route = vehicle->get_trip ()->get_route ();
+		if (!route) return;
+		auto stops = route->get_stops ();
+		if (stops.size () == 0 || stops.back ().shape_dist_traveled == 0) return;
+		auto shape = route->get_shape ();
+		if (!shape) return;
+		auto segments = shape->get_segments ();
+		if (segments.size () == 0 || segments.back ().shape_dist_traveled == 0) return;
+
+		double distance = get_distance ();
+		int J (stops.size ());    // the number of stops
+		int L (segments.size ()); // the number of segments
+        int j = 0, l = 0;
+		while (j < J-1 && distance > stops[j+1].shape_dist_traveled) j++;
+		while (l < L-1 && distance > segments[l+1].shape_dist_traveled) l++;
+
+
+		
+		// only M-1 stops to predict (can't do the first one)
+		etas.resize (stops.size (), 0);
+		// etas.emplace_back (0); // first one is always 0
+		while (j < J) {
+			j++;
+			etas.emplace_back (vehicle->get_timestamp () +
+				(int)round((1 / velocity) * (stops[j].shape_dist_traveled - distance)));
+			
+
+			// // STOP INDEX is 1-based; stop 0-index of CURRENT is stop_index-1.
+			// if (stops[i].shape_dist_traveled <= distance) {
+			// 	// etas.emplace_back (0);
+			// } else {
+			// }
+		}
+	};
 
 }; // end namespace gtfs

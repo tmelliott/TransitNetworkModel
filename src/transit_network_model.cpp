@@ -265,7 +265,6 @@ int main (int argc, char* argv[]) {
 
 			// Update segments and write to protocol buffer
 			transit_network::Feed feed;
-			// std::cout << "\n ~~~~~~~~~~~~~~~~~~~ \n";
 			for (auto& s: gtfs.get_segments ()) {
 				if (s.second->has_data ()) {
 					std::cout << "\n + Update segment " << s.first << ": ";
@@ -318,73 +317,70 @@ int main (int argc, char* argv[]) {
 
 		// Update ETA predictions
 		{
-			// time_start (clockstart, wallstart);
-			// std::cout << "\n * Calculating ETAs ...";
-			// std::cout.flush ();
-			// for (auto& v: vehicles) {
-			// 	if (!v.second->get_trip () || !v.second->is_initialized ()) continue;
-			// 	// std::cout << "\n - Vehicle: " << v.second->get_id ()
-			// 	// 	<< " - Time: " << v.second->get_timestamp ();
-			// 	for (auto& p: v.second->get_particles ()) p.calculate_etas ();
-			// }
-			// std::cout << "\n";
-			// time_end (clockstart, wallstart);
+			time_start (clockstart, wallstart);
+			std::cout << "\n * Calculating ETAs ...";
+			std::cout.flush ();
+			for (auto& v: vehicles) {
+				if (!v.second->get_trip () || v.second->is_finished ()) 
+					continue;
+				for (auto& p: v.second->get_particles ()) p.calculate_etas ();
+			}
+			std::cout << "\n";
+			time_end (clockstart, wallstart);
 		}
 
 		// Write vehicle positions to protobuf
 		// + ETAs in future
-		if (false) {
-			time_start (clockstart, wallstart);
-			std::cout << "\n * Writing to buffer ...";
-			std::cout.flush ();
+		// if (false) {
+		// 	time_start (clockstart, wallstart);
+		// 	std::cout << "\n * Writing to buffer ...";
+		// 	std::cout.flush ();
 
-			transit_network::Feed feed;
-			transit_network::Status* nw = feed.mutable_status ();
-			nw->set_ontime (0);
+		// 	transit_network::Feed feed;
+		// 	transit_network::Status* nw = feed.mutable_status ();
+		// 	nw->set_ontime (0);
 
-			for (auto& v: vehicles) {
-				if (!v.second->get_trip () || v.second->get_status () < 0) continue;
-				transit_network::Vehicle* vehicle = feed.add_vehicles ();
-				vehicle->set_id (v.second->get_id ().c_str ());
-				vehicle->set_trip_id (v.second->get_trip ()->get_id ().c_str ());
-				vehicle->set_timestamp (v.second->get_timestamp ());
+		// 	for (auto& v: vehicles) {
+		// 		if (!v.second->get_trip () || v.second->get_status () < 0) continue;
+		// 		transit_network::Vehicle* vehicle = feed.add_vehicles ();
+		// 		vehicle->set_id (v.second->get_id ().c_str ());
+		// 		vehicle->set_trip_id (v.second->get_trip ()->get_id ().c_str ());
+		// 		vehicle->set_timestamp (v.second->get_timestamp ());
 
-				if (v.second->get_delay ()) vehicle->set_delay (v.second->get_delay ().get ());
+		// 		if (v.second->get_delay ()) vehicle->set_delay (v.second->get_delay ().get ());
 
+		// 		transit_network::Position* pos = vehicle->mutable_pos ();
+		// 		pos->set_lat (v.second->get_position ().lat);
+		// 		pos->set_lng (v.second->get_position ().lng);
 
+		// 		double dist = 0.0;//, speed = 0.0;
+		// 		int Np = 0;
+		// 		// std::clog << "\n Vehicle " << v.second->get_id ()
+		// 		// 	<< ": ";
+		// 		for (auto& p: v.second->get_particles ()) {
+		// 			if (p.get_trajectory ().size () == 0) continue;
+		// 			Np++;
+		// 			dist += p.get_distance ();
+		// 			// speed += p.get_velocity (p.get_latest ());
+		// 		}
+		// 		if (Np > 0) {
+		// 			// std::clog << " d=" << dist/Np;// << ", v=" << speed/Np;
+		// 			pos->set_distance (dist / Np);
+		// 			// pos->set_speed (speed / Np);
+		// 		}
+		// 	}
 
-				transit_network::Position* pos = vehicle->mutable_pos ();
-				pos->set_lat (v.second->get_position ().lat);
-				pos->set_lng (v.second->get_position ().lng);
+		// 	std::fstream output ("networkstate.pb",
+		// 						 std::ios::out | std::ios::trunc | std::ios::binary);
+		// 	if (!feed.SerializeToOstream (&output)) {
+		// 		std::cerr << "\n x Failed to write ETA feed.\n";
+		// 	}
 
-				double dist = 0.0;//, speed = 0.0;
-				int Np = 0;
-				// std::clog << "\n Vehicle " << v.second->get_id ()
-				// 	<< ": ";
-				for (auto& p: v.second->get_particles ()) {
-					if (p.get_trajectory ().size () == 0) continue;
-					Np++;
-					dist += p.get_distance ();
-					// speed += p.get_velocity (p.get_latest ());
-				}
-				if (Np > 0) {
-					// std::clog << " d=" << dist/Np;// << ", v=" << speed/Np;
-					pos->set_distance (dist / Np);
-					// pos->set_speed (speed / Np);
-				}
-			}
+		// 	google::protobuf::ShutdownProtobufLibrary ();
 
-			std::fstream output ("networkstate.pb",
-								 std::ios::out | std::ios::trunc | std::ios::binary);
-			if (!feed.SerializeToOstream (&output)) {
-				std::cerr << "\n x Failed to write ETA feed.\n";
-			}
-
-			google::protobuf::ShutdownProtobufLibrary ();
-
-			std::cout << "\n";
-			time_end (clockstart, wallstart);
-		}
+		// 	std::cout << "\n";
+		// 	time_end (clockstart, wallstart);
+		// }
 
 		// Write ETAs to buffers
 		{
