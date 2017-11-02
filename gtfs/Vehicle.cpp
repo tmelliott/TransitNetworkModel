@@ -54,6 +54,9 @@ namespace gtfs {
 
 		// step 3: set all of the travel times
 		travel_times.clear ();
+		arrival_times.clear ();
+		departure_times.clear ();
+
 		auto route = trip->get_route ();
 		if (!route) return;
 		auto shape = trip->get_route ()->get_shape ();
@@ -604,16 +607,13 @@ namespace gtfs {
 				// only update stop sequence if it's greater than existing one
 				if (stu.has_stop_sequence () && stu.stop_sequence () >= stop_sequence) {
 					auto sseq = stu.stop_sequence () - 1;
-					// if (sseq > stop_sequence) {
-					// 	// necessary to reset arrival/departure time if stop sequence is increased
-					// 	arrival_times[] = boost::none;
-					// 	departure_time = boost::none;
-					// }
+					if (sseq >= arrival_times.size ()) {
+						std::cerr << "\n xx Error: TripUpdate's sequence = " << (sseq+1)
+							<< ", but Vehicle only has " << arrival_times.size () << " stops ...";
+						return;
+					}
 					stop_sequence = stu.stop_sequence ();
 					if (stu.has_arrival () && stu.arrival ().has_time ()) {
-						// std::cout << "- there are " << arrival_times.size () << "slots; placing in slot "
-						// 	<< sseq << std::endl;
-
 						arrival_times[sseq] = stu.arrival ().time ();
 						if (stu.arrival ().has_delay ()) delay = stu.arrival ().delay ();
 					}
