@@ -261,6 +261,7 @@ namespace gtfs {
 		unsigned long get_id (void) const;
 		bool has_parent (void) const;
 		unsigned long get_parent_id (void) const;
+		bool is_finished (void) { return finished; };
 
 		uint64_t get_start (void) const;
 		int get_latest (void) const;
@@ -278,9 +279,10 @@ namespace gtfs {
 		double get_weight () { return weight; };
 
 		// /** @return ETAs for all future stops */
-		// const std::vector<uint64_t>& get_etas (void) const { return etas; };
+		const std::vector<uint64_t>& get_etas (void) const { return etas; };
 		// /** @return ETA for stop `i` */
-		// const uint64_t& get_eta (int i) const { return etas[i]; };
+		const uint64_t& get_eta (int i) const { return etas[i]; };
+		
 
 		// Methods
 		void initialize (double dist, sampling::RNG& rng);
@@ -291,7 +293,7 @@ namespace gtfs {
 		void set_weight (double wt) { weight = wt; };
 
 		// void reset_travel_time (unsigned i);
-		void calculate_etas (void);
+		void calculate_etas (sampling::RNG& rng);
 
         // Operators
         bool operator<(const Particle &p2) const {

@@ -546,11 +546,14 @@ namespace gtfs {
 	 * Calculate the expected time until arrival (ETA) for each future stop
 	 * along the route.
 	 */
-	void Particle::calculate_etas (void) {
-		if (etas.size () > 0) {
-			std::cerr << "Particle already has ETAs; something went wrong!\n";
-			return;
-		}
+	void Particle::calculate_etas (sampling::RNG& rng) {
+		// if (etas.size () > 0) {
+		// 	std::cerr << "Particle already has ETAs; something went wrong!\n";
+		// 	return;
+		// }
+		
+		etas.clear ();
+		if (finished) return;
 		
 		if (!vehicle->get_trip () || !vehicle->get_trip ()->get_route () ||
 			vehicle->get_trip ()->get_route ()->get_stops ().size () == 0) {
@@ -568,28 +571,88 @@ namespace gtfs {
 		if (segments.size () == 0 || segments.back ().shape_dist_traveled == 0) return;
 
 		double distance = get_distance ();
+		double vel = get_velocity ();
 		int J (stops.size ());    // the number of stops
 		int L (segments.size ()); // the number of segments
-        int j = 0, l = 0;
-		while (j < J-1 && distance > stops[j+1].shape_dist_traveled) j++;
-		while (l < L-1 && distance > segments[l+1].shape_dist_traveled) l++;
+        int j, l;
 
+		std::vector<double> seglens (L, 0);
+		std::vector<double> segspeeds (L, 0);
+		// std::clog << "\n *** Segments: [" << L << "]";
+		for (l=0; l<L; l++) {
+			double len;
+			if (l < L-1) {
+				len = segments[l+1].shape_dist_traveled - segments[l].shape_dist_traveled;
+			} else {
+				len = stops.back ().shape_dist_traveled - segments[l].shape_dist_traveled;
+			}
 
+			if (segments[l].segment && 
+				segments[l].segment->get_timestamp () > 0) {
+				vel = 0;
+				int natt = 0;
+				double trtime;
+				while (vel <= 0 || vel > 30) {
+					trtime = rng.rnorm () * segments[l].segment->get_travel_time_var () + 
+						segments[l].segment->get_travel_time ();
+					vel = len / trtime;
+					natt++;
+					if (natt == 20) vel = 12;
+				}
+			} else {
+				vel = 0; //get_velocity ();
+				while (vel <= 0 || vel > 30) {
+					vel = rng.rnorm () * 5 + 15;
+				}
+			}
+			seglens[l] = len;
+			segspeeds[l] = vel;
+			// std::clog << "\n [" << l << "]: " << len << "m long, "
+				// << vel << "m/s";
+		}
 		
 		// only M-1 stops to predict (can't do the first one)
 		etas.resize (stops.size (), 0);
-		// etas.emplace_back (0); // first one is always 0
-		while (j < J) {
-			j++;
-			etas.emplace_back (vehicle->get_timestamp () +
-				(int)round((1 / velocity) * (stops[j].shape_dist_traveled - distance)));
-			
 
-			// // STOP INDEX is 1-based; stop 0-index of CURRENT is stop_index-1.
-			// if (stops[i].shape_dist_traveled <= distance) {
-			// 	// etas.emplace_back (0);
-			// } else {
-			// }
+		l = 0;
+		while (l < L-1 && distance > segments[l+1].shape_dist_traveled) l++;
+
+		vel = segspeeds[l];
+		// std::clog << "\n * ETAs for " << etas.size () << " stops... " 
+		// 	<< vel << "m/s:";
+
+		int tt = 0; // travel time up to last intersection
+		for (j=0; j<J; j++) {
+			if (stops[j].shape_dist_traveled <= distance) continue;
+
+			// If the next stop is farther than the next intersection ...
+			if (l < L-1 && stops[j].shape_dist_traveled > segments[l+1].shape_dist_traveled) {
+				// creep forward ...
+				l++;
+				// std::clog << "\n -- intersection [" << segments[l].shape_dist_traveled << "] --";
+				if (segments[l-1].shape_dist_traveled < distance) {
+					tt = (segments[l].shape_dist_traveled - distance) / vel;
+				} else {
+					tt += seglens[l-1] / vel;
+				}
+				vel = segspeeds[l];
+				// std::clog << " speed = " << vel;
+			}
+
+			double deltad;
+			if (segments[l].shape_dist_traveled < distance) {
+				deltad = stops[j].shape_dist_traveled - distance;
+			} else {
+				deltad = stops[j].shape_dist_traveled - segments[l].shape_dist_traveled;
+			}
+			etas[j] = vehicle->get_timestamp () + tt + round(deltad / vel);;
+
+			// std::clog << "\n [" << j+1 << "/" << J << ", "
+			// 	<< stops[j].shape_dist_traveled << "m]: "
+			// 	// << (stops[j].shape_dist_traveled - distance) << "m away - "
+			// 	<< tt << " + " << round(deltad / vel) << "s + "
+			// 	<< vehicle->get_timestamp () << " = "
+			// 	<< etas[j];
 		}
 	};
 

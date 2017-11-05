@@ -139,10 +139,13 @@ int main (int argc, char* argv[]) {
 	while (forever && repi > 0) {
 		// repi--;
 		curtime = time (NULL);
+		bool updated = false;
 
 		// Load GTFS feed -> vehicles
 		{
 			time_start (clockstart, wallstart);
+			std::cout << "\n * Reading realtime feeds ";
+
 			for (auto file: files) {
 				try {
 					if ( ! load_feed (vehicles, file, N, rng, gtfs, &curtime) ) {
@@ -151,6 +154,7 @@ int main (int argc, char* argv[]) {
 					}
 
 					if (forever) std::remove (file.c_str ());
+					updated = true;
 				} catch (...) {
 					std::cerr << "Error occured loading file.\n";
 				}
@@ -160,6 +164,11 @@ int main (int argc, char* argv[]) {
 		}
 
 		std::cout.flush ();
+
+		if (!updated) {
+			if (forever) std::this_thread::sleep_for (std::chrono::milliseconds (5 * 1000));
+			continue;
+		}
 
 		// Update each vehicle's particles
 		{
@@ -323,7 +332,7 @@ int main (int argc, char* argv[]) {
 			for (auto& v: vehicles) {
 				if (!v.second->get_trip () || v.second->is_finished ()) 
 					continue;
-				for (auto& p: v.second->get_particles ()) p.calculate_etas ();
+				for (auto& p: v.second->get_particles ()) p.calculate_etas (rng);
 			}
 			std::cout << "\n";
 			time_end (clockstart, wallstart);
@@ -384,65 +393,67 @@ int main (int argc, char* argv[]) {
 
 		// Write ETAs to buffers
 		{
-			// time_start (clockstart, wallstart);
-			// std::cout << "\n * Writing ETAs to protocol buffer ...";
-			// std::cout.flush ();
-			//
-			// transit_etas::Feed feed;
-			//
-			// for (auto& v: vehicles) {
-			// 	if (!v.second->get_trip () || !v.second->is_initialized ()) continue;
-			// 	transit_etas::Trip* trip = feed.add_trips ();
-			// 	trip->set_vehicle_id (v.second->get_id ().c_str ());
-			// 	trip->set_trip_id (v.second->get_trip ()->get_id ().c_str ());
-			// 	trip->set_route_id (v.second->get_trip ()->get_route ()->get_id ().c_str ());
-			// 	double dist = 0, speed = 0;
-			// 	for (auto& p: v.second->get_particles ()) {
-			// 		dist += p.get_distance ();
-			// 		speed += p.get_velocity ();
-			// 	}
-			// 	trip->set_distance_into_trip (dist / v.second->get_particles ().size ());
-			// 	trip->set_velocity (speed / v.second->get_particles ().size ());
-			//
-			// 	// Initialize a vector of ETAs for each particles; stop by stop
-			// 	unsigned Np (v.second->get_particles ().size ());
-			// 	std::vector<uint64_t> etas;
-			// 	etas.reserve (Np);
-			//
-			// 	auto stops = v.second->get_trip ()->get_stoptimes ();
-			// 	for (unsigned j=1; j<stops.size (); j++) {
-			// 		// For each stop, fetch ETAs for that stop
-			// 		for (auto& p: v.second->get_particles ()) {
-			// 			if (p.get_eta (j) == 0 || p.is_finished ()) continue;
-			// 			etas.push_back (p.get_eta (j));
-			// 		}
-			// 		if (etas.size () == 0) continue;
-			// 		// order them to get percentiles: 0.025, 0.5, 0.975
-			// 		std::sort (etas.begin (), etas.end ());
-			//
-			// 		// append to tripetas
-			// 		transit_etas::Trip::ETA* tripetas = trip->add_etas ();
-			// 		tripetas->set_stop_sequence (j+1);
-			// 		tripetas->set_stop_id (stops[j].stop->get_id ().c_str ());
-			// 		tripetas->set_arrival_min (etas[(int)(etas.size () * 0.025)]);
-			// 		tripetas->set_arrival_max (etas[(int)(etas.size () * 0.975)]);
-			// 		tripetas->set_arrival_eta (etas[(int)(etas.size () * 0.5)]);
-			//
-			// 		// clear for next stop
-			// 		etas.clear ();
-			// 	}
-			// }
-			//
-			// std::fstream output ("gtfs_etas.pb",
-			// 					 std::ios::out | std::ios::trunc | std::ios::binary);
-			// if (!feed.SerializeToOstream (&output)) {
-			// 	std::cerr << "\n x Failed to write ETA feed.\n";
-			// }
-			//
-			// google::protobuf::ShutdownProtobufLibrary ();
-			//
-			// std::cout << "\n";
-			// time_end (clockstart, wallstart);
+			time_start (clockstart, wallstart);
+			std::cout << "\n * Writing ETAs to protocol buffer ...";
+			std::cout.flush ();
+			
+			transit_etas::Feed feed;
+			
+			for (auto& v: vehicles) {
+				if (!v.second->get_trip () || v.second->is_finished ()) continue;
+				transit_etas::Trip* trip = feed.add_trips ();
+				trip->set_vehicle_id (v.second->get_id ().c_str ());
+				trip->set_trip_id (v.second->get_trip ()->get_id ().c_str ());
+				trip->set_route_id (v.second->get_trip ()->get_route ()->get_id ().c_str ());
+				double dist = 0, speed = 0;
+				for (auto& p: v.second->get_particles ()) {
+					dist += p.get_distance ();
+					speed += p.get_velocity ();
+				}
+				trip->set_distance_into_trip (dist / v.second->get_particles ().size ());
+				trip->set_velocity (speed / v.second->get_particles ().size ());
+			
+				// Initialize a vector of ETAs for each particles; stop by stop
+				unsigned Np (v.second->get_particles ().size ());
+				std::vector<uint64_t> etas;
+				etas.reserve (Np);
+			
+				auto stops = v.second->get_trip ()->get_stoptimes ();
+				for (unsigned j=0; j<stops.size (); j++) {
+					// For each stop, fetch ETAs for that stop
+					for (auto& p: v.second->get_particles ()) {
+						if (p.get_etas ().size () != stops.size () ||
+							p.get_eta (j) == 0 || 
+							p.is_finished ()) continue;
+						etas.push_back (p.get_eta (j));
+					}
+					if (etas.size () == 0) continue;
+					// order them to get percentiles: 0.025, 0.5, 0.975
+					std::sort (etas.begin (), etas.end ());
+			
+					// append to tripetas
+					transit_etas::Trip::ETA* tripetas = trip->add_etas ();
+					tripetas->set_stop_sequence (j+1);
+					tripetas->set_stop_id (stops[j].stop->get_id ().c_str ());
+					tripetas->set_arrival_min (etas[(int)(etas.size () * 0.025)]);
+					tripetas->set_arrival_max (etas[(int)(etas.size () * 0.975)]);
+					tripetas->set_arrival_eta (etas[(int)(etas.size () * 0.5)]);
+			
+					// clear for next stop
+					etas.clear ();
+				}
+			}
+			
+			std::fstream output ("gtfs_etas.pb",
+								 std::ios::out | std::ios::trunc | std::ios::binary);
+			if (!feed.SerializeToOstream (&output)) {
+				std::cerr << "\n x Failed to write ETA feed.\n";
+			}
+			
+			google::protobuf::ShutdownProtobufLibrary ();
+			
+			std::cout << "\n";
+			time_end (clockstart, wallstart);
 		}
 
 
@@ -493,7 +504,8 @@ bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> >
 		"(SELECT route_id FROM routes WHERE route_short_name IN "
 		// "('NEX'))";
 		"('274','277','224','222','258','NEX','129'))";
-		//"('277', '274'))";
+		// "('277', '274'))";
+		// "('277'))";
 	if (sqlite3_open (gtfs.get_dbname ().c_str (), &db)) {
 		std::cerr << "\n x oops...";
 	} else if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &tripskeep, 0) != SQLITE_OK) {
