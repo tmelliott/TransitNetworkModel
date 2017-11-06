@@ -329,12 +329,15 @@ int main (int argc, char* argv[]) {
 			time_start (clockstart, wallstart);
 			std::cout << "\n * Calculating ETAs ...";
 			std::cout.flush ();
-			for (auto& v: vehicles) {
-				if (!v.second->get_trip () || v.second->is_finished ()) 
-					continue;
-				for (auto& p: v.second->get_particles ()) p.calculate_etas (rng);
-				// std::clog << "\n ++++++++++ VEHICLE: " << v.second->get_id ();
-				// v.second->get_particles ()[0].calculate_etas (rng);
+			#pragma omp parallel for schedule(dynamic, 20) num_threads(numcore)
+			for (unsigned i=0; i<vehicles.bucket_count (); i++) {
+				for (auto v = vehicles.begin (i); v != vehicles.end (i); v++) {
+					if (!v->second->get_trip () || v->second->is_finished ()) 
+						continue;
+					for (auto& p: v->second->get_particles ()) p.calculate_etas (rng);
+					// std::clog << "\n ++++++++++ VEHICLE: " << v.second->get_id ();
+					// v.second->get_particles ()[0].calculate_etas (rng);
+				}
 			}
 			std::cout << "\n";
 			time_end (clockstart, wallstart);

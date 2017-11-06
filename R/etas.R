@@ -13,22 +13,30 @@ stopTimes <- function(trip, con) {
 
 readProtoFiles(dir="../proto")
 
-etas <- read(transit_etas.Feed, "../build/gtfs_etas.pb")$trips
-etas <- do.call(rbind, lapply(etas, function(x) {
-    x <- try({
-        data.frame(vehicle_id = x$vehicle_id,
-                   trip_id = x$trip_id,
-                   route_id = x$route_id,
-                   delay = x$delay,
-                   do.call(rbind, lapply(x$etas, function(y) as.data.frame(as.list(y)))))
-    })
-    if (!inherits(x, "try-error")) return(x) else return(NULL)
-}))
-xr <- tt(range(etas$arrival_min, etas$arrival_max))
-con <- dbConnect(SQLite(), "../gtfs.db")
-for (vid in levels(etas$vehicle_id)) {
+vid <- "29F8"
+while (TRUE) {
+    etas.raw <- read(transit_etas.Feed, "~/Dropbox/gtfs/etas.pb")$trips
+    etas <- do.call(rbind, lapply(etas.raw, function(x) {
+        if (x$vehicle_id != vid) return(NULL)
+        x <- try({
+            data.frame(vehicle_id = x$vehicle_id,
+                       trip_id = x$trip_id,
+                       route_id = x$route_id,
+                       delay = x$delay,
+                       do.call(rbind, lapply(x$etas, function(y) as.data.frame(as.list(y)))))
+        })
+        if (!inherits(x, "try-error")) return(x) else return(NULL)
+    }))
+    if (is.null(etas) || length(dim(etas)) != 2 || nrow(etas) == 0) {
+        print(sapply(etas.raw, function(x) x$vehicle_id))
+        Sys.sleep(20)
+        next()
+    }
+    xr <- tt(range(etas$arrival_min, etas$arrival_max))
+    con <- dbConnect(SQLite(), "../gtfs.db")
+    ## for (vid in levels(etas$vehicle_id)) {
     ## with(etas[etas$route_id == rid, ], {
-    with(etas[etas$vehicle_id == vid, ], {
+    with(etas, {##[etas$vehicle_id == vid, ], {
         ##vint <- as.numeric(droplevels(vehicle_id))
         clrs <- "black" ##viridis::viridis(length(unique(vint)))[vint]
         tts <- stopTimes(trip_id[1], con)
@@ -53,5 +61,7 @@ for (vid in levels(etas$vehicle_id)) {
                bg = ifelse(cummin(certainty == 1), "black",
                            ifelse(certainty == 1, "yellow", "white")))
     })
-    locator(1)
-}; dbDisconnect(con)
+    dbDisconnect(con)
+    Sys.sleep(10)
+}
+
