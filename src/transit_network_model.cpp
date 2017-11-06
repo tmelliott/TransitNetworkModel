@@ -333,6 +333,8 @@ int main (int argc, char* argv[]) {
 				if (!v.second->get_trip () || v.second->is_finished ()) 
 					continue;
 				for (auto& p: v.second->get_particles ()) p.calculate_etas (rng);
+				// std::clog << "\n ++++++++++ VEHICLE: " << v.second->get_id ();
+				// v.second->get_particles ()[0].calculate_etas (rng);
 			}
 			std::cout << "\n";
 			time_end (clockstart, wallstart);
@@ -405,6 +407,7 @@ int main (int argc, char* argv[]) {
 				trip->set_vehicle_id (v.second->get_id ().c_str ());
 				trip->set_trip_id (v.second->get_trip ()->get_id ().c_str ());
 				trip->set_route_id (v.second->get_trip ()->get_route ()->get_id ().c_str ());
+				if (v.second->get_delay ()) trip->set_delay (v.second->get_delay ().get ());
 				double dist = 0, speed = 0;
 				for (auto& p: v.second->get_particles ()) {
 					dist += p.get_distance ();
@@ -421,12 +424,15 @@ int main (int argc, char* argv[]) {
 				auto stops = v.second->get_trip ()->get_stoptimes ();
 				for (unsigned j=0; j<stops.size (); j++) {
 					// For each stop, fetch ETAs for that stop
+					double cert = 0;
 					for (auto& p: v.second->get_particles ()) {
 						if (p.get_etas ().size () != stops.size () ||
 							p.get_eta (j) == 0 || 
 							p.is_finished ()) continue;
 						etas.push_back (p.get_eta (j));
+						cert += p.get_cert (j);
 					}
+					cert /= etas.size ();
 					if (etas.size () == 0) continue;
 					// order them to get percentiles: 0.025, 0.5, 0.975
 					std::sort (etas.begin (), etas.end ());
@@ -438,6 +444,7 @@ int main (int argc, char* argv[]) {
 					tripetas->set_arrival_min (etas[(int)(etas.size () * 0.025)]);
 					tripetas->set_arrival_max (etas[(int)(etas.size () * 0.975)]);
 					tripetas->set_arrival_eta (etas[(int)(etas.size () * 0.5)]);
+					tripetas->set_certainty (cert);
 			
 					// clear for next stop
 					etas.clear ();

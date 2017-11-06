@@ -241,6 +241,7 @@ namespace gtfs {
         std::vector<pTravelTime> travel_times;        /*!< [queue,travel] time at each intersection/segment along route */
 
 		std::vector<uint64_t> etas;        /*!< ETAs for the particle */
+		std::vector<int> eta_cert;        /*!< ETAs for the particle */
 
 		bool finished;
 
@@ -282,6 +283,7 @@ namespace gtfs {
 		const std::vector<uint64_t>& get_etas (void) const { return etas; };
 		// /** @return ETA for stop `i` */
 		const uint64_t& get_eta (int i) const { return etas[i]; };
+		int get_cert (int i) const { return eta_cert[i]; };
 		
 
 		// Methods

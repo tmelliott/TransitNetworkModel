@@ -574,30 +574,36 @@ namespace gtfs {
 		double vel = get_velocity ();
 		int J (stops.size ());    // the number of stops
 		int L (segments.size ()); // the number of segments
-        int j, l;
+        int j, l = 0;
+        while (l < L-1 && distance > segments[l+1].shape_dist_traveled) l++;
 
 		std::vector<double> seglens (L, 0);
 		std::vector<double> segspeeds (L, 0);
+		std::vector<double> segcert (L, 0);
 		// std::clog << "\n *** Segments: [" << L << "]";
-		for (l=0; l<L; l++) {
+		for (int i=l; i<L; i++) {
 			double len;
-			if (l < L-1) {
-				len = segments[l+1].shape_dist_traveled - segments[l].shape_dist_traveled;
+			if (i < L-1) {
+				len = segments[i+1].shape_dist_traveled - segments[i].shape_dist_traveled;
 			} else {
-				len = stops.back ().shape_dist_traveled - segments[l].shape_dist_traveled;
+				len = stops.back ().shape_dist_traveled - segments[i].shape_dist_traveled;
 			}
 
-			if (segments[l].segment && 
-				segments[l].segment->get_timestamp () > 0) {
+			if (segments[i].segment && 
+				segments[i].segment->get_timestamp () > 0) {
 				vel = 0;
 				int natt = 0;
 				double trtime;
+				segcert[i] = 1;
 				while (vel <= 0 || vel > 30) {
-					trtime = rng.rnorm () * segments[l].segment->get_travel_time_var () + 
-						segments[l].segment->get_travel_time ();
+					trtime = rng.rnorm () * segments[i].segment->get_travel_time_var () + 
+						segments[i].segment->get_travel_time ();
 					vel = len / trtime;
 					natt++;
-					if (natt == 20) vel = 12;
+					if (natt == 20) {
+						vel = 12;
+						segcert[i] = 0;
+					}
 				}
 			} else {
 				vel = 0; //get_velocity ();
@@ -605,8 +611,8 @@ namespace gtfs {
 					vel = rng.rnorm () * 5 + 15;
 				}
 			}
-			seglens[l] = len;
-			segspeeds[l] = vel;
+			seglens[i] = len;
+			segspeeds[i] = vel;
 			// std::clog << "\n [" << l << "]: " << len << "m long, "
 				// << vel << "m/s";
 		}
@@ -614,29 +620,31 @@ namespace gtfs {
 		// only M-1 stops to predict (can't do the first one)
 		etas.resize (stops.size (), 0);
 
-		l = 0;
-		while (l < L-1 && distance > segments[l+1].shape_dist_traveled) l++;
-
 		vel = segspeeds[l];
 		// std::clog << "\n * ETAs for " << etas.size () << " stops... " 
 		// 	<< vel << "m/s:";
 
+		// std::clog << "\n * On segment " << l+1 << " of " << L
+			// << ", traveling " << vel << "m/s: \n >>>";
+
 		int tt = 0; // travel time up to last intersection
+		eta_cert.resize (J);
 		for (j=0; j<J; j++) {
+			eta_cert[j] = 0;
 			if (stops[j].shape_dist_traveled <= distance) continue;
 
 			// If the next stop is farther than the next intersection ...
-			if (l < L-1 && stops[j].shape_dist_traveled > segments[l+1].shape_dist_traveled) {
+			while (l < L-1 && stops[j].shape_dist_traveled > segments[l+1].shape_dist_traveled) {
 				// creep forward ...
 				l++;
-				// std::clog << "\n -- intersection [" << segments[l].shape_dist_traveled << "] --";
 				if (segments[l-1].shape_dist_traveled < distance) {
 					tt = (segments[l].shape_dist_traveled - distance) / vel;
 				} else {
 					tt += seglens[l-1] / vel;
 				}
 				vel = segspeeds[l];
-				// std::clog << " speed = " << vel;
+				// std::clog << " {{ INTERSECTION -- ETA: " 
+					// << tt << "; speed: " << vel << " }} >> ";
 			}
 
 			double deltad;
@@ -646,6 +654,9 @@ namespace gtfs {
 				deltad = stops[j].shape_dist_traveled - segments[l].shape_dist_traveled;
 			}
 			etas[j] = vehicle->get_timestamp () + tt + round(deltad / vel);;
+			eta_cert[j] = segcert[l];
+			// std::clog << " [" << j << ", " << deltad << "m away, "
+				// << round(deltad / vel) << "s from int, ETA: " << etas[j] << "] >> ";
 
 			// std::clog << "\n [" << j+1 << "/" << J << ", "
 			// 	<< stops[j].shape_dist_traveled << "m]: "
