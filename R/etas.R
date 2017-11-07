@@ -13,7 +13,8 @@ stopTimes <- function(trip, con) {
 
 readProtoFiles(dir="../proto")
 
-vid <- "29F8"
+vid <- "5EC0"
+xr <- NULL
 while (TRUE) {
     etas.raw <- read(transit_etas.Feed, "~/Dropbox/gtfs/etas.pb")$trips
     etas <- do.call(rbind, lapply(etas.raw, function(x) {
@@ -28,18 +29,22 @@ while (TRUE) {
         if (!inherits(x, "try-error")) return(x) else return(NULL)
     }))
     if (is.null(etas) || length(dim(etas)) != 2 || nrow(etas) == 0) {
-        print(sapply(etas.raw, function(x) x$vehicle_id))
+        print(lapply(etas.raw, function(x) c(x$vehicle_id, x$route_id)))
         Sys.sleep(20)
         next()
     }
-    xr <- tt(range(etas$arrival_min, etas$arrival_max))
+    if (is.null(xr))
+        xr <- tt(range(etas$arrival_min, etas$arrival_max))
     con <- dbConnect(SQLite(), "../gtfs.db")
     ## for (vid in levels(etas$vehicle_id)) {
     ## with(etas[etas$route_id == rid, ], {
-    with(etas, {##[etas$vehicle_id == vid, ], {
+    jpeg(sprintf("~/Desktop/eg/etas_%s_%s.jpg", vid,
+                 format(file.info("~/Dropbox/gtfs/etas.pb")$mtime, "%H:%M:%S")),
+        width = 1000, height = 700)
+    with(etas, {##etas$vehicle_id == vid, ], {
         ##vint <- as.numeric(droplevels(vehicle_id))
         clrs <- "black" ##viridis::viridis(length(unique(vint)))[vint]
-        tts <- stopTimes(trip_id[1], con)
+        tts <- stopTimes(etas$trip_id[1], con)
         tts$time <- as.POSIXct(paste(Sys.Date(), tts$arrival_time))
         tti <- tts[tts$stop_sequence >= min(stop_sequence), ]
         plot(tt(arrival_eta), tts$shape_dist_traveled[stop_sequence],
@@ -62,6 +67,7 @@ while (TRUE) {
                            ifelse(certainty == 1, "yellow", "white")))
     })
     dbDisconnect(con)
+    dev.off()
     Sys.sleep(10)
 }
 
