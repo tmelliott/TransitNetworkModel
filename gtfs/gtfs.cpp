@@ -415,6 +415,21 @@ namespace gtfs {
 				shapesegs.emplace_back (seg, sqlite3_column_double (select_segs, 1));
 			}
 			sqlite3_finalize (select_segs);
+
+			// add segment lengths, if they're missing ...
+			for (int i=0; i<shapesegs.size (); i++) {
+				if (shapesegs[i].segment->get_length () == 0) {
+					double len;
+					if (i < shapesegs.size () - 1) {
+						// use difference
+						len = shapesegs[i+1].shape_dist_traveled - shapesegs[i].shape_dist_traveled;
+					} else {
+						len = shapepts.back ().dist_traveled - shapesegs[i].shape_dist_traveled;
+					}
+					shapesegs[i].segment->set_length (len);
+				}
+			}
+
 			sqlite3_close (db);
 
 			std::shared_ptr<Shape> shape (new Shape (s, shapepts, shapesegs));

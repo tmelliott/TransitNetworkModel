@@ -129,10 +129,10 @@ int main (int argc, char* argv[]) {
 	sampling::RNG rng;
 	bool forever = true;
 
-	// std::ofstream f; // file for particles
-	// f.open ("particles.csv");
-	// f << "vehicle_id,trip_id,timestamp,particle_id,t,d\n";
-	// f.close ();
+	std::ofstream f; // file for particles
+	f.open ("segment_data.csv");
+	f << "segment_id,vehicle_id,timestamp,travel_time,length\n";
+	f.close ();
 
 	time_t curtime;
 	int repi = 20;
@@ -242,6 +242,7 @@ int main (int argc, char* argv[]) {
 			time_start (clockstart, wallstart);
 			std::cout << "\n * Updating road network with latest travel times ...";
 			// loop over VEHICLES that were updated this iteration (?)
+			f.open ("segment_data.csv", std::ofstream::app);
 			for (auto& v: vehicles) {
 				auto t = v.second->get_trip ();
 				if (!t) continue;
@@ -251,26 +252,20 @@ int main (int argc, char* argv[]) {
 				if (!sh) continue;
 				auto sgs = sh->get_segments ();
 				if (sgs.size () == 0) continue;
-				// std::cout << "\n - Vehicle " << v.second->get_id () << " travel times ("
-					// << sgs.size () << ")";
 				int L = v.second->get_travel_times ().size ();
 				for (int l=0; l<L; l++) {
 					gtfs::TravelTime* tt = v.second->get_travel_time (l);
-					// double len = tt.segment->get_length ();
-					// int spd = 0;
-					// if (tt.time > 0)
-					// 	spd = round (60.0 * 60.0 / 1000.0 * len / tt.time);
-					// printf("\n > Segment %*d of %*d: %*d m in %*d seconds (approx. %*d km/h) | %s",
-					// 	2, l, 2, L, 4, int (len + 0.5), 3, tt.time, 3, spd, tt.complete ? "X" : " ");
-					// printf("\n > Segment %*d of %*d: %*d seconds | %s",
-						// 2, l, 2, L, 3, tt->time, tt->used && tt->complete ? "X" : (tt->complete ? "o" : " "));
 					if (tt->time > 0 && tt->complete && !tt->used) {
-						// std::cout << " -> adding ";
+						f << tt->segment->get_id ()
+							<< "," << v.second->get_id ()
+							<< "," << curtime 
+							<< "," << tt->time
+							<< "," << tt->segment->get_length () << "\n";
 						tt->use ();
-						// tt.used = true;
 					}
 				}
 			}
+			f.close ();
 
 			// Update segments and write to protocol buffer
 			transit_network::Feed feed;

@@ -613,6 +613,7 @@ namespace gtfs {
         const uint64_t& get_timestamp (void) const { return timestamp; };
 
 		// --- METHODS
+		void set_length (double len) { length = len; };
 		void add_data (int mean);
 		void update (time_t t);
 	};

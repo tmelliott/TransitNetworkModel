@@ -583,7 +583,9 @@ namespace gtfs {
 		// std::clog << "\n *** Segments: [" << L << "]";
 		for (int i=l; i<L; i++) {
 			double len;
-			if (i < L-1) {
+			if (segments[i].segment->get_length () > 0) {
+				len = segments[i].segment->get_length ();
+			} else if (i < L-1) {
 				len = segments[i+1].shape_dist_traveled - segments[i].shape_dist_traveled;
 			} else {
 				len = stops.back ().shape_dist_traveled - segments[i].shape_dist_traveled;
