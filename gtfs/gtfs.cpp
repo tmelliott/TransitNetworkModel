@@ -180,7 +180,8 @@ namespace gtfs {
 			// Create trip and emplace into `trips`
 			sqlite3 *db;
 			if (sqlite3_open (database_.c_str (), &db)) {
-				std::cerr << "\n * Can't open database: " << sqlite3_errmsg (db) << "\n";
+				std::cerr << "\n * Can't open database "
+					<< database_ << " (get_trip): " << sqlite3_errmsg (db) << "\n";
 				sqlite3_close (db);
 				return nullptr;
 			}
@@ -269,7 +270,7 @@ namespace gtfs {
 			// Create route and emplace into `routes`
 			sqlite3 *db;
 			if (sqlite3_open (database_.c_str (), &db)) {
-				std::cerr << "\n * Can't open database: " << sqlite3_errmsg (db) << "\n";
+				std::cerr << "\n * Can't open database (get_route): " << sqlite3_errmsg (db) << "\n";
 				sqlite3_close (db);
 				return nullptr;
 			}
@@ -359,7 +360,7 @@ namespace gtfs {
 			// Create shape and emplace into `shapes`
 			sqlite3 *db;
 			if (sqlite3_open (database_.c_str (), &db)) {
-				std::cerr << "\n * Can't open database: " << sqlite3_errmsg (db) << "\n";
+				std::cerr << "\n * Can't open database (get_shape): " << sqlite3_errmsg (db) << "\n";
 				sqlite3_close (db);
 				return nullptr;
 			}

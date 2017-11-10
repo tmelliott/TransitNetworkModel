@@ -508,7 +508,8 @@ bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> >
 	std::string qry = "SELECT trip_id FROM trips WHERE route_id IN "
 		"(SELECT route_id FROM routes WHERE route_short_name IN "
 		// "('NEX'))";
-		"('274','277','224','222','258','NEX','129'))";
+		// "('274','277','224','222','258','NEX','129'))";
+		"('274','277','224','222','258', '221', '223', '258', '249', '243'))";
 		// "('277', '274'))";
 		// "('277'))";
 	if (sqlite3_open (gtfs.get_dbname ().c_str (), &db)) {

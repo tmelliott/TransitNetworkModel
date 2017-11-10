@@ -32,14 +32,16 @@ getFiles <- function(date) {
 		whichvp <- grep("vehicle_locations", fs)
 		whichtu <- grep("trip_updates", fs)
 		if (length(whichvp) == 1) {
-			cmd <- sprintf("scp -q tom@130.216.51.230:%s build/vp.pb", fs[whichvp])
+			cmd <- sprintf("scp -q tom@130.216.51.230:%s build/.vp.pb", fs[whichvp])
 			system(cmd)
 		}
-		if (length(whichvp) == 1) {
-			cmd <- sprintf("scp -q tom@130.216.51.230:%s build/tu.pb", fs[whichtu])
+		if (length(whichtu) == 1) {
+			cmd <- sprintf("scp -q tom@130.216.51.230:%s build/.tu.pb", fs[whichtu])
 			system(cmd)
 		}
-		while (file.exists("build/vp.pb") && file.exists("build/tu.pb")) {
+		if (length(whichvp) == 1) system("mv build/.vp.pb build/vp.pb")
+		if (length(whichtu) == 1) system("mv build/.tu.pb build/tu.pb")
+		while (file.exists("build/vp.pb") || file.exists("build/tu.pb")) {
 			Sys.sleep(1)
 		}
 	}
