@@ -128,6 +128,7 @@ namespace gtfs {
 			}
 		}
 		sqlite3_finalize (select_segs);
+		sqlite3_close (db);
 	};
 
 

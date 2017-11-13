@@ -25,10 +25,10 @@ getFiles <- function(date) {
 
 	i <- 1
 	N <- length(file.list)
-	while (length(file.list) > 0) {
+	for (i in seq_along(file.list)) {
+		if (i >= 5010) break;
 		fs <- file.list[[i]]
 		cat(sprintf("\rLoaded file %s of %s", i, N))
-		i <- i+1
 		whichvp <- grep("vehicle_locations", fs)
 		whichtu <- grep("trip_updates", fs)
 		if (length(whichvp) == 1) {

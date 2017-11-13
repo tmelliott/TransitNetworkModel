@@ -130,9 +130,9 @@ int main (int argc, char* argv[]) {
 	bool forever = true;
 
 	std::ofstream f; // file for particles
-	f.open ("segment_data.csv");
-	f << "segment_id,vehicle_id,timestamp,travel_time,length\n";
-	f.close ();
+	// f.open ("segment_data.csv");
+    // f << "segment_id,vehicle_id,timestamp,travel_time,length\n";
+	// f.close ();
 
 	time_t curtime;
 	int repi = 20;
@@ -149,14 +149,14 @@ int main (int argc, char* argv[]) {
 			for (auto file: files) {
 				try {
 					if ( ! load_feed (vehicles, file, N, rng, gtfs, &curtime) ) {
-						std::cerr << "Unable to read file.\n";
+						std::cerr << "\n x Unable to read file.\n";
 						continue;
 					}
 
 					if (forever) std::remove (file.c_str ());
 					updated = true;
 				} catch (...) {
-					std::cerr << "Error occured loading file.\n";
+					std::cerr << "\n x Error occured loading file.\n";
 				}
 			}
 			std::cout << "\n";
@@ -513,15 +513,21 @@ bool load_feed (std::unordered_map<std::string, std::unique_ptr<gtfs::Vehicle> >
 		// "('277', '274'))";
 		// "('277'))";
 	if (sqlite3_open (gtfs.get_dbname ().c_str (), &db)) {
-		std::cerr << "\n x oops...";
+		std::cerr << "\n x Error [1]: " << sqlite3_errmsg (db);
+        sqlite3_close (db);
+        return false;
 	} else if (sqlite3_prepare_v2 (db, qry.c_str (), -1, &tripskeep, 0) != SQLITE_OK) {
-		std::cerr << "\n x oops2...";
-
+		std::cerr << "\n x Error [2]: " << sqlite3_errmsg (db);
+        sqlite3_finalize (tripskeep);
+        sqlite3_close (db);
+        return false;
 	} else {
 		while (sqlite3_step (tripskeep) == SQLITE_ROW) {
 			std::string t = (char*)sqlite3_column_text (tripskeep, 0);
 			KEEPtrips.push_back (t);
 		}
+        sqlite3_finalize (tripskeep);
+        sqlite3_close (db);
 	}
 
 	for (int i=0; i<feed.entity_size (); i++) {
