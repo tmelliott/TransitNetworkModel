@@ -10,3 +10,5 @@ protobuf/*.pb.*
 *.pdf
 *.out
 *.gif
+
+R/fig
