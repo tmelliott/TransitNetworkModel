@@ -9,6 +9,7 @@ file <- "../build/segment_data.csv"
 gettimes <- function(x, n.min = 1) {
     times <- read.csv(
         file,
+        col.names = c("segment_id", "vehicle_id", "timestamp", "travel_time", "length"),
         colClasses = c("factor", "factor", "integer",
                        "integer", "numeric")) %>%
         mutate(timestamp = as.POSIXct(timestamp, origin = "1970-01-01"),
@@ -41,7 +42,7 @@ plottimes <- function (x, which = c("segments", "combined"),
                 
             })
     
-    p <- p + xlab("Time") + ylab("Speed (m/s)") + ylim(c(0, 110))
+    p <- p + xlab("Time") + ylab("Speed (m/s)") + ylim(c(0, 100))
     if (attr(x, "n.min") > 1)
         p <- p + ggtitle(sprintf("Segments with %s+ observations",
                                  attr(x, "n.min")))
@@ -60,9 +61,10 @@ plottimes <- function (x, which = c("segments", "combined"),
 ##     Sys.sleep(60)
 ## }
 
-plottimes(gettimes(file, n.min = 100), span = 0.3)
+plottimes(gettimes(file, n.min = 50), span = 0.3) +
+    geom_hline(yintercept = 50, colour = "magenta", lty = 3)
 
-times <- gettimes(file, n.min = 100)
+times <- gettimes(file, n.min = 50)
 SEGS <- levels(times$segment_id)[table(times$segment_id) > 0]
 
 BIGYHAT <- vector("list", length(SEGS))
@@ -116,11 +118,17 @@ for (SEG in SEGS) {
     dat$H <- sort(unique(dat$h))
     dat$M <- length(dat$H)
     dat$h <- dat$h - min(dat$h) + 1
+    dat$speed <- 10 * 4:10
+    dat$p.speed <- c(1, 20, 3, 2, 1, 1, 4)
+    dat$p.speed <- dat$p.speed / sum(dat$p.speed)
+    dat$S <- length(dat$speed)
     
     fit1 <- stan(file = "segment_model.stan", data = dat,
                  control = list(adapt_delta = 0.99))
-    
-    ##plot(fit1, pars = c("yhat"))
+
+    plot(extract(fit1, pars = "Vmax")[[1]], type = "l")
+    hist(extract(fit1, pars = c("Vmax"))[[1]], 100, freq=F)
+    curve(dtruncnorm(x, 5, 11, 5, 1), 5, 11, 1001, add = TRUE)
     
     ## lapply(do.call(data.frame, extract(fit1)), function(x) {
     ##     plot(x, type = "l")
