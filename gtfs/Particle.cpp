@@ -465,7 +465,7 @@ namespace gtfs {
 		}
 
 		// arrival/departure times ...
-		if (false && stop_times.size () > 0 && vehicle->get_stop_sequence ()) {
+		if (stop_times.size () > 0 && vehicle->get_stop_sequence ()) {
 
 			// indexing in PB is 1-based;
 			unsigned parr = 0, pdep = 0, sj = 0;
