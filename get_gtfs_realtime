@@ -6,3 +6,4 @@ scp tom@130.216.51.230:/mnt/storage/trip_updates.pb $DIR/trip_updates.pb
 
 scp tom@130.216.51.230:/mnt/storage/vehicle_locations.pb ~/Dropbox/gtfs/
 scp tom@130.216.51.230:/mnt/storage/trip_updates.pb ~/Dropbox/gtfs/
+scp "tom@130.216.51.230:/mnt/storage/*_prev.pb" ~/Dropbox/gtfs/
