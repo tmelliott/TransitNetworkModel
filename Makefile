@@ -31,5 +31,10 @@ build/protobuf.zip: build
 data: gtfs.zip
 	unzip -o $< -d $@
 
+GTFS_URL=https://cdn01.at.govt.nz/data/gtfs.zip
 gtfs.zip:
-	curl -S https://cdn01.at.govt.nz/data/gtfs.zip -o gtfs.zip
+	@echo Downloading latest GTFS data
+	@curl -S $(GTFS_URL) -o gtfs.zip
+
+gtfsinfo:
+	@curl -I --head $(GTFS_URL) 2>&1 | grep Last-Modified
