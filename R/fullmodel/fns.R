@@ -13,8 +13,9 @@ pbToCSV <- function(pb) {
 }
 makeData <- function(date, ip, dir, db = "busdata.db") {
     ## get a list of files for the chosen day
-    datef <- gsub("-", "", date)
-    cmd <- sprintf("ssh %s find %s -type f -name 'vehicle_locations_%s*.pb'", ip, dir, datef)
+    dir <- file.path(dir, gsub("-", "/", date))
+    # datef <- gsub("-", "", date)
+    cmd <- sprintf("ssh %s find %s -type f -name 'vehicle_locations_*.pb'", ip, dir)
     cat(" - Generating list of files ... ")
     files <- system(cmd, intern = TRUE)
     files <- sort(files)

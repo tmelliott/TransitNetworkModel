@@ -8,10 +8,10 @@ library(truncnorm)
 source("fns.R")
 
 ## 0. settings etc.
-DATE <- "2017-10-04"
+DATE <- "2018-01-08"
 HOME <- path.expand("~/Documents/uni/TransitNetworkModel")
 PI.IP <- "tom@130.216.51.230"
-PI.DIR <- "/mnt/storage/historical_data"
+PI.DIR <- "/mnt/storage/history"
 
 
 ## 1. read protofiles from a day into a database; return connection
