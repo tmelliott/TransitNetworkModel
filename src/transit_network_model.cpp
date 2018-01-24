@@ -130,9 +130,9 @@ int main (int argc, char* argv[]) {
 	bool forever = true;
 
 	std::ofstream f; // file for particles
-	// f.open ("segment_data.csv");
-    // f << "segment_id,vehicle_id,timestamp,travel_time,length\n";
-	// f.close ();
+	f.open ("segment_data.csv");
+    f << "segment_id,vehicle_id,timestamp,travel_time,length\n";
+	f.close ();
 
 	time_t curtime;
 	int repi = 20;

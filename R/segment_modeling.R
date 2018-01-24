@@ -194,3 +194,58 @@ for (i in 1:18) {
     print(p)
     grid::grid.locator()
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+####################################################
+####################################################
+##
+##
+##
+
+f <- function(x, phi = 50, lambda = 0.001, delta = 30) {
+    x + lambda * (phi - x)
+}
+F <- function(lambda = 0.001) 1 - lambda
+
+v <- 1:6 * 10
+V <- matrix(NA, ncol = length(v), nrow = 6000)
+V[1, ] <- v
+for (i in 2:nrow(V)) 
+    V[i, ] <- v <- f(v)
+
+plot((1:nrow(V)) / 60, V[, 1], type = "l", ylim = range(V),
+     xlab = 'Time (min)', ylab = 'Segment Travel Time (s)')
+for (i in 2:ncol(V)) lines((1:nrow(V)) / 60, V[, i])
+
+## test it ...
+v <- 80 # seconds
+s <- 2  # variance of travel times
+Q <- 1#5 / 60 # noise added to travel time per minute
+
+V <- numeric(6000) ## run for 100 minutes
+S <- V
+V[1] <- v
+S[1] <- s
+for (i in 2:length(V)) {
+    V[i] <- f(V[i-1])#, phi = ifelse(i > 60*60, 90, 50))
+    S[i] <- F() * S[i-1] * F() + Q
+}
+
+t <- seq_along(V) / 60
+plot(t, V, type = "l", lwd = 2, ylim = range(0, qnorm(0.975, V, sqrt(S))))
+abline(h = 0, lty = 3)
+lines(t, qnorm(0.25, V, sqrt(S)))
+lines(t, qnorm(0.75, V, sqrt(S)))
+lines(t, qnorm(0.025, V, sqrt(S)), lty = 2)
+lines(t, qnorm(0.975, V, sqrt(S)), lty = 2)

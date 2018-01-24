@@ -8,13 +8,14 @@ date <- if (length(ca) == 0) Sys.Date() - 1 else as.Date(ca)
 getFiles <- function(date) {
 	ds <- as.character(date)
 	cat("Retrieving list of files for", ds, "...")
-	datef <- gsub("-", "", ds)
-	cmd <- sprintf("ssh tom@130.216.51.230 find /mnt/storage/historical_data -type f -name '*_*_%s*.pb'", datef)
+	dir <- gsub("-", "/", ds)
+	datef <- file.path('/mnt', 'storage', 'history', gsub("-", "", dir))
+	cmd <- sprintf("ssh tom@130.216.51.230 find %s -type f -name '*.pb'", datef)
 	files <- system(cmd, intern = TRUE)
 	cat(" done.\n")
 
-	times <- as.factor(sapply(strsplit(files, ":"), function(f) {
-		x <- strsplit(as.character(as.POSIXct(strsplit(f, "_|[.]")[[1]][4], format="%Y%m%d%H%M%S")), ":")[[1]]
+	times <- as.factor(sapply(files, function(f) { #strsplit(files, ":"), function(f) {
+		x <- strsplit(as.character(as.POSIXct(strsplit(f, "_|[.]")[[1]][3], format="%Y%m%d%H%M%S")), ":")[[1]]
 		x[3] = 30 * (as.numeric(x[3]) %/% 30)
 		x = as.POSIXct(paste(x, collapse = ":"))
 		format(x, "%H:%M:%S")
