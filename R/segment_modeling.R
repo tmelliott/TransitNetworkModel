@@ -213,16 +213,77 @@ for (i in 1:18) {
 ##
 ##
 
-f <- function(x, phi = 50, lambda = 0.001, delta = 30) {
-    x + lambda * (phi - x)
+f <- function(x) {
+    for (i in 1:Delta) x <- x + Lambda * (Mu - x)
+    x
 }
-F <- function(lambda = 0.001) 1 - lambda
+F <- function() (1 - Lambda)^Delta
+
+
+Mu <- 50
+Sigma <- 10
+Lambda <- 0.005
+Delta <- 1
+Y <- rbind(c(20, 80, 3),
+           c(40, 78, 4),
+           c(90, 92, 6),
+           c(180, 93, 3),
+           c(240, 67, 6))
+
+X <- Mu
+P <- Sigma^2
+T <- seq(0, 10, by = 0.5)
+Q <- Sigma^2 * (1 - (1 - Lambda)^(2 * Delta))
+px <- dnorm(Y[, 2], Y[, 2], Y[, 3])
+curve(dnorm(x, Mu, Sigma), 1001, from = 0, to = 120, ylim = c(0, 2*max(px)),
+      col = "red", lwd = 2)
+curve(dnorm(x, X, sqrt(P)), 1001, from = 0, to = 120, add = TRUE)
+for (i in 1:1000) {
+    Lambda <- 0.01 * P / (Sigma^2 + P)
+    Q <- Sigma^2 * (1 - (1 - Lambda)^(2 * Delta))
+    X <- f(X)
+    P <- F()^2 * P + Q
+    j <- which(i * Delta == Y[, 1])
+    if (length(j) == 1) {
+        print("Observing")
+        z <- Y[j, 2]
+        r <- Y[j, 3]
+        y <- z - X
+        S <- P + r^2
+        K <- P * (1 / S)
+        X <- X + K * y
+        P <- (1 - K) * P
+    }
+    dev.hold()
+    curve(dnorm(x, Mu, Sigma), 1001, from = 0, to = 120, ylim = c(0, 2*max(px)),
+          col = "red", lwd = 2)
+    curve(dnorm(x, X, sqrt(P)), 1001, from = 0, to = 120, add = TRUE)
+    abline(v = c(Mu, X), lty = 2, col = c('red', 'black'))
+    jj <- which(Y[, 1] <= i * Delta)
+    if (length(jj) > 0) {
+        for (j in jj) {
+            curve(dnorm(x, Y[j, 2], Y[j, 3]),
+                  0, 120, 1001, add = TRUE, lwd = 2,
+                  col = rgb(0, 0, 1,
+                            max(0, 1 - (i * Delta - Y[j, 1]) / 120)))
+            #print(max(0, 1 - (i * Delta - Y[j, 1]) / 120))
+        }
+    }
+    title(main = sprintf("State after %s minutes without data",
+                         floor(i * Delta / 60)))
+    abline(v = Mu, lty = 2)
+    dev.flush()
+    Sys.sleep(0.1)
+}
+
+
+
 
 v <- 1:6 * 10
-V <- matrix(NA, ncol = length(v), nrow = 6000)
+V <- matrix(NA, ncol = length(v), nrow = 20)
 V[1, ] <- v
 for (i in 2:nrow(V)) 
-    V[i, ] <- v <- f(v)
+    V[i, ] <- v <- f(v, 0.1)
 
 plot((1:nrow(V)) / 60, V[, 1], type = "l", ylim = range(V),
      xlab = 'Time (min)', ylab = 'Segment Travel Time (s)')
