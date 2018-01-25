@@ -9,6 +9,7 @@ protobuf/*.pb.*
 *.pdf
 *.out
 *.gif
+*.mp4
 
 R/fig
 data/versions.csv
