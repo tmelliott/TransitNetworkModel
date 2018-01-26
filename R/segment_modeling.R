@@ -20,7 +20,8 @@ gettimes <- function(x, n.min = 1) {
     times
 }
 plottimes <- function (x, which = c("segments", "combined"),
-                       span = 1, show.peak = TRUE, speed = TRUE) {
+                       span = 1, show.peak = TRUE, speed = TRUE,
+                       trim = !speed) {
     times <- x
     date <- format(times$timestamp[1], "%Y-%m-%d")
 
@@ -45,7 +46,8 @@ plottimes <- function (x, which = c("segments", "combined"),
     
     p <- p + xlab("Time") +
         ylab(ifelse(speed, "Speed (m/s)", "Travel time (s)")) +
-        ylim(c(0, ifelse(speed, 100, max(times$travel_time))))
+        ylim(c(0, ifelse(speed, 100,
+                  ifelse(trim, quantile(times$travel_time, 0.9), max(times$travel_time)))))
     if (attr(x, "n.min") > 1)
         p <- p + ggtitle(sprintf("Segments with %s+ observations",
                                  attr(x, "n.min")))
@@ -317,6 +319,7 @@ lines(t, qnorm(0.975, V, sqrt(S)), lty = 2)
 
 ######### REPEAT using reeeal data
 times <- gettimes(file, n.min = 50)
+plottimes(times, speed = FALSE)
 
 f <- function(x) {
     for (i in 1:Delta) x <- x + Lambda * (Mu - x)
@@ -326,11 +329,11 @@ F <- function() (1 - Lambda)^Delta
 
 
 segtimes <- times %>%
-    filter(segment_id == "3012")
+    filter(segment_id == "389")
 plottimes(segtimes, show.peak = FALSE, speed = FALSE) +
     ggtitle("")
 
-Mu <- segtimes %>% .$travel_time %>% mean(na.rm = TRUE)
+Mu <- segtimes %>% .$travel_time %>% mean(na.rm = TRUE) %>% log
 Sigma <- segtimes %>% .$travel_time %>% sd(na.rm = TRUE)
 #    ( function(x) sd(x, na.rm = TRUE) / sqrt(sum(!is.na(x))) )
 Lambda <- 0.005
@@ -340,17 +343,18 @@ Y <- data.frame(t = as.integer(segtimes$timestamp - min(segtimes$timestamp) + 60
                 r = sqrt(10))
 
 
-saveVideo({
+#saveVideo({
 X <- Mu
 P <- Sigma^2
 Q <- Sigma^2 * (1 - (1 - Lambda)^(2 * Delta))
 px <- dnorm(Y[, 2], Y[, 2], Y[, 3])
 Ymax <- max(Y$y)
-curve(dnorm(x, Mu, Sigma), 1001, from = 0, to = Ymax, ylim = c(0, 2*max(px)),
+curve(dnorm(x, exp(Mu), Sigma), 1001, from = 0, to = Ymax, ylim = c(0, 2*max(px)),
       col = "red", lwd = 2, xlab = "Travel Time (s)", ylab = "")
-curve(dnorm(x, X, sqrt(P)), 1001, from = 0, to = Ymax, add = TRUE)
+curve(dnorm(x, exp(X), sqrt(P)), 1001, from = 0, to = Ymax, add = TRUE)
 Tmax <- (floor(max(Y$t) / 10) + 6)
 pb <- txtProgressBar(0, Tmax, style = 3)
+Ystate <- matrix(NA, ncol = 3, nrow = Tmax)
 for (i in 1:Tmax) {
     setTxtProgressBar(pb, i)
     Lambda <- 0.001 * P / (Sigma^2 + P)
@@ -361,33 +365,56 @@ for (i in 1:Tmax) {
     tk1 <- tk - Delta
     j <- which(Y$t > tk1 & Y$t <= tk)
     if (length(j) > 0) {
-        for (k in j) {
-            z <- Y[k, 2]
-            r <- Y[k, 3]
-            y <- z - X
-            S <- P + r^2
-            K <- P * (1 / S)
-            X <- X + K * y
-            P <- (1 - K) * P
-        }
+        z <- log(mean(Y$y[j]))
+        r <- mean(Y$y[j]^2 + Y$r[j]^2) - z^2
+        ## for (k in j) {
+        ## z <- Y[k, 2]
+        ## r <- Y[k, 3]
+        y <- z - X
+        S <- P + r^2
+        K <- P * (1 / S)
+        X <- X + K * y
+        P <- (1 - K) * P
+        ## }
     }
+    Ystate[i, ] <- c(tk, X, P)
     dev.hold()
-    curve(dnorm(x, Mu, Sigma), 1001, from = 0, to = Ymax, ylim = c(0, 2*max(px)),
+    curve(dnorm(x, exp(Mu), Sigma), 1001, from = 0, to = Ymax, ylim = c(0, 2*max(px)),
           col = "red", lwd = 2, xlab = "Travel time (s)", ylab = "")
-    curve(dnorm(x, X, sqrt(P)), 1001, from = 0, to = Ymax, add = TRUE)
-    abline(v = c(Mu, X), lty = 2, col = c('red', 'black'))
+    curve(dnorm(x, exp(X), sqrt(P)), 1001, from = 0, to = Ymax, add = TRUE)
+    abline(v = c(exp(Mu), exp(X)), lty = 2, col = c('red', 'black'))
     jj <- which(Y$t <= tk)
     if (length(jj) > 0) {
         for (j in jj) {
             curve(dnorm(x, Y[j, 2], Y[j, 3]),
                   0, Ymax, 1001, add = TRUE, lwd = 2,
                   col = rgb(0, 0, 1,
-                            max(0, 1 - (i * Delta - Y[j, 1]) / 60 / 5)))
+                            max(0, 1 - (i * Delta - Y[j, 1]) / 60 / 15)))
         }
     }
     title(main = sprintf("State at %s",
                          min(segtimes$timestamp) + tk - 60))
-    abline(v = Mu, lty = 2)
+    abline(v = exp(Mu), lty = 2)
     dev.flush(dev.flush())
 }; close(pb)
-}, 'travelstate.mp4', interval = 1 / 60)
+
+#}, 'travelstate.mp4', interval = 1 / 60)
+
+
+
+Ystate <- as.data.frame(Ystate)
+colnames(Ystate) <- c("t", "X", "P")
+Ystate$t <- min(segtimes$timestamp) + Ystate$t - 60
+
+plottimes(segtimes, which = 'combined', show.peak = FALSE,
+          speed = FALSE, span = NULL, trim = FALSE) +
+    geom_path(aes(x = t, y = X, group = NULL), data = Ystate,
+              color = "red", lwd = 2, lty = 1) +
+    geom_path(aes(x = t, y = qnorm(0.25, X, sqrt(P)), group = NULL),
+              data = Ystate, color = "orangered", lty = 2) +
+    geom_path(aes(x = t, y = qnorm(0.75, X, sqrt(P)), group = NULL),
+              data = Ystate, color = "orangered", lty = 2) +
+    geom_path(aes(x = t, y = qnorm(0.025, X, sqrt(P)), group = NULL),
+              data = Ystate, color = "orangered", lty = 3) +
+    geom_path(aes(x = t, y = qnorm(0.975, X, sqrt(P)), group = NULL),
+              data = Ystate, color = "orangered", lty = 3) 
