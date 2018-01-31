@@ -3,6 +3,7 @@ library(tidyverse)
 library(splines)
 library(RSQLite)
 library(rstan)
+library(magrittr)
 library(forcats)
 file <- "../build/segment_data.csv"
 
@@ -21,7 +22,8 @@ gettimes <- function(x, n.min = 1) {
 }
 plottimes <- function (x, which = c("segments", "combined"),
                        span = 1, show.peak = TRUE, speed = TRUE,
-                       trim = !speed) {
+                       trim = !speed,
+                       estimates) {
     times <- x
     date <- format(times$timestamp[1], "%Y-%m-%d")
 
@@ -51,6 +53,22 @@ plottimes <- function (x, which = c("segments", "combined"),
     if (attr(x, "n.min") > 1)
         p <- p + ggtitle(sprintf("Segments with %s+ observations",
                                  attr(x, "n.min")))
+
+    if (!missing(estimates)) {
+        estimates <- as.data.frame(estimates)
+        colnames(estimates) <- c("t", "X", "P")
+        est <- estimates %>%
+            mutate(t = (min(segtimes$timestamp) + t - 60),
+                   q125 = qnorm(0.125, X, sqrt(P)),
+                   q25 = qnorm(0.25, X, sqrt(P)),
+                   q75 = qnorm(0.75, X, sqrt(P)),
+                   q875 = qnorm(0.875, X, sqrt(P)))
+        p <- p +
+            geom_ribbon(aes(x = t, y = NULL, ymin = q125, ymax = q875),
+                        data = est, fill = "darkred") +    
+            geom_path(aes(x = t, y = X, group = NULL), data = est,
+                      color = "red", lwd = 2, lty = 1)
+    }
 
     dev.hold()
     suppressWarnings(print(p))
@@ -333,14 +351,14 @@ segtimes <- times %>%
 plottimes(segtimes, show.peak = FALSE, speed = FALSE) +
     ggtitle("")
 
-Mu <- segtimes %>% .$travel_time %>% mean(na.rm = TRUE) %>% log
+Mu <- segtimes %>% .$travel_time %>% mean(na.rm = TRUE)
 Sigma <- segtimes %>% .$travel_time %>% sd(na.rm = TRUE)
 #    ( function(x) sd(x, na.rm = TRUE) / sqrt(sum(!is.na(x))) )
 Lambda <- 0.005
 Delta <- 10
 Y <- data.frame(t = as.integer(segtimes$timestamp - min(segtimes$timestamp) + 60),
                 y = segtimes$travel_time,
-                r = sqrt(10))
+                r = sqrt(20))
 
 
 #saveVideo({
@@ -349,9 +367,9 @@ P <- Sigma^2
 Q <- Sigma^2 * (1 - (1 - Lambda)^(2 * Delta))
 px <- dnorm(Y[, 2], Y[, 2], Y[, 3])
 Ymax <- max(Y$y)
-curve(dnorm(x, exp(Mu), Sigma), 1001, from = 0, to = Ymax, ylim = c(0, 2*max(px)),
+curve(dnorm(x, (Mu), Sigma), 1001, from = 0, to = Ymax, ylim = c(0, 2*max(px)),
       col = "red", lwd = 2, xlab = "Travel Time (s)", ylab = "")
-curve(dnorm(x, exp(X), sqrt(P)), 1001, from = 0, to = Ymax, add = TRUE)
+curve(dnorm(x, (X), sqrt(P)), 1001, from = 0, to = Ymax, add = TRUE)
 Tmax <- (floor(max(Y$t) / 10) + 6)
 pb <- txtProgressBar(0, Tmax, style = 3)
 Ystate <- matrix(NA, ncol = 3, nrow = Tmax)
@@ -365,7 +383,7 @@ for (i in 1:Tmax) {
     tk1 <- tk - Delta
     j <- which(Y$t > tk1 & Y$t <= tk)
     if (length(j) > 0) {
-        z <- log(mean(Y$y[j]))
+        z <- (mean(Y$y[j]))
         r <- mean(Y$y[j]^2 + Y$r[j]^2) - z^2
         ## for (k in j) {
         ## z <- Y[k, 2]
@@ -379,10 +397,10 @@ for (i in 1:Tmax) {
     }
     Ystate[i, ] <- c(tk, X, P)
     dev.hold()
-    curve(dnorm(x, exp(Mu), Sigma), 1001, from = 0, to = Ymax, ylim = c(0, 2*max(px)),
+    curve(dnorm(x, (Mu), Sigma), 1001, from = 0, to = Ymax, ylim = c(0, 2*max(px)),
           col = "red", lwd = 2, xlab = "Travel time (s)", ylab = "")
-    curve(dnorm(x, exp(X), sqrt(P)), 1001, from = 0, to = Ymax, add = TRUE)
-    abline(v = c(exp(Mu), exp(X)), lty = 2, col = c('red', 'black'))
+    curve(dnorm(x, (X), sqrt(P)), 1001, from = 0, to = Ymax, add = TRUE)
+    abline(v = c((Mu), (X)), lty = 2, col = c('red', 'black'))
     jj <- which(Y$t <= tk)
     if (length(jj) > 0) {
         for (j in jj) {
@@ -394,22 +412,32 @@ for (i in 1:Tmax) {
     }
     title(main = sprintf("State at %s",
                          min(segtimes$timestamp) + tk - 60))
-    abline(v = exp(Mu), lty = 2)
+    abline(v = (Mu), lty = 2)
     dev.flush(dev.flush())
 }; close(pb)
 
 #}, 'travelstate.mp4', interval = 1 / 60)
 
 
-
-Ystate <- as.data.frame(Ystate)
-colnames(Ystate) <- c("t", "X", "P")
-Ystate$t <- min(segtimes$timestamp) + Ystate$t - 60
+## Yhist <- as.data.frame(Ystate)
+## colnames(Yhist) <- c("t", "X", "P")
+## Yhist %<>% 
+##     mutate(t = (min(segtimes$timestamp) + t - 60),
+##            q125 = qnorm(0.125, X, sqrt(P)),
+##            q25 = qnorm(0.25, X, sqrt(P)),
+##            q75 = qnorm(0.75, X, sqrt(P)),
+##            q875 = qnorm(0.875, X, sqrt(P)))
 
 plottimes(segtimes, which = 'combined', show.peak = FALSE,
-          speed = FALSE, span = NULL, trim = FALSE) +
-    geom_path(aes(x = t, y = X, group = NULL), data = Ystate,
-              color = "red", lwd = 2, lty = 1) +
+          speed = FALSE, span = NULL, trim = FALSE,
+          estimates = Ystate)
+
+    geom_ribbon(aes(x = t, ymin = q125, ymax = q875),
+                data = Yhist, fill = "darkred") +    
+    geom_path(aes(x = t, y = X, group = NULL), data = Yhist,
+              color = "red", lwd = 2, lty = 1)
+
+
     geom_path(aes(x = t, y = qnorm(0.25, X, sqrt(P)), group = NULL),
               data = Ystate, color = "orangered", lty = 2) +
     geom_path(aes(x = t, y = qnorm(0.75, X, sqrt(P)), group = NULL),
