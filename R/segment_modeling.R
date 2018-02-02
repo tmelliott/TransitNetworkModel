@@ -64,7 +64,7 @@ plottimes <- function (x, which = c("segments", "combined"),
                    q75 = qnorm(0.75, X, sqrt(P)),
                    q875 = qnorm(0.875, X, sqrt(P)))
         p <- p +
-            geom_ribbon(aes(x = t, y = NULL, ymin = q125, ymax = q875),
+            geom_ribbon(aes(x = t, y = NULL, ymin = q125, ymax = q875, group=NULL),
                         data = est, fill = "darkred") +    
             geom_path(aes(x = t, y = X, group = NULL), data = est,
                       color = "red", lwd = 2, lty = 1)
@@ -347,7 +347,7 @@ F <- function() (1 - Lambda)^Delta
 
 
 segtimes <- times %>%
-    filter(segment_id == "389")
+    filter(segment_id == "2993")
 plottimes(segtimes, show.peak = FALSE, speed = FALSE) +
     ggtitle("")
 
@@ -361,15 +361,18 @@ Y <- data.frame(t = as.integer(segtimes$timestamp - min(segtimes$timestamp) + 60
                 r = sqrt(20))
 
 
-#saveVideo({
+animation::saveVideo({
 X <- Mu
 P <- Sigma^2
 Q <- Sigma^2 * (1 - (1 - Lambda)^(2 * Delta))
 px <- dnorm(Y[, 2], Y[, 2], Y[, 3])
 Ymax <- max(Y$y)
-curve(dnorm(x, (Mu), Sigma), 1001, from = 0, to = Ymax, ylim = c(0, 2*max(px)),
-      col = "red", lwd = 2, xlab = "Travel Time (s)", ylab = "")
-curve(dnorm(x, (X), sqrt(P)), 1001, from = 0, to = Ymax, add = TRUE)
+xx <- seq(0, Ymax, length = 1001)
+p <- ggplot(mapping = aes(x = x, y = y)) +
+    geom_line(data = data.frame(x = xx, y = dnorm(xx, Mu, Sigma)), lwd = 2) +
+    ylim(c(0, max(px))) + xlab("Travel Time (s)") + ylab("")
+p + geom_line(data = data.frame(x = xx, y = dnorm(xx, X, sqrt(P))),
+              colour = "red", lwd = 2, lty = 2)
 Tmax <- (floor(max(Y$t) / 10) + 6)
 pb <- txtProgressBar(0, Tmax, style = 3)
 Ystate <- matrix(NA, ncol = 3, nrow = Tmax)
@@ -385,38 +388,35 @@ for (i in 1:Tmax) {
     if (length(j) > 0) {
         z <- (mean(Y$y[j]))
         r <- mean(Y$y[j]^2 + Y$r[j]^2) - z^2
-        ## for (k in j) {
-        ## z <- Y[k, 2]
-        ## r <- Y[k, 3]
         y <- z - X
         S <- P + r^2
         K <- P * (1 / S)
         X <- X + K * y
         P <- (1 - K) * P
-        ## }
     }
     Ystate[i, ] <- c(tk, X, P)
-    dev.hold()
-    curve(dnorm(x, (Mu), Sigma), 1001, from = 0, to = Ymax, ylim = c(0, 2*max(px)),
-          col = "red", lwd = 2, xlab = "Travel time (s)", ylab = "")
-    curve(dnorm(x, (X), sqrt(P)), 1001, from = 0, to = Ymax, add = TRUE)
-    abline(v = c((Mu), (X)), lty = 2, col = c('red', 'black'))
+    pi <- p +
+        geom_line(data = data.frame(x = xx, y = dnorm(xx, X, sqrt(P))),
+                  colour = "red", lwd = 2, lty = 2)
     jj <- which(Y$t <= tk)
     if (length(jj) > 0) {
         for (j in jj) {
-            curve(dnorm(x, Y[j, 2], Y[j, 3]),
-                  0, Ymax, 1001, add = TRUE, lwd = 2,
-                  col = rgb(0, 0, 1,
-                            max(0, 1 - (i * Delta - Y[j, 1]) / 60 / 15)))
+            pi <- pi +
+                geom_line(
+                    data = data.frame(x = xx, y = dnorm(xx, Y[j, 2], Y[j, 3])),
+                    lwd = 1,
+                    col =
+                        rgb(0, 0, 1,
+                            max(0, 1 - (i * Delta - Y[j, 1]) / 60 / 15))
+                )
         }
     }
-    title(main = sprintf("State at %s",
-                         min(segtimes$timestamp) + tk - 60))
-    abline(v = (Mu), lty = 2)
+    pi <- pi + ggtitle(sprintf("State at %s", min(segtimes$timestamp) + tk - 60))
+    dev.hold()
+    print(pi)
     dev.flush(dev.flush())
 }; close(pb)
-
-#}, 'travelstate.mp4', interval = 1 / 60)
+}, 'travelstate.mp4', interval = 1 / 60)
 
 
 ## Yhist <- as.data.frame(Ystate)
@@ -432,17 +432,17 @@ plottimes(segtimes, which = 'combined', show.peak = FALSE,
           speed = FALSE, span = NULL, trim = FALSE,
           estimates = Ystate)
 
-    geom_ribbon(aes(x = t, ymin = q125, ymax = q875),
-                data = Yhist, fill = "darkred") +    
-    geom_path(aes(x = t, y = X, group = NULL), data = Yhist,
-              color = "red", lwd = 2, lty = 1)
+    ## geom_ribbon(aes(x = t, ymin = q125, ymax = q875),
+    ##             data = Yhist, fill = "darkred") +    
+    ## geom_path(aes(x = t, y = X, group = NULL), data = Yhist,
+    ##           color = "red", lwd = 2, lty = 1)
 
 
-    geom_path(aes(x = t, y = qnorm(0.25, X, sqrt(P)), group = NULL),
-              data = Ystate, color = "orangered", lty = 2) +
-    geom_path(aes(x = t, y = qnorm(0.75, X, sqrt(P)), group = NULL),
-              data = Ystate, color = "orangered", lty = 2) +
-    geom_path(aes(x = t, y = qnorm(0.025, X, sqrt(P)), group = NULL),
-              data = Ystate, color = "orangered", lty = 3) +
-    geom_path(aes(x = t, y = qnorm(0.975, X, sqrt(P)), group = NULL),
-              data = Ystate, color = "orangered", lty = 3) 
+    ## geom_path(aes(x = t, y = qnorm(0.25, X, sqrt(P)), group = NULL),
+    ##           data = Ystate, color = "orangered", lty = 2) +
+    ## geom_path(aes(x = t, y = qnorm(0.75, X, sqrt(P)), group = NULL),
+    ##           data = Ystate, color = "orangered", lty = 2) +
+    ## geom_path(aes(x = t, y = qnorm(0.025, X, sqrt(P)), group = NULL),
+    ##           data = Ystate, color = "orangered", lty = 3) +
+    ## geom_path(aes(x = t, y = qnorm(0.975, X, sqrt(P)), group = NULL),
+    ##           data = Ystate, color = "orangered", lty = 3) 
