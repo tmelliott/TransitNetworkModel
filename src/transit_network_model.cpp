@@ -272,7 +272,7 @@ int main (int argc, char* argv[]) {
 			for (auto& s: gtfs.get_segments ()) {
 				if (s.second->has_data ()) {
 					std::cout << "\n + Update segment " << s.first << ": ";
-					s.second->update (curtime);
+					s.second->update ();
 				}
 				transit_network::Segment* seg = feed.add_segments ();
 				seg->set_segment_id (s.second->get_id ());

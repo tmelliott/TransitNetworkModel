@@ -536,7 +536,10 @@ namespace gtfs {
 		double travel_time_var = 0;         /*!< the variance of speed along the segment */
 		uint64_t timestamp = 0;             /*!< updated at timestamp */
 
-		std::vector<int> data; /*!< estimates of travel time for recent vehicles */
+		double pred_tt = 0;        /*!< predicted travel time for next period */
+		double pred_ttvar = 0;     /*!< variance of travel time for next period */
+
+		std::vector<std::tuple<int, double> > data; /*!< estimates of travel time for recent vehicles */
 
 	public:
 		/**
@@ -608,14 +611,15 @@ namespace gtfs {
 
 		bool has_data (void) { return data.size () > 0; };
 		bool is_initialized (void) { return timestamp > 0; };
-        double get_travel_time (void) { return travel_time; };
-        double get_travel_time_var (void) { return travel_time_var; };
+        double get_travel_time (void) { return pred_tt; };
+        double get_travel_time_var (void) { return pred_ttvar; };
         const uint64_t& get_timestamp (void) const { return timestamp; };
 
 		// --- METHODS
 		void set_length (double len) { length = len; };
-		void add_data (int mean);
-		void update (time_t t);
+		void add_data (int mean, double var);
+		void predict (time_t t);
+		void update ();
 	};
 
 	/**
@@ -751,6 +755,7 @@ namespace gtfs {
 	struct TravelTime {
 		std::shared_ptr<Segment> segment; /*!< pointer to the segment */
 		int time = 0;                     /*!< the time spent traveling */
+		double var = 0;                   /*!< the variance of the travel time */
 		bool complete = false;            /*!< indicates the segment has been completed */
 		bool used = false;                /*!< true once model has used the value */
 
@@ -762,6 +767,7 @@ namespace gtfs {
 
 		void reset (void) {
 			time = 0;
+			var = 0;
 			complete = false;
 			used = false;
 		}
@@ -771,6 +777,12 @@ namespace gtfs {
 			time = t;
 			complete = true;
 		};
+		/** Set the travel time variance for the segment (and set complete) */
+		void set_time (int t, double v) {
+			time = t;
+			if (v > 0) var = v;
+			complete = true;
+		}
 
 		/** Get the travel time for the segment (and set used) */
 		int get_time (void) {
@@ -778,9 +790,10 @@ namespace gtfs {
 			return time;
 		};
 
+
 		/** Give the data to the segment */
 		void use (void) {
-			segment->add_data (get_time ());
+			segment->add_data (get_time (), var);
 		}
 	};
 

@@ -418,8 +418,19 @@ namespace gtfs {
 								<< "; range: [" << tmin << ", " << tmax << "]";
 							if (Np > 0) {
 								tbar /= Np;
-								travel_times[i].set_time (round (tbar));
-								std::clog << "\n -> Segment " << i << ": " << round (tbar) << "s";
+								double tvar = 0.0;
+								if (Np > 1) {
+									for (auto& p: particles) {
+										auto tt = p.get_travel_time (i);
+										if (tt.initialized && tt.complete) {
+											tvar += pow(tt.time - tbar, 2);
+										}
+									}
+									tvar /= Np;
+								}
+								travel_times[i].set_time (round (tbar), tvar);
+								std::clog << "\n -> Segment " << i << ": " << round (tbar) 
+									<< "s [" << round(tvar * 100) / 100.0 << "]";
 							} else {
 								travel_times[i].set_time (0.0);
 								std::clog << " ... no particles with travel time";
