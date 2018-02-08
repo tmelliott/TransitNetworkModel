@@ -134,6 +134,11 @@ int main (int argc, char* argv[]) {
     f << "segment_id,vehicle_id,timestamp,travel_time,length\n";
 	f.close ();
 
+	std::ofstream f2; // file for particles
+	f2.open ("segment_state.csv");
+    f2 << "segment_id,timestamp,travel_time,var,length\n";
+	f2.close ();
+
 	time_t curtime;
 	int repi = 20;
 	while (forever && repi > 0) {
@@ -170,11 +175,24 @@ int main (int argc, char* argv[]) {
 			continue;
 		}
 
+		{
+			// Update the the network state: step 1 - predict
+			time_start (clockstart, wallstart);
+			std::cout << "\n * Predicting latest network state ";
+			std::cout.flush ();
+
+			for (auto& s: gtfs.get_segments ()) s.second->predict (curtime);
+
+			std::cout << "\n";
+			time_end (clockstart, wallstart);
+		}
+
 		// Update each vehicle's particles
 		{
 			// -> triggers particle transition -> resample
 			time_start (clockstart, wallstart);
 			std::cout << "\n * Running particle filter ";
+			std::cout.flush ();
 			struct tm * timeinfo;
 			timeinfo = std::localtime (&curtime);
 			char buff[20];
@@ -209,38 +227,11 @@ int main (int argc, char* argv[]) {
 			time_end (clockstart, wallstart);
 		}
 
-		// if (csvout) {
-		// 	time_start (clockstart, wallstart);
-		// 	std::cout << "\n * Writing particles to CSV\n";
-		// 	std::cout.flush ();
-		// 	f.open ("particles.csv", std::ofstream::app);
-		// 	int i=1;
-		// 	for (auto& v: vehicles) {
-		// 		printf("\rVehicle %*d of %lu", 3, i, vehicles.bucket_count ());
-		// 		std::cout.flush ();
-		// 		i++;
-		// 		for (auto& p: v.second->get_particles ()) {
-		// 			if (rng.runif () < 0.8) continue;
-		// 			int k0 = p.get_trajectory ().size () - v.second->get_delta ();
-		// 			for (unsigned k=k0; k<p.get_trajectory ().size (); k++) {
-		// 				f << v.second->get_id () << ","
-		// 					<< v.second->get_trip ()->get_id () << ","
-		// 					<< v.second->get_timestamp () << ","
-		// 					<< p.get_id () << ","
-		// 					<< p.get_start () + k << ","
-		// 					<< p.get_trajectory ()[k] << "\n";
-		// 			}
-		// 		}
-		// 	}
-		// 	f.close ();
-		// 	std::cout << "\n";
-		// 	time_end (clockstart, wallstart);
-		// }
-
 		// Update road segments -> Kalman filter
 		{
 			time_start (clockstart, wallstart);
 			std::cout << "\n * Updating road network with latest travel times ...";
+			std::cout.flush ();
 			// loop over VEHICLES that were updated this iteration (?)
 			f.open ("segment_data.csv", std::ofstream::app);
 			for (auto& v: vehicles) {
@@ -269,11 +260,17 @@ int main (int argc, char* argv[]) {
 
 			// Update segments and write to protocol buffer
 			transit_network::Feed feed;
+			f2.open ("segment_state.csv", std::ofstream::app);
 			for (auto& s: gtfs.get_segments ()) {
-				if (s.second->has_data ()) {
-					std::cout << "\n + Update segment " << s.first << ": ";
-					s.second->update ();
-				}
+				if (s.second->has_data ()) s.second->update ();
+
+				f2 << s.second->get_id ()
+					<< "," << s.second->get_timestamp () 
+					<< "," << s.second->get_travel_time ()
+					<< "," << s.second->get_travel_time_var () 
+					<< "," << s.second->get_length ()
+					<< "\n";
+
 				transit_network::Segment* seg = feed.add_segments ();
 				seg->set_segment_id (s.second->get_id ());
 				if (s.second->is_initialized ()) {
@@ -306,6 +303,7 @@ int main (int argc, char* argv[]) {
 					pend->set_lng ( pt2.lng );
 				}
 			}
+			f2.close ();
 
 			std::fstream output ("networkstate.pb",
 								 std::ios::out | std::ios::trunc | std::ios::binary);
