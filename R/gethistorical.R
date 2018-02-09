@@ -24,10 +24,9 @@ getFiles <- function(date) {
 
 	cat("Files organised, beginning realtime simulation.\n")
 
-	i <- 1
+	i <- 567
 	N <- length(file.list)
-	for (i in seq_along(file.list)) {
-		if (i >= 5010) break;
+	for (i in i:length(file.list)) {
 		fs <- file.list[[i]]
 		cat(sprintf("\rLoaded file %s of %s", i, N))
 		whichvp <- grep("vehicle_locations", fs)

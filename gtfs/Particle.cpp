@@ -188,7 +188,7 @@ namespace gtfs {
 					// we hope the bus will depart around the scheduled departure time
 					// (if > start AND not more than 20min away ...)
 					// start = vehicle->get_arrival_time ().get ();
-					int wait = sampling::exponential (1.0 / 20.0).rand (rng);
+					wait = sampling::exponential (1.0 / 20.0).rand (rng);
 				} else if (vehicle->get_departure_time ()) {
 					// start = vehicle->get_departure_time ().get () - 30;
 					wait = std::max(0.0, 30 + rng.rnorm () * 5);
@@ -406,7 +406,7 @@ namespace gtfs {
     		// make sure the trajectory is long enough!
 			latest = vehicle->get_timestamp () - start;
     		// while (start + trajectory.size () < vehicle->get_timestamp ())
-    		while (trajectory.size () <= latest)
+    		while ((int)trajectory.size () <= latest)
     			trajectory.push_back (d);
 
     		// then update latest
@@ -447,6 +447,17 @@ namespace gtfs {
 			log_likelihood = -INFINITY;
 			return;
 		};
+		auto segments = shape->get_segments ();
+		bool use_segments = segments.size () == 0;
+
+		double d (get_distance ()), v (get_velocity ());
+		// int J (stops.size ());    // the number of stops
+		int L (segments.size ()); // the number of segments
+
+        int l = 0;
+		// quickly find which segment the start location is in
+		// while (j < J-1 && d > stops[j+1].shape_dist_traveled) j++;
+		while (l < L-1 && d > segments[l+1].shape_dist_traveled) l++;
 
 		// i.e., if ts == start, then latest = 0 which makes perfect sense <(o.o)>
 		// latest = vehicle->get_timestamp () - start;
@@ -462,7 +473,28 @@ namespace gtfs {
 
 			nllhood += log (2 * M_PI * sigy);
 			nllhood += (pow(z[0], 2) + pow(z[1], 2)) / (2 * pow(sigy, 2));
+
+			if (use_segments) {
+				// Use network state to filter particles even further ... 
+				auto pseg = segments[l].segment;
+				double tt = pseg->get_travel_time (),
+				       ttvar = pseg->get_travel_time_var (),
+				       length = pseg->get_length ();
+				if (length == 0) {
+					std::clog << " \n >>> Ummm something off, length is ZERO :(";
+				} else {
+					double speed, speed_var;
+					speed = length / tt;
+					// delta method to calculate variance; var(Y) = (g'(x))^2 * var(X)
+					speed_var = - pow(L / pow(tt, 2), 2) * ttvar;
+
+					nllhood += 0.5 * log (2 * M_PI) + 0.5 * log (speed_var) +
+						pow(v - speed, 2) / (2 * speed_var);
+				}
+			}
 		}
+
+		
 
 		// arrival/departure times ...
 		if (stop_times.size () > 0 && vehicle->get_stop_sequence ()) {

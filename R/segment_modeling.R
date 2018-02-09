@@ -15,7 +15,8 @@ gettimes <- function(x, n.min = 1) {
                        "integer", "numeric")) %>%
         mutate(timestamp = as.POSIXct(timestamp, origin = "1970-01-01"),
                speed = round(length / 1000 / travel_time * 60 * 60),
-               length = round(length)) %>%
+               length = round(length),
+               segment_id = paste0(segment_id, "[", length, "]")) %>%
         group_by(segment_id) %>% filter(n() > n.min)
     attr(times, "n.min") <- n.min
     times
@@ -84,8 +85,14 @@ plottimes <- function (x, which = c("segments", "combined"),
 ##     Sys.sleep(60)
 ## }
 
-plottimes(gettimes(file, n.min = 50), span = 0.3) +
-    geom_hline(yintercept = 50, colour = "magenta", lty = 3)
+while(TRUE) {
+    dev.hold()
+    plottimes(gettimes(file, n.min = 0), span = 0.3) +
+        geom_hline(yintercept = 50, colour = "magenta", lty = 3)
+    dev.flush()
+    cat(".")
+    Sys.sleep(30)
+}
 
 times <- gettimes(file, n.min = 50)
 SEGS <- levels(times$segment_id)[table(times$segment_id) > 0]

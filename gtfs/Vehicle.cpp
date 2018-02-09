@@ -297,9 +297,7 @@ namespace gtfs {
 						std::clog << "\n >> WARNING: max likelihood belongs to min distance ...(" << dmin << ")";
 					break;
 				}
-			}
-
-			
+			}			
 
 			if (status == 1 && lmax < -1000) {
 				std::clog << " -> RESET";
