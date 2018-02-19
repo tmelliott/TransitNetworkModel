@@ -7,6 +7,7 @@ readProtoFiles(dir = '../proto')
 date <- "2018-01-01"
 
 processDay <- function(date, quiet = TRUE) {
+    date <- as.character(date)
     cat("+++ Processing", date, "\n")
     dir <- file.path("/mnt", "storage", "history", gsub("-", "/", date))
     cmd <- sprintf("ssh tom@130.216.51.230 find %s -type f -name '*.pb'", dir)
@@ -50,8 +51,15 @@ processDay <- function(date, quiet = TRUE) {
 processVP <- function(file, out) {
     ## Returns a data.frame
     con <- "tom@130.216.51.230"
-    pb <- read(transit_realtime.FeedMessage,
-               pipe(sprintf("ssh %s cat %s", con, file)))$entity
+    pb <- NULL
+    while (is.null(pb)) {
+        pb <- try({
+            read(transit_realtime.FeedMessage,
+                 pipe(sprintf("ssh %s cat %s", con, file)))$entity
+        }, quietly = TRUE)
+        if (inherits(pb, "try-error")) pb <- NULL
+        Sys.sleep(5 * is.null(pb))
+    }
     res <- do.call(rbind, lapply(pb, function(vp) {
         data.frame(
             vehicle_id = vp$vehicle$vehicle$id,
@@ -70,8 +78,15 @@ processVP <- function(file, out) {
 processTU <- function(file, out) {
     ## Returns a data.frame
     con <- "tom@130.216.51.230"
-    pb <- read(transit_realtime.FeedMessage,
-               pipe(sprintf("ssh %s cat %s", con, file)))$entity
+    pb <- NULL
+    while (is.null(pb)) {
+        pb <- try({
+            pb <- read(transit_realtime.FeedMessage,
+                       pipe(sprintf("ssh %s cat %s", con, file)))$entity
+            }, quietly = TRUE)
+        if (inherits(pb, "try-error")) pb <- NULL
+        Sys.sleep(5 * is.null(pb))
+    }
     res <- do.call(rbind, lapply(pb, function(vp) {
         data.frame(
             vehicle_id = vp$trip_update$vehicle$id,
@@ -106,4 +121,4 @@ processTU <- function(file, out) {
 }
 
 dates <- seq(as.Date("2017-04-01"), as.Date("2017-12-31"), by = 1)
-mclapply(dates, processDay, mc.cores = 3, mc.preschedule = FALSE)
+parallel::mclapply(dates, processDay, mc.cores = 3, mc.preschedule = FALSE)
