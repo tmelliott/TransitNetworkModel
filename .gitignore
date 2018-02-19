@@ -13,3 +13,5 @@ protobuf/*.pb.*
 
 R/fig
 data/versions.csv
+
+R/historicaldata
