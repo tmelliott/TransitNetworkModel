@@ -5,7 +5,7 @@ library(geosphere)
 library(viridis)
 
 ### --- Step 1: Load the data
-date <- "2018-01-01"
+date <- "2017-04-04"
 
 dir <- "historicaldata"
 files <- paste0(dir, "/", c("vehicle_positions", "trip_updates"),
@@ -15,12 +15,17 @@ files <- paste0(dir, "/", c("vehicle_positions", "trip_updates"),
 #tus <- read.csv(files[2])
 
 ### --- Step 2: Filter duplicate rows
-vps <- read.csv(files[1]) %>%
+vps <- read.csv(files[1],
+                colClasses = c("factor", "factor", "factor", "character",
+                               "numeric", "numeric", "numeric", "integer")) %>%
     group_by(vehicle_id, timestamp) %>%
     filter(row_number() == 1) %>%
     ungroup() %>%
     arrange(timestamp)
-tus <- read.csv(files[2]) %>%
+tus <- read.csv(files[2],
+                colClasses = c("factor", "factor", "factor", "character",
+                               "integer", "factor", "integer", "integer",
+                               "integer", "integer", "integer")) %>%
     group_by(vehicle_id, timestamp) %>%
     filter(row_number() == 1) %>%
     ungroup() %>%
@@ -92,14 +97,19 @@ p <- ggmap(aklmap) +
     scale_color_viridis()
 p
 
-p + facet_wrap(~hour, nrow = 3)
+p + facet_wrap(~hour, nrow = 4)
 
 
-for (t in (min(ds$timestamp) + 60 * 60 * 3):max(ds$timestamp)) {
+for (t in seq(min(ds$timestamp) + 60 * 60 * 2,
+              max(ds$timestamp), by = 30)) {
+    dev.flush(dev.flush())
     pt <- ggmap(aklmap) +
-        geom_point(aes(x = position_longitude, y = position_latitude),
-                   data = ds %>% filter(timestamp > t - 10 & timestamp < t + 10)) +
-        ggtitle(as.POSIXct(t, origin = "1970-01-01"))
+        geom_point(aes(x = position_longitude, y = position_latitude,
+                       color = speed),
+                   data = ds %>% filter(timestamp > t - 15 & timestamp < t + 15)) +
+        ggtitle(as.POSIXct(t, origin = "1970-01-01")) +
+        scale_color_viridis(limits = c(0, 30))
+        ##scale_color_gradientn(colours = c("red", "green4", "yellow"), limits = c(0, 30))
     dev.hold()
     print(pt)
     dev.flush()
