@@ -3,6 +3,7 @@ library(magrittr)
 library(ggmap)
 library(geosphere)
 library(viridis)
+library(RSQLite)
 
 ### --- Step 1: Load the data
 date <- "2017-04-04"
@@ -38,15 +39,17 @@ v1 <- vps %>%
            position_latitude, position_longitude, position_bearing)
 t1 <- tus %>%
     select(vehicle_id, timestamp, trip_id, route_id, trip_start_time,
-           stop_sequence, stop_id, arrival_time, arrival_delay, departure_time, departure_delay)
+           stop_sequence, stop_id, arrival_time, arrival_delay, departure_time,
+           departure_delay)
 
 data <- full_join(v1, t1) %>%
     arrange(timestamp, vehicle_id) %>%
-    mutate(delay = ifelse(is.na(arrival_delay), departure_delay, arrival_delay)) %>%
+    mutate(delay = ifelse(is.na(arrival_delay), departure_delay,
+                          arrival_delay)) %>%
     mutate(delaycat = cut(delay/60, c(-Inf, -30, -10, -5, 5, 10, 30, Inf)))
 
 ### --- Step 4: Do stuff with the data!
-vid <- names(sort(table(data$vehicle_id), TRUE))[1]
+vid <- names(sort(table(data$vehicle_id), TRUE))[7]
 dv <- data %>%
     filter(vehicle_id == vid) %>%
     arrange(timestamp)
@@ -72,14 +75,72 @@ p + facet_grid(~route_id)
 p + facet_wrap(~trip_start_time)
 
 
+### --- Step 5: Load road segments from the database
+getsegments <- function() {
+    ## check if they exist yet ...
+    if (file.exists("segments.rda")) {
+        load("segments.rda")
+    } else {
+        con <- dbConnect(SQLite(), "../gtfs.db")
+        segments <- dbGetQuery(con, "SELECT segment_id FROM segments") %>%
+            pluck("segment_id") %>% lapply(function(x) list(id = x, shape = NULL))
+        pb <- txtProgressBar(0, length(segments), style = 3)
+        for (i in i:length(segments)) {
+            setTxtProgressBar(pb, i)
+            x <- segments[[i]]$id
+            ## get a shape that uses this segment
+            q <- dbSendQuery(con, "SELECT shape_id, leg FROM shape_segments
+                                   WHERE segment_id=? LIMIT 1")
+            dbBind(q, x)
+            shp <- dbFetch(q)
+            dbClearResult(q)
+            if (nrow(shp) == 0) next
+            ## get the start/end distances for that shape
+            q <- dbSendQuery(con, "SELECT shape_dist_traveled FROM shape_segments
+                                   WHERE shape_id=? AND LEG BETWEEN ? AND ?")
+            dbBind(q, list(shp$shape_id, shp$leg, shp$leg + 1))
+            dr <- dbFetch(q)$shape_dist_traveled
+            dbClearResult(q)
+            if (length(dr) == 1) dr <- c(dr, Inf)
+            ## get the shape points for the shape in the required distance range
+            q <- dbSendQuery(con, "SELECT lat, lng FROM shapes
+                                   WHERE shape_id=? AND
+                                         dist_traveled BETWEEN ? AND ?
+                                   ORDER BY seq")
+            dbBind(q, list(shp$shape_id, dr[1], dr[2]))
+            segments[[i]]$shape <- dbFetch(q)
+            dbClearResult(q)
+        }
+        close(pb)
+        dbDisconnect(con)
+        segments <-
+            segments[sapply(segments, function(x) !is.null(x$shape))] %>%
+            lapply(function(x)
+                data.frame(id = rep(x$id, nrow(x$shape)), x$shape)) %>%
+            do.call(rbind, .) %>%
+            mutate(id = as.factor(id))
+        save(segments, file = "segments.rda")
+    }
+    
+    segments %>% as.tibble
+}
+segments <- getsegments()
 
-### --- Step 5: model vehicle trajectories to estimate speed
+pseg <- ggplot(segments, aes(x = lng, y = lat, group = id)) +
+    geom_path() +
+    coord_fixed(1.2)
+pseg
+
+
+### --- Step 6: model vehicle trajectories to estimate speed
 ds <- data %>%
     filter(!is.na(position_latitude)) %>%
     arrange(vehicle_id, timestamp) %>%
     mutate(delta_t = c(0, diff(timestamp)),
-           delta_d = c(0, distHaversine(cbind(position_longitude[-n()], position_latitude[-n()]),
-                                        cbind(position_longitude[-1], position_latitude[-1])))) %>%
+           delta_d = c(0, distHaversine(cbind(position_longitude[-n()],
+                                              position_latitude[-n()]),
+                                        cbind(position_longitude[-1],
+                                              position_latitude[-1])))) %>%
     mutate(speed = pmin(30, delta_d / delta_t)) %>%
     mutate(speed = ifelse(speed > 0, speed, NA),
            hour = format(as.POSIXct(timestamp, origin = "1970-01-01"), "%H"))
@@ -91,13 +152,70 @@ bbox <- with(ds, c(min(position_longitude, na.rm = TRUE),
 aklmap <- get_map(bbox, source = "stamen", maptype = "toner-lite")
 
 p <- ggmap(aklmap) +
+    geom_path(aes(x = lng, y = lat, group = id), data = segments) +
     geom_point(aes(x = position_longitude, y = position_latitude,
-                   colour = speed),
-               data = ds) +
-    scale_color_viridis()
+                   colour = speed / 1000 * 60 * 60),
+               data = ds, size = 0.2) +
+    scale_color_gradientn(colours = c("#990000", viridis(6)[5:6])) +
+    labs(colour = "Speed (km/h)")
 p
 
 p + facet_wrap(~hour, nrow = 4)
+
+### Smooth the value at each point ...
+library(mgcv)
+rad <- function(d) d * pi / 180
+deg <- function(r) r * 180 / pi
+R <- 6378137
+
+ds <- ds %>%
+    filter(!is.na(speed)) %>%
+    mutate(x = R * (rad(position_longitude) - rad(mean(ds$position_longitude))) *
+               cos(rad(mean(ds$position_latitude))),
+           y = R * (rad(position_latitude) - rad(mean(ds$position_latitude))))
+
+smth <- function(x, y, z, span = 20) {
+    dist(cbind(x, y)) %>% as.matrix %>%
+        apply(1, function(d) mean(z[d < span], na.rm = TRUE)) %>%
+        as.numeric
+}
+
+dsf <- ds %>% filter(as.numeric(hour) <= 7) %>% group_by(hour) %>%
+    do(mutate(., speed.smooth = smth(.$x, .$y, .$speed))) %>%
+    ungroup
+
+## speed.fit <- loess(speed ~ x + y,
+##                    data = ds1000 %>%
+##                       ),
+##                    na.action = na.exclude, span = 0.1, degree = 1)
+## ds1000$speed.smooth <- predict(speed.fit)
+
+bbox <- with(dsf, c(min(position_longitude, na.rm = TRUE),
+                       min(position_latitude, na.rm = TRUE),
+                       max(position_longitude, na.rm = TRUE),
+                       max(position_latitude, na.rm = TRUE)))
+aklmap2 <- get_map(bbox, source = "stamen", maptype = "toner-lite")
+
+p <- ggmap(aklmap2) +
+    #geom_path(aes(x = lng, y = lat, group = id), data = segments) +
+    geom_point(aes(x = position_longitude, y = position_latitude,
+                   colour = speed / 1000 * 60 * 60),
+               data = dsf, size = 1) +
+    scale_color_gradientn(colours = c("#990000", viridis(6)[5:6]),
+                          limits = c(0, 100)) +
+    labs(colour = "Speed (km/h)") +
+    facet_wrap(~hour)
+ps <- ggmap(aklmap2) +
+    #geom_path(aes(x = lng, y = lat, group = id), data = segments) +
+    geom_point(aes(x = position_longitude, y = position_latitude,
+                   colour = speed.smooth / 1000 * 60 * 60),
+               data = dsf, size = 1) +
+    scale_color_gradientn(colours = c("#990000", viridis(6)[5:6]),
+                          limits = c(0, 100)) +
+    labs(colour = "Speed (km/h)") +
+    facet_wrap(~hour)
+
+gridExtra::grid.arrange(p, ps, nrow = 1)
 
 
 for (t in seq(min(ds$timestamp) + 60 * 60 * 2,
