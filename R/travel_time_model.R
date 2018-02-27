@@ -158,31 +158,100 @@ p <- ggmap(aklmap) +
                data = ds, size = 0.2) +
     scale_color_gradientn(colours = c("#990000", viridis(6)[5:6])) +
     labs(colour = "Speed (km/h)")
-p
+##p
 
 p + facet_wrap(~hour, nrow = 4)
 
-### Smooth the value at each point ...
-library(mgcv)
+
+### For each segment, find all points in it
+
+
+library(sf)
 rad <- function(d) d * pi / 180
 deg <- function(r) r * 180 / pi
 R <- 6378137
 
-ds <- ds %>%
-    filter(!is.na(speed)) %>%
-    mutate(x = R * (rad(position_longitude) - rad(mean(ds$position_longitude))) *
-               cos(rad(mean(ds$position_latitude))),
-           y = R * (rad(position_latitude) - rad(mean(ds$position_latitude))))
+segs.geoms <-
+    do.call(rbind, {
+        tapply(1:nrow(segments), segments$id,
+               function(i) {
+                   if (length(i) == 1) return(NULL)
+                   ## conversions
+                   lat <- rad(segments$lat[i])
+                   lng <- rad(segments$lng[i])
+                   Lam <- mean(lng)
+                   Phi <- mean(lat)
+                   ## equirectangular proj
+                   x <- (lng - Lam) * cos(Phi)
+                   y <- lat - Phi
+                   ## polygon buffer around path
+                   buf <- st_buffer(st_linestring(cbind(x, y) * R), 15)
+                   ## simple df with polygon, in geospace
+                   coords <-
+                       st_coordinates(buf) %>%
+                       as.data.frame %>%
+                       mutate(id = segments$id[i[1]],
+                              lng = deg(X / R / cos(Phi) + Lam),
+                              lat = deg(Y / R + Phi))
+                   coords
+               })
+    })
 
-smth <- function(x, y, z, span = 20) {
-    dist(cbind(x, y)) %>% as.matrix %>%
-        apply(1, function(d) mean(z[d < span], na.rm = TRUE)) %>%
-        as.numeric
-}
+s <- segs.geoms %>% filter(id == 103)
+ggplot(s) +
+    geom_point(aes(position_longitude, position_latitude),
+               data = ds) +
+    geom_polygon(aes(lng, lat, group = id), fill = "red", alpha = 0.5) +
+    xlim(min(s$lng) - 0.01, max(s$lng) + 0.01) +
+    ylim(min(s$lat) - 0.005, max(s$lat) + 0.005) +
+    coord_fixed(1.2)
 
-dsf <- ds %>% filter(as.numeric(hour) <= 7) %>% group_by(hour) %>%
-    do(mutate(., speed.smooth = smth(.$x, .$y, .$speed))) %>%
-    ungroup
+bbox <- with(s, c(min(lng, na.rm = TRUE) - 0.01,
+                  min(lat, na.rm = TRUE) - 0.005,
+                  max(lng, na.rm = TRUE) + 0.01,
+                  max(lat, na.rm = TRUE) + 0.005))
+aklmap <- get_map(bbox, source = "stamen", maptype = "toner-lite")
+
+ggmap(aklmap) +
+    geom_point(aes(position_longitude, position_latitude),
+               data = ds) +
+    geom_polygon(aes(lng, lat, group = id), data = s,
+                 lwd = 1, color = 'red',
+                 fill = "red", alpha = 0.2)
+
+s <- segments %>% filter(id == 310)
+ggmap(aklmap) + geom_path(aes(lng, lat), data = s)
+
+ggplot(s, aes(lng, lat)) +
+    geom_point(aes(position_longitude, position_latitude),
+               data = ds) +
+    geom_path(color = "red", lwd = 1.5) +
+    xlim(min(s$lng) - 0.01, max(s$lng) + 0.01) +
+    ylim(min(s$lat) - 0.005, max(s$lat) + 0.005) +
+    coord_fixed(1.2)
+
+
+
+
+### Smooth the value at each point ...
+## library(mgcv)
+## 
+
+## ds <- ds %>%
+##     filter(!is.na(speed)) %>%
+##     mutate(x = R * (rad(position_longitude) - rad(mean(ds$position_longitude))) *
+##                cos(rad(mean(ds$position_latitude))),
+##            y = R * (rad(position_latitude) - rad(mean(ds$position_latitude))))
+
+## smth <- function(x, y, z, span = 20) {
+##     dist(cbind(x, y)) %>% as.matrix %>%
+##         apply(1, function(d) mean(z[d < span], na.rm = TRUE)) %>%
+##         as.numeric
+## }
+
+## dsf <- ds %>% filter(as.numeric(hour) <= 7) %>% group_by(hour) %>%
+##     do(mutate(., speed.smooth = smth(.$x, .$y, .$speed))) %>%
+##     ungroup
 
 ## speed.fit <- loess(speed ~ x + y,
 ##                    data = ds1000 %>%
@@ -190,45 +259,45 @@ dsf <- ds %>% filter(as.numeric(hour) <= 7) %>% group_by(hour) %>%
 ##                    na.action = na.exclude, span = 0.1, degree = 1)
 ## ds1000$speed.smooth <- predict(speed.fit)
 
-bbox <- with(dsf, c(min(position_longitude, na.rm = TRUE),
-                       min(position_latitude, na.rm = TRUE),
-                       max(position_longitude, na.rm = TRUE),
-                       max(position_latitude, na.rm = TRUE)))
-aklmap2 <- get_map(bbox, source = "stamen", maptype = "toner-lite")
+## bbox <- with(dsf, c(min(position_longitude, na.rm = TRUE),
+##                        min(position_latitude, na.rm = TRUE),
+##                        max(position_longitude, na.rm = TRUE),
+##                        max(position_latitude, na.rm = TRUE)))
+## aklmap2 <- get_map(bbox, source = "stamen", maptype = "toner-lite")
 
-p <- ggmap(aklmap2) +
-    #geom_path(aes(x = lng, y = lat, group = id), data = segments) +
-    geom_point(aes(x = position_longitude, y = position_latitude,
-                   colour = speed / 1000 * 60 * 60),
-               data = dsf, size = 1) +
-    scale_color_gradientn(colours = c("#990000", viridis(6)[5:6]),
-                          limits = c(0, 100)) +
-    labs(colour = "Speed (km/h)") +
-    facet_wrap(~hour)
-ps <- ggmap(aklmap2) +
-    #geom_path(aes(x = lng, y = lat, group = id), data = segments) +
-    geom_point(aes(x = position_longitude, y = position_latitude,
-                   colour = speed.smooth / 1000 * 60 * 60),
-               data = dsf, size = 1) +
-    scale_color_gradientn(colours = c("#990000", viridis(6)[5:6]),
-                          limits = c(0, 100)) +
-    labs(colour = "Speed (km/h)") +
-    facet_wrap(~hour)
+## p <- ggmap(aklmap2) +
+##     #geom_path(aes(x = lng, y = lat, group = id), data = segments) +
+##     geom_point(aes(x = position_longitude, y = position_latitude,
+##                    colour = speed / 1000 * 60 * 60),
+##                data = dsf, size = 1) +
+##     scale_color_gradientn(colours = c("#990000", viridis(6)[5:6]),
+##                           limits = c(0, 100)) +
+##     labs(colour = "Speed (km/h)") +
+##     facet_wrap(~hour)
+## ps <- ggmap(aklmap2) +
+##     #geom_path(aes(x = lng, y = lat, group = id), data = segments) +
+##     geom_point(aes(x = position_longitude, y = position_latitude,
+##                    colour = speed.smooth / 1000 * 60 * 60),
+##                data = dsf, size = 1) +
+##     scale_color_gradientn(colours = c("#990000", viridis(6)[5:6]),
+##                           limits = c(0, 100)) +
+##     labs(colour = "Speed (km/h)") +
+##     facet_wrap(~hour)
 
-gridExtra::grid.arrange(p, ps, nrow = 1)
+## gridExtra::grid.arrange(p, ps, nrow = 1)
 
 
-for (t in seq(min(ds$timestamp) + 60 * 60 * 2,
-              max(ds$timestamp), by = 30)) {
-    dev.flush(dev.flush())
-    pt <- ggmap(aklmap) +
-        geom_point(aes(x = position_longitude, y = position_latitude,
-                       color = speed),
-                   data = ds %>% filter(timestamp > t - 15 & timestamp < t + 15)) +
-        ggtitle(as.POSIXct(t, origin = "1970-01-01")) +
-        scale_color_viridis(limits = c(0, 30))
-        ##scale_color_gradientn(colours = c("red", "green4", "yellow"), limits = c(0, 30))
-    dev.hold()
-    print(pt)
-    dev.flush()
-}
+## for (t in seq(min(ds$timestamp) + 60 * 60 * 2,
+##               max(ds$timestamp), by = 30)) {
+##     dev.flush(dev.flush())
+##     pt <- ggmap(aklmap) +
+##         geom_point(aes(x = position_longitude, y = position_latitude,
+##                        color = speed),
+##                    data = ds %>% filter(timestamp > t - 15 & timestamp < t + 15)) +
+##         ggtitle(as.POSIXct(t, origin = "1970-01-01")) +
+##         scale_color_viridis(limits = c(0, 30))
+##         ##scale_color_gradientn(colours = c("red", "green4", "yellow"), limits = c(0, 30))
+##     dev.hold()
+##     print(pt)
+##     dev.flush()
+## }
