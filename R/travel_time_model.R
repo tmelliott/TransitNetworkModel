@@ -160,7 +160,7 @@ p <- ggmap(aklmap) +
     labs(colour = "Speed (km/h)")
 ##p
 
-p + facet_wrap(~hour, nrow = 4)
+##p + facet_wrap(~hour, nrow = 4)
 
 
 ### For each segment, find all points in it
@@ -197,8 +197,10 @@ segs.geoms <-
                })
     })
 
-s <- segs.geoms %>% filter(id == 103)
+i <- i + 1; print(i)
+s <- segs.geoms %>% filter(id == i)
 ggplot(s) +
+    geom_path(aes(lng, lat, group = id), data = segments) +
     geom_point(aes(position_longitude, position_latitude),
                data = ds) +
     geom_polygon(aes(lng, lat, group = id), fill = "red", alpha = 0.5) +
@@ -219,18 +221,41 @@ ggmap(aklmap) +
                  lwd = 1, color = 'red',
                  fill = "red", alpha = 0.2)
 
-s <- segments %>% filter(id == 310)
-ggmap(aklmap) + geom_path(aes(lng, lat), data = s)
 
-ggplot(s, aes(lng, lat)) +
-    geom_point(aes(position_longitude, position_latitude),
-               data = ds) +
-    geom_path(color = "red", lwd = 1.5) +
-    xlim(min(s$lng) - 0.01, max(s$lng) + 0.01) +
-    ylim(min(s$lat) - 0.005, max(s$lat) + 0.005) +
-    coord_fixed(1.2)
+## Find points in the polygon
+dx <- ds %>% filter(position_longitude > bbox[1] &
+                    position_longitude < bbox[3] &
+                    position_latitude > bbox[2] &
+                    position_latitude < bbox[4])
+POLY <- cbind(s$lng, s$lat) %>%
+    as.matrix %>% list %>% st_polygon
 
+vpos <- do.call(st_sfc, lapply(1:nrow(dx), function(i) {
+    st_point(as.numeric(c(dx$position_longitude[i],
+                          dx$position_latitude[i])))
+}))
+dx$inseg <- sapply(st_intersects(vpos, POLY), function(x) length(x) > 0)
+plot(vpos, cex = 0.5, pch = 19,
+     col = ifelse(inseg, 'blue', 'black'))
+plot(POLY, fill='red', border='red', add=T)
 
+gridExtra::grid.arrange(
+    ggmap(aklmap) +
+    geom_polygon(aes(lng, lat, group = id), data = s,
+                 lwd = 1, 
+                 fill = "magenta", alpha = 0.5) +
+    geom_point(aes(position_longitude, position_latitude,
+                   color = inseg),
+               data = dx) +
+    scale_colour_manual(values = c('#666666', 'white')) +
+    theme(legend.position = "none"),
+    ggplot(dx %>%
+           filter(inseg), aes(as.POSIXct(timestamp, origin='1970-01-01'),
+                              speed / 1000 * 60 * 60)) +
+    geom_point() + geom_smooth() + #facet_wrap(~route_id) +
+    xlab("Time") + ylab("Approx. speed (km/h)") + ylim(0, 100),
+    ncol = 1, heights = c(2, 1)
+    )
 
 
 ### Smooth the value at each point ...
