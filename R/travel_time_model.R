@@ -124,11 +124,13 @@ getsegments <- function() {
     
     segments %>% as.tibble
 }
+
 segments <- getsegments()
 
 pseg <- ggplot(segments, aes(x = lng, y = lat, group = id)) +
     geom_path() +
-    coord_fixed(1.2)
+    coord_fixed(1.2) +
+    xlim(174.7, 174.9) + ylim(-37, -36.8)
 pseg
 
 
@@ -154,16 +156,18 @@ bbox <- with(ds, c(min(position_longitude, na.rm = TRUE),
                    min(position_latitude, na.rm = TRUE),
                    max(position_longitude, na.rm = TRUE),
                    max(position_latitude, na.rm = TRUE)))
+bbox <- c(174.7, -37, 174.9, -36.8)
 aklmap <- get_map(bbox, source = "stamen", maptype = "toner-lite")
 
 p <- ggmap(aklmap) +
     geom_path(aes(x = lng, y = lat, group = id), data = segments) +
     geom_point(aes(x = position_longitude, y = position_latitude,
                    colour = speed / 1000 * 60 * 60),
-               data = ds, size = 0.2) +
-    scale_color_gradientn(colours = c("#990000", viridis(6)[5:6])) +
+               data = ds, size = 0.4) +
+    scale_color_viridis() +
+    #scale_color_gradientn(colours = c("#990000", viridis(6)[5:6])) +
     labs(colour = "Speed (km/h)")
-##p
+p
 
 ##p + facet_wrap(~hour, nrow = 4)
 
@@ -202,6 +206,7 @@ segs.geoms <-
                })
     })
 
+#i <- 1
 i <- i + 1; print(i)
 s <- segs.geoms %>% filter(id == i)
 ggplot(s) +
@@ -259,7 +264,7 @@ gridExtra::grid.arrange(
     ggplot(dx %>%
            filter(inseg), aes(as.POSIXct(timestamp, origin='1970-01-01'),
                               speed / 1000 * 60 * 60)) +
-    geom_point() + geom_smooth() + #facet_wrap(~route_id) +
+    geom_point() + geom_smooth(method = 'loess', span = 0.2) +
     xlab("Time") + ylab("Approx. speed (km/h)") + ylim(0, 100),
     ncol = 1, heights = c(2, 1)
     )
@@ -333,3 +338,68 @@ gridExtra::grid.arrange(
 ##     print(pt)
 ##     dev.flush()
 ## }
+
+
+
+####### Alternative segmentation ... yikes!
+
+getNetwork <- function(db = '../gtfs.db') {
+    require('sf')
+    c <- dbConnect(SQLite(), db)
+    v <- dbGetQuery(c, 'SELECT distinct route_id FROM routes') %>%
+        (function(x) sapply(strsplit(x$route_id, '_v'), function(z) z[2])) %>%
+        as.numeric %>% max
+    ##q <- dbSendQuery(c, 'SELECT * FROM shapes WHERE shapes_id IN (SELECT shape_id FROM routes WHERE route_type=3) AND shape_id LIKE ? ORDER BY shape_id, seq')
+    q <- dbSendQuery(c, 'SELECT * FROM shapes WHERE shape_id LIKE ? AND shape_id IN (SELECT shape_id FROM routes WHERE route_short_name IN ("274", "277", "223", "221", "110")) ORDER BY shape_id, seq')
+    dbBind(q, paste0('%_v', v))
+    r <- dbFetch(q)
+    dbClearResult(q)
+    dbDisconnect(c)
+
+    ## Convert each shape to a polyline
+    slines <-
+        tapply(1:nrow(r),
+               r$shape_id,
+               function(i) {
+                   r %>%
+                       slice(i) %>%
+                       select(lng, lat) %>%
+                       as.matrix %>%
+                       st_linestring
+               })
+    shapes <-
+        data.frame(shape_id = names(slines),
+                   geom = do.call(st_sfc, slines)) %>%
+        st_as_sf(crs = 4326)
+    rm(slines, r)
+
+    ## Buffer each polyline
+    shapes.nz <- st_transform(shapes, 27200)
+    shapes.nz.buf <- st_buffer(shapes.nz, 20)
+
+    s1 <- shapes.nz.buf$geometry[7] %>% st_sfc
+    s2 <- shapes.nz.buf$geometry[8] %>% st_sfc
+
+    plot(s1)
+    plot(s2, add = TRUE)
+    st_intersection(s1, s2) %>% plot(add=T)
+    st_difference(s1, s2) %>% plot
+    
+    plot(st_intersection(shapes.nz.buf$geometry[1], shapes.nz.buf$geometry[2]))
+
+    st_join(shapes.nz.buf[1,], shapes.nz.buf[12,]) %>% plot
+
+    
+    nw <- shapes.nz.buf %>% st_union %>% st_simplify
+
+    ##d <- tempdir()
+    ##st_write(shapes.nz.buf, file.path(d, 'network.shp'))
+    ##system(sprintf('create_centerlines %s nw.geojson', file.path(d, 'network.shp')))
+    
+    
+    plot(nw)
+
+    plot(shapes.nz.buf)
+    plot(shapes.nz, add = TRUE)
+}
+
