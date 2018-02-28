@@ -133,8 +133,13 @@ pseg
 
 
 ### --- Step 6: model vehicle trajectories to estimate speed
+cx <- paste(data$position_latitude, data$position_longitude, sep = ":") %>% table
+repPts <- names(cx)[cx > 1]
+
 ds <- data %>%
     filter(!is.na(position_latitude)) %>%
+    filter(!paste(position_latitude, position_longitude,
+                  sep = ":") %in% repPts) %>%
     arrange(vehicle_id, timestamp) %>%
     mutate(delta_t = c(0, diff(timestamp)),
            delta_d = c(0, distHaversine(cbind(position_longitude[-n()],
@@ -220,6 +225,8 @@ ggmap(aklmap) +
     geom_polygon(aes(lng, lat, group = id), data = s,
                  lwd = 1, color = 'red',
                  fill = "red", alpha = 0.2)
+
+
 
 
 ## Find points in the polygon
