@@ -56,7 +56,7 @@ processVP <- function(file, out) {
         pb <- try({
             read(transit_realtime.FeedMessage,
                  pipe(sprintf("ssh %s cat %s", con, file)))$entity
-        }, quietly = TRUE)
+        }, silent = TRUE)
         if (inherits(pb, "try-error")) pb <- NULL
         Sys.sleep(5 * is.null(pb))
     }
@@ -83,7 +83,7 @@ processTU <- function(file, out) {
         pb <- try({
             pb <- read(transit_realtime.FeedMessage,
                        pipe(sprintf("ssh %s cat %s", con, file)))$entity
-            }, quietly = TRUE)
+            }, silent = TRUE)
         if (inherits(pb, "try-error")) pb <- NULL
         Sys.sleep(5 * is.null(pb))
     }
@@ -120,5 +120,5 @@ processTU <- function(file, out) {
                 quote = FALSE, row.names = FALSE, sep = ",", na = "")
 }
 
-dates <- seq(as.Date("2017-04-01"), as.Date("2017-12-31"), by = 1)
+dates <- seq(as.Date("2018-02-10"), as.Date("2018-02-17"), by = 1)
 parallel::mclapply(dates, processDay, mc.cores = 3, mc.preschedule = FALSE)

@@ -4,9 +4,12 @@ library(ggmap)
 library(geosphere)
 library(viridis)
 library(RSQLite)
+library(mgcv)
+library(rgl)
+library(Rcpp)
 
 ### --- Step 1: Load the data
-date <- "2017-04-04"
+date <- "2018-02-20"
 
 dir <- "historicaldata"
 files <- paste0(dir, "/", c("vehicle_positions", "trip_updates"),
@@ -49,7 +52,7 @@ data <- full_join(v1, t1) %>%
     mutate(delaycat = cut(delay/60, c(-Inf, -30, -10, -5, 5, 10, 30, Inf)))
 
 ### --- Step 4: Do stuff with the data!
-vid <- names(sort(table(data$vehicle_id), TRUE))[7]
+vid <- names(sort(table(data$vehicle_id), TRUE))[19]
 dv <- data %>%
     filter(vehicle_id == vid) %>%
     arrange(timestamp)
@@ -76,7 +79,15 @@ p + facet_wrap(~trip_start_time)
 
 
 ### --- Step 5: Load road segments from the database
-getsegments <- function() {
+getsegments <- function(whole.shapes = FALSE) {
+    if (whole.shapes) {
+        con <- dbConnect(SQLite(), "../gtfs.db")
+        segments <- dbGetQuery(
+            con,
+            "SELECT shape_id AS id, lat, lng FROM shapes ORDER BY shape_id, seq")
+        dbDisconnect(con)
+        return(segments)
+    }
     ## check if they exist yet ...
     if (file.exists("segments.rda")) {
         load("segments.rda")
@@ -125,7 +136,7 @@ getsegments <- function() {
     segments %>% as.tibble
 }
 
-segments <- getsegments()
+segments <- getsegments(TRUE)
 
 pseg <- ggplot(segments, aes(x = lng, y = lat, group = id)) +
     geom_path() +
@@ -206,9 +217,10 @@ segs.geoms <-
                })
     })
 
-i <- 407
-i <- i + 1; print(i)
-s <- segs.geoms %>% filter(id == i)
+i <- 7
+
+i <- i+1
+s <- segs.geoms %>% filter(id == levels(segments$id %>% as.factor)[i])
 ggplot(s) +
     geom_path(aes(lng, lat, group = id), data = segments) +
     geom_point(aes(position_longitude, position_latitude),
@@ -247,9 +259,6 @@ vpos <- do.call(st_sfc, lapply(1:nrow(dx), function(i) {
                           dx$position_latitude[i])))
 }))
 dx$inseg <- sapply(st_intersects(vpos, POLY), function(x) length(x) > 0)
-#plot(vpos, cex = 0.5, pch = 19,
-#     col = ifelse(inseg, 'blue', 'black'))
-#plot(POLY, fill='red', border='red', add=T)
 
 gridExtra::grid.arrange(
     ggmap(aklmap) +
@@ -270,11 +279,33 @@ gridExtra::grid.arrange(
     )
 
 
-### Smooth the value at each point ...
-library(mgcv)
-library(rgl)
-library(Rcpp)
+## 3D plot
+speed2col <- function(v, palette = viridis, r = range(pmin(30, pmax(0, v))), ...) {
+    cols <- palette(101, ...)
+    w <- round((v - r[1]) / diff(r) * 100)
+    cols[w]
+}
 
+sinseg <- dx %>%
+    filter(inseg) %>%
+    filter(!is.na(speed)) %>%
+    mutate(x = R * (rad(position_longitude) - rad(mean(ds$position_longitude))) *
+               cos(rad(mean(ds$position_latitude))),
+           y = R * (rad(position_latitude) - rad(mean(ds$position_latitude))),
+           .t = as.POSIXct(timestamp, origin = '1970-01-01'),
+           second = format(.t, '%S') %>% as.numeric,
+           minute = format(.t, '%M') %>% as.numeric + second / 60,
+           time = format(.t, '%H') %>% as.numeric + minute / 60)
+plot3d(sinseg$x, sinseg$y, sinseg$time, box = FALSE,
+       aspect = c(1, diff(range(sinseg$y)) / diff(range(sinseg$x)), 4), 
+       col = speed2col(sinseg$speed, inferno), size = 1, type = "s",
+       xlab = 'Longitude', ylab = 'Latitude', zlab = 'Time (hour)')
+
+
+
+
+###### Back to full dataset ...
+### Smooth the value at each point ...
 ds <- ds %>%
     filter(!is.na(speed)) %>%
     mutate(x = R * (rad(position_longitude) - rad(mean(ds$position_longitude))) *
@@ -308,11 +339,6 @@ smoothSpatTemp <- function(value, x = NULL, y = NULL, z = NULL, data = NULL,
     }
     invisible(smthSpatTmp(as.matrix(X), distance, time))
 }
-speed2col <- function(v, palette = viridis, ...) {
-    cols <- palette(101, ...)
-    w <- round(v / 30 * 100)
-    cols[w]
-}
 
 sourceCpp('smoothSpatTemp.cpp')
 dsf <- ds %>%
@@ -322,22 +348,26 @@ dsf <- ds %>%
            time = format(.t, '%H') %>% as.numeric + minute / 60) %>%
     mutate(speed.smooth = smoothSpatTemp(speed, x, y, time, t = 0.25))
 
+rids <- sort(table(dsf$route_id), TRUE)
+SI <- 7
+with(dsf %>% filter(route_id %in% names(rids)[SI]),
+     plot3d(x, y, time, box = FALSE, type = "s", size = 1,
+            aspect = c(1, diff(range(sinseg$y)) / diff(range(sinseg$x)), 4), 
+            col = speed2col(speed.smooth, inferno),
+            xlab = 'Longitude', ylab = 'Latitude', zlab = 'Time (hour)'))
 
-plot3d(dsf$x, dsf$y, dsf$time, aspect = c(1, 1, 4), box = FALSE,
-       col = speed2col(dsf$speed.smooth, inferno),
-       xlab = 'Longitude', ylab = 'Latitude', zlab = 'Time (hour)')
-
-bbox <- with(dsf, c(min(position_longitude, na.rm = TRUE),
-                       min(position_latitude, na.rm = TRUE),
-                       max(position_longitude, na.rm = TRUE),
-                       max(position_latitude, na.rm = TRUE)))
+bbox <- with(dsf%>% filter(route_id == names(rids)[SI]),
+             c(min(position_longitude, na.rm = TRUE),
+               min(position_latitude, na.rm = TRUE),
+               max(position_longitude, na.rm = TRUE),
+               max(position_latitude, na.rm = TRUE)))
 aklmap <- get_map(bbox, source = "stamen", maptype = "toner-lite")
 
-p <- ggmap(aklmap2) +
+p <- ggmap(aklmap) +
     #geom_path(aes(x = lng, y = lat, group = id), data = segments) +
     geom_point(aes(x = position_longitude, y = position_latitude,
                    colour = speed / 1000 * 60 * 60),
-               data = dsf, size = 1) +
+               data = dsf %>% filter(route_id == names(rids)[SI]), size = 1) +
     scale_color_gradientn(colours = c("#990000", viridis(6)[5:6]),
                           limits = c(0, 100)) +
     labs(colour = "Speed (km/h)") +
@@ -475,4 +505,70 @@ getNetwork <- function(db = '../gtfs.db') {
     plot(shapes.nz.buf)
     plot(shapes.nz, add = TRUE)
 }
+
+
+
+
+
+
+
+
+
+
+
+
+#### Do modeling of 'dv'
+ggplot(dv, aes(position_longitude, position_latitude)) +
+    geom_point() +
+    coord_fixed(1.2)
+
+with(dv %>% filter(!is.na(position_latitude)) %>%
+     mutate(.t = as.POSIXct(timestamp, origin = '1970-01-01'),
+            second = format(.t, '%S') %>% as.numeric,
+            minute = format(.t, '%M') %>% as.numeric + second / 60,
+            time = format(.t, '%H') %>% as.numeric + minute / 60),
+     plot3d(position_longitude, position_latitude, time,
+            aspect = c(1, 1.2, 5)))#, type = 'l', lwd = 3))
+
+trips <- unique(dv$trip_id)
+tripids <- gsub('-.*$', '', trips)
+
+con <- dbConnect(SQLite(), '../gtfs.db')
+q <- dbSendQuery(con, 'SELECT trip_id, route_id FROM trips WHERE trip_id LIKE ?')
+lapply(tripids, function(tid) {
+    dbBind(q, list(paste0('%', tid)))
+    r <- dbFetch(q)
+    #dbClearResult(q)
+})
+dbDisconnect(con)
+
+
+
+
+### A spline model
+data <- data.frame(
+    t = c( 30,  60, 100,  140,  180),
+    y = c(100, 300, 900, 1000, 1300)
+)
+stops <- data.frame(id = 1:2,
+                    d = c(500, 1000))
+ggplot(data, aes(t, y)) +
+    geom_point() +
+    geom_hline(yintercept = stops$d, lty = 2)
+
+ggplot(data, aes(y, t)) +
+    geom_point() +
+    geom_vline(xintercept = stops$d, lty = 2)
+
+f <- function(beta, kappa) {
+    
+}
+
+## prior
+knots <- stops$d
+
+## likelihood
+
+## update proposals
+
 
