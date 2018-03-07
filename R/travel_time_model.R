@@ -9,7 +9,7 @@ library(rgl)
 library(Rcpp)
 
 ### --- Step 1: Load the data
-date <- "2018-02-20"
+date <- "2018-02-12"
 
 dir <- "historicaldata"
 files <- paste0(dir, "/", c("vehicle_positions", "trip_updates"),
@@ -534,15 +534,100 @@ trips <- unique(dv$trip_id)
 tripids <- gsub('-.*$', '', trips)
 
 con <- dbConnect(SQLite(), '../gtfs.db')
-q <- dbSendQuery(con, 'SELECT trip_id, route_id FROM trips WHERE trip_id LIKE ?')
-lapply(tripids, function(tid) {
-    dbBind(q, list(paste0('%', tid)))
+q <- dbSendQuery(con, 'SELECT t.trip_id, t.route_id, r.shape_id FROM trips AS t, routes AS r WHERE trip_id LIKE ? AND t.route_id=r.route_id LIMIT 1')
+trips <- do.call(rbind, lapply(tripids, function(tid) {
+    dbBind(q, list(paste0(tid, '%')))
     r <- dbFetch(q)
-    #dbClearResult(q)
-})
+    r
+}))
+dbClearResult(q)
+
+
+q <- dbSendQuery(con, 'SELECT * FROM shapes WHERE shape_id IN (?) ORDER BY shape_id, seq')
+dbBind(q, list(unique(trips$shape_id)))
+shapes <- dbFetch(q)
+dbClearResult(q)
 dbDisconnect(con)
 
 
+
+ggplot(dv, aes(position_longitude, position_latitude)) +
+    geom_path(aes(lng, lat, group = shape_id), data = shapes,
+              lwd = 2, col = 'orangered') +
+    geom_point(shape = 4) +
+    coord_fixed(1.2)
+
+
+
+### --- A likelihood function for f(y|x)
+## x: the state (including the distance into trip)
+## y: the observed lat/lng position
+library(lwgeom)
+
+lhood <- function(y, x, shape, sigma.gps = 20) {
+    ## 0. convert y and shape to spatial objects
+    Y <- st_point(y) %>%
+        st_sfc(crs = 4326) %>%
+        st_transform(27200)
+    
+    shape <- shape %>%
+        select(lng, lat) %>%
+        as.matrix %>%
+        st_linestring %>%
+        st_sfc(crs = 4326) %>%
+        st_transform(27200)
+
+    ## 1. convert x to a coordinate: z = h(x)
+    if (x[1] == 0) {
+        z <- shape[[1]][1, ]
+    } else if (x[1] >= st_length(shape[[1]])) {
+        z <- shape[[1]][nrow(shape[[1]]), ]
+    } else {
+        i <- 1
+        d <- 0
+        while (d < x[1]) {
+            i <- i + 1
+            d <- shape[[1]][1:i, , drop=FALSE] %>%
+                st_linestring %>% st_sfc(crs = 27200) %>%
+                st_length %>% as.numeric
+        }
+        ## in a flat projection
+        p1 <- shape[[1]][i-1,]
+        p2 <- shape[[1]][i,]
+        px <- p2 - p1
+        print(i)
+        d <- shape[[1]][1:(i-1), , drop=FALSE] %>%
+            st_linestring %>% st_sfc(crs = 27200) %>%
+            st_length %>% as.numeric
+        dx <- x[1] - d
+        th <- atan(px[1] / px[2])
+        z <- p1 + c(dx * sin(th), dx * cos(th))
+        plot(shape[[1]][(i-1):i, ], type = "l", asp = 1)
+        points(z[1], z[2])
+    }
+    Z <- rbind(z) %>% st_point %>% st_sfc(crs = 27200)
+
+    dev.hold()
+    #plot(shape[[1]][max(1, i - 30):min(nrow(shape[[1]]), i + 30),], type = "l", asp=1)
+    #points(Z[[1]] %>% as.matrix, pch = 19)
+    dev.flush()
+
+    ## 2. get likelihood of Y given z
+    
+    invisible(list(shape, Y))
+}
+
+for (x in seq(0, st_length(shape) %>% as.numeric, by=1)) {
+    lhood(c(dv$position_longitude[30], dv$position_latitude[30]), x,
+          shapes %>% filter(shape_id == shapes$shape_id[1]))
+    locator(1)
+}
+
+
+xx <- lhood(c(dv$position_longitude[30], dv$position_latitude[30]), 100,
+            shapes %>% filter(shape_id == shapes$shape_id[1]))
+plot(xx[[1]], lwd = 2)
+plot(xx[[2]], add = TRUE, pch = 19, col = 'black')
 
 
 ### A spline model
