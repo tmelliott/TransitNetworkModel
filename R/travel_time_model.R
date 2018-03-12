@@ -55,6 +55,7 @@ data <- full_join(v1, t1) %>%
 vid <- names(sort(table(data$vehicle_id), TRUE))[19]
 dv <- data %>%
     filter(vehicle_id == vid) %>%
+    filter(timestamp > as.numeric(as.POSIXct(date))) %>%
     arrange(timestamp)
 ggplot(dv, aes(position_longitude, position_latitude)) +
     geom_point() + coord_fixed(1.2)
@@ -518,11 +519,12 @@ getNetwork <- function(db = '../gtfs.db') {
 
 
 #### Do modeling of 'dv'
+#dv <- dv[-(1:13), ]
 ggplot(dv, aes(position_longitude, position_latitude)) +
     geom_point() +
     coord_fixed(1.2)
 
-with(dv %>% filter(!is.na(position_latitude)) %>%
+with(dv <- dv %>% filter(!is.na(position_latitude)) %>%
      mutate(.t = as.POSIXct(timestamp, origin = '1970-01-01'),
             second = format(.t, '%S') %>% as.numeric,
             minute = format(.t, '%M') %>% as.numeric + second / 60,
@@ -550,7 +552,6 @@ dbClearResult(q)
 dbDisconnect(con)
 
 
-
 ggplot(dv, aes(position_longitude, position_latitude)) +
     geom_path(aes(lng, lat, group = shape_id), data = shapes,
               lwd = 2, col = 'orangered') +
@@ -564,96 +565,144 @@ ggplot(dv, aes(position_longitude, position_latitude)) +
 ## y: the observed lat/lng position
 library(lwgeom)
 
-lhood <- function(y, x, shape, sigma.gps = 20) {
-    ## 0. convert y and shape to spatial objects
-    Y <- st_point(y) %>%
-        st_sfc(crs = 4326) %>%
-        st_transform(27200)
-    
+h <- function(x, shape) {
     shape <- shape %>%
-        select(lng, lat) %>%
-        as.matrix %>%
-        st_linestring %>%
-        st_sfc(crs = 4326) %>%
-        st_transform(27200)
+        mutate(dist = c(0, distGeo(cbind(lng, lat))) %>% cumsum)
 
-    ## 1. convert x to a coordinate: z = h(x)
-    if (x[1] == 0) {
-        z <- shape[[1]][1, ]
-    } else if (x[1] >= st_length(shape[[1]])) {
-        z <- shape[[1]][nrow(shape[[1]]), ]
+    if (x[1] >= max(shape$dist)) {
+        z <- shape[nrow(shape), c("lng", "lat")]
+    } else if (x[1] == 0) {
+        z <- shape[1, c("lng", "lat")]
     } else {
-        i <- 1
-        d <- 0
-        while (d < x[1]) {
-            i <- i + 1
-            d <- shape[[1]][1:i, , drop=FALSE] %>%
-                st_linestring %>% st_sfc(crs = 27200) %>%
-                st_length %>% as.numeric
+        i <- which(shape$dist > x[1])[1]
+        p1 <- shapes[i-1, c("lng", "lat")]
+        p2 <- shapes[i, c("lng", "lat")]
+        d <- x[1] - shapes$dist[i-1]
+        if (d < 1e-16) {
+            z <- shape[i, c("lng", "lat")]
+        } else {
+            z <- destPoint(p1, bearing(p1, p2),
+                           d)
         }
-        ## in a flat projection
-        p1 <- shape[[1]][i-1,]
-        p2 <- shape[[1]][i,]
-        px <- p2 - p1
-        print(i)
-        d <- shape[[1]][1:(i-1), , drop=FALSE] %>%
-            st_linestring %>% st_sfc(crs = 27200) %>%
-            st_length %>% as.numeric
-        dx <- x[1] - d
-        th <- atan(px[1] / px[2])
-        z <- p1 + c(dx * sin(th), dx * cos(th))
-        plot(shape[[1]][(i-1):i, ], type = "l", asp = 1)
-        points(z[1], z[2])
     }
-    Z <- rbind(z) %>% st_point %>% st_sfc(crs = 27200)
+    as.numeric(z)
+}
+lhood <- function(y, x, shape, sigma.gps = 20, log = TRUE) {
+    Y <-
+        st_multipoint(y) %>%
+        st_sfc(crs = 4326) %>%
+        st_transform(27200) %>%
+        st_coordinates
+    Y <- Y[, 1:2]
 
-    dev.hold()
-    #plot(shape[[1]][max(1, i - 30):min(nrow(shape[[1]]), i + 30),], type = "l", asp=1)
-    #points(Z[[1]] %>% as.matrix, pch = 19)
-    dev.flush()
+    Z <- h(x, shape) %>% rbind %>% st_point %>% st_sfc(crs = 4326) %>%
+        st_transform(27200) %>% st_coordinates %>% as.numeric
 
     ## 2. get likelihood of Y given z
-    
-    invisible(list(shape, Y))
+    mvtnorm::dmvnorm(Y, Z, diag(2) * sigma.gps, log = log)
 }
 
-for (x in seq(0, st_length(shape) %>% as.numeric, by=1)) {
-    lhood(c(dv$position_longitude[30], dv$position_latitude[30]), x,
-          shapes %>% filter(shape_id == shapes$shape_id[1]))
-    locator(1)
-}
+shape <- shapes %>% filter(shape_id == shapes$shape_id[1])
+
+lh <- lhood(cbind(dv$position_longitude, dv$position_latitude),
+            30, shapes %>% filter(shape_id == shapes$shape_id[1]),
+            sigma = 20)
+plot3d(dv$position_longitude, dv$position_latitude, lh)
+
+## --- test
+## X <- dv[1, c('position_longitude', 'position_latitude')] %>% as.matrix %>% t
+## Y <- t(sapply(1:360, function(th) destPoint(t(X), th, 20)))
+## Sigma <- 20 * diag(2)
+## fy <- apply(Y, 1, function(y)
+##     1 / (2 * pi * sqrt(det(Sigma))) *
+##     exp(-0.5 * t(cbind(y) - X) %*% solve(Sigma) %*% (cbind(y) - X)))
+## all(mvtnorm::dmvnorm(Y, X, 20 * diag(2)) - fy < 1e-16)
 
 
-xx <- lhood(c(dv$position_longitude[30], dv$position_latitude[30]), 100,
-            shapes %>% filter(shape_id == shapes$shape_id[1]))
-plot(xx[[1]], lwd = 2)
-plot(xx[[2]], add = TRUE, pch = 19, col = 'black')
+
+con <- dbConnect(SQLite(), '../gtfs.db')
+q <- dbSendQuery(con, 'SELECT stop_sequence, shape_dist_traveled, arrival_time FROM stop_times WHERE trip_id=? ORDER BY stop_sequence')
+dbBind(q, list(dv$trip_id[1]))
+stops <- dbFetch(q)
+dbClearResult(q)
+dbDisconnect(con)
 
 
-### A spline model
-data <- data.frame(
-    t = c( 30,  60, 100,  140,  180),
-    y = c(100, 300, 900, 1000, 1300)
+## Setup
+trip <- dv$trip_id[1]
+data <- list(
+    Sd = stops$shape_dist_traveled,
+    start = as.POSIXct(paste(date, stops$arrival_time[1])),
+    M = nrow(stops),
+    N = nrow(dv),
+    t = dv %>% filter(trip_id == trip) %>% pluck("timestamp"),
+    y = dv %>% filter(trip_id == trip) %>%
+        select(position_longitude, position_latitude) %>%
+        as.matrix,
+    shape = shape
 )
-stops <- data.frame(id = 1:2,
-                    d = c(500, 1000))
-ggplot(data, aes(t, y)) +
-    geom_point() +
-    geom_hline(yintercept = stops$d, lty = 2)
 
-ggplot(data, aes(y, t)) +
-    geom_point() +
-    geom_vline(xintercept = stops$d, lty = 2)
-
-f <- function(beta, kappa) {
-    
+## param
+params <- function(data) {
+    d <- list(
+        tau = rbinom(data$M-1, 1, 0.5) * (6 + rexp(data$M-1, 1 / 20)),
+        beta = truncnorm::rtruncnorm(data$M-1, 0, 30, 12, 6)
+    )
+ #   if (min(data$t) < as.numeric(data$start))
+ #       d$tau[1] <- d$tau[1] + (data$start - min(data$t))
+    d
 }
 
-## prior
-knots <- stops$d
+getTrajectory <- function(state, data) {
+    ## interstop travel times
+    t0 <- cumsum(c(0, diff(data$Sd) / state$beta))
+    ## travel + dwell
+    t0 <- t0 + cumsum(c(0, state$tau))
+    t1 <- t0 + c(state$tau, 0)
+    t <- as.numeric(rbind(t0, t1))
+    y <- rep(data$Sd, each = 2)
+    list(t = data$start + t, y = y)
+}
 
-## likelihood
+plotstate <- function(state, data) {
+    l <- getTrajectory(state, data)
+    
+    layout(rbind(1, 2))
+    plot(l$t, l$y, type = "l", lwd = 2,
+         xlab = "Time", ylab = "Distance (m)",
+         xlim = range(data$start, data$t))
+    points(l$t, l$y, pch = 21, bg = c("#990000", "#00aa00"))
 
-## update proposals
+    x <- sapply(data$t, function(t) {
+        ## end of line
+        if (t >= max(l$t)) return(max(l$y))
+        i <- which(l$t > t)[1]
+        ## begining of line
+        if (i == 1) return(0)
+        j <- i %/% 2
+        if (i %% 2 == 0) {
+            ## at a stop
+            return(data$Sd[j])
+        } else {
+            ## between stops
+            dx <- diff(data$Sd[j:(j+1)])
+            dt <- diff(l$t[(i-1):i] %>% as.numeric)
+            s <- dx / dt
+            return(data$Sd[j] + s * (t - as.numeric(l$t[i-1])))
+        }
+    })
+    ##abline(v = data$t, lty = 3)
+    points(data$t, x, cex = 0.5, pch = 19)
 
+    y <- t(sapply(x, h, shape = data$shape))
+    plot(data$shape %>% select(lng, lat) %>% as.matrix,
+         type = "l", lwd = 2, asp = 1.3)
+    points(y, cex = 0.5, pch = 19)
+    lh <- sapply(seq_along(1:nrow(data$y)),
+                 function(i) lhood(data$y[i,,drop=F], x[i], data$shape, log = F,
+                                   sigma.gps = 20))
+    points(data$y, pch = 4, col = "#aa0000", cex = lh)
+    layout(1)
+}
 
+plotstate(params(data), data)
