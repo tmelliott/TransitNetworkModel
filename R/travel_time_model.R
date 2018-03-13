@@ -5,6 +5,7 @@ library(geosphere)
 library(viridis)
 library(RSQLite)
 library(mgcv)
+library(sf)
 library(rgl)
 library(Rcpp)
 
@@ -630,6 +631,7 @@ dbDisconnect(con)
 
 ## Setup
 trip <- dv$trip_id[1]
+dv <- dv %>% filter(timestamp >= as.numeric(as.POSIXct(paste(date, stops$arrival_time[1]))))
 data <- list(
     Sd = stops$shape_dist_traveled,
     start = as.POSIXct(paste(date, stops$arrival_time[1])),
@@ -639,17 +641,17 @@ data <- list(
     y = dv %>% filter(trip_id == trip) %>%
         select(position_longitude, position_latitude) %>%
         as.matrix,
-    shape = shape
+    shape = shape,
+    gamma = 6
 )
 
 ## param
 params <- function(data) {
     d <- list(
-        tau = rbinom(data$M-1, 1, 0.5) * (6 + rexp(data$M-1, 1 / 20)),
+        pi = rbeta(data$M-1, 0.5, 0.5),
+        tau = rexp(data$M-1, 1 / 10),
         beta = truncnorm::rtruncnorm(data$M-1, 0, 30, 12, 6)
     )
- #   if (min(data$t) < as.numeric(data$start))
- #       d$tau[1] <- d$tau[1] + (data$start - min(data$t))
     d
 }
 
@@ -657,8 +659,10 @@ getTrajectory <- function(state, data) {
     ## interstop travel times
     t0 <- cumsum(c(0, diff(data$Sd) / state$beta))
     ## travel + dwell
-    t0 <- t0 + cumsum(c(0, state$tau))
-    t1 <- t0 + c(state$tau, 0)
+    p <- state$pi > 0.5 # rbinom(length(state$pi), 1, state$pi)
+    dwell <- p * (data$gamma + state$tau)
+    t0 <- t0 + cumsum(c(0, dwell))
+    t1 <- t0 + c(dwell, 0)
     t <- as.numeric(rbind(t0, t1))
     y <- rep(data$Sd, each = 2)
     list(t = data$start + t, y = y)
@@ -666,7 +670,8 @@ getTrajectory <- function(state, data) {
 
 plotstate <- function(state, data) {
     l <- getTrajectory(state, data)
-    
+
+    dev.hold()
     layout(rbind(1, 2))
     plot(l$t, l$y, type = "l", lwd = 2,
          xlab = "Time", ylab = "Distance (m)",
@@ -698,11 +703,94 @@ plotstate <- function(state, data) {
     plot(data$shape %>% select(lng, lat) %>% as.matrix,
          type = "l", lwd = 2, asp = 1.3)
     points(y, cex = 0.5, pch = 19)
-    lh <- sapply(seq_along(1:nrow(data$y)),
-                 function(i) lhood(data$y[i,,drop=F], x[i], data$shape, log = F,
-                                   sigma.gps = 20))
-    points(data$y, pch = 4, col = "#aa0000", cex = lh)
+    #lh <- sapply(seq_along(1:nrow(data$y)),
+    #             function(i) lhood(data$y[i,,drop=F], x[i], data$shape, log = F,
+    #                               sigma.gps = 20))
+    points(data$y, pch = 4, col = "#aa0000", cex = 0.5)
+    arrows(y[, 1], y[, 2], data$y[, 1], data$y[, 2], col = 'red', code = 2, length = 0.05)
+    dev.flush()
     layout(1)
 }
 
 plotstate(params(data), data)
+
+
+state <- params(data)
+STATE <- matrix(NA, 100, sum(sapply(state, length)) + 1,
+                dimnames =
+                    list(NULL,
+                         c(do.call(c, lapply(names(state),
+                                             function(x) paste0(x, 1:length(state[[x]])))),
+                           "nllh")))
+
+nllh <- function(state, data, how.many = nrow(data$y)) {
+    l <- getTrajectory(state, data)
+    x <- sapply(data$t, function(t) {
+        ## end of line
+        if (t >= max(l$t)) return(max(l$y))
+        i <- which(l$t > t)[1]
+        ## begining of line
+        if (i == 1) return(0)
+        j <- i %/% 2
+        if (i %% 2 == 0) {
+            ## at a stop
+            return(data$Sd[j])
+        } else {
+            ## between stops
+            dx <- diff(data$Sd[j:(j+1)])
+            dt <- diff(l$t[(i-1):i] %>% as.numeric)
+            s <- dx / dt
+            return(data$Sd[j] + s * (t - as.numeric(l$t[i-1])))
+        }
+    })
+    sum(sapply(seq_along(1:how.many),
+               function(i)
+                   lhood(data$y[i,,drop=F], x, data$shape, sigma.gps = 20)))
+}
+
+STATE[1, ] <- c(do.call(c, state), nllh(state, data))
+plotstate(state, data)
+
+for (i in 1:nrow(STATE)) {
+    cat("Iteration", i, "of", nrow(STATE), "\r")
+    ## propose a new value for each parameter
+    lh <- nllh(state, data, how.many = i %/% 5 + 1)
+    ## Update slopes
+    for (j in 1:length(state$beta)) {
+        prop <- state
+        prop$beta[j] <- truncnorm::rtruncnorm(1, 0, 30, state$beta[j], 3)
+        lstar <- nllh(prop, data, how.many = i %/% 5 + 1)
+        alpha <- exp(min(0, lstar - lh))
+        if (rbinom(1, 1, alpha) == 1) {
+            state <- prop
+            lh <- lstar
+            plotstate(state, data)
+        }
+    }
+    ## Update dwell times
+    for (j in 1:length(state$tau)) {
+        prop <- state
+        prop$tau[j] <- truncnorm::rtruncnorm(1, 0, Inf, state$tau[j], 3)
+        lstar <- nllh(prop, data, how.many = i %/% 5 + 1)
+        alpha <- exp(min(0, lstar - lh))
+        if (rbinom(1, 1, alpha) == 1) {
+            state <- prop
+            lh <- lstar
+            plotstate(state, data)
+        }
+    }
+    ## Update stopping probabilities
+    for (j in 1:length(state$p)) {
+        prop <- state
+        prop$pi[j] <- truncnorm::rtruncnorm(1, 0, 1, prop$pi[j], 0.1)
+        lstar <- nllh(prop, data, how.many = i %/% 5 + 1)
+        alpha <- exp(min(0, lstar - lh))
+        if (rbinom(1, 1, alpha) == 1) {
+            state <- prop
+            lh <- lstar
+            plotstate(state, data)
+        }
+    }
+    STATE[i, ] <- c(do.call(c, state), lh)
+}
+
