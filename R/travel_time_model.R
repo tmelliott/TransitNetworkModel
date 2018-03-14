@@ -629,76 +629,124 @@ dbClearResult(q)
 dbDisconnect(con)
 
 
-## Setup
+
+############# NEW
+library(splines)
+Dmax <- max(shape$dist)
+
+d <- data.frame(x = seq(0, Dmax, length.out = 1001))
+B <- bs(d$x, df = 50, intercept = TRUE)
+
+alpha <- runif(ncol(B), 0, 30)
+beta <- matrix(cumsum(alpha), ncol = 1)
+yhat <- B %*% beta
+plot(x, yhat, type = "l", xlab = "Distance", ylab = "Time")
+
+fit <- lm(yhat ~ bs(x, df = 50, intercept = TRUE) - 1, data = d)
+target <- function(d, t, fit) {
+    (t - predict(fit, newdata = data.frame(x = d)))^2
+}
+
+t0 <- 200
+d0 <- optimize(target, range(d$x), t = t0, fit = fit)$minimum
+
+plot(x, yhat, type = "l", xlab = "Distance", ylab = "Time", xaxs = "i", yaxs = "i")
+#segments(c(0, d0), t0, d0, c(t0, 0), lty = 3)
+
+
 trip <- dv$trip_id[1]
-dv <- dv %>% filter(timestamp >= as.numeric(as.POSIXct(paste(date, stops$arrival_time[1]))))
+start <- as.POSIXct(paste(date, stops$arrival_time[1]))
+dxv <- dv %>%
+    filter(trip_id == trip) %>%
+    filter(timestamp >= as.numeric(as.POSIXct(paste(date, stops$arrival_time[1]))))
 data <- list(
     Sd = stops$shape_dist_traveled,
-    start = as.POSIXct(paste(date, stops$arrival_time[1])),
+    start = start,
     M = nrow(stops),
-    N = nrow(dv),
-    t = dv %>% filter(trip_id == trip) %>% pluck("timestamp"),
-    y = dv %>% filter(trip_id == trip) %>%
+    N = nrow(dxv),
+    t = dxv %>% pluck("timestamp") - as.numeric(start),
+    y = dxv %>% 
         select(position_longitude, position_latitude) %>%
         as.matrix,
     shape = shape,
-    gamma = 6
+    bd = data.frame(x = seq(0, max(shape$dist), length.out = 1001)),
+    df = 10
 )
+data$B <- bs(data$bd$x, df = data$df, intercept = TRUE)
 
-## param
 params <- function(data) {
     d <- list(
+        ## probability of stopping
         pi = rbeta(data$M-1, 0.5, 0.5),
+        ## dwell time at stops
         tau = rexp(data$M-1, 1 / 10),
-        beta = truncnorm::rtruncnorm(data$M-1, 0, 30, 12, 6)
+        ## "speed" along the route
+        alpha = runif(ncol(data$B), 5, 1e6)
     )
+    d$p <- rbinom(data$M-1, 1, d$pi)
     d
 }
 
-getTrajectory <- function(state, data) {
-    ## interstop travel times
-    t0 <- cumsum(c(0, diff(data$Sd) / state$beta))
-    ## travel + dwell
-    p <- state$pi > 0.5 # rbinom(length(state$pi), 1, state$pi)
-    dwell <- p * (data$gamma + state$tau)
-    t0 <- t0 + cumsum(c(0, dwell))
-    t1 <- t0 + c(dwell, 0)
-    t <- as.numeric(rbind(t0, t1))
-    y <- rep(data$Sd, each = 2)
-    list(t = data$start + t, y = y)
+get.dist <- function(data, state, plot = FALSE) {
+    ## target function
+    beta <- matrix(cumsum(state$alpha), ncol = 1)
+    yhat <- data$B %*% beta
+    fit <- lm(yhat ~ bs(x, df = data$df, intercept = TRUE) - 1, data = data$bd)
+    
+    ## find the X value for each time obs
+    target <- function(d, t, fit) {
+        ## we know d ... so just sum up dwell times
+        sj <- which(data$Sd < d)
+        if (length(sj) > 0) {
+            dt <- sum(state$p[sj] * (6 + state$tau[sj]))
+        } else {
+            dt <- 0
+        }
+        if (max(sj) < data$M && d == data$Sd[max(sj)+1]) {
+            k <- max(sj) + 1
+            ta <- predict(fit, newdata = data.frame(x = d))
+            td <- ta + sum(state$p[k] * (6 + state$tau[k]))
+            if (t + dt < ta) return((t + dt - ta)^2)
+            if (t + dt > td) return((t + dt - td)^2)
+            return(0)
+        } else {
+            return((t - predict(fit, newdata = data.frame(x = d)) - dt)^2)
+        }
+    }
+    x <- numeric(data$N)
+    if (plot) plotstate(state, data)
+    for (i in seq_along(1:data$N)) {
+        x[i] <- optimize(target, range(data$bd$x), t = data$t[i], fit = fit)$minimum
+        if (plot)
+            segments(data$t[i], c(0, x[i]), c(data$t[i], 0), x[i], lty = 3)
+    }
+    x
 }
 
 plotstate <- function(state, data) {
-    l <- getTrajectory(state, data)
-
     dev.hold()
-    layout(rbind(1, 2))
-    plot(l$t, l$y, type = "l", lwd = 2,
-         xlab = "Time", ylab = "Distance (m)",
-         xlim = range(data$start, data$t))
-    points(l$t, l$y, pch = 21, bg = c("#990000", "#00aa00"))
+    op <- par(mfrow = c(2, 1))
+    xx <- sort(c(unique(c(seq(0, max(data$Sd), length.out = 1001), data$Sd)),
+                 data$Sd))
+    beta <- matrix(cumsum(state$alpha), ncol = 1)
+    yhat <- data$B %*% beta
+    fit <- lm(yhat ~ bs(x, df = data$df, intercept = TRUE) - 1, data = data$bd)
+    yhat <- predict(fit, newdata = data.frame(x = xx))
+    Y <- yhat
+    for (i in 1:(data$M - 1)) {
+        wi <- which(xx == data$Sd[i])[2]
+        yhat[wi:length(yhat)] <- yhat[wi:length(yhat)] +
+            state$p[i] * (6 + state$tau[i])
+    }
+    plot(yhat, xx, type = "l", xlab = "Time", ylab = "Distance",
+         xaxs = "i", yaxs = "i")
+    lines(Y, xx, col = "gray")
+    points(data$t, rep(0, length(data$t)))
+    ##plot(xx, yhat, type = "l", ylab = "Time", xlab = "Distance",
+    ##     xaxs = "i", yaxs = "i")
+    ##lines(xx, Y, col = "gray")
 
-    x <- sapply(data$t, function(t) {
-        ## end of line
-        if (t >= max(l$t)) return(max(l$y))
-        i <- which(l$t > t)[1]
-        ## begining of line
-        if (i == 1) return(0)
-        j <- i %/% 2
-        if (i %% 2 == 0) {
-            ## at a stop
-            return(data$Sd[j])
-        } else {
-            ## between stops
-            dx <- diff(data$Sd[j:(j+1)])
-            dt <- diff(l$t[(i-1):i] %>% as.numeric)
-            s <- dx / dt
-            return(data$Sd[j] + s * (t - as.numeric(l$t[i-1])))
-        }
-    })
-    ##abline(v = data$t, lty = 3)
-    points(data$t, x, cex = 0.5, pch = 19)
-
+    x <- get.dist(data, state)
     y <- t(sapply(x, h, shape = data$shape))
     plot(data$shape %>% select(lng, lat) %>% as.matrix,
          type = "l", lwd = 2, asp = 1.3)
@@ -707,12 +755,19 @@ plotstate <- function(state, data) {
     #             function(i) lhood(data$y[i,,drop=F], x[i], data$shape, log = F,
     #                               sigma.gps = 20))
     points(data$y, pch = 4, col = "#aa0000", cex = 0.5)
-    arrows(y[, 1], y[, 2], data$y[, 1], data$y[, 2], col = 'red', code = 2, length = 0.05)
+    arrows(y[, 1], y[, 2], data$y[, 1], data$y[, 2], col = '#99000060',
+           code = 2, length = 0.05)
     dev.flush()
-    layout(1)
+    par(op)
 }
 
-plotstate(params(data), data)
+
+nllh <- function(state, data, how.many = nrow(data$y)) {
+    x <- get.dist(data, state)
+    sum(sapply(seq_along(1:how.many),
+               function(i)
+                   lhood(data$y[i,,drop=F], x, data$shape, sigma.gps = 20)))
+}
 
 
 state <- params(data)
@@ -720,34 +775,9 @@ STATE <- matrix(NA, 100, sum(sapply(state, length)) + 1,
                 dimnames =
                     list(NULL,
                          c(do.call(c, lapply(names(state),
-                                             function(x) paste0(x, 1:length(state[[x]])))),
+                                             function(x)
+                                                 paste0(x, 1:length(state[[x]])))),
                            "nllh")))
-
-nllh <- function(state, data, how.many = nrow(data$y)) {
-    l <- getTrajectory(state, data)
-    x <- sapply(data$t, function(t) {
-        ## end of line
-        if (t >= max(l$t)) return(max(l$y))
-        i <- which(l$t > t)[1]
-        ## begining of line
-        if (i == 1) return(0)
-        j <- i %/% 2
-        if (i %% 2 == 0) {
-            ## at a stop
-            return(data$Sd[j])
-        } else {
-            ## between stops
-            dx <- diff(data$Sd[j:(j+1)])
-            dt <- diff(l$t[(i-1):i] %>% as.numeric)
-            s <- dx / dt
-            return(data$Sd[j] + s * (t - as.numeric(l$t[i-1])))
-        }
-    })
-    sum(sapply(seq_along(1:how.many),
-               function(i)
-                   lhood(data$y[i,,drop=F], x, data$shape, sigma.gps = 20)))
-}
-
 STATE[1, ] <- c(do.call(c, state), nllh(state, data))
 plotstate(state, data)
 
@@ -756,9 +786,11 @@ for (i in 1:nrow(STATE)) {
     ## propose a new value for each parameter
     lh <- nllh(state, data, how.many = i %/% 5 + 1)
     ## Update slopes
-    for (j in 1:length(state$beta)) {
+    pb <- txtProgressBar(0, length(state$alpha), style = 3)
+    pbi <- 0
+    for (j in 1:length(state$alpha)) {
         prop <- state
-        prop$beta[j] <- truncnorm::rtruncnorm(1, 0, 30, state$beta[j], 3)
+        prop$alpha[j] <- truncnorm::rtruncnorm(1, 0, 30, state$alpha[j], 3)
         lstar <- nllh(prop, data, how.many = i %/% 5 + 1)
         alpha <- exp(min(0, lstar - lh))
         if (rbinom(1, 1, alpha) == 1) {
@@ -766,31 +798,46 @@ for (i in 1:nrow(STATE)) {
             lh <- lstar
             plotstate(state, data)
         }
+        pbi <- pbi+1
+        setTxtProgressBar(pb, pbi)
     }
-    ## Update dwell times
-    for (j in 1:length(state$tau)) {
-        prop <- state
-        prop$tau[j] <- truncnorm::rtruncnorm(1, 0, Inf, state$tau[j], 3)
-        lstar <- nllh(prop, data, how.many = i %/% 5 + 1)
-        alpha <- exp(min(0, lstar - lh))
-        if (rbinom(1, 1, alpha) == 1) {
-            state <- prop
-            lh <- lstar
-            plotstate(state, data)
-        }
-    }
-    ## Update stopping probabilities
-    for (j in 1:length(state$p)) {
-        prop <- state
-        prop$pi[j] <- truncnorm::rtruncnorm(1, 0, 1, prop$pi[j], 0.1)
-        lstar <- nllh(prop, data, how.many = i %/% 5 + 1)
-        alpha <- exp(min(0, lstar - lh))
-        if (rbinom(1, 1, alpha) == 1) {
-            state <- prop
-            lh <- lstar
-            plotstate(state, data)
-        }
-    }
+    ## ## Update dwell times
+    ## for (j in 1:length(state$tau)) {
+    ##     prop <- state
+    ##     prop$tau[j] <- truncnorm::rtruncnorm(1, 0, Inf, state$tau[j], 3)
+    ##     lstar <- nllh(prop, data)#, how.many = i %/% 5 + 1)
+    ##     alpha <- exp(min(0, lstar - lh))
+    ##     if (rbinom(1, 1, alpha) == 1) {
+    ##         state <- prop
+    ##         lh <- lstar
+    ##         plotstate(state, data)
+    ##     }
+    ## }
+    ## ## Update stopping probabilities
+    ## for (j in 1:length(state$p)) {
+    ##     prop <- state
+    ##     prop$pi[j] <- truncnorm::rtruncnorm(1, 0, 1, prop$pi[j], 0.1)
+    ##     lstar <- nllh(prop, data, how.many)# = i %/% 5 + 1)
+    ##     alpha <- exp(min(0, lstar - lh))
+    ##     if (rbinom(1, 1, alpha) == 1) {
+    ##         state <- prop
+    ##         lh <- lstar
+    ##         plotstate(state, data)
+    ##     }
+    ## }
     STATE[i, ] <- c(do.call(c, state), lh)
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 

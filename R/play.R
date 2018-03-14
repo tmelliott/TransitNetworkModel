@@ -32,3 +32,5 @@ lines(1:max(z), predict(fit, newdata = data.frame(z = 1:max(z))),
 
 
 
+## - model speed along segment, using a spline or whatever
+## - connect the points
