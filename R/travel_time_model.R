@@ -138,7 +138,7 @@ getsegments <- function(whole.shapes = FALSE) {
     segments %>% as.tibble
 }
 
-segments <- getsegments(TRUE)
+segments <- getsegments(FALSE)
 
 pseg <- ggplot(segments, aes(x = lng, y = lat, group = id)) +
     geom_path() +
@@ -219,10 +219,12 @@ segs.geoms <-
                })
     })
 
-i <- 7
+i <- 16
 
-i <- i+1
-s <- segs.geoms %>% filter(id == levels(segments$id %>% as.factor)[i])
+segid <- levels(segments$id %>% as.factor)[i]
+
+for (segid in levels(segments$id %>% as.factor)) {
+s <- segs.geoms %>% filter(id == segid)
 ggplot(s) +
     geom_path(aes(lng, lat, group = id), data = segments) +
     geom_point(aes(position_longitude, position_latitude),
@@ -231,22 +233,28 @@ ggplot(s) +
     xlim(min(s$lng) - 0.01, max(s$lng) + 0.01) +
     ylim(min(s$lat) - 0.005, max(s$lat) + 0.005) +
     coord_fixed(1.2)
-
+if (nrow(s) == 0) next
 bbox <- with(s, c(min(lng, na.rm = TRUE) - 0.01,
                   min(lat, na.rm = TRUE) - 0.005,
                   max(lng, na.rm = TRUE) + 0.01,
                   max(lat, na.rm = TRUE) + 0.005))
-aklmap <- get_map(bbox, source = "stamen", maptype = "toner-lite")
+## aklmap <- get_map(bbox, source = "stamen", maptype = "toner-lite")
 
-ggmap(aklmap) +
-    geom_point(aes(position_longitude, position_latitude),
-               data = ds) +
-    geom_polygon(aes(lng, lat, group = id), data = s,
-                 lwd = 1, color = 'red',
-                 fill = "red", alpha = 0.2)
+## ggmap(aklmap) +
+##     geom_point(aes(position_longitude, position_latitude),
+##                data = ds) +
+##     geom_polygon(aes(lng, lat, group = id), data = s,
+##                  lwd = 1, color = 'red',
+##                  fill = "red", alpha = 0.2)
 
 
-
+## get all segment/shape matching stuff
+con <- dbConnect(SQLite(), '../gtfs.db')
+q <- dbSendQuery(con, 'SELECT DISTINCT shape_segments.shape_id, routes.route_id FROM shape_segments, routes WHERE shape_segments.shape_id=routes.shape_id AND segment_id=?')
+dbBind(q, list(segid))
+segroutes <- dbFetch(q)$route_id
+dbClearResult(q)
+dbDisconnect(con)
 
 ## Find points in the polygon
 dx <- ds %>% filter(position_longitude > bbox[1] &
@@ -260,26 +268,29 @@ vpos <- do.call(st_sfc, lapply(1:nrow(dx), function(i) {
     st_point(as.numeric(c(dx$position_longitude[i],
                           dx$position_latitude[i])))
 }))
-dx$inseg <- sapply(st_intersects(vpos, POLY), function(x) length(x) > 0)
+dx$inseg <- sapply(st_intersects(vpos, POLY), function(x) length(x) > 0) &
+    dx$route_id %in% segroutes
 
 gridExtra::grid.arrange(
-    ggmap(aklmap) +
+    ## ggmap(aklmap) +
+    ggplot() +
     geom_polygon(aes(lng, lat, group = id), data = s,
                  lwd = 1, 
                  fill = "magenta", alpha = 0.5) +
     geom_point(aes(position_longitude, position_latitude,
-                   color = inseg),
-               data = dx) +
+                   color = inseg), data = dx) +
     scale_colour_manual(values = c('#666666', 'white')) +
     theme(legend.position = "none"),
     ggplot(dx %>%
            filter(inseg), aes(as.POSIXct(timestamp, origin='1970-01-01'),
                               speed / 1000 * 60 * 60)) +
-    geom_point() + geom_smooth(method = 'loess', span = 0.2) +
+    geom_point() + #geom_smooth(method = lm, formula = y ~ splines::bs(x, 10)) +
     xlab("Time") + ylab("Approx. speed (km/h)") + ylim(0, 100),
     ncol = 1, heights = c(2, 1)
     )
 
+grid::grid.locator()
+}
 
 ## 3D plot
 speed2col <- function(v, palette = viridis, r = range(pmin(30, pmax(0, v))), ...) {
