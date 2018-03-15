@@ -204,6 +204,7 @@ segs.geoms <-
                    Lam <- mean(lng)
                    Phi <- mean(lat)
                    ## equirectangular proj
+                   
                    x <- (lng - Lam) * cos(Phi)
                    y <- lat - Phi
                    ## polygon buffer around path

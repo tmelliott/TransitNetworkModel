@@ -1,8 +1,9 @@
-library(tidyverse)
-library(RSQLite)
-library(parallel)
-library(pbapply)
-library(geosphere)
+suppressPackageStartupMessages({
+    library(tidyverse)
+    library(RSQLite)
+    library(parallel)
+    library(pbapply)
+})
 
 ## Combine multiple histories into one
 dates <- seq(as.Date("2018-02-10"), as.Date("2018-02-17"), by = 1)
@@ -68,7 +69,8 @@ data <- data %>%
        mutate(speed = ifelse(speed > 0, speed, NA),
               hour = format(as.POSIXct(timestamp, origin = "1970-01-01"), "%H"))
        ) %>%
-    ungroup
+    ungroup %>%
+    mutate(segment_id = NA)
 
 cat(" * writing to database\n")
 con <- dbConnect(SQLite(), db)
