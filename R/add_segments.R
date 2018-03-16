@@ -87,29 +87,81 @@ segs.geoms <- segs.geoms[!sapply(segs.geoms, is.null)]
 
 db <- "history.db"
 con <- dbConnect(SQLite(), db)
-data <- dbGetQuery(con, "SELECT vehicle_id, timestamp, route_id, position_latitude AS lat, position_longitude AS lng, segment_id FROM vps")
+data <- dbReadTable(con, "vps")
+cn <- colnames(data)
+cn[cn == "position_latitude"] <- "lat"
+cn[cn == "position_longitude"] <- "lng"
+colnames(data) <- as.character(cn)
+clusterExport(cl, "data")
+
 pts <- do.call(st_sfc,
                pblapply(1:nrow(data), function(i) {
                    data[i, c("lng", "lat")] %>% as.numeric %>% st_point
                }, cl = cl))
 st_crs(pts) <- 4326
 
-clusterExport(cl, c("segs.geoms", "data", "pts"))
-segids <-
-    pblapply(names(segs.geoms), function(sid) {
-        con <- dbConnect(SQLite(), "../gtfs.db")
-        q <- dbSendQuery(con, 'SELECT DISTINCT shape_segments.shape_id, routes.route_id FROM shape_segments, routes WHERE shape_segments.shape_id=routes.shape_id AND segment_id=?')
-        dbBind(q, list(sid))
-        segroutes <- dbFetch(q)$route_id
-        dbClearResult(q)
+## shapes of the routes
+con <- dbConnect(SQLite(), "../gtfs.db")
+shapes <- dbGetQuery(con, 'SELECT shape_id, lat, lng FROM shapes ORDER BY shape_id, seq')
+sr <- dbGetQuery(con, 'SELECT route_id, shape_id FROM routes')
+dbDisconnect(con)
 
-        inroute <- which(data$route_id %in% segroutes)
-        bbox <- st_bbox(segs.geoms[[sid]]) %>% st_as_sfc(crs = 4326)
-        inbox <- inroute[sapply(st_intersects(pts[inroute], bbox), length) > 0]
-        
-        inbox[sapply(st_intersects(pts[inbox], segs.geoms[[sid]]), length) > 0]
+bearingAt <- function(x, shape) {
+    if (inherits(shape, "sfc")) {
+        shape <-shape %>% st_coordinates
+        shape <- shape[,1:2]
+        colnames(shape) <- c('lng', 'lat')
+    }
+    
+    j <- which.min(apply(shape, 1, function(y) {
+        geosphere::distHaversine(x, y)
+    }))
+    if (j == 1) j <- 2
+    bearing <- NA
+    k <- j-1
+    while(is.na(bearing) && j < k + 10) {
+        if (geosphere::distHaversine(shape[k,], shape[j,]) > 1e-15) {
+            bearing <- geosphere::bearing(shape[k,], shape[j,])
+        } else {
+            j <- j + 1
+        }
+    }
+    bearing
+}
+
+clusterExport(cl, c("segs.geoms", "data", "pts", "shapes", "sr", "bearingAt"))
+segids <-
+    pblapply(names(segs.geoms), function(sid) {       
+        bbox <- st_bbox(segs.geoms[[sid]])
+        inbox <- which(data$lng >= bbox[1] & data$lng <= bbox[3] &
+                       data$lat >= bbox[2] & data$lat <= bbox[4])
+        inseg <- inbox[sapply(st_intersects(pts[inbox], segs.geoms[[sid]]), length) > 0]
+        ## direction!
+        con <- dbConnect(SQLite(), "../gtfs.db")
+        q <- dbSendQuery(con, 'SELECT shape_id FROM shape_segments WHERE segment_id=?')
+        dbBind(q, sid)
+        segshapes <- dbFetch(q)
+        dbClearResult(q)
+        dbDisconnect(con)
+        shapenot <- character()
+        inseg[sapply(inseg, function(i) {
+            s <- sr %>% filter(route_id == data[i, "route_id"]) %>% pluck("shape_id")
+            if (is.null(s) || s %in% shapenot) return(FALSE)
+            if (s %in% segshapes) return(TRUE)
+            sh <- shapes %>%
+                filter(shape_id == s) %>%
+                select(lng, lat) %>% as.matrix
+            x <- data[i, ] %>% select(lng, lat) %>% as.numeric
+            b1 <- bearingAt(x, sh)
+            b2 <- bearingAt(x, segs.geoms[[sid]])
+            if (b1 - b2 < 90) {
+                segshapes <<- c(segshapes, s)
+                return(TRUE)
+            }
+            shapenot <<- c(shapenot, s)
+            return(FALSE)
+        })]
     }, cl = cl)
-stopCluster(cl)
 names(segids) <- names(segs.geoms)
 
 invisible(pblapply(names(segs.geoms), function(sid) {
@@ -118,6 +170,11 @@ invisible(pblapply(names(segs.geoms), function(sid) {
     }
 }))
 
-ggplot(data, aes(lng, lat, color = segment_id)) +
-    geom_point() +
-    theme(legend.position = 'none')
+## ggplot(data, aes(lng, lat, color = segment_id)) +
+##     geom_point() +
+##     theme(legend.position = 'none')
+
+
+con <- dbConnect(SQLite(), db)
+dbWriteTable(con, 'vps', data, overwrite = TRUE)
+dbDisconnect(con)
