@@ -6,6 +6,9 @@ suppressPackageStartupMessages({
     library(sf)
 })
 
+pboptions(type = "timer")
+options("mc.cores" = detectCores() - 1)
+
 getsegments <- function(whole.shapes = FALSE) {
     if (whole.shapes) {
         con <- dbConnect(SQLite(), "../gtfs.db")
@@ -63,15 +66,19 @@ getsegments <- function(whole.shapes = FALSE) {
     segments %>% as.tibble
 }
 
+cat(" * loading segments\n")
 segments <- getsegments(FALSE)
 
-cl <- makeCluster(3L)
+cat(" * setting up cluster\n")
+cl <- makeCluster(getOption("mc.cores"))
 clusterExport(cl, "segments")
 invisible(clusterEvalQ(cl, {
     library(sf)
     library(tidyverse)
     library(RSQLite)
 }))
+
+cat(" * reading in segments\n")
 segs.geoms <-
     pblapply(levels(segments$id), function(id) {
         segi <- segments[segments$id == id, ]
@@ -85,6 +92,7 @@ segs.geoms <-
 names(segs.geoms) <- levels(segments$id)
 segs.geoms <- segs.geoms[!sapply(segs.geoms, is.null)]
 
+cat(" * fetching history\n")
 db <- "history.db"
 con <- dbConnect(SQLite(), db)
 data <- dbReadTable(con, "vps")
@@ -94,6 +102,7 @@ cn[cn == "position_longitude"] <- "lng"
 colnames(data) <- as.character(cn)
 clusterExport(cl, "data")
 
+cat(" * creating points\n")
 pts <- do.call(st_sfc,
                pblapply(1:nrow(data), function(i) {
                    data[i, c("lng", "lat")] %>% as.numeric %>% st_point
@@ -101,6 +110,7 @@ pts <- do.call(st_sfc,
 st_crs(pts) <- 4326
 
 ## shapes of the routes
+cat(" * loading shapes\n")
 con <- dbConnect(SQLite(), "../gtfs.db")
 shapes <- dbGetQuery(con, 'SELECT shape_id, lat, lng FROM shapes ORDER BY shape_id, seq')
 sr <- dbGetQuery(con, 'SELECT route_id, shape_id FROM routes')
@@ -129,6 +139,7 @@ bearingAt <- function(x, shape) {
     bearing
 }
 
+cat(" * computing segment ids\n")
 clusterExport(cl, c("segs.geoms", "data", "pts", "shapes", "sr", "bearingAt"))
 segids <-
     pblapply(names(segs.geoms), function(sid) {       
@@ -164,17 +175,18 @@ segids <-
     }, cl = cl)
 names(segids) <- names(segs.geoms)
 
+cat(" * attaching segment ids\n")
 invisible(pblapply(names(segs.geoms), function(sid) {
     if (length(segids[[sid]]) > 0) {
         data$segment_id[segids[[sid]]] <<- sid
     }
 }))
 
-## ggplot(data, aes(lng, lat, color = segment_id)) +
-##     geom_point() +
-##     theme(legend.position = 'none')
 
-
+cat(" * writing database\n")
 con <- dbConnect(SQLite(), db)
 dbWriteTable(con, 'vps', data, overwrite = TRUE)
 dbDisconnect(con)
+
+
+cat(" * done!\n")
