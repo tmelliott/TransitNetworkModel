@@ -154,7 +154,7 @@ segids <-
         con <- dbConnect(SQLite(), "../gtfs.db")
         q <- dbSendQuery(con, 'SELECT shape_id FROM shape_segments WHERE segment_id=?')
         dbBind(q, sid)
-        segshapes <- dbFetch(q)
+        segshapes <- dbFetch(q)$shape_id
         dbClearResult(q)
         dbDisconnect(con)
         shapenot <- character()
