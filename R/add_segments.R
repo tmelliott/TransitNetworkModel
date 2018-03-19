@@ -142,11 +142,14 @@ bearingAt <- function(x, shape) {
 cat(" * computing segment ids\n")
 clusterExport(cl, c("segs.geoms", "data", "pts", "shapes", "sr", "bearingAt"))
 segids <-
-    pblapply(names(segs.geoms), function(sid) {       
+    pblapply(names(segs.geoms), function(sid) {
         bbox <- st_bbox(segs.geoms[[sid]])
         inbox <- which(data$lng >= bbox[1] & data$lng <= bbox[3] &
                        data$lat >= bbox[2] & data$lat <= bbox[4])
-        inseg <- inbox[sapply(st_intersects(pts[inbox], segs.geoms[[sid]]), length) > 0]
+        if (length(inbox) == 0) return(NULL)
+        inseg <- suppressMessages(
+            inbox[sapply(st_intersects(pts[inbox], segs.geoms[[sid]]), length) > 0])
+        if (length(inseg) == 0) return(NULL)
         ## direction!
         con <- dbConnect(SQLite(), "../gtfs.db")
         q <- dbSendQuery(con, 'SELECT shape_id FROM shape_segments WHERE segment_id=?')
@@ -155,7 +158,7 @@ segids <-
         dbClearResult(q)
         dbDisconnect(con)
         shapenot <- character()
-        inseg[sapply(inseg, function(i) {
+        w <- sapply(inseg, function(i) {
             s <- sr %>% filter(route_id == data[i, "route_id"]) %>% pluck("shape_id")
             if (is.null(s) || s %in% shapenot) return(FALSE)
             if (s %in% segshapes) return(TRUE)
@@ -171,7 +174,8 @@ segids <-
             }
             shapenot <<- c(shapenot, s)
             return(FALSE)
-        })]
+        })
+        inseg[w]
     }, cl = cl)
 names(segids) <- names(segs.geoms)
 
