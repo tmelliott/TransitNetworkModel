@@ -1,0 +1,56 @@
+getsegments <- function(whole.shapes = FALSE) {
+    if (whole.shapes) {
+        con <- dbConnect(SQLite(), "../gtfs.db")
+        segments <- dbGetQuery(
+            con,
+            "SELECT shape_id AS id, lat, lng FROM shapes ORDER BY shape_id, seq")
+        dbDisconnect(con)
+        return(segments)
+    }
+    ## check if they exist yet ...
+    if (file.exists("segments.rda")) {
+        load("segments.rda")
+    } else {
+        con <- dbConnect(SQLite(), "../gtfs.db")
+        segments <- dbGetQuery(con, "SELECT segment_id FROM segments") %>%
+            pluck("segment_id") %>% lapply(function(x) list(id = x, shape = NULL))
+        pb <- txtProgressBar(0, length(segments), style = 3)
+        for (i in i:length(segments)) {
+            setTxtProgressBar(pb, i)
+            x <- segments[[i]]$id
+            ## get a shape that uses this segment
+            q <- dbSendQuery(con, "SELECT shape_id, leg FROM shape_segments
+                                   WHERE segment_id=? LIMIT 1")
+            dbBind(q, x)
+            shp <- dbFetch(q)
+            dbClearResult(q)
+            if (nrow(shp) == 0) next
+            ## get the start/end distances for that shape
+            q <- dbSendQuery(con, "SELECT shape_dist_traveled FROM shape_segments
+                                   WHERE shape_id=? AND LEG BETWEEN ? AND ?")
+            dbBind(q, list(shp$shape_id, shp$leg, shp$leg + 1))
+            dr <- dbFetch(q)$shape_dist_traveled
+            dbClearResult(q)
+            if (length(dr) == 1) dr <- c(dr, Inf)
+            ## get the shape points for the shape in the required distance range
+            q <- dbSendQuery(con, "SELECT lat, lng FROM shapes
+                                   WHERE shape_id=? AND
+                                         dist_traveled BETWEEN ? AND ?
+                                   ORDER BY seq")
+            dbBind(q, list(shp$shape_id, dr[1], dr[2]))
+            segments[[i]]$shape <- dbFetch(q)
+            dbClearResult(q)
+        }
+        close(pb)
+        dbDisconnect(con)
+        segments <-
+            segments[sapply(segments, function(x) !is.null(x$shape))] %>%
+            lapply(function(x)
+                data.frame(id = rep(x$id, nrow(x$shape)), x$shape)) %>%
+            do.call(rbind, .) %>%
+            mutate(id = as.factor(id))
+        save(segments, file = "segments.rda")
+    }
+    
+    segments %>% as.tibble
+}
