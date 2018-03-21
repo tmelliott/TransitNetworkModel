@@ -6,6 +6,7 @@ suppressPackageStartupMessages({
     library(Rcpp)
     library(rgl)
     library(sf)
+    library(mgcv)
 })
 
 source("common.R")
@@ -78,12 +79,14 @@ for (si in unique(data$segment_id)) {
 
 si <- "5262"
 si <- "5073"
+si <- "2951"
+
 dsi <- data %>% filter(segment_id == si) %>%
     mutate(route = substr(route_id, 1, 3))
 ggplot(dsi %>% filter(!weekend), aes(time, speed)) +
     geom_point() +
     xlab("") + ylab("Speed (km/h)") + ylim(c(0, 100)) +
-    geom_smooth() #+ facet_wrap(~route)
+    geom_smooth()
 
 ssi <- segments %>% filter(id == si)
 bbox <- with(ssi, c(min(lng) - 0.05, min(lat) - 0.05,
@@ -120,8 +123,7 @@ ggplot(dsi %>% filter(!weekend), aes(dist, speed, color = time)) +
     geom_smooth() +
     scale_colour_viridis(option = "D")
 
-fit <- gam(speed ~ s(dist) + s(time), data = dsi,
-           sp = c(-1, 0.001))
+fit <- gam(speed ~ s(dist) + s(time, k=10), data = dsi)
 summary(fit)
 xdist <- seq(min(dsi$dist), max(dsi$dist), length.out = 101)
 xtime <- seq(min(dsi$time), max(dsi$time), length.out = 101)
@@ -137,3 +139,95 @@ with(dsi %>% filter(!weekend),
 surface3d(xdist, xtime, pred, grid=FALSE, color = "red")
 
 
+## A 'dummy' variable for "peak"
+peak <- c(9, 17)
+peak.sd <- c(0.5, 1)
+
+dsi <- dsi %>%
+    mutate(peak1 = dnorm(time, peak[1], peak.sd[1]),
+           peak2 = dnorm(time, peak[2], peak.sd[2]))
+
+p1 <- ggplot(dsi %>% filter(!weekend), aes(time, speed)) +
+    geom_point(aes(alpha = pmax(peak1 + peak2))) +
+    xlab("") + ylab("Speed (km/h)") + ylim(c(0, 100)) +
+    geom_smooth() +
+    geom_vline(xintercept = peak) +
+    theme(legend.position = "none")
+p2 <- ggplot() +
+    geom_path(aes(x = x, y = y),
+              data = data.frame(
+                  x = (xx <- seq(min(dsi$time), max(dsi$time), by = 0.01)),
+                  y = pmax(dnorm(xx, peak[1], peak.sd[1]),
+                           dnorm(xx, peak[2], peak.sd[2]))))
+gridExtra::grid.arrange(p1, p2, ncol = 1, heights = c(3, 1))
+
+
+fit <- gam(speed ~ s(dist) + peak1 + peak2, data = dsi,
+           sp = c(-1, 1, 1))
+summary(fit)
+xdist <- seq(min(dsi$dist), max(dsi$dist), length.out = 101)
+xtime <- seq(min(dsi$time), max(dsi$time), length.out = 101)
+
+pred <- outer(xdist, xtime, function(d, t)
+    predict(fit, data.frame(dist = d,
+                            peak1 = dnorm(t, peak[1], peak.sd[1]),
+                            peak2 = dnorm(t, peak[2], peak.sd[2]))))
+
+with(dsi %>% filter(!weekend),
+     plot3d(dist, time, speed, aspect = c(3, 5, 1)))
+surface3d(xdist, xtime, pred, grid=FALSE, color = "red")
+
+library(splines)
+library(R2jags)
+
+## gj <- jagam(speed ~ s(dist) + peak1 + peak2, data = dsi,
+##             file = "model.jags")
+
+jags.data <- list(
+    B = (B <- bs(dsi$dist, df = 10)),
+    t = dsi$time,
+    y = dsi$speed,
+    N = nrow(dsi),
+    K = ncol(B)
+)
+jags.pars <- c("intercept", "beta", "tau", "omega", "pi", "alpha", "sig2", "r")
+
+jfit <- jags(jags.data, NULL, jags.pars, model.file = "model.jags",
+             n.chains = 2, n.iter = 2000)
+
+jfit.mcmc <- as.mcmc.list(jfit$BUGSoutput)
+
+rdf <- jfit$BUGSoutput$sims.matrix %>% as.tibble %>%
+    rename_if(grepl("[", names(.), fixed=T),
+              function(x) gsub("`|\\[|\\]", "", x))
+
+hist(rdf$sig2, 50)
+
+pairs(rdf %>% select(alpha2, pi2, tau2,
+                     omega2, sig2, deviance))
+
+sims <- jfit$BUGSoutput$median
+Bx <- bs(xdist, knots = attr(B, "knots"))
+nr <- nrow(sims[[1]])
+pred <- outer(1:length(xdist), xtime, function(j, t) {
+    peak <- cbind(0*dnorm(t, sims$tau[1], sims$omega[1]),
+                  dnorm(t, sims$tau[2], sims$omega[2]))
+    (sims$intercept[1] + Bx[j, ] %*% cbind(sims$beta)) *
+        (1 - peak %*% cbind(sims$alpha))
+})
+with(dsi %>% filter(!weekend),
+     plot3d(dist, time, speed, aspect = c(3, 5, 1)))
+surface3d(xdist, xtime, pred, grid=FALSE, color = "#99000020")
+
+
+i <- which.min(rdf$deviance)
+sims <- jfit$BUGSoutput$sims.list
+pred <- outer(1:length(xdist), xtime, function(j, t) {
+    peak <- cbind(0*dnorm(t, sims$tau[i,1], sims$omega[i,1]),
+                  dnorm(t, sims$tau[i,2], sims$omega[i,2]))
+    (sims$intercept[i] + Bx[j, ] %*% cbind(sims$beta[i,])) *
+        (1 - peak %*% cbind(sims$alpha[i,]))
+})
+with(dsi %>% filter(!weekend),
+     plot3d(dist, time, speed, aspect = c(3, 5, 1)))
+surface3d(xdist, xtime, pred, grid=FALSE, color = "#99000020")
