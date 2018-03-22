@@ -77,9 +77,9 @@ for (si in unique(data$segment_id)) {
     grid::grid.locator()
 }
 
-si <- "5262"
+#si <- "5262"
 si <- "5073"
-si <- "2951"
+#si <- "2951"
 
 dsi <- data %>% filter(segment_id == si) %>%
     mutate(route = substr(route_id, 1, 3))
@@ -191,43 +191,143 @@ jags.data <- list(
     K = ncol(B)
 )
 jags.pars <- c("intercept", "beta", "tau", "omega", "pi", "alpha", "sig2", "r")
+##jags.pars <- c("intercept", "beta", "sig2")
 
 jfit <- jags(jags.data, NULL, jags.pars, model.file = "model.jags",
              n.chains = 2, n.iter = 2000)
 
-jfit.mcmc <- as.mcmc.list(jfit$BUGSoutput)
+##jfit.mcmc <- as.mcmc.list(jfit$BUGSoutput)
 
 rdf <- jfit$BUGSoutput$sims.matrix %>% as.tibble %>%
     rename_if(grepl("[", names(.), fixed=T),
               function(x) gsub("`|\\[|\\]", "", x))
 
 hist(rdf$sig2, 50)
+hist(rdf$pi2, 50)
+hist(rdf$tau2, 50)
+hist(rdf$omega2, 50)
+hist(rdf$pi1, 50)
+hist(rdf$tau1, 50)
+hist(rdf$omega1, 50)
 
-pairs(rdf %>% select(alpha2, pi2, tau2,
-                     omega2, sig2, deviance))
+pairs(rdf %>% select_if(!grepl("beta|^r.", names(.))))
 
 sims <- jfit$BUGSoutput$median
 Bx <- bs(xdist, knots = attr(B, "knots"))
 nr <- nrow(sims[[1]])
 pred <- outer(1:length(xdist), xtime, function(j, t) {
-    peak <- cbind(0*dnorm(t, sims$tau[1], sims$omega[1]),
-                  dnorm(t, sims$tau[2], sims$omega[2]))
-    (sims$intercept[1] + Bx[j, ] %*% cbind(sims$beta)) *
-        (1 - peak %*% cbind(sims$alpha))
+    p <- sapply(t, function(ti)
+        1 - sum(sims$r * sims$alpha * exp(-(ti - sims$tau)^2 / (2 * sims$omega^2))))
+    p * (sims$intercept[1] + Bx[j, ] %*% cbind(sims$beta))
 })
 with(dsi %>% filter(!weekend),
      plot3d(dist, time, speed, aspect = c(3, 5, 1)))
 surface3d(xdist, xtime, pred, grid=FALSE, color = "#99000020")
 
 
-i <- which.min(rdf$deviance)
-sims <- jfit$BUGSoutput$sims.list
-pred <- outer(1:length(xdist), xtime, function(j, t) {
-    peak <- cbind(0*dnorm(t, sims$tau[i,1], sims$omega[i,1]),
-                  dnorm(t, sims$tau[i,2], sims$omega[i,2]))
-    (sims$intercept[i] + Bx[j, ] %*% cbind(sims$beta[i,])) *
-        (1 - peak %*% cbind(sims$alpha[i,]))
-})
-with(dsi %>% filter(!weekend),
-     plot3d(dist, time, speed, aspect = c(3, 5, 1)))
-surface3d(xdist, xtime, pred, grid=FALSE, color = "#99000020")
+for (i in sample(nrow(rdf), 50)) {
+    sims <- lapply(jfit$BUGSoutput$sims.list, function(x) x[i, ])
+    pred <- outer(1:length(xdist), xtime, function(j, t) {
+        p <- sapply(t, function(ti)
+            1 - sum(sims$r * sims$alpha * exp(-(ti - sims$tau)^2 / (2 * sims$omega^2))))
+        p * (sims$intercept[1] + Bx[j, ] %*% cbind(sims$beta))
+    })
+    with(dsi %>% filter(!weekend),
+         plot3d(dist, time, speed, aspect = c(3, 5, 1)))
+    surface3d(xdist, xtime, pred, grid=FALSE, color = "#990000")
+    Sys.sleep(0.1)
+}
+
+
+
+#si <- "5262"
+si <- "5073"
+#si <- "2951"
+
+segs <- c("5262", "5073", "2951")
+sg <- segments %>% filter(id %in% segs)
+ds <- data %>%
+    filter(segment_id %in% segs) %>%
+    mutate(route = substr(route_id, 1, 3)) %>%
+    group_by(segment_id) %>%
+    do((.) %>%
+       mutate(dist = distIntoShape(., segments %>%
+                                      filter(id == segment_id[1])))) %>%
+    ungroup()
+
+bbox <- with(sg, c(min(lng) - 0.05, min(lat) - 0.05,
+                   max(lng) + 0.05, max(lat) + 0.05))
+aklmap <- get_map(bbox, source = "stamen", maptype = "toner-lite")
+
+ggmap(aklmap) +
+    geom_path(aes(lng, lat, colour = id), data = sg, lwd = 2)
+
+
+ggplot(ds, aes(dist, speed, colour = time)) +
+    geom_point() +
+    facet_wrap(~segment_id, scales = "free", ncol = 1)
+
+Bs <- tapply(ds$dist, ds$segment_id, bs, df = 10)
+jags.data <- list(
+    B = (B <- do.call(rbind, Bs)),
+    t = ds$time,
+    s = ds$segment_id %>% as.factor %>% as.numeric,
+    y = ds$speed,
+    N = nrow(ds),
+    K = ncol(B),
+    L = length(unique(ds$segment_id))
+)
+jags.pars <- c("intercept", "beta", "tau", "omega", "pi", "alpha", "sig2", "r")
+
+jfit <- jags(jags.data, NULL, jags.pars, model.file = "model2.jags",
+             n.chains = 2, n.iter = 2000)
+
+rdf <- jfit$BUGSoutput$sims.matrix %>% as.tibble %>%
+    rename_if(grepl("[", names(.), fixed=T),
+              function(x)
+                  gsub(",", "_", gsub("`|\\[|\\]", "", x)))
+
+pairs(rdfx <- rdf %>% select_if(!grepl("beta|^r.", names(.))))
+
+op <- par(mfrow = c(5, 4))
+for (i in colnames(rdfx))
+    hist(rdf[[i]], 50, xlab=i,main=i)
+par(op)
+
+plotPlane <- function(x, fit, seg = 1, B,
+                      which = c('median', 'mean', 'max', 'sample')) {
+    sid <- levels(x$segment_id %>% as.factor)[seg]
+    x <- x %>% filter(segment_id == sid)
+    xdist <- seq(min(x$dist), max(x$dist), length.out = 101)
+    xtime <- seq(min(x$time), max(x$time), length.out = 101)
+
+    which <- match.arg(which)
+    sims <- switch(which,
+                   "median" = jfit$BUGSoutput$median,
+                   "mean" = jfit$BUGSoutput$mean,
+                   "max" = {
+
+                   },
+                   "sample" = {
+                       i <- sample(fit$n.iter, 1)
+                       lapply(fit$BUGSoutput$sims.list,
+                              function(z) {
+                                  if (length(dim(z)) == 3)
+                                      z[i,,]
+                                  else
+                                      z[i, ]
+                              })
+                   })
+    Bx <- bs(xdist, knots = attr(B[[seg]], "knots"))
+    pred <- outer(1:length(xdist), xtime, function(j, t) {
+        p <- sapply(t, function(ti)
+            1 - sum(sims$r[,seg] * sims$alpha *
+                    exp(-(ti - sims$tau)^2 / (2 * sims$omega^2))))
+        p * (sims$intercept[seg] + Bx[j, ] %*% cbind(sims$beta[,seg]))
+    })
+    with(x %>% filter(!weekend),
+         plot3d(dist, time, speed, aspect = c(3, 5, 1)))
+    surface3d(xdist, xtime, pred, grid=FALSE, color = "#99000020")
+}
+
+plotPlane(ds, jfit, 2, Bs, which = 'median')

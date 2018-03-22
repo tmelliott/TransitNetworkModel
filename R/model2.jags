@@ -2,31 +2,34 @@ model {
     ## Likelihood
     for (i in 1:N) {
         for (j in 1:2) {
-            p[i,j] <- r[j] * alpha[j] *
+            p[i,j] <- r[j,s[i]] * alpha[j] *
                 exp(-pow(t[i] - tau[j], 2) / (2 * pow(omega[j], 2)))
         }
         w[i] <- p[i,1] + p[i,2]
-        eta[i] <- intercept + B[i,] %*% beta
+        eta[i] <- intercept[s[i]] + B[i,] %*% beta[,s[i]]
         y[i] ~ dnorm(eta[i] * (1 - w[i]), sigi)
     }
     
-    ## Priors'
+    ## Priors
     sigi <- 1/sig2
     sig2 ~ dt(0, pow(2.5, -2), 1)T(0,)
     
     tau[1] ~ dnorm(8, 1)  # morning peak time
     tau[2] ~ dnorm(17, 1) # afternoon peak time
-    ## pi[1] <- 0
-    ## pi[2] <- 1
     for (j in 1:2) {
-        pi[j] ~ dbeta(0.5, 0.5)
-        r[j] ~ dbin(pi[j], 1)
         alpha[j] ~ dbeta(0.5, 0.5) # the effect of peak hour
         omega[j] ~ dunif(0.5, 2)     # width of peak time
     }
 
-    intercept ~ dunif(0, 100)
-    for (k in 1:K) {
-        beta[k] ~ dnorm(0, 1e-6)
+    for (l in 1:L) {
+        for (j in 1:2) {
+            pi[j,l] ~ dbeta(0.5, 0.5)
+            r[j,l] ~ dbin(pi[j,l], 1)
+        }
+
+        intercept[l] ~ dunif(0, 100)
+        for (k in 1:K) {
+            beta[k,l] ~ dnorm(0, 1e-6)
+        }
     }
 }
