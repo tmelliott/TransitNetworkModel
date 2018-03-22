@@ -305,41 +305,7 @@ save(ds, jfit, Bs, file = "model_results.rda")
 ##     hist(rdf[[i]], 50, xlab=i,main=i)
 ## par(op)
 
-plotPlane <- function(x, fit, seg = 1, B,
-                      which = c('median', 'mean', 'max', 'sample')) {
-    sid <- levels(x$segment_id %>% as.factor)[seg]
-    x <- x %>% filter(segment_id == sid)
-    xdist <- seq(min(x$dist), max(x$dist), length.out = 101)
-    xtime <- seq(min(x$time), max(x$time), length.out = 101)
 
-    which <- match.arg(which)
-    sims <- switch(which,
-                   "median" = jfit$BUGSoutput$median,
-                   "mean" = jfit$BUGSoutput$mean,
-                   "max" = {
-
-                   },
-                   "sample" = {
-                       i <- sample(fit$n.iter, 1)
-                       lapply(fit$BUGSoutput$sims.list,
-                              function(z) {
-                                  if (length(dim(z)) == 3)
-                                      z[i,,]
-                                  else
-                                      z[i, ]
-                              })
-                   })
-    Bx <- bs(xdist, knots = attr(B[[seg]], "knots"))
-    pred <- outer(1:length(xdist), xtime, function(j, t) {
-        p <- sapply(t, function(ti)
-            1 - sum(sims$r[,seg] * sims$alpha *
-                    exp(-(ti - sims$tau)^2 / (2 * sims$omega^2))))
-        p * (sims$intercept[seg] + Bx[j, ] %*% cbind(sims$beta[,seg]))
-    })
-    with(x %>% filter(!weekend),
-         plot3d(dist, time, speed, aspect = c(3, 5, 1)))
-    surface3d(xdist, xtime, pred, grid=FALSE, color = "#99000020")
-}
 
 ## plotPlane(ds, jfit, 2, Bs, which = 'median')
 
