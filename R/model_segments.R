@@ -1,4 +1,4 @@
-cat(" * loading packages\n")
+message(" * loading packages")
 suppressPackageStartupMessages({
     library(tidyverse)
     library(ggmap)
@@ -22,7 +22,7 @@ as.time <- function(x) {
 }
 
 ## Load all of the data for exploring
-cat(" * loading data\n")
+message(" * loading data")
 con <- dbConnect(SQLite(), "history.db")
 data <- dbGetQuery(con,
                    "SELECT * FROM vps WHERE segment_id IS NOT NULL") %>%
@@ -68,7 +68,7 @@ doaplot <- function(data, segments, t, span = 0.25) {
     invisible(p)
 }
 
-cat(" * loading segments\n")
+message(" * loading segments")
 segments <- getsegments()
 ## for (t in seq(5, 21, by = 0.25)) {
 ##     doaplot(data, segments, t)
@@ -244,13 +244,14 @@ distIntoShape <- function(p, shape) {
 ## }
 
 
-cat(" * loading segments and computing distance\n")
+message(" * loading segments and computing distance")
 segs <- c("5262", "5073", "2951")
 st <- sort(table(data$segment_id), TRUE)
 segs <- names(st)[1:5]
 sg <- segments %>% filter(id %in% segs)
 ds <- data %>%
     filter(segment_id %in% segs) %>%
+    filter(!is.na(speed)) %>%
     mutate(route = substr(route_id, 1, 3)) %>%
     group_by(segment_id) %>%
     do((.) %>%
@@ -270,26 +271,91 @@ ds <- data %>%
 ##     geom_point() +
 ##     facet_wrap(~segment_id, scales = "free", ncol = 1)
 
-Bs <- tapply(ds$dist, ds$segment_id, bs, df = 10)
-jags.data <- list(
-    B = (B <- do.call(rbind, Bs)),
-    t = ds$time,
-    s = ds$segment_id %>% as.factor %>% as.numeric,
-    y = ds$speed,
-    N = nrow(ds),
-    K = ncol(B),
-    L = length(unique(ds$segment_id))
-)
-jags.pars <- c("intercept", "beta", "tau", "omega", "pi", "alpha", "sig2", "r")
+## floor(tapply(ds$dist, ds$segment_id, length) / 100)
+bsX <- function(x) {
+    b <- splines::bs(x, df = floor(length(x) / 100), intercept = TRUE)
+    B <- b
+    attributes(B) <- NULL
+    dim(B) <- dim(b)
+    B <- B %>% unclass %>% as.tibble %>%
+        rename_all(function(i) gsub("V", "", i)) %>%
+        rowid_to_column %>%
+        gather(key = "xi", value = "betaj", -rowid) %>%
+        filter(betaj > 0) %>%
+        mutate(xi = as.integer(xi))
+    attr(B, "knots") <- attr(b, "knots")
+    B
+}
 
-cat(" * fitting JAGS model\n")
+
+
+## Now convert Bs into a single sparse matrix ...
+Bs <- tapply(1:nrow(ds), ds$segment_id, function(i) {
+    x <- ds$dist[i]
+    b <- splines::bs(x, df = floor(length(x) / 100), intercept = TRUE)
+    B <- b
+    attributes(B) <- NULL
+    dim(B) <- dim(b)
+    B <- B %>% unclass %>% as.tibble %>%
+        rename_all(function(i) gsub("V", "", i)) %>%
+        mutate(i = i) %>%
+        gather(key = "j", value = "beta", -i) %>%
+        filter(beta > 0) %>%
+        mutate(i = as.integer(i),
+               j = as.integer(j))
+    attr(B, "knots") <- attr(b, "knots")
+    B
+})
+Bj <- lapply(Bs, function(x) max(x$j)) %>% as.integer
+Sk <- rep(names(Bs), Bj)
+Bj <- c(0L, cumsum(Bj)[-length(Bj)])
+names(Bj) <- names(Bs)
+Bs <- lapply(names(Bs), function(sid) {
+    Bs[[sid]] %>% mutate(j = j + Bj[sid])
+})
+B <- do.call(rbind, Bs)
+
+
+
+library(rstan)
+
+stan.fit <- stan("stan/hier_seg_model.stan",
+                 data = list(Bij = B[,1:2] %>% as.matrix,
+                             Bval = B$beta,
+                             M = nrow(B),
+                             t = ds$time,
+                             y = ds$speed,
+                             N = nrow(ds),
+                             s = ds$segment_id %>% as.factor %>% as.numeric,
+                             L = length(unique(ds$segment_id)),
+                             K = max(B$j),
+                             sk = as.integer(Sk))
+)
+
+
+## Now model is fitted, need to transform B into B matrices for each segment
+
+
+
+
+
+
+####### BEGIN JAGS
+jags.data <- list(
+    
+jags.pars <- c("beta", "tau", "omega", "pi", "alpha", "sig2", "r")
+
+message(" * fitting JAGS model")
 jfit <- suppressMessages({
-    jags.parallel(jags.data, NULL, jags.pars,
-                  model.file = "model2.jags",
-                  n.chains = 4, n.iter = 5000)
+    ## jags.parallel(
+    jags(
+        jags.data, NULL, jags.pars,
+        model.file = "model2.jags",
+        ## n.chains = 4, n.iter = 5000)
+        n.iter = 2000)
 })
 
-cat(" * writing results\n")
+message(" * writing results")
 save(ds, jfit, Bs, file = "model_results.rda")
 
 
@@ -310,4 +376,4 @@ save(ds, jfit, Bs, file = "model_results.rda")
 ## plotPlane(ds, jfit, 2, Bs, which = 'median')
 
 
-cat(" * done\n")
+message(" * done")

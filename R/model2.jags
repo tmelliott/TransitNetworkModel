@@ -1,14 +1,27 @@
 model {
     ## Likelihood
-    for (i in 1:N) {
+    ## for (i in 1:N) {
+    ##     for (j in 1:2) {
+    ##         p[i,j] <- r[j,s[i]] * alpha[j] *
+    ##             exp(-pow(t[i] - tau[j], 2) / (2 * pow(omega[j], 2)))
+    ##     }
+    ##     w[i] <- p[i,1] + p[i,2]
+    ##     eta[i] <- intercept[s[i]] + B[i,] %*% beta[,s[i]]
+    ##     y[i] ~ dnorm(eta[i] * (1 - w[i]), sigi)
+    ## }
+
+    for (i in 1:length(y)) {
         for (j in 1:2) {
             p[i,j] <- r[j,s[i]] * alpha[j] *
                 exp(-pow(t[i] - tau[j], 2) / (2 * pow(omega[j], 2)))
         }
         w[i] <- p[i,1] + p[i,2]
-        eta[i] <- intercept[s[i]] + B[i,] %*% beta[,s[i]]
-        y[i] ~ dnorm(eta[i] * (1 - w[i]), sigi)
+        for (k in 1:N) {
+            eta[i,k] <- ifelse(B[k,1] == i, beta[B[k,2]] * B[k,3], 0)
+        }
+        y[i] ~ dnorm(sum(eta[i,]) * (1 - w[i]), sigi)
     }
+    
     
     ## Priors
     sigi <- 1/sig2
@@ -26,10 +39,8 @@ model {
             pi[j,l] ~ dbeta(0.5, 0.5)
             r[j,l] ~ dbin(pi[j,l], 1)
         }
-
-        intercept[l] ~ dunif(0, 100)
-        for (k in 1:K) {
-            beta[k,l] ~ dnorm(0, 1e-6)
-        }
+    }
+    for (k in 1:K) {
+        beta[k] ~ dnorm(0, 1e-6)
     }
 }
