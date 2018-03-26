@@ -1,3 +1,11 @@
+as.time <- function(x) {
+    y <- as.POSIXct(x, origin = "1970-01-01") %>%
+        format("%Y-%m-%d") %>%
+        as.POSIXct %>% as.numeric
+    (x - y) / 60 / 60
+}
+
+
 getsegments <- function(whole.shapes = FALSE) {
     if (whole.shapes) {
         con <- dbConnect(SQLite(), "../gtfs.db")
