@@ -332,6 +332,7 @@ stan.fit <- stan("stan/hier_seg_model.stan",
                              sk = as.integer(Sk))
 )
 
+save(ds, stan.fit, Bs, file = "model_results.rda")
 
 ## Now model is fitted, need to transform B into B matrices for each segment
 
@@ -340,40 +341,40 @@ stan.fit <- stan("stan/hier_seg_model.stan",
 
 
 
-####### BEGIN JAGS
-jags.data <- list(
+## ####### BEGIN JAGS
+## jags.data <- list(
     
-jags.pars <- c("beta", "tau", "omega", "pi", "alpha", "sig2", "r")
+## jags.pars <- c("beta", "tau", "omega", "pi", "alpha", "sig2", "r")
 
-message(" * fitting JAGS model")
-jfit <- suppressMessages({
-    ## jags.parallel(
-    jags(
-        jags.data, NULL, jags.pars,
-        model.file = "model2.jags",
-        ## n.chains = 4, n.iter = 5000)
-        n.iter = 2000)
-})
+## message(" * fitting JAGS model")
+## jfit <- suppressMessages({
+##     ## jags.parallel(
+##     jags(
+##         jags.data, NULL, jags.pars,
+##         model.file = "model2.jags",
+##         ## n.chains = 4, n.iter = 5000)
+##         n.iter = 2000)
+## })
 
-message(" * writing results")
-save(ds, jfit, Bs, file = "model_results.rda")
-
-
-## rdf <- jfit$BUGSoutput$sims.matrix %>% as.tibble %>%
-##     rename_if(grepl("[", names(.), fixed=T),
-##               function(x)
-##                   gsub(",", "_", gsub("`|\\[|\\]", "", x)))
-
-## pairs(rdfx <- rdf %>% select_if(!grepl("beta|^r.", names(.))))
-
-## op <- par(mfrow = c(5, 4))
-## for (i in colnames(rdfx))
-##     hist(rdf[[i]], 50, xlab=i,main=i)
-## par(op)
+## message(" * writing results")
+## save(ds, jfit, Bs, file = "model_results.rda")
 
 
+## ## rdf <- jfit$BUGSoutput$sims.matrix %>% as.tibble %>%
+## ##     rename_if(grepl("[", names(.), fixed=T),
+## ##               function(x)
+## ##                   gsub(",", "_", gsub("`|\\[|\\]", "", x)))
 
-## plotPlane(ds, jfit, 2, Bs, which = 'median')
+## ## pairs(rdfx <- rdf %>% select_if(!grepl("beta|^r.", names(.))))
+
+## ## op <- par(mfrow = c(5, 4))
+## ## for (i in colnames(rdfx))
+## ##     hist(rdf[[i]], 50, xlab=i,main=i)
+## ## par(op)
 
 
-message(" * done")
+
+## ## plotPlane(ds, jfit, 2, Bs, which = 'median')
+
+
+## message(" * done")
