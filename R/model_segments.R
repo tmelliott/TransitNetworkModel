@@ -83,15 +83,20 @@ segs <- c("5262", "5073", "2951")
 st <- sort(table(data$segment_id), TRUE)
 segs <- names(st)[1:5]
 sg <- segments %>% filter(id %in% segs)
-ds <- data %>%
-    filter(segment_id %in% segs) %>%
-    filter(!is.na(speed)) %>%
-    mutate(route = substr(route_id, 1, 3)) %>%
-    group_by(segment_id) %>%
-    do((.) %>%
-       mutate(dist = distIntoShape(., segments %>%
-                                      filter(id == segment_id[1])))) %>%
-    ungroup()
+if (file.exists("thedata.rda")) {
+    load("thedata.rda")
+} else {
+    ds <- data %>%
+        filter(segment_id %in% segs) %>%
+        filter(!is.na(speed)) %>%
+        mutate(route = substr(route_id, 1, 3)) %>%
+        group_by(segment_id) %>%
+        do((.) %>%
+           mutate(dist = distIntoShape(., segments %>%
+                                          filter(id == segment_id[1])))) %>%
+        ungroup()
+    save(ds, file = "thedata.rda")
+}
 
 ## Now convert Bs into a single sparse matrix ...
 message(" * preparing sparse basis matrices")
@@ -141,7 +146,7 @@ stan.fit <-
                 )
 
 
-message(" * writing results to file")
+qmessage(" * writing results to file")
 save(ds, stan.fit, Bs, file = "model_results.rda")
 
 message(" * done")
