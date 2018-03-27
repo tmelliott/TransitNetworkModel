@@ -146,7 +146,7 @@ stan.fit <-
                 )
 
 
-qmessage(" * writing results to file")
+message(" * writing results to file")
 save(ds, stan.fit, Bs, file = "model_results.rda")
 
 message(" * done")
