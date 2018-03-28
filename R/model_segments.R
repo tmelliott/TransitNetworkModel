@@ -142,7 +142,8 @@ stan.fit <-
                             L = length(unique(ds$segment_id)),
                             K = max(B$j),
                             sk = as.integer(Sk)),
-                cores = 4
+                cores = 4,
+                pars = c("eta"), include = FALSE
                 )
 
 
