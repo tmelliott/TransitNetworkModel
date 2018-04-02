@@ -30,7 +30,9 @@ plotfit <- function(fit, data, seg, Bs,
     knots <- attr(Bs, "knots")[[seg]]
     betaj <- which(attr(Bs, "sk") == sid)
     pars2keep <- c("tau", "omega", "alpha", "sigma",
-                   paste0("beta[", betaj, "]"))
+                   paste0("beta[", betaj, "]"),
+                   sprintf("pi1[%d]", seg),
+                   sprintf("pi2[%s]", seg))
 
     if (type %in% c("trace", "hist"))
         return(plot(fit, plotfun = type, pars = pars2keep))
