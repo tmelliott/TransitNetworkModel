@@ -34,15 +34,15 @@ transformed parameters {
 	real z2;
 	
 	b = beta[Bij[m,2]] * Bval[m];
-	z1 = alpha[1] *
+	z1 = 1 - alpha[1] *
 	  exp(-pow(t[Bij[m,1]] - tau[1], 2) / (2 * pow(omega[1], 2)));
-	z2 = alpha[2] *
+	z2 = 1 - alpha[2] *
 	  exp(-pow(t[Bij[m,1]] - tau[2], 2) / (2 * pow(omega[2], 2)));
 	
     eta[Bij[m,1],1] += b;
-	eta[Bij[m,1],2] += (1 - z1) * b;
-	eta[Bij[m,2],3] += (1 - z2) * b;
-	eta[Bij[m,2],4] += (1 - z1 - z2) * b;
+	eta[Bij[m,1],2] += z1 * b;
+	eta[Bij[m,2],3] += z2 * b;
+	eta[Bij[m,2],4] += (z1 * z2) * b;
   }
 }
 model {
@@ -58,8 +58,6 @@ model {
   tau[2] ~ normal(17, 1);
   omega ~ uniform(0.5, 2);
   alpha ~ beta(1, 1);
-
-  
 
   // The likelihood
   sigma ~ cauchy(0, pow(2.5, -2));
