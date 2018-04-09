@@ -131,7 +131,7 @@ attr(Bs, "sk") <- Sk
 
 message(" * fitting model")
 stan.fit <-
-    rstan::stan("stan/hier_seg_model.stan",
+    rstan::stan("stan/hier_seg_model2.stan",
                 data = list(Bij = B[,1:2] %>% as.matrix,
                             Bval = B$beta,
                             M = nrow(B),
@@ -142,8 +142,8 @@ stan.fit <-
                             L = length(unique(ds$segment_id)),
                             K = max(B$j),
                             sk = as.integer(Sk)),
-                cores = 4,
-                pars = c("eta"), include = FALSE
+                cores = 1, chains=1,
+                pars = c("eta", "alpha"), include = FALSE
                 )
 
 
