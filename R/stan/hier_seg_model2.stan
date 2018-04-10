@@ -23,25 +23,23 @@ parameters {
 transformed parameters {
   real eta[N];
   real alpha[L,2];
-
-  for (i in 1:N) {
-    eta[i] = intercept[s[i]];
-  }
+  vector[2] z;
 
   for (i in 1:L) {
     for (j in 1:2) {
       alpha[i,j] = (mu_alpha[i,j] < 0) ? 0 : mu_alpha[i,j];
     }
   }
-  for (m in 1:M) {
-    real b;
-    vector[2] z;
 
-    b = beta[Bij[m,2]] * Bval[m];
-    for (i in 1:2) {
-      z[i] = alpha[s[Bij[m,1]],i] * exp(-pow(t[Bij[m,1]] - tau[i], 2) / 2 * pow(omega[i], 2));
+  for (i in 1:N) {
+    for (j in 1:2) {
+      z[j] = alpha[s[i],j] * exp(-pow(t[i] - tau[j], 2) / 2 * pow(omega[j], 2));
     }
-    eta[Bij[m,1]] += b - sum(z);
+    eta[i] = intercept[s[i]] - sum(z);
+  }
+
+  for (m in 1:M) {
+    eta[Bij[m,1]] += beta[Bij[m,2]] * Bval[m];
   }
 }
 model {
