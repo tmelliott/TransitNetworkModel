@@ -12,6 +12,7 @@ data {
   int sk[K];                            // which segment each beta belongs to
 }
 parameters {
+  real<lower=0,upper=100> intercept[L]; // the intercept
   real beta[K];                         // The spline coefficients
   vector<lower=0,upper=24>[2] tau;      // Middle of peak time
   vector<lower=0.5,upper=2>[2] omega;   // The width of peak time
@@ -24,7 +25,7 @@ transformed parameters {
   real alpha[L,2];
 
   for (i in 1:N) {
-    eta[i] = 0;
+    eta[i] = intercept[s[i]];
   }
 
   for (i in 1:L) {
@@ -46,6 +47,7 @@ transformed parameters {
 model {
   // The basic spline for each segment (speed ~ distance)
   beta ~ normal(0, 1e6);
+  intercept ~ uniform(0, 100);
 
   // The peak-hour effect (speed ~ time)
   for (i in 1:L)

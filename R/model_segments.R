@@ -102,7 +102,7 @@ if (file.exists("thedata.rda")) {
 message(" * preparing sparse basis matrices")
 Bs <- tapply(1:nrow(ds), ds$segment_id, function(i) {
     x <- ds$dist[i]
-    b <- splines::bs(x, df = floor(max(ds$dist[i]) / 200), intercept = TRUE)
+    b <- splines::bs(x, df = floor(max(ds$dist[i]) / 200), intercept = FALSE)
     B <- b
     attributes(B) <- NULL
     dim(B) <- dim(b)
@@ -142,7 +142,7 @@ stan.fit <-
                             L = length(unique(ds$segment_id)),
                             K = max(B$j),
                             sk = as.integer(Sk)),
-                cores = 1, chains=1,
+                cores = 1,
                 pars = c("eta", "alpha"), include = FALSE
                 )
 
