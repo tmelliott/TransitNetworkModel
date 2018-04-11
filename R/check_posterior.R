@@ -16,7 +16,7 @@ load("model_results.rda")
 
 ## Now model is fitted, need to transform B into B matrices for each segment
 
-smrypars <- c("tau", "omega", "mu_alpha")
+smrypars <- c("tau", "omega", "mu_alpha", "intercept")
 summary(stan.fit, pars = smrypars,
         prob = c(0.025, 0.5, 0.975))$summary
 plot(stan.fit, pars = c("mu_alpha"))
@@ -31,6 +31,7 @@ plotfit <- function(fit, data, seg, Bs,
     knots <- attr(Bs, "knots")[[seg]]
     betaj <- which(attr(Bs, "sk") == sid)
     pars2keep <- c("tau", "omega", "sigma",
+                   sprintf("intercept[%d]", seg),
                    paste0(sprintf("mu_alpha[%d", seg), ",", 1:2, "]"),
                    paste0("beta[", betaj, "]"))
 
@@ -55,14 +56,15 @@ plotfit <- function(fit, data, seg, Bs,
                    mm <- as.matrix(fit, pars = pars2keep)
                    mm[sample(nrow(mm), 1), ]
                })
+    intercept <- sims[grep("intercept", names(sims))] %>% as.numeric
     beta <- sims[grep("beta", names(sims))] %>% as.numeric
     alpha <- sims[grep("mu_alpha", names(sims))] %>%
         as.numeric %>% pmax(0)
     tau <- sims[grep("tau", names(sims))] %>% as.numeric
     omega <- sims[grep("omega", names(sims))] %>% as.numeric
-    B <- bs(xd, knots = knots, intercept = TRUE)
+    B <- bs(xd, knots = knots)
     pred <- outer(1:length(xd), xt, function(j, t) {
-        B[j, ] %*% beta -
+        intercept + B[j, ] %*% beta -
             sapply(t, function(ti)
                 sum(alpha * exp(-(ti - tau)^2 / 2 * omega^2)))
     })
@@ -70,15 +72,15 @@ plotfit <- function(fit, data, seg, Bs,
     surface3d(xd, xt, pred, grid = FALSE, color = "#990000")
 }
 
-w <- "random"
-plotfit(stan.fit, ds, 1, Bs, "random")
-plotfit(stan.fit, ds, 2, Bs, "random")
-plotfit(stan.fit, ds, 3, Bs, "random")
-plotfit(stan.fit, ds, 4, Bs, "random")
-plotfit(stan.fit, ds, 5, Bs, "random")
+#w <- "random"
+#plotfit(stan.fit, ds, 1, Bs, "random")
+#plotfit(stan.fit, ds, 2, Bs, "random")
+#plotfit(stan.fit, ds, 3, Bs, "random")
+#plotfit(stan.fit, ds, 4, Bs, "random")
+#plotfit(stan.fit, ds, 5, Bs, "random")
 
 
 plotfit(stan.fit, ds, 1, Bs, "trace")
 plotfit(stan.fit, ds, 1, Bs, "hist")
 plotfit(stan.fit, ds, 1, Bs, "pairs",
-        pars = paste0("beta[", 1:10, "]"))
+        pars = c("intercept", paste0("beta[", 1:10, "]")))
