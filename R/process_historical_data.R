@@ -120,5 +120,5 @@ processTU <- function(file, out) {
                 quote = FALSE, row.names = FALSE, sep = ",", na = "")
 }
 
-dates <- seq(as.Date("2018-02-10"), as.Date("2018-02-17"), by = 1)
+dates <- seq(as.Date("2018-04-01"), as.Date("2018-05-01")-1, by = 1)
 parallel::mclapply(dates, processDay, mc.cores = 3, mc.preschedule = FALSE)
