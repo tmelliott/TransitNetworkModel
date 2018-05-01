@@ -6,7 +6,7 @@ suppressPackageStartupMessages({
 })
 
 ## Combine multiple histories into one
-dates <- seq(as.Date("2018-02-10"), as.Date("2018-02-17"), by = 1)
+dates <- seq(as.Date("2018-04-10"), as.Date("2018-02-17"), by = 1)
 db <- "history.db"
 dir <- "historicaldata"
 

@@ -119,6 +119,19 @@ ggplot(ds, aes(segment_time/60, dist, group = interaction(vehicle_id, trip_id)))
     theme(legend.position = "none") +
     xlab("Time in segment (min)")
 
+
+sis <- unique(ds$segment_id)
+ggplot(ds %>% filter(segment_id == sis[3] & speed > 10) %>%
+       mutate(peak = case_when(time > 7.5 & time < 8.5 ~ "peak (morning)",
+                               time > 17 & time < 18 ~ "peak (evening)",
+                               time > 11 & time < 13 ~ "off",
+                               TRUE ~ "")) %>%
+       filter(peak != ""),
+       aes(dist, speed, colour = peak)) +
+    geom_point() +
+    geom_smooth(span = 0.4)
+
+
 ## Now convert Bs into a single sparse matrix ...
 message(" * preparing sparse basis matrices")
 Bs <- tapply(1:nrow(ds), ds$segment_id, function(i) {
