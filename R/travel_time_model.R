@@ -10,7 +10,7 @@ library(rgl)
 library(Rcpp)
 
 ### --- Step 1: Load the data
-date <- "2018-02-12"
+date <- "2018-04-02"
 
 dir <- "historicaldata"
 files <- paste0(dir, "/", c("vehicle_positions", "trip_updates"),

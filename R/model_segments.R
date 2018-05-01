@@ -89,7 +89,9 @@ if (file.exists("thedata.rda")) {
     ds <- data %>%
         filter(segment_id %in% segs) %>%
         filter(!is.na(speed)) %>%
-        mutate(route = substr(route_id, 1, 3)) %>%
+        mutate(route = substr(route_id, 1, 3),
+               date = format(as.POSIXct(timestamp, origin = "1970-01-01"),
+                             "%Y-%m-%d")) %>%
         group_by(segment_id) %>%
         do((.) %>%
            mutate(dist = distIntoShape(., segments %>%
@@ -97,6 +99,25 @@ if (file.exists("thedata.rda")) {
         ungroup()
     save(ds, file = "thedata.rda")
 }
+
+startt <-
+    tapply(1:nrow(ds),
+           paste0(ds$vehicle_id, ds$segment_id, ds$date, ds$trip_id),
+           function(i) min(ds$timestamp[i]))
+ds <- ds %>%
+    mutate(segment_time = timestamp -
+               startt[paste0(vehicle_id, segment_id, date, trip_id)])
+
+hist(ds$segment_time)
+    #group_by(interaction(vehicle_id, segment_id, date, trip_id)) %>%
+    #do((.) %>% mutate(segment_time = timestamp - min(timestamp))) %>%
+    #ungroup 
+
+ggplot(ds, aes(segment_time/60, dist, group = interaction(vehicle_id, trip_id))) +
+    geom_path(aes(colour = date)) +
+    facet_wrap(~segment_id, scales = "free") +
+    theme(legend.position = "none") +
+    xlab("Time in segment (min)")
 
 ## Now convert Bs into a single sparse matrix ...
 message(" * preparing sparse basis matrices")
