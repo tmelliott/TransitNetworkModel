@@ -121,7 +121,7 @@ ggplot(ds, aes(segment_time/60, dist, group = interaction(vehicle_id, trip_id)))
 
 
 sis <- unique(ds$segment_id)
-ggplot(ds %>% filter(segment_id == sis[3] & speed > 10) %>%
+ggplot(ds %>% filter(segment_id == sis[3] & speed > 0) %>%
        mutate(peak = case_when(time > 7.5 & time < 8.5 ~ "peak (morning)",
                                time > 17 & time < 18 ~ "peak (evening)",
                                time > 11 & time < 13 ~ "off",
@@ -185,3 +185,133 @@ message(" * writing results to file")
 save(ds, stan.fit, Bs, file = "model_results.rda")
 
 message(" * done")
+
+
+
+
+
+
+
+
+
+
+
+############################### Process a single trip
+
+library(tidyverse)
+library(RSQLite)
+library(dbplyr)
+library(lubridate)
+
+con <- dbConnect(SQLite(), "rawhistory.db")
+
+vps <- tbl(con, 'vps') %>%
+    mutate(date = strftime('%Y-%m-%d', datetime(timestamp, 'unixepoch')))
+
+c2 <- dbConnect(SQLite(), "../../TransitNetworkModel/gtfs.db")
+routes <- tbl(c2, 'routes')
+## trips <- tbl(c2, 'trips')
+
+shapes <- tbl(c2, 'shapes') %>%
+    inner_join(routes) %>%
+    select(shape_id, seq, lat, lng, route_id)
+
+dates <- vps %>%
+    select(date) %>% distinct %>% collect
+date <- dates$date[1]
+
+trips <- vps %>%
+    group_by(trip_id) %>%
+    summarize(n = n()) %>%
+    arrange(desc(n)) %>%
+    collect
+
+routes <- vps %>%
+    group_by(route_id) %>%
+    summarize(n = n()) %>%
+    arrange(desc(n)) %>%
+    collect
+
+trip <- trips$trip_id[1]
+route <- routes$route_id[1]
+x <- vps %>%
+    filter(route_id == route & date == date) %>%
+    select(vehicle_id, route_id, trip_id, trip_start_time, timestamp,
+           position_latitude, position_longitude, date) %>%
+    arrange(timestamp) %>%
+    mutate(lat = position_latitude, lng = position_longitude) %>%
+    collect
+
+z <- process_trip(x)
+
+for (i in 1:nrow(routes)) {
+    route <- routes$route_id[i]
+    x <- vps %>%
+        filter(route_id == route) %>%
+        select(vehicle_id, route_id, trip_id, trip_start_time, timestamp,
+               position_latitude, position_longitude, date) %>%
+        arrange(timestamp) %>%
+        collect
+    z <- process_trip(x)
+    if (is.null(z)) next
+    grid::grid.locator()
+}
+
+process_trip <- function(x) {
+
+    x$time <- format(as.POSIXct(x$timestamp, origin = "1970-01-01"), "%H:%M:%S")
+
+    tstart <- hms(x$trip_start_time)
+    x <- x %>%
+        filter(hms(time) >= tstart - minutes(5) &
+               hms(time) < tstart + minutes(90))
+
+    if (nrow(x) <= 1) return()
+    
+    rid <- gsub('-.*', '', x$route_id[1])
+    shape <- shapes %>%
+        filter(route_id %like% paste0(rid, '%')) %>%
+        arrange(seq) %>%
+        collect
+    
+    x <- x %>% group_by(date, trip_id, vehicle_id) %>%
+        do((.) %>% arrange(timestamp) %>%
+           mutate(
+               dt = c(0, diff(timestamp)),
+               dx = c(0,
+                      if ((.) %>% nrow < 2) {
+                          numeric()
+                      } else if ((.) %>% nrow == 2) {
+                          zz <- cbind(position_longitude, position_latitude)
+                          geosphere::distGeo(zz[1,], zz[2,])
+                      } else {
+                          geosphere::distGeo(
+                              cbind(position_longitude, position_latitude))
+                      }),
+               dist = cumsum(dx),
+               speed = dx / dt / 1000 * 60 * 60
+           )) %>%
+        ungroup()
+
+    s0 <- x %>% filter(speed == 0)
+
+    gridExtra::grid.arrange(
+        ggplot(x %>% filter(speed > 0) %>% arrange(timestamp),
+               aes(position_longitude, position_latitude)) +
+        geom_path(aes(lng, lat), data = shape, lwd = 2) +
+        geom_path(aes(colour = speed, group = interaction(vehicle_id, trip_id)),
+                  lwd = 2) +
+        geom_point(aes(size = dt), data = s0, color = "red") +
+        facet_wrap(~date, nrow = 1) +
+        coord_fixed(1.3) +
+        labs(size = "Dwell time (seconds)") +
+        scale_colour_viridis(option = 'C'),
+        ggplot(x %>% filter(speed > 0),
+               aes(dist, speed, group = interaction(date, vehicle_id, trip_id))) +
+        geom_path(),
+        ##geom_smooth(method = "gam", se=FALSE),
+        nrow = 2)
+        
+}
+
+process_trip(x)
