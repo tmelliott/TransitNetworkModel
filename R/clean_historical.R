@@ -1,6 +1,7 @@
 library(tidyverse)
 library(RSQLite)
 library(dbplyr)
+library(viridis)
 library(lubridate)
 
 if (exists("con")) dbDisconnect(con)
@@ -280,4 +281,141 @@ for (trip in trips) {
     }    
 }
 
-save(list=ls(), file="workspace.rda")
+##save(list=ls(), file="workspace.rda")
+##load("workspace.rda")
+
+
+for (trip in trips.final %>% pluck("trip_id") %>% unique) {
+    tid <- gsub("-.*", "", trip)    
+    tid.gtfs <- try(
+        gtfs %>% tbl("trips") %>%
+        filter(trip_id %like% paste0(tid, "%")) %>% select(trip_id) %>%
+        head(1) %>% collect %>% pluck("trip_id"))
+    shape <-
+        gtfs %>% tbl('trips') %>%
+        inner_join(gtfs %>% tbl('routes'), by = 'route_id') %>%
+        filter(trip_id == tid.gtfs) %>%
+        select(shape_id) %>%
+        inner_join(gtfs %>% tbl('shapes'), by = 'shape_id') %>%
+        select(seq, lng, lat) %>% arrange(seq) %>% collect
+    
+    p1 <- ggplot(trips.final %>% filter(trip_id == trip),
+                aes(lng, lat)) +
+        geom_path(data = shape, colour = 'orangered') +
+        geom_point(data = shape[1,], size = 3, colour = "orangered") +
+        geom_path(aes(colour = speed / 1000 * 60 * 60), lwd = 2) +
+        #geom_point() +
+        scale_colour_viridis() +
+        coord_fixed(1.3) +
+        labs(colour = "Speed (km/h)")
+    p2 <- ggplot(trips.final %>% filter(trip_id == trip),
+                 aes(as.numeric(time - trip_start_time) / 60, dist/1000)) +
+        #geom_path(lty = 2) +
+        geom_point() +
+        xlab("Time into trip (min)") + ylab("Distance into trip (km)")
+    p3 <- ggplot(trips.final %>% filter(trip_id == trip),
+                 aes(c(0, dist[-1] - diff(dist)/2)/1000,
+                     speed / 1000 * 60 * 60)) +
+        #geom_path(lty = 3) +
+        geom_point() +
+        geom_smooth(se=FALSE) +
+        xlab("Distance into trip (km)") + ylab("Speed (km/h)")
+    gridExtra::grid.arrange(p1, p2, p3, layout_matrix= rbind(c(1, 2), c(1, 3)))
+    
+    grid::grid.locator()
+}
+
+
+ggplot(trips.final, aes(lng, lat, colour = speed / 1000 * 60 * 60)) +
+    ## geom_point(alpha = 0.5) +
+    geom_path(aes(group = trip_id), alpha = 0.5, lwd = 2, lineend = "round") +
+    coord_fixed(1.3) +
+    scale_colour_viridis() +
+    labs(colour = "Speed (km/h)")
+
+
+
+segments <-
+    gtfs %>% tbl('segments') %>% #, by = 'segment_id') %>%
+    left_join(gtfs %>% tbl('intersections'),
+              by = c('from_id' = 'intersection_id')) %>%
+    left_join(gtfs %>% tbl('intersections'),
+              by = c('to_id' = 'intersection_id'),
+              suffix = c(".from", ".to")) %>%
+    left_join(gtfs %>% tbl('stops'),
+              by = c('start_at' = 'stop_id')) %>%
+    left_join(gtfs %>% tbl('stops'),
+              by = c('end_at' = 'stop_id'),
+              suffix = c('.start', '.end')) %>%
+    mutate(lat.from = case_when(is.na(from_id) ~ lat.start, TRUE ~ lat.from),
+           lng.from = case_when(is.na(from_id) ~ lng.start, TRUE ~ lng.from),
+           lat.to = case_when(is.na(to_id) ~ lat.end, TRUE ~ lat.to),
+           lng.to = case_when(is.na(to_id) ~ lng.end, TRUE ~ lng.to)) %>%
+    select(segment_id, lat.from, lng.from, lat.to, lng.to) %>%
+    collect
+    
+segspeeds <- NULL
+## For each route_id ->
+for (route in trips.final %>% pluck('route_id') %>% unique) {
+    ## get segments ->
+    rid <- gsub("-.*", "", route)
+    rid.gtfs <- try(
+        gtfs %>% tbl("routes") %>%
+        filter(route_id %like% paste0(rid, "%")) %>% select(route_id) %>%
+        head(1) %>% collect %>% pluck("route_id"))
+
+    shseg <- gtfs %>% tbl("routes") %>%
+        filter(route_id == rid.gtfs) %>%
+        select(shape_id) %>%
+        left_join(gtfs %>% tbl('shape_segments'), by = 'shape_id') %>%
+        mutate(dist = shape_dist_traveled) %>%
+        select(segment_id, dist) %>% arrange(dist) %>% collect
+
+    ## Get segment_id for each point
+    ss <- trips.final %>% filter(route_id == route) %>%
+        mutate(segment_id = sapply(dist, function(d) {
+            shseg$segment_id[max(which(shseg$dist <= d))]
+        })) %>%
+        select(lat, lng, time, speed, segment_id)
+    segspeeds <- segspeeds %>% bind_rows(ss)
+}
+
+segs <- segspeeds %>%
+    group_by(segment_id) %>%
+    summarize(speed.mean = mean(speed, na.rm = TRUE),
+              speed.sd = sd(speed, na.rm = TRUE)) %>%
+    left_join(segments, by = 'segment_id')
+
+ggplot(segs, aes(lng.from, lat.from,
+                     colour = speed.mean / 1000 * 60 * 60)) +
+    geom_segment(aes(xend=lng.to, yend=lat.to, group = segment_id),
+                 lwd = 1.5, lineend = 'butt', alpha = 0.8) +
+    labs(colour = "Speed (km/h)") +
+    scale_colour_viridis() +
+    coord_fixed(1.3)
+    
+
+
+segment <- segspeeds$segment_id[1]
+
+
+
+ggplot(segspeeds, aes(time, speed / 1000 * 60 * 60)) +
+    geom_point() +
+    facet_wrap(~segment_id) +
+    xlab("Time") + ylab("Speed (km/h)")
+
+sids <- segspeeds %>%
+    group_by(segment_id) %>%
+    summarize(count = n()) %>% ungroup %>%
+    arrange(desc(count)) %>% pluck('segment_id')
+
+for (segment in sids) {
+    p <- ggplot(segspeeds %>% filter(segment_id == segment),
+           aes(time, speed / 1000 * 60 * 60)) +
+        geom_point() +
+        xlab("Time") + ylab("Speed (km/h)") +
+        ylim(0, 100)
+    print(p)
+    grid::grid.locator()
+}
