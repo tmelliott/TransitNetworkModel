@@ -228,7 +228,11 @@ cat("\n *** Processing trips\n")
 for (trip in trips) {
     tii <- tii + 1
     cat(sep = "", "\r * [", tii, "/", length(trips), "]  ")
-    tdata <- tcon %>% tbl("trips_raw") %>% filter(trip_id == trip)
+    tdata <- tcon %>% tbl("trips_raw") %>%
+        filter(trip_id == trip) %>%
+        collect %>%
+        mutate(trip_start_time = as.hms(trip_start_time),
+               time = as.hms(trip_start_time))
     vs <- table(tdata$vehicle_id)
     if (length(vs) > 1) {
         vid <- names(vs)[which.max(vs)]
