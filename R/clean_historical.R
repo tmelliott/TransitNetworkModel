@@ -43,6 +43,8 @@ if (!file.exists("history_cleaned.db")) {
                    format("%H:%M:%S") %>% as.hms) %>%
         filter(FALSE)
     dbWriteTable(tcon, "trips_raw", trips.keep)
+} else {
+    tcon <- dbConnect(SQLite(), "history_cleaned.db")
 }
 
 ## For each day ...
