@@ -223,7 +223,11 @@ h <- function(d, shape) {
 
 trips.final <- NULL
 trips <- tcon %>% tbl("trips_raw") %>% collect %>% pluck('trip_id') %>% unique
+tii <- 0
+cat("\n *** Processing trips\n")
 for (trip in trips) {
+    tii <- tii + 1
+    cat(sep = "", "\r * [", tii, "/", length(trips), "]  ")
     tdata <- tcon %>% tbl("trips_raw") %>% filter(trip_id == trip)
     vs <- table(tdata$vehicle_id)
     if (length(vs) > 1) {
@@ -295,6 +299,7 @@ for (trip in trips) {
 }
 
 dbWriteTable(tcon, "trips", trips.final)
+cat("\nDone\n")
 
 ##save(list=ls(), file="workspace.rda")
 ##load("workspace.rda")
