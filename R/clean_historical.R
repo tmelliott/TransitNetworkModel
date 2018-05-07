@@ -32,19 +32,22 @@ inbbox <- function(x, bbox, R = 6371000) {
     abs(x[,1]) < span[1] & abs(x[,2]) < span[2]
 }
 
-tcon <- dbConnect(SQLite(), "history_cleaned.db")
-trips.keep <- vps %>% 
-    mutate(lat = position_latitude, lng = position_longitude) %>%
-    select(vehicle_id, trip_id, route_id, trip_start_time,
-           lat, lng, timestamp, trip_date) %>% head(1) %>% collect %>%
-    mutate(trip_start_time = as.hms(trip_start_time),
-           time = as.POSIXct(timestamp, origin = "1970-01-01") %>%
-               format("%H:%M:%S") %>% as.hms) %>%
-    filter(FALSE)
-dbWriteTable(tcon, "trips_raw", trips.keep)
+if (!file.exists("history_cleaned.db")) {
+    tcon <- dbConnect(SQLite(), "history_cleaned.db")
+    trips.keep <- vps %>% 
+        mutate(lat = position_latitude, lng = position_longitude) %>%
+        select(vehicle_id, trip_id, route_id, trip_start_time,
+               lat, lng, timestamp, trip_date) %>% head(1) %>% collect %>%
+        mutate(trip_start_time = as.hms(trip_start_time),
+               time = as.POSIXct(timestamp, origin = "1970-01-01") %>%
+                   format("%H:%M:%S") %>% as.hms) %>%
+        filter(FALSE)
+    dbWriteTable(tcon, "trips_raw", trips.keep)
+}
 
 ## For each day ...
-dates <- vps %>% select(trip_date) %>% distinct %>% collect %>% pluck("trip_date")
+#dates <- vps %>% select(trip_date) %>% distinct %>% collect %>% pluck("trip_date")
+dates <- character()
 for (date in dates) {
     cat("\n +++", date, "\n")
     ## For each trip ...
