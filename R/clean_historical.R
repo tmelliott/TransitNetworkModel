@@ -222,7 +222,7 @@ h <- function(d, shape) {
 
 
 trips.final <- NULL
-trips <- tcon %>% tbl("trips_raw") %>% pluck('trip_id') %>% unique
+trips <- tcon %>% tbl("trips_raw") %>% collect %>% pluck('trip_id') %>% unique
 for (trip in trips) {
     tdata <- tcon %>% tbl("trips_raw") %>% filter(trip_id == trip)
     vs <- table(tdata$vehicle_id)
