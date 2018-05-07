@@ -232,7 +232,7 @@ for (trip in trips) {
         filter(trip_id == trip) %>%
         collect %>%
         mutate(trip_start_time = as.hms(trip_start_time),
-               time = as.hms(trip_start_time))
+               time = as.hms(time))
     vs <- table(tdata$vehicle_id)
     if (length(vs) > 1) {
         vid <- names(vs)[which.max(vs)]
