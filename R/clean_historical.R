@@ -227,6 +227,7 @@ tii <- 0
 cat("\n *** Processing trips\n")
 for (trip in trips) {
     tii <- tii + 1
+    cat("\r", rep("", 500))
     cat(sep = "", "\r * [", tii, "/", length(trips), "]  ")
     tdata <- tcon %>% tbl("trips_raw") %>%
         filter(trip_id == trip) %>%
@@ -268,12 +269,14 @@ for (trip in trips) {
         sx <- c(0, geosphere::distGeo(tdata %>% select(lng, lat) %>%
                                       as.matrix, f = 0) / diff(tx))
 
+        cat(sep="", " [", N, "] ")
         for (j in 1:N) {
+            cat(".")
             d <- Inf
             i <- 0
-            while (d > 10 + i/10) {
+            while (d > 10 + i/100) {
                 .sx <- sx
-                .sx[j] <- truncnorm::rtruncnorm(1, 0, 30, .sx[j], 1)
+                .sx[j] <- truncnorm::rtruncnorm(1, 0-i/10, 30, .sx[j], 1)
                 dx <- cumsum(.sx * c(0, diff(tx)))
                 zx <- h(dx, shape)
                 
@@ -295,10 +298,12 @@ for (trip in trips) {
             ##     geom_point() +
             ##     coord_fixed(1.3)
             ## print(p)
-        }      
-        
+        }
+
+        cat("::")
         trips.final <- trips.final %>%
-            bind_rows(tdata %>% mutate(dist = dx, speed = sx))   
+            bind_rows(tdata %>% mutate(dist = dx, speed = sx))
+        cat("!")
     }    
 }
 
