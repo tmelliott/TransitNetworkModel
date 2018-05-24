@@ -203,7 +203,7 @@ for (date in dates) {
         dbWriteTable(tcon, "trips_raw", tdata, append = TRUE)
     }
 }
-
+dbDisconnect(tcon)
 
 
 h <- function(d, shape) {
@@ -222,17 +222,22 @@ h <- function(d, shape) {
 
 
 trips.final <- NULL
+tcon <- dbConnect(SQLite(), "history_cleaned.db")
 trips <- tcon %>% tbl("trips_raw") %>% collect %>% pluck('trip_id') %>% unique
+dbDisconnect(tcon)
 tii <- 0
 cat("\n *** Processing trips\n")
 for (trip in trips) {
     tii <- tii + 1
     cat(sep = "", "\r * [", tii, "/", length(trips), "]  ")
+    tcon <- dbConnect(SQLite(), "history_cleaned.db")
     tdata <- tcon %>% tbl("trips_raw") %>%
         filter(trip_id == trip) %>%
         collect %>%
         mutate(trip_start_time = as.hms(trip_start_time),
                time = as.hms(time))
+    dbDisconnect(tcon)
+
     vs <- table(tdata$vehicle_id)
     if (length(vs) > 1) {
         vid <- names(vs)[which.max(vs)]
@@ -244,6 +249,8 @@ for (trip in trips) {
         gtfs %>% tbl("trips") %>%
         filter(trip_id %like% paste0(tid, "%")) %>% select(trip_id) %>%
         head(1) %>% collect %>% pluck("trip_id"))
+    if (inherits(tid.gtfs, "try-error") || is.null(tid.gtfs)) next
+
     shape <-
         gtfs %>% tbl('trips') %>%
         inner_join(gtfs %>% tbl('routes'), by = 'route_id') %>%
@@ -289,7 +296,9 @@ for (trip in trips) {
     }    
 }
 
+tcon <- dbConnect(SQLite(), "history_cleaned.db")
 dbWriteTable(tcon, "trips", trips.final)
+dbDisconnect(tcon)
 cat("\nDone\n")
 
 ##save(list=ls(), file="workspace.rda")
