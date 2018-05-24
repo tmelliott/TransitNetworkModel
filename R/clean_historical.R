@@ -227,7 +227,6 @@ tii <- 0
 cat("\n *** Processing trips\n")
 for (trip in trips) {
     tii <- tii + 1
-    cat("\r", rep("", 500))
     cat(sep = "", "\r * [", tii, "/", length(trips), "]  ")
     tdata <- tcon %>% tbl("trips_raw") %>%
         filter(trip_id == trip) %>%
@@ -266,44 +265,27 @@ for (trip in trips) {
     {
         N <- nrow(tdata)
         tx <- (tdata$time - tdata$trip_start_time) %>% as.numeric
-        sx <- c(0, geosphere::distGeo(tdata %>% select(lng, lat) %>%
-                                      as.matrix, f = 0) / diff(tx))
+        sx <- numeric(N)
 
-        cat(sep="", " [", N, "] ")
-        for (j in 1:N) {
-            cat(".")
-            d <- Inf
-            i <- 0
-            while (d > 10 + i/100) {
-                .sx <- sx
-                .sx[j] <- truncnorm::rtruncnorm(1, 0-i/10, 30, .sx[j], 1)
-                dx <- cumsum(.sx * c(0, diff(tx)))
-                zx <- h(dx, shape)
-                
-                .d <- geosphere::distGeo(
-                    zx[j,] %>% select(lng, lat) %>% as.matrix,
-                    tdata[j,] %>% select(lng, lat) %>% as.matrix,
-                    f = 0)
-                if (.d < d || runif(1) < d / .d) {
-                    d <- .d
-                    sx <- .sx
-                }
-                i <- i+1
-            }
-            ## p <- ggplot(zx[1:j,], aes(lng, lat)) +
-            ##     geom_path(data = shape, colour = 'orangered') +
-            ##     geom_point(data = shape[1,], size = 3, colour = "orangered") +
-            ##     geom_path(lty = 2) +
-            ##     geom_point(data = tdata, size = 2, col = 'magenta') +
-            ##     geom_point() +
-            ##     coord_fixed(1.3)
-            ## print(p)
+        for (j in 2:N) {
+            sxj <- seq(0, 30, length = 3)
+            wm <- 2
+        	for (k in 1:5) {
+	            sxj <- seq(sxj[max(1, wm - 1)], sxj[min(length(sxj), wm + 1)], length = 11)
+	            dxj <- sum(sx[1:(j-1)]) + sxj * tx[j]
+	            zxj <- h(dxj, shape)
+	            dj <- geosphere::distGeo(
+	                zxj %>% select(lng, lat) %>% as.matrix,
+	                tdata[j, ] %>% select(lng, lat) %>% as.matrix,
+	                f = 0)
+	            wm <- which.min(dj)
+        	}
+            sx[j] <- sxj[wm]
         }
 
-        cat("::")
+        dx <- cumsum(c(0, diff(tx)) * sx)
         trips.final <- trips.final %>%
             bind_rows(tdata %>% mutate(dist = dx, speed = sx))
-        cat("!")
     }    
 }
 
