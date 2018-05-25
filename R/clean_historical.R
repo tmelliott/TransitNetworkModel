@@ -221,63 +221,74 @@ h <- function(d, shape) {
 }
 
 
-trips.final <- NULL
 tcon <- dbConnect(SQLite(), "history_cleaned.db")
 trips <- tcon %>% tbl("trips_raw") %>% collect %>% pluck('trip_id') %>% unique
 dbDisconnect(tcon)
-tii <- 0
 cat("\n *** Processing trips\n")
-for (trip in trips) {
-    tii <- tii + 1
-    cat(sep = "", "\r * [", tii, "/", length(trips), "]  ")
-    tcon <- dbConnect(SQLite(), "history_cleaned.db")
-    tdata <- tcon %>% tbl("trips_raw") %>%
-        filter(trip_id == trip) %>%
-        collect %>%
-        mutate(trip_start_time = as.hms(trip_start_time),
-               time = as.hms(time))
-    dbDisconnect(tcon)
 
-    vs <- table(tdata$vehicle_id)
-    if (length(vs) > 1) {
-        vid <- names(vs)[which.max(vs)]
-        tdata <- tdata %>% filter(vehicle_id == vid)
-    }
-    
-    tid <- gsub("-.*", "", trip)    
-    tid.gtfs <- try(
-        gtfs %>% tbl("trips") %>%
-        filter(trip_id %like% paste0(tid, "%")) %>% select(trip_id) %>%
-        head(1) %>% collect %>% pluck("trip_id"))
-    if (inherits(tid.gtfs, "try-error") || is.null(tid.gtfs)) next
+library(parallel)
+library(pbapply)
 
-    shape <-
-        gtfs %>% tbl('trips') %>%
-        inner_join(gtfs %>% tbl('routes'), by = 'route_id') %>%
-        filter(trip_id == tid.gtfs) %>%
-        select(shape_id) %>%
-        inner_join(gtfs %>% tbl('shapes'), by = 'shape_id') %>%
-        select(seq, lng, lat) %>% arrange(seq) %>% collect
-    
-    ## ggplot(tdata, aes(lng, lat)) +
-    ##     geom_path(data = shape, colour = 'orangered') +
-    ##     geom_point(data = shape[1,], size = 3, colour = "orangered") +
-    ##     geom_path(lty = 2) +
-    ##     geom_point()
+cl <- makeCluster(6)
+res <- clusterEvalQ(cl, {
+	library(tidyverse)
+	library(RSQLite)
+	library(dbplyr)
+	library(viridis)
+	library(lubridate)
+	library(hms)
+})
+res <- clusterExport(cl, "h")
+rm(res)
 
-    ## Find closest point on line
-    shape <- shape %>%
-        mutate(dist = cumsum(c(0, cbind(lng, lat) %>% as.matrix %>%
-                                  geosphere::distGeo(f = 0))))
-    {
-        N <- nrow(tdata)
-        tx <- (tdata$time - tdata$trip_start_time) %>% as.numeric
-        sx <- numeric(N)
+pboptions(type = "timer")
 
-        for (j in 2:N) {
-            sxj <- seq(0, 30, length = 3)
-            wm <- 2
-        	for (k in 1:5) {
+trips.final <- pblapply(trips, function(trip) {
+	    tcon <- dbConnect(SQLite(), "history_cleaned.db")
+	    tdata <- tcon %>% tbl("trips_raw") %>%
+	        filter(trip_id == trip) %>%
+	        collect %>%
+	        mutate(trip_start_time = as.hms(trip_start_time),
+	               time = as.hms(time))
+	    dbDisconnect(tcon)
+
+	    vs <- table(tdata$vehicle_id)
+	    if (length(vs) > 1) {
+	        vid <- names(vs)[which.max(vs)]
+	        tdata <- tdata %>% filter(vehicle_id == vid)
+	    }
+	    
+	    gtfs <- dbConnect(SQLite(), "../gtfs.db")
+
+	    tid <- gsub("-.*", "", trip)    
+	    tid.gtfs <- try(
+	        gtfs %>% tbl("trips") %>%
+	        filter(trip_id %like% paste0(tid, "%")) %>% select(trip_id) %>%
+	        head(1) %>% collect %>% pluck("trip_id"))
+	    if (inherits(tid.gtfs, "try-error") || is.null(tid.gtfs)) return(NULL)
+
+	    shape <-
+	        gtfs %>% tbl('trips') %>%
+	        inner_join(gtfs %>% tbl('routes'), by = 'route_id') %>%
+	        filter(trip_id == tid.gtfs) %>%
+	        select(shape_id) %>%
+	        inner_join(gtfs %>% tbl('shapes'), by = 'shape_id') %>%
+	        select(seq, lng, lat) %>% arrange(seq) %>% collect
+
+	    dbDisconnect(gtfs)
+
+	    ## Find closest point on line
+	    shape <- shape %>%
+	        mutate(dist = cumsum(c(0, cbind(lng, lat) %>% as.matrix %>%
+	                                  geosphere::distGeo(f = 0))))
+	    N <- nrow(tdata)
+	    tx <- (tdata$time - tdata$trip_start_time) %>% as.numeric
+	    sx <- numeric(N)
+
+	    for (j in 2:N) {
+	        sxj <- seq(0, 30, length = 3)
+	        wm <- 2
+	    	for (k in 1:5) {
 	            sxj <- seq(sxj[max(1, wm - 1)], sxj[min(length(sxj), wm + 1)], length = 11)
 	            dxj <- sum(sx[1:(j-1)]) + sxj * tx[j]
 	            zxj <- h(dxj, shape)
@@ -286,15 +297,13 @@ for (trip in trips) {
 	                tdata[j, ] %>% select(lng, lat) %>% as.matrix,
 	                f = 0)
 	            wm <- which.min(dj)
-        	}
-            sx[j] <- sxj[wm]
-        }
+	    	}
+	        sx[j] <- sxj[wm]
+	    }
 
-        dx <- cumsum(c(0, diff(tx)) * sx)
-        trips.final <- trips.final %>%
-            bind_rows(tdata %>% mutate(dist = dx, speed = sx))
-    }    
-}
+	    dx <- cumsum(c(0, diff(tx)) * sx)
+	    tdata %>% mutate(dist = dx, speed = sx)
+	}, cl = cl)
 
 tcon <- dbConnect(SQLite(), "history_cleaned.db")
 dbWriteTable(tcon, "trips", trips.final)
