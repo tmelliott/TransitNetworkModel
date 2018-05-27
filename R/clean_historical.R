@@ -244,6 +244,7 @@ rm(res)
 pboptions(type = "timer")
 
 trips.final <- pblapply(trips, function(trip) {
+    try({
 	    tcon <- dbConnect(SQLite(), "history_cleaned.db")
 	    tdata <- tcon %>% tbl("trips_raw") %>%
 	        filter(trip_id == trip) %>%
@@ -252,6 +253,7 @@ trips.final <- pblapply(trips, function(trip) {
 	               time = as.hms(time))
 	    dbDisconnect(tcon)
 
+        if (nrow(tdata) == 0) return(NULL)
 	    vs <- table(tdata$vehicle_id)
 	    if (length(vs) > 1) {
 	        vid <- names(vs)[which.max(vs)]
@@ -303,7 +305,8 @@ trips.final <- pblapply(trips, function(trip) {
 
 	    dx <- cumsum(c(0, diff(tx)) * sx)
 	    tdata %>% mutate(dist = dx, speed = sx)
-	}, cl = cl)
+    })
+}, cl = cl)
 
 tcon <- dbConnect(SQLite(), "history_cleaned.db")
 dbWriteTable(tcon, "trips", trips.final)
