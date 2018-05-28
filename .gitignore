@@ -11,6 +11,7 @@ protobuf/*.pb.*
 *.gif
 *.mp4
 *.rda
+*.zip
 
 R/fig
 data/versions.csv

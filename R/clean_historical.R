@@ -285,6 +285,7 @@ trips.final <- pblapply(trips, function(trip) {
 	                                  geosphere::distGeo(f = 0))))
 	    N <- nrow(tdata)
 	    tx <- (tdata$time - tdata$trip_start_time) %>% as.numeric
+	    dx <- numeric(N)
 	    sx <- numeric(N)
 
 	    for (j in 2:N) {
@@ -300,6 +301,7 @@ trips.final <- pblapply(trips, function(trip) {
 	                f = 0)
 	            wm <- which.min(dj)
 	    	}
+	    	# dx[j] <- dj[wm]
 	        sx[j] <- sxj[wm]
 	    }
 
@@ -308,10 +310,24 @@ trips.final <- pblapply(trips, function(trip) {
     })
 }, cl = cl)
 
+
+cat("\nWriting to database ... ")
 tcon <- dbConnect(SQLite(), "history_cleaned.db")
-dbWriteTable(tcon, "trips", trips.final)
+dbRemoveTable(tcon, "trips")
+dbWriteTable(tcon, "trips", trips.final[[1]])
+pb <- txtProgressBar(0, length(trips.final), style = 3)
+for (i in 2:length(trips.final)) {
+	setTxtProgressBar(pb, i)
+	if (!is.null(trips.final[[i]]) &&
+		!inherits(trips.final[[i]], "try-error") &&
+		nrow(trips.final[[i]]) > 5 &&
+		colnames(trips.final[[i]]) == colnames(trips.final[[1]]))
+	{
+		dbWriteTable(tcon, "trips", trips.final[[i]], append = TRUE)
+	}
+}
 dbDisconnect(tcon)
-cat("\nDone\n")
+cat("done\n")
 
 ##save(list=ls(), file="workspace.rda")
 ##load("workspace.rda")
