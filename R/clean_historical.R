@@ -12,212 +12,212 @@ if (exists("gtfs")) dbDisconnect(gtfs)
 gtfs <- dbConnect(SQLite(), "../gtfs.db")
 
 vps <- tbl(con, 'vps') %>%
-    mutate(trip_date = strftime('%Y-%m-%d', datetime(timestamp, 'unixepoch')))
+	mutate(trip_date = strftime('%Y-%m-%d', datetime(timestamp, 'unixepoch')))
 
 inbbox <- function(x, bbox, R = 6371000) {
-    ## x: [[lng, lat], ...] (matrix)
-    ## bbox: [lngmin, latmin, lngmax, latmax]
-    bbox <- matrix(bbox, nrow = 2, byrow = TRUE)
-    center <- colMeans(bbox)
-    ## convert to radians
-    center <- center * pi / 180
-    x <- x * pi / 180
-    x[,1] <- (x[,1] - center[1]) * cos(center[2]) * R
-    x[,2] <- (x[,2] - center[2]) * R
-    bbox <- bbox * pi / 180
-    bbox[,1] <- (bbox[,1] - center[1]) * cos(center[2]) * R
-    bbox[,2] <- (bbox[,2] - center[2]) * R
-    ## within 50m of the bbox
-    span <- apply(bbox, 2, max) + 50
-    abs(x[,1]) < span[1] & abs(x[,2]) < span[2]
+	## x: [[lng, lat], ...] (matrix)
+	## bbox: [lngmin, latmin, lngmax, latmax]
+	bbox <- matrix(bbox, nrow = 2, byrow = TRUE)
+	center <- colMeans(bbox)
+	## convert to radians
+	center <- center * pi / 180
+	x <- x * pi / 180
+	x[,1] <- (x[,1] - center[1]) * cos(center[2]) * R
+	x[,2] <- (x[,2] - center[2]) * R
+	bbox <- bbox * pi / 180
+	bbox[,1] <- (bbox[,1] - center[1]) * cos(center[2]) * R
+	bbox[,2] <- (bbox[,2] - center[2]) * R
+	## within 50m of the bbox
+	span <- apply(bbox, 2, max) + 50
+	abs(x[,1]) < span[1] & abs(x[,2]) < span[2]
 }
 
 if (!file.exists("history_cleaned.db")) {
-    tcon <- dbConnect(SQLite(), "history_cleaned.db")
-    trips.keep <- vps %>% 
-        mutate(lat = position_latitude, lng = position_longitude) %>%
-        select(vehicle_id, trip_id, route_id, trip_start_time,
-               lat, lng, timestamp, trip_date) %>% head(1) %>% collect %>%
-        mutate(trip_start_time = as.hms(trip_start_time),
-               time = as.POSIXct(timestamp, origin = "1970-01-01") %>%
-                   format("%H:%M:%S") %>% as.hms) %>%
-        filter(FALSE)
-    dbWriteTable(tcon, "trips_raw", trips.keep)
+	tcon <- dbConnect(SQLite(), "history_cleaned.db")
+	trips.keep <- vps %>% 
+		mutate(lat = position_latitude, lng = position_longitude) %>%
+		select(vehicle_id, trip_id, route_id, trip_start_time,
+			   lat, lng, timestamp, trip_date) %>% head(1) %>% collect %>%
+		mutate(trip_start_time = as.hms(trip_start_time),
+			   time = as.POSIXct(timestamp, origin = "1970-01-01") %>%
+				   format("%H:%M:%S") %>% as.hms) %>%
+		filter(FALSE)
+	dbWriteTable(tcon, "trips_raw", trips.keep)
 } else {
-    tcon <- dbConnect(SQLite(), "history_cleaned.db")
+	tcon <- dbConnect(SQLite(), "history_cleaned.db")
 }
 
 ## For each day ...
 #dates <- vps %>% select(trip_date) %>% distinct %>% collect %>% pluck("trip_date")
 dates <- character()
 for (date in dates) {
-    cat("\n +++", date, "\n")
-    ## For each trip ...
-    trips <- vps %>% filter(trip_date == date) %>%
-        group_by(trip_id) %>% summarize(count = n()) %>%
-        filter(count >= 10) %>% collect %>% pluck("trip_id")
-    tii <- 0
-    for (trip in trips) {
-        tii <- tii + 1
-        if (tcon %>% tbl("trips_raw") %>%
-            filter(trip_date == date & trip_id == trip) %>%
-            collect %>% nrow) next()
-        cat(sep = "", "\r + [", tii, " of ", length(trips), "] ", trip)
-        ## Find trip's GTFS entry -> start and end times
-        tid <- gsub("-.*", "", trip)
-        
-        tid.gtfs <- try(
-            gtfs %>% tbl("trips") %>%
-            filter(trip_id %like% paste0(tid, "%")) %>% select(trip_id) %>%
-            head(1) %>% collect %>% pluck("trip_id"))
-        if (inherits(tid.gtfs, "try-error")) next()
-        if (length(tid.gtfs) == 0) next()
-        
-        trip.times <- try(
-            gtfs %>% tbl('stop_times') %>% filter(trip_id == tid.gtfs))
-        if (inherits(trip.times, "try-error")) next()
-        
-        trip.start <- try(
-            trip.times %>% arrange(stop_sequence) %>%
-            select(departure_time) %>% head(1) %>%
-            collect %>% pluck('departure_time') %>% as.hms)
-        if (inherits(trip.start, "try-error")) next()
-        
-        trip.end <- try(
-            trip.times %>% arrange(desc(stop_sequence)) %>%
-            select(arrival_time) %>% head(1) %>%
-            collect %>% pluck('arrival_time') %>% as.hms)
-        if (inherits(trip.end, "try-error")) next()
-        trip.duration <- as.numeric(trip.end - trip.start)
-        
-        tdata <-
-            vps %>%
-            filter(trip_date == date & trip_id == trip) %>%
-            mutate(lat = position_latitude, lng = position_longitude) %>%
-            select(vehicle_id, trip_id, route_id, trip_start_time,
-                   lat, lng, timestamp, trip_date) %>%
-            collect %>%
-            mutate(trip_start_time = as.hms(trip_start_time),
-                   time = as.POSIXct(timestamp, origin = "1970-01-01") %>%
-                       format("%H:%M:%S") %>% as.hms)
-        
-        if (nrow(tdata) < 10 || (!is.na(tdata$trip_start_time[1]) &&
-                                 tdata$trip_start_time[1] != trip.start)) {
-            #cat("Skipping... [1]")
-            next()
-        }
+	cat("\n +++", date, "\n")
+	## For each trip ...
+	trips <- vps %>% filter(trip_date == date) %>%
+		group_by(trip_id) %>% summarize(count = n()) %>%
+		filter(count >= 10) %>% collect %>% pluck("trip_id")
+	tii <- 0
+	for (trip in trips) {
+		tii <- tii + 1
+		if (tcon %>% tbl("trips_raw") %>%
+			filter(trip_date == date & trip_id == trip) %>%
+			collect %>% nrow) next()
+		cat(sep = "", "\r + [", tii, " of ", length(trips), "] ", trip)
+		## Find trip's GTFS entry -> start and end times
+		tid <- gsub("-.*", "", trip)
+		
+		tid.gtfs <- try(
+			gtfs %>% tbl("trips") %>%
+			filter(trip_id %like% paste0(tid, "%")) %>% select(trip_id) %>%
+			head(1) %>% collect %>% pluck("trip_id"))
+		if (inherits(tid.gtfs, "try-error")) next()
+		if (length(tid.gtfs) == 0) next()
+		
+		trip.times <- try(
+			gtfs %>% tbl('stop_times') %>% filter(trip_id == tid.gtfs))
+		if (inherits(trip.times, "try-error")) next()
+		
+		trip.start <- try(
+			trip.times %>% arrange(stop_sequence) %>%
+			select(departure_time) %>% head(1) %>%
+			collect %>% pluck('departure_time') %>% as.hms)
+		if (inherits(trip.start, "try-error")) next()
+		
+		trip.end <- try(
+			trip.times %>% arrange(desc(stop_sequence)) %>%
+			select(arrival_time) %>% head(1) %>%
+			collect %>% pluck('arrival_time') %>% as.hms)
+		if (inherits(trip.end, "try-error")) next()
+		trip.duration <- as.numeric(trip.end - trip.start)
+		
+		tdata <-
+			vps %>%
+			filter(trip_date == date & trip_id == trip) %>%
+			mutate(lat = position_latitude, lng = position_longitude) %>%
+			select(vehicle_id, trip_id, route_id, trip_start_time,
+				   lat, lng, timestamp, trip_date) %>%
+			collect %>%
+			mutate(trip_start_time = as.hms(trip_start_time),
+				   time = as.POSIXct(timestamp, origin = "1970-01-01") %>%
+					   format("%H:%M:%S") %>% as.hms)
+		
+		if (nrow(tdata) < 10 || (!is.na(tdata$trip_start_time[1]) &&
+								 tdata$trip_start_time[1] != trip.start)) {
+			#cat("Skipping... [1]")
+			next()
+		}
 
-        ## temporal deletion
-        temporal.window <- c(as.hms(trip.start - hms(minutes = 10)),
-                             as.hms(trip.end + hms(minutes = 90)))
-        tdata <- tdata %>%
-            filter(between(time, temporal.window[1], temporal.window[2]))
-        if (nrow(tdata) < 10 || diff(range(tdata$time)) < 10 * 60)  {
-            #cat("Skipping... [2]")
-            next()
-        }
+		## temporal deletion
+		temporal.window <- c(as.hms(trip.start - hms(minutes = 10)),
+							 as.hms(trip.end + hms(minutes = 90)))
+		tdata <- tdata %>%
+			filter(between(time, temporal.window[1], temporal.window[2]))
+		if (nrow(tdata) < 10 || diff(range(tdata$time)) < 10 * 60)  {
+			#cat("Skipping... [2]")
+			next()
+		}
 
-        shape <-
-            gtfs %>% tbl('trips') %>%
-            inner_join(gtfs %>% tbl('routes'), by = "route_id") %>%
-            filter(trip_id == tid.gtfs) %>%
-            select(shape_id) %>%
-            inner_join(gtfs %>% tbl('shapes'), by = "shape_id") %>%
-            select(seq, lng, lat) %>% arrange(seq)
-        shape.bbox <- shape %>%
-            summarize(lng.min = min(lng, na.rm = TRUE),
-                      lat.min = min(lat, na.rm = TRUE),
-                      lng.max = max(lng, na.rm = TRUE),
-                      lat.max = max(lat, na.rm = TRUE)) %>%
-            head(1) %>% collect %>% as.numeric
+		shape <-
+			gtfs %>% tbl('trips') %>%
+			inner_join(gtfs %>% tbl('routes'), by = "route_id") %>%
+			filter(trip_id == tid.gtfs) %>%
+			select(shape_id) %>%
+			inner_join(gtfs %>% tbl('shapes'), by = "shape_id") %>%
+			select(seq, lng, lat) %>% arrange(seq)
+		shape.bbox <- shape %>%
+			summarize(lng.min = min(lng, na.rm = TRUE),
+					  lat.min = min(lat, na.rm = TRUE),
+					  lng.max = max(lng, na.rm = TRUE),
+					  lat.max = max(lat, na.rm = TRUE)) %>%
+			head(1) %>% collect %>% as.numeric
 
-        ## p <- tdata %>%
-        ##     mutate(inbox = inbbox(cbind(lng, lat), shape.bbox)) %>%
-        ##     ggplot(aes(lng, lat)) +
-        ##     geom_point(aes(color = inbox)) +
-        ##     geom_path(data = shape) +
-        ##     coord_fixed(1.3)
-        ## print(p)
+		## p <- tdata %>%
+		##     mutate(inbox = inbbox(cbind(lng, lat), shape.bbox)) %>%
+		##     ggplot(aes(lng, lat)) +
+		##     geom_point(aes(color = inbox)) +
+		##     geom_path(data = shape) +
+		##     coord_fixed(1.3)
+		## print(p)
 
-        ## spatial deletion - bbox
-        tdata <- tdata %>%
-            filter(inbbox(cbind(lng, lat), shape.bbox)) %>%
-            arrange(timestamp)
-        if (nrow(tdata) < 10)  {
-            #cat("Skipping... [3]")
-            next()
-        }
+		## spatial deletion - bbox
+		tdata <- tdata %>%
+			filter(inbbox(cbind(lng, lat), shape.bbox)) %>%
+			arrange(timestamp)
+		if (nrow(tdata) < 10)  {
+			#cat("Skipping... [3]")
+			next()
+		}
 
-        ## p <- tdata %>% 
-        ##     ggplot(aes(lng, lat)) +
-        ##     geom_path(data = shape, lwd = 2) +
-        ##     geom_point(colour = 'red') +
-        ##     geom_path(colour = 'red') +
-        ##     coord_fixed(1.3)
-        ## print(p)
+		## p <- tdata %>% 
+		##     ggplot(aes(lng, lat)) +
+		##     geom_path(data = shape, lwd = 2) +
+		##     geom_point(colour = 'red') +
+		##     geom_path(colour = 'red') +
+		##     coord_fixed(1.3)
+		## print(p)
 
-        ## spatial deletion - on/near the actual line
-        dLast <-
-            geosphere::distGeo(tdata %>% select(lng, lat) %>% as.matrix,
-                               shape %>% arrange(desc(seq)) %>% select(lng, lat) %>%
-                               head(1) %>% collect %>% as.numeric, f = 0)
-        if (min(dLast) < 20) 
-            tdata <- tdata %>% slice(1:which.min(dLast))
-        
-        if (nrow(tdata) < 10)  {
-            #cat("Skipping... [4]")
-            next()
-        }
+		## spatial deletion - on/near the actual line
+		dLast <-
+			geosphere::distGeo(tdata %>% select(lng, lat) %>% as.matrix,
+							   shape %>% arrange(desc(seq)) %>% select(lng, lat) %>%
+							   head(1) %>% collect %>% as.numeric, f = 0)
+		if (min(dLast) < 20) 
+			tdata <- tdata %>% slice(1:which.min(dLast))
+		
+		if (nrow(tdata) < 10)  {
+			#cat("Skipping... [4]")
+			next()
+		}
 
-        ## multiple vehicles? grab the one with most points
-        vs <- table(tdata$vehicle_id)
-        if (length(vs) > 1) {
-            vid <- names(vs)[which.max(vs)]
-            tdata <- tdata %>% filter(vehicle_id == vid)
-        }
-        if (nrow(tdata) < 10) {
-            #cat("Skipping... [5]")
-            next()
-        }
+		## multiple vehicles? grab the one with most points
+		vs <- table(tdata$vehicle_id)
+		if (length(vs) > 1) {
+			vid <- names(vs)[which.max(vs)]
+			tdata <- tdata %>% filter(vehicle_id == vid)
+		}
+		if (nrow(tdata) < 10) {
+			#cat("Skipping... [5]")
+			next()
+		}
 
-        dFirst <-
-            geosphere::distGeo(tdata %>% select(lng, lat) %>% as.matrix,
-                               shape %>% select(lng, lat) %>%
-                               head(1) %>% collect %>% as.numeric, f = 0)
-        if (min(dFirst) < 20)
-            tdata <- tdata %>%
-            slice(tail(which(dFirst == dFirst[which.min(dFirst)]), 1):n())
-        if (nrow(tdata) < 10)  {
-            #cat("Skipping... [6]")
-            next()
-        }
-        
-        ## p <- tdata %>%
-        ##     ggplot(aes(lng, lat)) +
-        ##     geom_path(data = shape, lwd = 2) +
-        ##     geom_point(colour = 'red') +
-        ##     geom_path(colour = 'red') +
-        ##     coord_fixed(1.3)
-        ## print(p)
+		dFirst <-
+			geosphere::distGeo(tdata %>% select(lng, lat) %>% as.matrix,
+							   shape %>% select(lng, lat) %>%
+							   head(1) %>% collect %>% as.numeric, f = 0)
+		if (min(dFirst) < 20)
+			tdata <- tdata %>%
+			slice(tail(which(dFirst == dFirst[which.min(dFirst)]), 1):n())
+		if (nrow(tdata) < 10)  {
+			#cat("Skipping... [6]")
+			next()
+		}
+		
+		## p <- tdata %>%
+		##     ggplot(aes(lng, lat)) +
+		##     geom_path(data = shape, lwd = 2) +
+		##     geom_point(colour = 'red') +
+		##     geom_path(colour = 'red') +
+		##     coord_fixed(1.3)
+		## print(p)
 
-        dbWriteTable(tcon, "trips_raw", tdata, append = TRUE)
-    }
+		dbWriteTable(tcon, "trips_raw", tdata, append = TRUE)
+	}
 }
 dbDisconnect(tcon)
 
 
 h <- function(d, shape) {
-    o <- do.call(rbind, lapply(d, function(x) {
-        S <- shape %>% select(lng, lat) %>% as.matrix
-        if (x <= 0) return(S[1,])
-        if (x >= max(shape$dist)) return(S[nrow(S),])
-        di <- max(which(shape$dist <= x))
-        dr <- x - shape$dist[di]
-        geosphere::destPoint(S[di, ], geosphere::bearing(S[di,], S[di+1,], f = 0),
-                             dr, f = 0) %>% as.matrix
-    }))
-    colnames(o) <- c('lng', 'lat')
-    as.tibble(o) %>% add_column(dist = d)
+	o <- do.call(rbind, lapply(d, function(x) {
+		S <- shape %>% select(lng, lat) %>% as.matrix
+		if (x <= 0) return(S[1,])
+		if (x >= max(shape$dist)) return(S[nrow(S),])
+		di <- max(which(shape$dist <= x))
+		dr <- x - shape$dist[di]
+		geosphere::destPoint(S[di, ], geosphere::bearing(S[di,], S[di+1,], f = 0),
+							 dr, f = 0) %>% as.matrix
+	}))
+	colnames(o) <- c('lng', 'lat')
+	as.tibble(o) %>% add_column(dist = d)
 }
 
 
@@ -244,70 +244,80 @@ rm(res)
 pboptions(type = "timer")
 
 trips.final <- pblapply(trips, function(trip) {
-    try({
-	    tcon <- dbConnect(SQLite(), "history_cleaned.db")
-	    tdata <- tcon %>% tbl("trips_raw") %>%
-	        filter(trip_id == trip) %>%
-	        collect %>%
-	        mutate(trip_start_time = as.hms(trip_start_time),
-	               time = as.hms(time))
-	    dbDisconnect(tcon)
+	try({
+		tcon <- dbConnect(SQLite(), "history_cleaned.db")
+		tdata <- tcon %>% tbl("trips_raw") %>%
+			filter(trip_id == trip) %>%
+			collect %>%
+			mutate(trip_start_time = as.hms(trip_start_time),
+				   time = as.hms(time))
+		dbDisconnect(tcon)
 
-        if (nrow(tdata) == 0) return(NULL)
-	    vs <- table(tdata$vehicle_id)
-	    if (length(vs) > 1) {
-	        vid <- names(vs)[which.max(vs)]
-	        tdata <- tdata %>% filter(vehicle_id == vid)
-	    }
-	    
-	    gtfs <- dbConnect(SQLite(), "../gtfs.db")
+		if (nrow(tdata) == 0) return(NULL)
+		vs <- table(tdata$vehicle_id)
+		if (length(vs) > 1) {
+			vid <- names(vs)[which.max(vs)]
+			tdata <- tdata %>% filter(vehicle_id == vid)
+		}
+		
+		gtfs <- dbConnect(SQLite(), "../gtfs.db")
 
-	    tid <- gsub("-.*", "", trip)    
-	    tid.gtfs <- try(
-	        gtfs %>% tbl("trips") %>%
-	        filter(trip_id %like% paste0(tid, "%")) %>% select(trip_id) %>%
-	        head(1) %>% collect %>% pluck("trip_id"))
-	    if (inherits(tid.gtfs, "try-error") || is.null(tid.gtfs)) return(NULL)
+		tid <- gsub("-.*", "", trip)    
+		tid.gtfs <- try(
+			gtfs %>% tbl("trips") %>%
+			filter(trip_id %like% paste0(tid, "%")) %>% select(trip_id) %>%
+			head(1) %>% collect %>% pluck("trip_id"))
+		if (inherits(tid.gtfs, "try-error") || is.null(tid.gtfs)) return(NULL)
 
-	    shape <-
-	        gtfs %>% tbl('trips') %>%
-	        inner_join(gtfs %>% tbl('routes'), by = 'route_id') %>%
-	        filter(trip_id == tid.gtfs) %>%
-	        select(shape_id) %>%
-	        inner_join(gtfs %>% tbl('shapes'), by = 'shape_id') %>%
-	        select(seq, lng, lat) %>% arrange(seq) %>% collect
+		shape <-
+			gtfs %>% tbl('trips') %>%
+			inner_join(gtfs %>% tbl('routes'), by = 'route_id') %>%
+			filter(trip_id == tid.gtfs) %>%
+			select(shape_id) %>%
+			inner_join(gtfs %>% tbl('shapes'), by = 'shape_id') %>%
+			select(seq, lng, lat) %>% arrange(seq) %>% collect
 
-	    dbDisconnect(gtfs)
+		dbDisconnect(gtfs)
 
-	    ## Find closest point on line
-	    shape <- shape %>%
-	        mutate(dist = cumsum(c(0, cbind(lng, lat) %>% as.matrix %>%
-	                                  geosphere::distGeo(f = 0))))
-	    N <- nrow(tdata)
-	    tx <- (tdata$time - tdata$trip_start_time) %>% as.numeric
-	    dx <- numeric(N)
-	    sx <- numeric(N)
+		## Find closest point on line
+		shape <- shape %>%
+			mutate(dist = cumsum(c(0, cbind(lng, lat) %>% as.matrix %>%
+									  geosphere::distGeo(f = 0))))
+		N <- nrow(tdata)
+		tx <- (tdata$time - tdata$trip_start_time) %>% as.numeric
+		dx <- numeric(N)
+		
+		for (j in 1:N) {
+			dxj <- seq(0, max(shape$dist), length = 3)
+			wm <- 2
+			for (k in 1:5) {
+				dxj <- seq(dxj[max(1, wm - 1)], dxj[min(length(dxj), wm + 1)], length = 11)
+				zxj <- h(dxj, shape)
+				dj <- geosphere::distGeo(
+					zxj %>% select(lng, lat) %>% as.matrix,
+					tdata[j, ] %>% select(lng, lat) %>% as.matrix,
+					f = 0)
+				wm <- which.min(dj)
+			}
+			dx[j] <- dxj[wm]
+		}
 
-	    for (j in 2:N) {
-	        sxj <- seq(0, 30, length = 3)
-	        wm <- 2
-	    	for (k in 1:5) {
-	            sxj <- seq(sxj[max(1, wm - 1)], sxj[min(length(sxj), wm + 1)], length = 11)
-	            dxj <- sum(sx[1:(j-1)]) + sxj * tx[j]
-	            zxj <- h(dxj, shape)
-	            dj <- geosphere::distGeo(
-	                zxj %>% select(lng, lat) %>% as.matrix,
-	                tdata[j, ] %>% select(lng, lat) %>% as.matrix,
-	                f = 0)
-	            wm <- which.min(dj)
-	    	}
-	    	# dx[j] <- dj[wm]
-	        sx[j] <- sxj[wm]
-	    }
+		tdata %>% mutate(t = tx, dist = dx) %>% 
+			return
+			# select(lng, lat, time, t, dist) %>%
+			# mutate(speed = c(diff(dist) / diff(t), 0)) %>% 
+			# filter(speed >= 0 & speed < 25) %>%
+			# mutate(speed = c(diff(dist) / diff(t), 0)) %>% 
+			# filter(speed > 0 | dist == max(.$dist)) %>% 
+			# mutate(speed = speed / 1000 * 60 * 60) %>%
+			# ggplot(aes(time, dist)) + geom_path(aes(colour = speed), lwd = 2) +
+			# 	scale_colour_viridis()
 
-	    dx <- cumsum(c(0, diff(tx)) * sx)
-	    tdata %>% mutate(dist = dx, speed = sx)
-    })
+			# ggplot(aes(lng, lat)) + 
+			# 	geom_path(aes(colour = speed), lwd = 2) +
+
+	})
+	NULL
 }, cl = cl)
 
 
@@ -346,7 +356,7 @@ cat("done\n")
 ##         select(shape_id) %>%
 ##         inner_join(gtfs %>% tbl('shapes'), by = 'shape_id') %>%
 ##         select(seq, lng, lat) %>% arrange(seq) %>% collect
-    
+	
 ##     p1 <- ggplot(trips.final %>% filter(trip_id == trip),
 ##                 aes(lng, lat)) +
 ##         geom_path(data = shape, colour = 'orangered') +
@@ -369,7 +379,7 @@ cat("done\n")
 ##         geom_smooth(se=FALSE) +
 ##         xlab("Distance into trip (km)") + ylab("Speed (km/h)")
 ##     gridExtra::grid.arrange(p1, p2, p3, layout_matrix= rbind(c(1, 2), c(1, 3)))
-    
+	
 ##     grid::grid.locator()
 ## }
 
@@ -401,7 +411,7 @@ cat("done\n")
 ##            lng.to = case_when(is.na(to_id) ~ lng.end, TRUE ~ lng.to)) %>%
 ##     select(segment_id, lat.from, lng.from, lat.to, lng.to) %>%
 ##     collect
-    
+	
 ## segspeeds <- NULL
 ## ## For each route_id ->
 ## for (route in trips.final %>% pluck('route_id') %>% unique) {
@@ -441,7 +451,7 @@ cat("done\n")
 ##     labs(colour = "Speed (km/h)") +
 ##     scale_colour_viridis() +
 ##     coord_fixed(1.3)
-    
+	
 
 
 ## segment <- segspeeds$segment_id[1]
