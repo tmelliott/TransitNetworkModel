@@ -244,7 +244,7 @@ rm(res)
 pboptions(type = "timer")
 
 trips.final <- pblapply(trips, function(trip) {
-	try({
+	x <- try({
 		tcon <- dbConnect(SQLite(), "history_cleaned.db")
 		tdata <- tcon %>% tbl("trips_raw") %>%
 			filter(trip_id == trip) %>%
@@ -263,11 +263,10 @@ trips.final <- pblapply(trips, function(trip) {
 		gtfs <- dbConnect(SQLite(), "../gtfs.db")
 
 		tid <- gsub("-.*", "", trip)    
-		tid.gtfs <- try(
-			gtfs %>% tbl("trips") %>%
+		tid.gtfs <- gtfs %>% tbl("trips") %>%
 			filter(trip_id %like% paste0(tid, "%")) %>% select(trip_id) %>%
-			head(1) %>% collect %>% pluck("trip_id"))
-		if (inherits(tid.gtfs, "try-error") || is.null(tid.gtfs)) return(NULL)
+			head(1) %>% collect %>% pluck("trip_id")
+		# if (inherits(tid.gtfs, "try-error") || is.null(tid.gtfs)) return(NULL)
 
 		shape <-
 			gtfs %>% tbl('trips') %>%
@@ -302,22 +301,10 @@ trips.final <- pblapply(trips, function(trip) {
 			dx[j] <- dxj[wm]
 		}
 
-		tdata %>% mutate(t = tx, dist = dx) %>% 
-			return
-			# select(lng, lat, time, t, dist) %>%
-			# mutate(speed = c(diff(dist) / diff(t), 0)) %>% 
-			# filter(speed >= 0 & speed < 25) %>%
-			# mutate(speed = c(diff(dist) / diff(t), 0)) %>% 
-			# filter(speed > 0 | dist == max(.$dist)) %>% 
-			# mutate(speed = speed / 1000 * 60 * 60) %>%
-			# ggplot(aes(time, dist)) + geom_path(aes(colour = speed), lwd = 2) +
-			# 	scale_colour_viridis()
-
-			# ggplot(aes(lng, lat)) + 
-			# 	geom_path(aes(colour = speed), lwd = 2) +
-
+		tdata %>% mutate(t = tx, dist = dx)
 	})
-	NULL
+	if (inherits(x, "try-error")) return(NULL)
+	x
 }, cl = cl)
 
 
@@ -338,6 +325,18 @@ for (i in 2:length(trips.final)) {
 }
 dbDisconnect(tcon)
 cat("done\n")
+
+			# select(lng, lat, time, t, dist) %>%
+			# mutate(speed = c(diff(dist) / diff(t), 0)) %>% 
+			# filter(speed >= 0 & speed < 25) %>%
+			# mutate(speed = c(diff(dist) / diff(t), 0)) %>% 
+			# filter(speed > 0 | dist == max(.$dist)) %>% 
+			# mutate(speed = speed / 1000 * 60 * 60) %>%
+			# ggplot(aes(time, dist)) + geom_path(aes(colour = speed), lwd = 2) +
+			# 	scale_colour_viridis()
+
+			# ggplot(aes(lng, lat)) + 
+			# 	geom_path(aes(colour = speed), lwd = 2) +
 
 ##save(list=ls(), file="workspace.rda")
 ##load("workspace.rda")
