@@ -307,10 +307,12 @@ trips.final <- pblapply(trips, function(trip) {
 	x
 }, cl = cl)
 
+save(list=ls(), file="workspace.rda")
 
 cat("\nWriting to database ... ")
 tcon <- dbConnect(SQLite(), "history_cleaned.db")
-dbRemoveTable(tcon, "trips")
+if (dbExistsTable(tcon, "trips"))
+	dbRemoveTable(tcon, "trips")
 dbWriteTable(tcon, "trips", trips.final[[1]])
 pb <- txtProgressBar(0, length(trips.final), style = 3)
 for (i in 2:length(trips.final)) {
