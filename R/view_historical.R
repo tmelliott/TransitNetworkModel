@@ -12,7 +12,63 @@ trips <- con %>% tbl('trips')
 routes <- trips %>% select('route_id') %>% 
 	collect %>% pluck('route_id') %>% unique
 
-plotRoute <- function(route, which = c('dist', 'speed', 'map')) {
+getRoute <- function(route) {
+    rdb <- gsub("-.*", "%", route)
+	sid <- gtfs %>% tbl('routes') %>% filter(route_id %LIKE% rdb) %>% 
+		select(shape_id) %>% head(1) %>% collect %>% pluck('shape_id')
+    trips %>% filter(route_id == route) %>% collect
+}
+
+getStops <- function(trip) {
+    tdb <- gsub("-.*", "%", trip)
+	tid <- gtfs %>% tbl('trips') %>% filter(trip_id %LIKE% tdb) %>% 
+		select(trip_id) %>% head(1) %>% collect %>% pluck('trip_id')
+    gtfs %>% tbl('stop_times') %>%
+        filter(trip_id == tid) %>%
+        inner_join(gtfs %>% tbl('stops')) %>%
+        select(stop_id, stop_sequence, shape_dist_traveled, lat, lng) %>%
+        arrange(stop_sequence) %>%
+        collect
+}
+
+getSegments <- function(route) {
+    rdb <- gsub("-.*", "%", route)
+	sid <- gtfs %>% tbl('routes') %>% filter(route_id %LIKE% rdb) %>% 
+		select(shape_id) %>% head(1) %>% collect %>% pluck('shape_id')
+    gtfs %>% tbl('shape_segments') %>% filter(shape_id == sid) %>%
+        collect
+}
+
+
+cleanSpeeds <- function(d) {
+    d <- d %>% mutate(speed = c(diff(dist) / diff(t), 0))
+    bk <- which(d$speed < 0)
+    rm <- numeric()
+    #print(d)
+    #print(c(bk, nrow(d)))
+    for (i in bk) {
+        if (i == 1) {
+            rm <- c(rm, i)
+        } else if (all(d[i-1, c("lat", "lng")] == d[i+1, c("lat", "lng")])) {
+            if (d[i, "speed"] > 30)
+                rm <- c(rm, i+1)
+            else
+                rm <- c(rm, i)
+        } else {
+            rm <- c(rm, i)
+        }
+    }
+    if (length(rm))
+        d <- d %>% slice(-rm) %>%
+        mutate(speed = c(diff(dist) / diff(t), 0))
+
+    d %>% filter(speed < 30) %>%
+        mutate(speed = c(diff(dist) / diff(t), 0))
+}
+
+
+plotRoute <- function(route, which = c('dist', 'speed', 'map'),
+                      zero.time = FALSE, stops = TRUE, segments = TRUE) {
 	which <- match.arg(which)
 	rdb <- gsub("-.*", "%", route)
 	sid <- gtfs %>% tbl('routes') %>% filter(route_id %LIKE% rdb) %>% 
@@ -21,32 +77,156 @@ plotRoute <- function(route, which = c('dist', 'speed', 'map')) {
 		select(lat, lng, dist_traveled) %>%
 		collect
 
-	switch(which, 
-		"dist" = {	
-			trips %>% filter(route_id == route & dist > 0) %>%
-				select(trip_id, time, dist) %>%
-				collect %>% mutate(time = hms(time)) %>%
-				ggplot(aes(time, dist, group = trip_id)) +
-					geom_path() +
-					geom_hline(yintercept = max(shape$dist_traveled), lty = 2)
-		},
-		"speed" = {
-			trips %>% filter(route_id == route & dist > 0) %>%
-				select(trip_id, dist, speed) %>%
-				collect %>% 
-				ggplot(aes(dist, speed, group = trip_id)) +
-					geom_path()
-		},
-		"map" = {
-			trips %>% filter(route_id == route & dist > 0) %>%
-				select(trip_id, lat, lng, speed) %>%
-				collect %>%
-				ggplot(aes(lng, lat, group = trip_id)) +
-					geom_path(aes(group = NULL), data = shape, col = "orangered", lwd = 2) +
-					geom_path()
-		})
+    d <- trips %>% filter(route_id == route & dist > 0) %>%
+                   select(trip_id, time, t, lat, lng, dist) %>%
+                   collect %>%
+                   filter(trip_id %in%
+                          ((.) %>% group_by(trip_id) %>% 
+                           summarise(tmax = max(diff(t)) < 3*60) %>%
+                           filter(tmax) %>% pluck('trip_id'))) %>%
+                   mutate(time = if (zero.time) t else hms(time)) %>%
+                   #group_by(trip_id) %>% 
+                   #do(cleanSpeeds(.)) %>% 
+                   #ungroup() %>%
+                   mutate(speed = c(diff(dist) / diff(t), 0)) %>%
+                   filter(speed > 0)
+    
+	p <- switch(which, 
+           "dist" = {
+               p <- d %>%
+                   ggplot(aes(time, dist, group = trip_id)) +
+                   geom_path() +
+                   geom_hline(yintercept = max(shape$dist_traveled), lty = 2)
+               if (stops) {
+                   p <- p +
+                       geom_hline(aes(x = NULL, y = NULL, group = NULL,
+                                      yintercept = shape_dist_traveled),
+                                  data = getStops(d$trip_id[1]),
+                                  lwd = 0.5, lty = 3, colour = "orangered")
+               }
+               if (segments) {
+                   p <- p +
+                       geom_hline(aes(x = NULL, y = NULL, group = NULL,
+                                      yintercept = shape_dist_traveled),
+                                  data = getSegments(route),
+                                  lwd = 0.5, lty = 3, colour = "green4")
+               }
+               p
+           },
+           "speed" = {
+               p <- d %>%
+                   ggplot(aes(dist + c(diff(dist)/2, 0),
+                              speed, group = trip_id)) +
+                   geom_point()
+               if (stops) {
+                   p <- p +
+                       geom_vline(aes(x = NULL, y = NULL, group = NULL,
+                                      xintercept = shape_dist_traveled),
+                                  data = getStops(d$trip_id[1]),
+                                  lwd = 0.5, lty = 3, colour = "orangered")
+               }
+               if (segments) {
+                   p <- p +
+                       geom_vline(aes(x = NULL, y = NULL, group = NULL,
+                                      xintercept = shape_dist_traveled),
+                                  data = getSegments(route),
+                                  lwd = 0.5, lty = 3, colour = "green4")
+               }
+               p
+           },
+           "map" = {
+               d %>%
+                   ggplot(aes(lng, lat, group = trip_id)) +
+                   geom_path(aes(group = NULL), data = shape,
+                             col = "orangered", lwd = 2) +
+                   geom_path()
+           })
+    p + ggtitle(route)
+    
 }
 
-plotRoute(routes[2], "dist")
-plotRoute(routes[2], "speed")
-plotRoute(routes[2], "map")
+ii <- 5
+plotRoute(routes[ii], "dist")
+plotRoute(routes[ii], "dist", zero.time = TRUE)
+plotRoute(routes[ii], "speed")
+plotRoute(routes[ii], "map")
+
+
+### Clean the distance/speed data
+data <- do.call(bind_rows,
+                pbapply::pblapply(routes, function(route) {
+                    rdata <- getRoute(route)
+                    ## rstops <- getStops(rdata$trip_id[1])
+                    rsegs <- getSegments(rdata$route_id[1])                    
+                    rdata <- rdata %>%
+                        filter(trip_id %in%
+                               ((.) %>% group_by(trip_id) %>% 
+                                summarise(tmax = max(diff(t)) < 3*60) %>%
+                                filter(tmax) %>% pluck('trip_id'))) %>%
+                        group_by(trip_id) %>% 
+                        do(cleanSpeeds(.)) %>% 
+                        ungroup() %>%
+                        filter(speed > 0 & c(diff(t), 100) > 10)
+                    segi <- sapply(rdata$dist, function(x) 
+                        max(which(rsegs$shape_dist_traveled <= x)))
+                    if (length(segi) == 0) return(NULL)
+                    rdata %>%
+                        mutate(segment_id = rsegs$segment_id[segi],
+                               seg_dist = dist - rsegs$shape_dist_traveled[segi])
+                }))
+
+getHours <- function(x) hour(x) + minute(x) / 60
+sids <- data %>% filter(!is.na(segment_id)) %>%
+    group_by(segment_id) %>%
+    summarize(n = n()) %>% arrange(desc(n)) %>% head(100) %>%
+    pluck('segment_id')
+ggplot(data %>% filter(segment_id %in% sids),
+       aes(seg_dist, speed / 1000 * 60 * 60)) +
+    geom_point(aes(colour = getHours(time %>% hms))) +
+    geom_smooth() +
+    ylim(0, 100) +
+    scale_colour_viridis() +
+    facet_wrap(~segment_id, scales="free")
+
+
+library(mgcv)
+library(ggmap)
+
+d1 <- data %>% filter(segment_id == sids[35])
+ggplot(d1, aes(hms(time), seg_dist, colour = speed)) +
+    geom_point() +
+    scale_colour_viridis()
+
+
+g <- gam(speed ~ s(seg_dist, time), data = d1)
+xt <- seq(min(d1$time), max(d1$time), length = 201)
+xd <- seq(min(d1$seg_dist), max(d1$seg_dist), length = 201)
+xdf <- expand.grid(time = xt, seg_dist = xd)
+xs <- predict(g, newdata = xdf)
+##contour(xt, xd, matrix(xs, nrow = length(xt)), nlevels = 10)
+ggplot(xdf %>% add_column(speed = xs),
+       aes(hms(time), seg_dist/1000, colour = speed/1000*60*60)) +
+    geom_point() +
+    xlab("Time") + ylab("Distance (km)") + labs(colour = "Speed (km/h)") +
+    scale_colour_viridis(option="A") +
+    coord_cartesian(expand = FALSE)
+
+
+
+
+
+d <- rdata %>% select(trip_id, lat, lng, time, t, dist)
+#    filter(trip_id == (.) %>% pluck('trip_id') %>% head(1))
+
+ %>%
+    select(time, t, dist, speed) %>% as.data.frame
+
+    ##    filter(speed >= 0) %>% mutate(speed = c(diff(dist) / diff(t), 0)) %>%
+    ##    ungroup() %>%
+    ggplot(aes(dist, speed, group = trip_id)) +
+    ##ggplot(aes(t, dist, group = trip_id)) +
+    geom_path() #+
+#geom_hline(aes(x = NULL, y = NULL, group = NULL,
+#                   yintercept = shape_dist_traveled),
+#               data = getStops(d$trip_id[1]),
+#               lwd = 0.5, lty = 3, colour = "orangered")
