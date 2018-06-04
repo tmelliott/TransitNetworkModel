@@ -153,27 +153,33 @@ plotRoute(routes[ii], "map")
 
 
 ### Clean the distance/speed data
-data <- do.call(bind_rows,
-                pbapply::pblapply(routes, function(route) {
-                    rdata <- getRoute(route)
-                    ## rstops <- getStops(rdata$trip_id[1])
-                    rsegs <- getSegments(rdata$route_id[1])                    
-                    rdata <- rdata %>%
-                        filter(trip_id %in%
-                               ((.) %>% group_by(trip_id) %>% 
-                                summarise(tmax = max(diff(t)) < 3*60) %>%
-                                filter(tmax) %>% pluck('trip_id'))) %>%
-                        group_by(trip_id) %>% 
-                        do(cleanSpeeds(.)) %>% 
-                        ungroup() %>%
-                        filter(speed > 0 & c(diff(t), 100) > 10)
-                    segi <- sapply(rdata$dist, function(x) 
-                        max(which(rsegs$shape_dist_traveled <= x)))
-                    if (length(segi) == 0) return(NULL)
-                    rdata %>%
-                        mutate(segment_id = rsegs$segment_id[segi],
-                               seg_dist = dist - rsegs$shape_dist_traveled[segi])
-                }))
+f <- "mycleandata.rds"
+if (file.exists(f)) {
+    data <- readRDS(f)
+} else {
+    data <- do.call(bind_rows,
+                    pbapply::pblapply(routes, function(route) {
+                        rdata <- getRoute(route)
+                        ## rstops <- getStops(rdata$trip_id[1])
+                        rsegs <- getSegments(rdata$route_id[1])                    
+                        rdata <- rdata %>%
+                            filter(trip_id %in%
+                                   ((.) %>% group_by(trip_id) %>% 
+                                    summarise(tmax = max(diff(t)) < 3*60) %>%
+                                    filter(tmax) %>% pluck('trip_id'))) %>%
+                            group_by(trip_id) %>% 
+                            do(cleanSpeeds(.)) %>% 
+                            ungroup() %>%
+                            filter(speed > 0 & c(diff(t), 100) > 10)
+                        segi <- sapply(rdata$dist, function(x) 
+                            max(which(rsegs$shape_dist_traveled <= x)))
+                        if (length(segi) == 0) return(NULL)
+                        rdata %>%
+                            mutate(segment_id = rsegs$segment_id[segi],
+                                   seg_dist = dist - rsegs$shape_dist_traveled[segi])
+                    }))
+    saveRDS(data, f)
+}
 
 getHours <- function(x) hour(x) + minute(x) / 60
 sids <- data %>% filter(!is.na(segment_id)) %>%
@@ -192,7 +198,7 @@ ggplot(data %>% filter(segment_id %in% sids),
 library(mgcv)
 library(ggmap)
 
-d1 <- data %>% filter(segment_id == sids[35])
+d1 <- data %>% filter(segment_id == "3218")
 ggplot(d1, aes(hms(time), seg_dist, colour = speed)) +
     geom_point() +
     scale_colour_viridis()
@@ -202,15 +208,25 @@ g <- gam(speed ~ s(seg_dist, time), data = d1)
 xt <- seq(min(d1$time), max(d1$time), length = 201)
 xd <- seq(min(d1$seg_dist), max(d1$seg_dist), length = 201)
 xdf <- expand.grid(time = xt, seg_dist = xd)
-xs <- predict(g, newdata = xdf)
+xs <- predict(g, newdata = xdf, se.fit = TRUE)
 ##contour(xt, xd, matrix(xs, nrow = length(xt)), nlevels = 10)
-ggplot(xdf %>% add_column(speed = xs),
-       aes(hms(time), seg_dist/1000, colour = speed/1000*60*60)) +
-    geom_point() +
-    xlab("Time") + ylab("Distance (km)") + labs(colour = "Speed (km/h)") +
-    scale_colour_viridis(option="A") +
-    coord_cartesian(expand = FALSE)
 
+
+
+p <- ggplot(xdf %>% add_column(speed = xs$fit, se = xs$se.fit),
+            aes(hms(time), seg_dist/1000)) +
+    xlab("Time") + ylab("Distance (km)") + 
+    coord_cartesian(expand = FALSE) +
+    theme(legend.position = "bottom")
+gridExtra::grid.arrange(
+    p + geom_point(aes(colour = speed/1000*60*60)) +
+    labs(colour = "Speed (km/h)") +
+    scale_colour_viridis(option="A"),
+    p + geom_point(aes(colour = se)) + labs(colour = "Std. err") +
+    scale_colour_,
+    nrow = 2
+)
+    
 
 
 
