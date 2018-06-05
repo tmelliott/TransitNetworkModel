@@ -198,6 +198,7 @@ ggplot(data %>% filter(segment_id %in% sids),
 
 library(mgcv)
 library(ggmap)
+library(rgl)
 
 d1 <- data %>% filter(segment_id == "3433")
 ggplot(d1, aes(hms(time), seg_dist, colour = speed)) +
@@ -205,14 +206,20 @@ ggplot(d1, aes(hms(time), seg_dist, colour = speed)) +
     scale_colour_viridis()
 
 
-g <- gam(speed ~ s(time, seg_dist), data = d1, method="REML")
+g <- gam(speed ~ s(time, seg_dist), data = d1)
 xt <- seq(min(d1$time), max(d1$time), length = 201)
 xd <- seq(min(d1$seg_dist), max(d1$seg_dist), length = 201)
 xdf <- expand.grid(time = xt, seg_dist = xd)
 xs <- predict(g, newdata = xdf, se.fit = TRUE)
 ##contour(xt, xd, matrix(xs, nrow = length(xt)), nlevels = 10)
+plot(g)
+vis.gam(g, se=TRUE, plot.type="3d")
 
-
+spd <- round(xs$fit/1000*60*60)
+spd <- spd - min(spd)
+plot3d(xdf$time, xdf$seg_dist, xs$fit,
+       col = viridis(max(spd))[spd])
+plot3d(d1$time, d1$seg_dist, d1$speed, add = TRUE)
 
 p <- ggplot(xdf %>% add_column(speed = xs$fit, se = xs$se.fit),
             aes(hms(time), seg_dist/1000)) +
