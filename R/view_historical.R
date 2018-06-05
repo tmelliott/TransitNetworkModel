@@ -184,7 +184,7 @@ if (file.exists(f)) {
 getHours <- function(x) hour(x) + minute(x) / 60
 sids <- data %>% filter(!is.na(segment_id)) %>%
     group_by(segment_id) %>%
-    summarize(n = n()) %>% arrange(desc(n)) %>% head(100) %>%
+    summarize(n = n()) %>% arrange(desc(n)) %>% head(50) %>%
     pluck('segment_id')
 ggplot(data %>% filter(segment_id %in% sids),
        aes(seg_dist, speed / 1000 * 60 * 60)) +
@@ -192,19 +192,20 @@ ggplot(data %>% filter(segment_id %in% sids),
     geom_smooth() +
     ylim(0, 100) +
     scale_colour_viridis() +
-    facet_wrap(~segment_id, scales="free")
+    facet_wrap(~segment_id, scales="free") +
+    theme(legend.position = "bottom")
 
 
 library(mgcv)
 library(ggmap)
 
-d1 <- data %>% filter(segment_id == "3218")
+d1 <- data %>% filter(segment_id == "3433")
 ggplot(d1, aes(hms(time), seg_dist, colour = speed)) +
     geom_point() +
     scale_colour_viridis()
 
 
-g <- gam(speed ~ s(seg_dist, time), data = d1)
+g <- gam(speed ~ s(time, seg_dist), data = d1, method="REML")
 xt <- seq(min(d1$time), max(d1$time), length = 201)
 xd <- seq(min(d1$seg_dist), max(d1$seg_dist), length = 201)
 xdf <- expand.grid(time = xt, seg_dist = xd)
@@ -221,9 +222,10 @@ p <- ggplot(xdf %>% add_column(speed = xs$fit, se = xs$se.fit),
 gridExtra::grid.arrange(
     p + geom_point(aes(colour = speed/1000*60*60)) +
     labs(colour = "Speed (km/h)") +
-    scale_colour_viridis(option="A"),
+    scale_colour_viridis(option="A") +
+    geom_point(aes(colour = speed/1000*60*60), data = d1),
     p + geom_point(aes(colour = se)) + labs(colour = "Std. err") +
-    scale_colour_,
+    scale_colour_viridis(option = "C", direction = -1),
     nrow = 2
 )
     
