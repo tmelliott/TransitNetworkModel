@@ -182,9 +182,11 @@ if (file.exists(f)) {
 }
 
 getHours <- function(x) hour(x) + minute(x) / 60
-sids <- data %>% filter(!is.na(segment_id)) %>%
+sids <- data %>%
+    filter(!is.na(segment_id) & trip_date == "2018-02-12" &
+           !segment_id %in% c('116', '118')) %>%
     group_by(segment_id) %>%
-    summarize(n = n()) %>% arrange(desc(n)) %>% head(50) %>%
+    summarize(n = n()) %>% arrange(desc(n)) %>% head(49) %>%
     pluck('segment_id')
 ggplot(data %>% filter(segment_id %in% sids),
        aes(seg_dist, speed / 1000 * 60 * 60)) +
@@ -193,14 +195,29 @@ ggplot(data %>% filter(segment_id %in% sids),
     ylim(0, 100) +
     scale_colour_viridis() +
     facet_wrap(~segment_id, scales="free") +
-    theme(legend.position = "bottom")
+    theme(legend.position = "bottom") + labs(colour = "Time") +
+    xlab("Distance along road segment (m)") + ylab("Speed (km/h)")
+
+## sh <- gtfs %>% tbl('shape_segments') %>%
+##     filter(segment_id == "116") %>%
+##     collect
+## seg <- gtfs %>% tbl("segments") %>%
+##     filter(segment_id == 116) %>% collect
+## int <- gtfs %>% tbl("intersections") %>% filter(intersection_id == seg$to_id)
+## gtfs %>% tbl("shapes") %>%
+##     filter(shape_id %in% sh$shape_id) %>%
+##     ggplot(aes(lng, lat, group = shape_id, colour = shape_id, size = shape_id)) +
+##     geom_path() +
+##     scale_size_discrete(range = c(6, 2, 0.5)) +
+##     geom_point(aes(group = NULL, colour = NULL, size = NULL),
+##                data = int)
 
 
 library(mgcv)
 library(ggmap)
 library(rgl)
 
-d1 <- data %>% filter(segment_id == "3433")
+d1 <- data %>% filter(segment_id == "2588")
 ggplot(d1, aes(hms(time), seg_dist, colour = speed)) +
     geom_point() +
     scale_colour_viridis()
@@ -215,11 +232,11 @@ xs <- predict(g, newdata = xdf, se.fit = TRUE)
 plot(g)
 vis.gam(g, se=TRUE, plot.type="3d")
 
-spd <- round(xs$fit/1000*60*60)
-spd <- spd - min(spd)
-plot3d(xdf$time, xdf$seg_dist, xs$fit,
-       col = viridis(max(spd))[spd])
-plot3d(d1$time, d1$seg_dist, d1$speed, add = TRUE)
+## spd <- round(xs$fit/1000*60*60)
+## spd <- spd - min(spd)
+## plot3d(xdf$time, xdf$seg_dist, xs$fit,
+##        col = viridis(max(spd))[spd])
+## plot3d(d1$time, d1$seg_dist, d1$speed, add = TRUE)
 
 p <- ggplot(xdf %>% add_column(speed = xs$fit, se = xs$se.fit),
             aes(hms(time), seg_dist/1000)) +
@@ -229,8 +246,8 @@ p <- ggplot(xdf %>% add_column(speed = xs$fit, se = xs$se.fit),
 gridExtra::grid.arrange(
     p + geom_point(aes(colour = speed/1000*60*60)) +
     labs(colour = "Speed (km/h)") +
-    scale_colour_viridis(option="A") +
-    geom_point(aes(colour = speed/1000*60*60), data = d1),
+    scale_colour_viridis(option="A"),
+    #geom_point(aes(colour = speed/1000*60*60), data = d1),
     p + geom_point(aes(colour = se)) + labs(colour = "Std. err") +
     scale_colour_viridis(option = "C", direction = -1),
     nrow = 2

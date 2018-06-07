@@ -48,8 +48,8 @@ if (!file.exists("history_cleaned.db")) {
 }
 
 ## For each day ...
-#dates <- vps %>% select(trip_date) %>% distinct %>% collect %>% pluck("trip_date")
-dates <- character()
+# dates <- vps %>% select(trip_date) %>% distinct %>% collect %>% pluck("trip_date")
+dates <- c("2018-03-05", "2018-03-06", "2018-03-07", "2018-03-08", "2018-03-09")
 for (date in dates) {
 	cat("\n +++", date, "\n")
 	## For each trip ...
