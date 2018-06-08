@@ -182,6 +182,12 @@ if (file.exists(f)) {
 }
 
 getHours <- function(x) hour(x) + minute(x) / 60
+data <- data %>%
+    mutate(tx = as.POSIXct(timestamp, origin = "1970-01-01"),
+           th = format(tx, "%H") %>% as.numeric,
+           tm = format(tx, "%M") %>% as.numeric,
+           tt = th + tm/60,
+           peak.effect = dnorm(tt, 7.5, 1.5) + dnorm(tt, 17, 2))
 sids <- data %>%
     filter(!is.na(segment_id) & trip_date == "2018-02-12" &
            !segment_id %in% c('116', '118')) %>%
@@ -190,12 +196,13 @@ sids <- data %>%
     pluck('segment_id')
 ggplot(data %>% filter(segment_id %in% sids),
        aes(seg_dist, speed / 1000 * 60 * 60)) +
-    geom_point(aes(colour = getHours(time %>% hms))) +
+    geom_point(aes(colour = peak.effect)) + # getHours(time %>% hms))) +
     geom_smooth() +
     ylim(0, 100) +
     scale_colour_viridis() +
     facet_wrap(~segment_id, scales="free") +
-    theme(legend.position = "bottom") + labs(colour = "Time") +
+    #theme(legend.position = "bottom") +
+    labs(colour = "Time") +
     xlab("Distance along road segment (m)") + ylab("Speed (km/h)")
 
 ## sh <- gtfs %>% tbl('shape_segments') %>%
@@ -217,13 +224,13 @@ library(mgcv)
 library(ggmap)
 library(rgl)
 
-d1 <- data %>% filter(segment_id == "2588")
-ggplot(d1, aes(hms(time), seg_dist, colour = speed)) +
+d1 <- data %>% filter(segment_id == "3285")
+ggplot(d1, aes(hms(time), seg_dist, colour = speed)) + 
     geom_point() +
     scale_colour_viridis()
 
 
-g <- gam(speed ~ s(time, seg_dist), data = d1)
+g <- gam(speed ~ s(peak.effect, seg_dist), data = d1)
 xt <- seq(min(d1$time), max(d1$time), length = 201)
 xd <- seq(min(d1$seg_dist), max(d1$seg_dist), length = 201)
 xdf <- expand.grid(time = xt, seg_dist = xd)
