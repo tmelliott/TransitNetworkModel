@@ -49,7 +49,7 @@ if (!file.exists("history_cleaned.db")) {
 
 ## For each day ...
 # dates <- vps %>% select(trip_date) %>% distinct %>% collect %>% pluck("trip_date")
-dates <- c("2018-03-05", "2018-03-06", "2018-03-07", "2018-03-08", "2018-03-09")
+dates <- seq(as.Date("2018-04-02"), as.Date("2018-04-05"), by = 1) %>% as.character
 for (date in dates) {
 	cat("\n +++", date, "\n")
 	## For each trip ...
@@ -243,6 +243,9 @@ rm(res)
 
 pboptions(type = "timer")
 
+## remove trips that are already processed
+
+
 trips.final <- pblapply(trips, function(trip) {
 	x <- try({
 		tcon <- dbConnect(SQLite(), "history_cleaned.db")
@@ -252,7 +255,7 @@ trips.final <- pblapply(trips, function(trip) {
 			mutate(trip_start_time = as.hms(trip_start_time),
 				   time = as.hms(time))
 		dbDisconnect(tcon)
-
+                
 		if (nrow(tdata) == 0) return(NULL)
 		vs <- table(tdata$vehicle_id)
 		if (length(vs) > 1) {

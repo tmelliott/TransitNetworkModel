@@ -6,7 +6,7 @@ suppressPackageStartupMessages({
 })
 
 ## Combine multiple histories into one
-dates <- seq(as.Date("2018-02-10"), as.Date("2018-02-17"), by = 1)
+dates <- seq(as.Date("2018-04-01"), as.Date("2018-05-01")-1, by = 1)
 db <- "rawhistory.db"
 dir <- "historicaldata"
 
@@ -21,15 +21,17 @@ data <-
                     "_", d, ".csv")
         if (!file.exists(f[1])) return(NULL)
         ## read the vehicle positions and trip updates
-        vps <-
+        vps <- try({
             read.csv(f[1],
                      colClasses = c("factor", "factor", "factor",
                                     "character","numeric", "numeric",
                                     "numeric", "integer")) %>%
-            group_by(vehicle_id, timestamp) %>%
-            filter(row_number() == 1) %>%
-            ungroup() %>%
-            arrange(timestamp)
+                group_by(vehicle_id, timestamp) %>%
+                filter(row_number() == 1) %>%
+                ungroup() %>%
+                arrange(timestamp)
+        })
+        if (inherits(vps, 'try-error')) return (NULL)
         vps
     }, cl = cl)
 stopCluster(cl)
