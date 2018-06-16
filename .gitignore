@@ -19,3 +19,5 @@ data/versions.csv
 R/historicaldata
 *.log
 *.rds
+
+*.log
