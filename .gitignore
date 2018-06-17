@@ -21,3 +21,4 @@ R/historicaldata
 *.rds
 
 *.log
+R/segment_fits

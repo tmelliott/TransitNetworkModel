@@ -145,7 +145,7 @@ plotRoute <- function(route, which = c('dist', 'speed', 'map'),
     
 }
 
-ii <- 5
+ii <- 1
 plotRoute(routes[ii], "dist")
 plotRoute(routes[ii], "dist", zero.time = TRUE)
 plotRoute(routes[ii], "speed")
@@ -192,16 +192,15 @@ sids <- data %>%
     filter(!is.na(segment_id) & trip_date == "2018-02-12" &
            !segment_id %in% c('116', '118')) %>%
     group_by(segment_id) %>%
-    summarize(n = n()) %>% arrange(desc(n)) %>% head(49) %>%
+    summarize(n = n()) %>% arrange(desc(n)) %>% head(25) %>%
     pluck('segment_id')
 ggplot(data %>% filter(segment_id %in% sids),
        aes(seg_dist, speed / 1000 * 60 * 60)) +
-    geom_point(aes(colour = peak.effect)) + # getHours(time %>% hms))) +
+    geom_point(aes(colour = peak.effect)) + 
     geom_smooth() +
     ylim(0, 100) +
     scale_colour_viridis() +
     facet_wrap(~segment_id, scales="free") +
-    #theme(legend.position = "bottom") +
     labs(colour = "Time") +
     xlab("Distance along road segment (m)") + ylab("Speed (km/h)")
 
@@ -224,13 +223,14 @@ library(mgcv)
 library(ggmap)
 library(rgl)
 
-d1 <- data %>% filter(segment_id == "3285")
+## Segments to view: 3285, 
+d1 <- data %>% filter(segment_id == "3437")
 ggplot(d1, aes(hms(time), seg_dist, colour = speed)) + 
     geom_point() +
     scale_colour_viridis()
 
 
-g <- gam(speed ~ s(peak.effect, seg_dist), data = d1)
+g <- gam(speed ~ s(time, seg_dist), data = d1)
 xt <- seq(min(d1$time), max(d1$time), length = 201)
 xd <- seq(min(d1$seg_dist), max(d1$seg_dist), length = 201)
 xdf <- expand.grid(time = xt, seg_dist = xd)
@@ -250,17 +250,35 @@ p <- ggplot(xdf %>% add_column(speed = xs$fit, se = xs$se.fit),
     xlab("Time") + ylab("Distance (km)") + 
     coord_cartesian(expand = FALSE) +
     theme(legend.position = "bottom")
-gridExtra::grid.arrange(
-    p + geom_point(aes(colour = speed/1000*60*60)) +
-    labs(colour = "Speed (km/h)") +
-    scale_colour_viridis(option="A"),
-    #geom_point(aes(colour = speed/1000*60*60), data = d1),
-    p + geom_point(aes(colour = se)) + labs(colour = "Std. err") +
-    scale_colour_viridis(option = "C", direction = -1),
-    nrow = 2
-)
-    
 
+p1 <- p + geom_point(aes(colour = speed/1000*60*60)) +
+    labs(colour = "Speed (km/h)") +
+    scale_colour_viridis(option="D")
+p2 <- p + geom_point(aes(colour = se)) + labs(colour = "Std. err") +
+    scale_colour_viridis(option = "C", direction = -1)
+
+p1
+
+gridExtra::grid.arrange(p1, p2, nrow = 2)
+    
+## simulate from the posterior
+gV <- vcov(g, freq = FALSE)
+Rbeta <- MASS::mvrnorm(100, coef(g), gV)
+Xp <- predict(g, newdata = xdf, type = "lpmatrix")
+xsim <- apply(Rbeta, 1, function(rb) Xp %*% cbind(rb))
+
+plots <- vector("list", 100)
+for (i in 1:100) {
+	plots[[i]] <- ggplot(xdf %>% add_column(speed = xsim[,i]),
+	            aes(hms(time), seg_dist/1000)) +
+	    xlab("Time") + ylab("Distance (km)") + 
+	    coord_cartesian(expand = FALSE) +
+	    theme(legend.position = "bottom") +
+	    geom_point(aes(colour = speed/1000*60*60)) +
+	    labs(colour = "Speed (km/h)") +
+	    scale_colour_viridis(option="D", limits = range(xsim) / 1000 * 60 * 60)
+	ggsave(sprintf("segment_fits/sim_%03d.png", i), plots[[i]], device = "png")
+}
 
 
 
