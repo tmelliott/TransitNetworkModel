@@ -183,16 +183,22 @@ if (file.exists(f)) {
 
 getHours <- function(x) hour(x) + minute(x) / 60
 data <- data %>%
+    filter(format(as.POSIXct(timestamp, origin = "1970-01-01", tz="NZDT"),
+                  "%Y-%m-%d") == "2018-04-04") %>%
     mutate(tx = as.POSIXct(timestamp, origin = "1970-01-01"),
            th = format(tx, "%H") %>% as.numeric,
            tm = format(tx, "%M") %>% as.numeric,
            tt = th + tm/60,
-           peak.effect = dnorm(tt, 7.5, 1.5) + dnorm(tt, 17, 2))
+           peak.effect =
+               dnorm(tt, 7.5, 1) + dnorm(tt, 17, 1) + dnorm(tt, 15.5, 1))
+
 sids <- data %>%
-    filter(!is.na(segment_id) & trip_date == "2018-02-12" &
-           !segment_id %in% c('116', '118')) %>%
+    filter(!is.na(segment_id)) %>%
     group_by(segment_id) %>%
-    summarize(n = n()) %>% arrange(desc(n)) %>% head(25) %>%
+    summarize(n = n(), nadj = n / length(unique(trip_id)),
+              dmax = max(seg_dist), vmax = max(speed)) %>%
+    filter(vmax > 90 & n > 60) %>% 
+    arrange(desc(n)) %>% head(50) %>%
     pluck('segment_id')
 ggplot(data %>% filter(segment_id %in% sids),
        aes(seg_dist, speed / 1000 * 60 * 60)) +
@@ -223,17 +229,19 @@ library(mgcv)
 library(ggmap)
 library(rgl)
 
-## Segments to view: 3285, 
-d1 <- data %>% filter(segment_id == "3437")
-ggplot(d1, aes(hms(time), seg_dist, colour = speed)) + 
+## Segments to view: 3285, 3437, 1214, 3432, 3433
+segid <- "1701"
+d1 <- data %>% filter(segment_id == segid & speed < 80)
+ggplot(d1, aes(tt, seg_dist, colour = speed)) + 
     geom_point() +
     scale_colour_viridis()
 
 
-g <- gam(speed ~ s(time, seg_dist), data = d1)
-xt <- seq(min(d1$time), max(d1$time), length = 201)
+d1$dmax <- max(d1$seg_dist)
+g <- gam(speed ~ s(tt, I(seg_dist / dmax * 12)), data = d1)
+xt <- seq(min(d1$tt), max(d1$tt), length = 1001)
 xd <- seq(min(d1$seg_dist), max(d1$seg_dist), length = 201)
-xdf <- expand.grid(time = xt, seg_dist = xd)
+xdf <- expand.grid(tt = xt, seg_dist = xd, dmax = max(d1$seg_dist))
 xs <- predict(g, newdata = xdf, se.fit = TRUE)
 ##contour(xt, xd, matrix(xs, nrow = length(xt)), nlevels = 10)
 plot(g)
@@ -246,10 +254,11 @@ vis.gam(g, se=TRUE, plot.type="3d")
 ## plot3d(d1$time, d1$seg_dist, d1$speed, add = TRUE)
 
 p <- ggplot(xdf %>% add_column(speed = xs$fit, se = xs$se.fit),
-            aes(hms(time), seg_dist/1000)) +
+            aes(tt, seg_dist/1000)) +
     xlab("Time") + ylab("Distance (km)") + 
     coord_cartesian(expand = FALSE) +
-    theme(legend.position = "bottom")
+    scale_x_continuous(breaks = c(8, 12, 16, 20),
+                       labels = paste0(c(8, 12, 16, 20), "h00"))
 
 p1 <- p + geom_point(aes(colour = speed/1000*60*60)) +
     labs(colour = "Speed (km/h)") +
@@ -269,6 +278,7 @@ xsim <- apply(Rbeta, 1, function(rb) Xp %*% cbind(rb))
 
 plots <- vector("list", 100)
 for (i in 1:100) {
+    dev.flush(dev.flush())
 	plots[[i]] <- ggplot(xdf %>% add_column(speed = xsim[,i]),
 	            aes(hms(time), seg_dist/1000)) +
 	    xlab("Time") + ylab("Distance (km)") + 
@@ -277,23 +287,75 @@ for (i in 1:100) {
 	    geom_point(aes(colour = speed/1000*60*60)) +
 	    labs(colour = "Speed (km/h)") +
 	    scale_colour_viridis(option="D", limits = range(xsim) / 1000 * 60 * 60)
-	ggsave(sprintf("segment_fits/sim_%03d.png", i), plots[[i]], device = "png")
+    dev.hold()
+    print(plots[[i]])
+    dev.flush()
+	#ggsave(sprintf("segment_fits/sim_%03d.png", i), plots[[i]], device = "png")
+}
+
+plot3d(d1$time, d1$seg_dist, d1$speed, zlim = range(xsim), asp = c(5, 2, 1))
+for (i in sample(1:100, 10)) {
+    surface3d(xt, xd, matrix(xsim[,i], nrow = length(xt)),
+              col = "blue", alpha = 0.2)
 }
 
 
+###### Plots for useR talk
+dseg <- data %>%
+    filter(route_id%in% !!(d1 %>% pluck('route_id') %>% unique)) %>%
+    mutate(inseg = segment_id == segid) %>%
+    filter(speed / 1000 * 60 * 60 < 80)
 
-d <- rdata %>% select(trip_id, lat, lng, time, t, dist)
-#    filter(trip_id == (.) %>% pluck('trip_id') %>% head(1))
+## Plot 1: raw points
+akl <- get_googlemap(c(mean(range(d1$lng)), mean(range(d1$lat))), zoom = 12,
+                     size = c(640, 640), maptype = "roadmap")
 
- %>%
-    select(time, t, dist, speed) %>% as.data.frame
+ggmap(akl) +
+    geom_point(aes(lng, lat), data = dseg)
 
-    ##    filter(speed >= 0) %>% mutate(speed = c(diff(dist) / diff(t), 0)) %>%
-    ##    ungroup() %>%
-    ggplot(aes(dist, speed, group = trip_id)) +
-    ##ggplot(aes(t, dist, group = trip_id)) +
-    geom_path() #+
-#geom_hline(aes(x = NULL, y = NULL, group = NULL,
-#                   yintercept = shape_dist_traveled),
-#               data = getStops(d$trip_id[1]),
-#               lwd = 0.5, lty = 3, colour = "orangered")
+ggmap(akl) +
+    geom_point(aes(lng, lat, colour = inseg), data = dseg) +
+    scale_colour_manual(values = c('gray', 'black')) +
+    theme(legend.position = "none")
+
+ggmap(akl) +
+    geom_path(aes(lng, lat, colour = route_id, group = trip_id), data = dseg) +
+    theme(legend.position = "none")
+
+akl2 <- get_googlemap(c(mean(range(d1$lng)), mean(range(d1$lat))), zoom = 13,
+                     size = c(640, 320), maptype = "satellite")
+
+ggmap(akl2) +
+    geom_path(aes(lng, lat, colour = route_id, group = trip_id),
+              data = dseg %>% filter(segment_id == segid)) +
+    theme(legend.position = 'none')
+
+ggmap(akl2) +
+    geom_path(aes(lng, lat, colour = speed/1000*60*60, group = trip_id),
+              data = dseg %>% filter(segment_id == segid)) +
+    scale_colour_viridis()
+
+## ggmap(akl2)
+
+ggplot(dseg %>% filter(segment_id == segid) %>%
+       ##filter(between(tt, 14, 20)),
+       filter(between(tt, 0, 24)),
+       aes(tt, seg_dist / 1000, colour = speed / 1000 * 60 * 60,
+           group = trip_id)) +
+    geom_path(lwd = 2) +
+    scale_colour_viridis() +
+    xlab('Time') + ylab('Distance (km)') + labs(colour = "Speed (km/h)") +
+    scale_x_continuous(breaks = c(8, 12, 16, 20),
+                       labels = paste0(c(8, 12, 16, 20), "h00"))
+
+p1
+
+p1 + geom_path(aes(tt,
+                  seg_dist / 1000,
+                  #colour = speed / 1000 * 60 * 60,
+                  group = trip_id),
+               data = dseg %>% filter(segment_id == segid),
+               colour = "white", lty = 2) 
+    ## scale_x_continuous(breaks = c(14, 16, 18, 20),
+    ##                    labels = paste0(c(14, 16, 18, 20), "h00"),
+    ##                    limits = c(14, 20))
