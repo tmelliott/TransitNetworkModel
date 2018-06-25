@@ -4,6 +4,9 @@ library(dbplyr)
 library(viridis)
 library(lubridate)
 library(hms)
+library(mgcv)
+library(ggmap)
+library(rgl)
 
 con <- dbConnect(SQLite(), "history_cleaned.db")
 gtfs <- dbConnect(SQLite(), "../gtfs.db")
@@ -183,8 +186,8 @@ if (file.exists(f)) {
 
 getHours <- function(x) hour(x) + minute(x) / 60
 data <- data %>%
-    filter(format(as.POSIXct(timestamp, origin = "1970-01-01", tz="NZDT"),
-                  "%Y-%m-%d") == "2018-04-04") %>%
+    filter(format(as.POSIXct(timestamp, origin = "1970-01-01"),
+                  "%Y-%m-%d") %in% c("2018-04-04", "2018-04-05")) %>%
     mutate(tx = as.POSIXct(timestamp, origin = "1970-01-01"),
            th = format(tx, "%H") %>% as.numeric,
            tm = format(tx, "%M") %>% as.numeric,
@@ -225,12 +228,10 @@ ggplot(data %>% filter(segment_id %in% sids),
 ##                data = int)
 
 
-library(mgcv)
-library(ggmap)
-library(rgl)
 
-## Segments to view: 3285, 3437, 1214, 3432, 3433
-segid <- "1701"
+
+## Segments to view: 3285, 3437, 1214, 3432, 3433, 2847
+segid <- "2847"
 d1 <- data %>% filter(segment_id == segid & speed < 80)
 ggplot(d1, aes(tt, seg_dist, colour = speed)) + 
     geom_point() +
@@ -319,14 +320,14 @@ ggmap(akl) +
     theme(legend.position = "none")
 
 ggmap(akl) +
-    geom_path(aes(lng, lat, colour = route_id, group = trip_id), data = dseg) +
+    geom_path(aes(lng, lat, colour = route_id, group = interaction(trip_date, trip_id)), data = dseg) +
     theme(legend.position = "none")
 
 akl2 <- get_googlemap(c(mean(range(d1$lng)), mean(range(d1$lat))), zoom = 13,
                      size = c(640, 320), maptype = "satellite")
 
 ggmap(akl2) +
-    geom_path(aes(lng, lat, colour = route_id, group = trip_id),
+    geom_path(aes(lng, lat, colour = route_id, group = interaction(trip_date, trip_id)),
               data = dseg %>% filter(segment_id == segid)) +
     theme(legend.position = 'none')
 
