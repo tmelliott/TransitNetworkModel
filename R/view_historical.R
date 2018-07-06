@@ -186,9 +186,9 @@ if (file.exists(f)) {
 
 getHours <- function(x) hour(x) + minute(x) / 60
 data <- data %>%
-    filter(format(as.POSIXct(timestamp, origin = "1970-01-01"),
+    filter(format(as.POSIXct(timestamp, origin = "1970-01-01", tz="Pacific/Auckland"),
                   "%Y-%m-%d") %in% c("2018-04-04", "2018-04-05")) %>%
-    mutate(tx = as.POSIXct(timestamp, origin = "1970-01-01"),
+    mutate(tx = as.POSIXct(timestamp, origin = "1970-01-01", tz="Pacific/Auckland"),
            th = format(tx, "%H") %>% as.numeric,
            tm = format(tx, "%M") %>% as.numeric,
            tt = th + tm/60,
@@ -200,7 +200,7 @@ sids <- data %>%
     group_by(segment_id) %>%
     summarize(n = n(), nadj = n / length(unique(trip_id)),
               dmax = max(seg_dist), vmax = max(speed)) %>%
-    filter(vmax > 90 & n > 60) %>% 
+    # filter(vmax > 90 & n > 60) %>% 
     arrange(desc(n)) %>% head(50) %>%
     pluck('segment_id')
 ggplot(data %>% filter(segment_id %in% sids),
@@ -231,11 +231,16 @@ ggplot(data %>% filter(segment_id %in% sids),
 
 
 ## Segments to view: 3285, 3437, 1214, 3432, 3433, 2847
-segid <- "2847"
-d1 <- data %>% filter(segment_id == segid & speed < 80)
-ggplot(d1, aes(tt, seg_dist, colour = speed)) + 
-    geom_point() +
-    scale_colour_viridis()
+for (segid in data$segment_id %>% unique) {
+	segid <- "2765"
+	d1 <- data %>% filter(segment_id == segid & speed < 19)
+	px <- ggplot(d1, aes(tt, seg_dist, colour = speed)) + 
+	    geom_point() +
+	    scale_colour_viridis() +
+	    ggtitle(segid)
+    print(px)
+	grid::grid.locator()
+}
 
 
 d1$dmax <- max(d1$seg_dist)
@@ -246,7 +251,8 @@ xdf <- expand.grid(tt = xt, seg_dist = xd, dmax = max(d1$seg_dist))
 xs <- predict(g, newdata = xdf, se.fit = TRUE)
 ##contour(xt, xd, matrix(xs, nrow = length(xt)), nlevels = 10)
 plot(g)
-vis.gam(g, se=TRUE, plot.type="3d")
+vis.gam(g, se=FALSE, plot.type="3d", zlim = c(0, 25),
+	xlab = "Time", ylab = "Distance Traveled", zlab = "Speed")
 
 ## spd <- round(xs$fit/1000*60*60)
 ## spd <- spd - min(spd)
@@ -336,6 +342,15 @@ ggmap(akl2) +
               data = dseg %>% filter(segment_id == segid)) +
     scale_colour_viridis()
 
+set.seed(2018)
+ggmap(akl2) +
+    geom_point(aes(lng, lat, colour = speed/1000*60*60),
+              data = dseg %>% filter(segment_id == segid) %>%
+              mutate(lng = lng + rnorm(n(),0,0.0005),
+              	     lat = lat + rnorm(n(),0,0.0005)) %>%
+              arrange(desc(speed))) +
+    scale_colour_viridis()
+
 ## ggmap(akl2)
 
 ggplot(dseg %>% filter(segment_id == segid) %>%
@@ -356,7 +371,8 @@ p1 + geom_path(aes(tt,
                   #colour = speed / 1000 * 60 * 60,
                   group = trip_id),
                data = dseg %>% filter(segment_id == segid),
-               colour = "white", lty = 2) 
+               colour = "white", lty = 2) +
+	xlim(15, 18)
     ## scale_x_continuous(breaks = c(14, 16, 18, 20),
     ##                    labels = paste0(c(14, 16, 18, 20), "h00"),
     ##                    limits = c(14, 20))
