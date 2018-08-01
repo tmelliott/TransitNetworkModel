@@ -231,7 +231,7 @@ ggplot(data %>% filter(segment_id %in% sids),
 
 
 ## Segments to view: 3285, 3437, 1214, 3432, 3433, 2847
-for (segid in data$segment_id %>% unique) {
+# for (segid in data$segment_id %>% unique) {
 	segid <- "2765"
 	d1 <- data %>% filter(segment_id == segid & speed < 19)
 	px <- ggplot(d1, aes(tt, seg_dist, colour = speed)) + 
@@ -239,14 +239,24 @@ for (segid in data$segment_id %>% unique) {
 	    scale_colour_viridis() +
 	    ggtitle(segid)
     print(px)
-	grid::grid.locator()
-}
+# 	grid::grid.locator()
+# }
 
+### WRITE THE DATA
+set.seed(2018)
+write.csv(d1 %>% 
+	mutate(id = 1:n(),
+		   lngr = lng + rnorm(n(),0,0.0005),
+           latr = lat + rnorm(n(),0,0.0005)) %>% 
+	select(id, tt, seg_dist, speed, lat, lng, latr, lngr) %>%
+	arrange(desc(speed)),
+	"../../talks/2018-07_useR/data/segspeed.csv",
+	row.names=FALSE, quote=FALSE)
 
 d1$dmax <- max(d1$seg_dist)
 g <- gam(speed ~ s(tt, I(seg_dist / dmax * 12)), data = d1)
-xt <- seq(min(d1$tt), max(d1$tt), length = 1001)
-xd <- seq(min(d1$seg_dist), max(d1$seg_dist), length = 201)
+xt <- seq(min(d1$tt), max(d1$tt), length = 41)[1:40]
+xd <- seq(min(d1$seg_dist), max(d1$seg_dist), length = 21)[1:20]
 xdf <- expand.grid(tt = xt, seg_dist = xd, dmax = max(d1$seg_dist))
 xs <- predict(g, newdata = xdf, se.fit = TRUE)
 ##contour(xt, xd, matrix(xs, nrow = length(xt)), nlevels = 10)
@@ -259,9 +269,15 @@ vis.gam(g, se=FALSE, plot.type="3d", zlim = c(0, 25),
 ## plot3d(xdf$time, xdf$seg_dist, xs$fit,
 ##        col = viridis(max(spd))[spd])
 ## plot3d(d1$time, d1$seg_dist, d1$speed, add = TRUE)
+xdf <- xdf %>% add_column(speed = xs$fit, se = xs$se.fit)
 
-p <- ggplot(xdf %>% add_column(speed = xs$fit, se = xs$se.fit),
-            aes(tt, seg_dist/1000)) +
+### Write it ...
+write.csv(xdf %>% select(tt, seg_dist, speed) %>%
+	mutate(id = 1:n()),
+	"../../talks/2018-07_useR/data/fitspeed.csv",
+	quote = FALSE, row.names = FALSE)
+
+p <- ggplot(xdf, aes(tt, seg_dist/1000)) +
     xlab("Time") + ylab("Distance (km)") + 
     coord_cartesian(expand = FALSE) +
     scale_x_continuous(breaks = c(8, 12, 16, 20),
@@ -376,3 +392,24 @@ p1 + geom_path(aes(tt,
     ## scale_x_continuous(breaks = c(14, 16, 18, 20),
     ##                    labels = paste0(c(14, 16, 18, 20), "h00"),
     ##                    limits = c(14, 20))
+
+
+## predict the future
+final = as.tibble(xdf) %>% 
+	filter(tt %in% xt[c(12, 29)]) 
+
+write.csv(final %>% filter(tt < 15) %>% select(seg_dist, speed) %>% mutate(id = 1:n()), 
+	'../../talks/2018-07_useR/data/predspeeds_10.csv',
+	quote = FALSE, row.names = FALSE)
+write.csv(final %>% filter(tt > 15) %>% select(seg_dist, speed) %>% mutate(id = 1:n()), 
+	'../../talks/2018-07_useR/data/predspeeds_17.csv',
+	quote = FALSE, row.names = FALSE)
+
+ggplot(final, aes(seg_dist / 1000, speed / 1000 * 60 * 60, 
+		color = factor(tt, labels = c("10am", "5:30pm")))) +
+		geom_path() +
+		labs(color = "") +
+		xlab("Distance (km)") + ylab("Speed (km/h)") +
+		theme(legend.position = "bottom")
+
+ggsave("../../talks/2018-07_useR/assets/img/pred.png")
